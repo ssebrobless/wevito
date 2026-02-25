@@ -1,0 +1,16 @@
+# Godot cache and editor state
+.godot/
+
+# Build outputs and binaries
+builds/
+*.exe
+
+# Local logs and scratch
+issue_run-latest.txt
+nul
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
