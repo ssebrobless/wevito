@@ -13,6 +13,9 @@ __pycache__/
 tools/desktop_bridge/bin/
 tools/desktop_bridge/obj/
 tools/desktop_bridge/publish/
+vnext/**/bin/
+vnext/**/obj/
+vnext/artifacts/
 
 # OS/editor
 .DS_Store

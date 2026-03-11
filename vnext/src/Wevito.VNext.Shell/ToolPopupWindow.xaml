@@ -1,0 +1,64 @@
+<Window x:Class="Wevito.VNext.Shell.ToolPopupWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Wevito Basket"
+        Width="320"
+        Height="240"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        Topmost="True"
+        ShowActivated="False"
+        AllowDrop="True"
+        Drop="ToolPopupWindow_OnDrop">
+    <Border Background="#F61F242A"
+            BorderBrush="#FF86939B"
+            BorderThickness="1"
+            CornerRadius="16"
+            Padding="12">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Basket"
+                           Foreground="#FFF0F4F5"
+                           FontSize="18"
+                           FontWeight="SemiBold" />
+                <Button Grid.Column="1"
+                        Padding="10,4"
+                        Content="Close"
+                        Click="CloseButton_OnClick" />
+            </Grid>
+
+            <ListBox x:Name="BasketList"
+                     Grid.Row="1"
+                     Margin="0,10,0,10"
+                     DisplayMemberPath="Label" />
+
+            <UniformGrid Grid.Row="2"
+                         Columns="3">
+                <Button Margin="0,0,6,0"
+                        Padding="8,5"
+                        Content="Copy"
+                        Click="CopyButton_OnClick" />
+                <Button Margin="0,0,6,0"
+                        Padding="8,5"
+                        Content="Open"
+                        Click="OpenButton_OnClick" />
+                <Button Padding="8,5"
+                        Content="Delete"
+                        Click="DeleteButton_OnClick" />
+            </UniformGrid>
+        </Grid>
+    </Border>
+</Window>

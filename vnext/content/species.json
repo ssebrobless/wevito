@@ -1,0 +1,20 @@
+[
+  {
+    "id": "rat",
+    "displayName": "Rat",
+    "accentColor": "#F4D35E",
+    "baseSpeed": 96.0
+  },
+  {
+    "id": "crow",
+    "displayName": "Crow",
+    "accentColor": "#7EA3CC",
+    "baseSpeed": 110.0
+  },
+  {
+    "id": "fox",
+    "displayName": "Fox",
+    "accentColor": "#D98C5F",
+    "baseSpeed": 122.0
+  }
+]
