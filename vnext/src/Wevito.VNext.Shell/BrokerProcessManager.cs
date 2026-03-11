@@ -19,23 +19,12 @@ internal static class BrokerProcessManager
 
     public static string ResolveContentRoot()
     {
-        var nextToExe = Path.Combine(AppContext.BaseDirectory, "content");
-        if (Directory.Exists(nextToExe))
-        {
-            return nextToExe;
-        }
+        return ResolveDirectory("content", Path.Combine("vnext", "content"), "Could not resolve vNext content directory.");
+    }
 
-        var repoRoot = FindRepoRoot(AppContext.BaseDirectory);
-        if (repoRoot is not null)
-        {
-            var candidate = Path.Combine(repoRoot, "vnext", "content");
-            if (Directory.Exists(candidate))
-            {
-                return candidate;
-            }
-        }
-
-        throw new DirectoryNotFoundException("Could not resolve vNext content directory.");
+    public static string ResolveSpriteRoot()
+    {
+        return ResolveDirectory("sprites", "sprites", "Could not resolve sprite directory.");
     }
 
     private static (string FileName, string Arguments) ResolveBrokerLaunch(string pipeName)
@@ -82,5 +71,26 @@ internal static class BrokerProcessManager
         }
 
         return null;
+    }
+
+    private static string ResolveDirectory(string siblingDirectory, string repoRelativeDirectory, string errorMessage)
+    {
+        var nextToExe = Path.Combine(AppContext.BaseDirectory, siblingDirectory);
+        if (Directory.Exists(nextToExe))
+        {
+            return nextToExe;
+        }
+
+        var repoRoot = FindRepoRoot(AppContext.BaseDirectory);
+        if (repoRoot is not null)
+        {
+            var candidate = Path.Combine(repoRoot, repoRelativeDirectory);
+            if (Directory.Exists(candidate))
+            {
+                return candidate;
+            }
+        }
+
+        throw new DirectoryNotFoundException(errorMessage);
     }
 }

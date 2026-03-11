@@ -3,18 +3,120 @@
     "id": "rat",
     "displayName": "Rat",
     "accentColor": "#F4D35E",
-    "baseSpeed": 96.0
+    "baseSpeed": 96.0,
+    "defaultEnvironmentId": "rat",
+    "supportedAgeStages": ["baby", "teen", "adult"],
+    "supportedGenders": ["female", "male"],
+    "supportedColors": ["red", "orange", "yellow", "blue", "indigo", "violet"],
+    "primaryFoodGroupId": "omnivore-scavenger",
+    "secondaryFoodGroupId": "herbivore-grazer"
   },
   {
     "id": "crow",
     "displayName": "Crow",
     "accentColor": "#7EA3CC",
-    "baseSpeed": 110.0
+    "baseSpeed": 110.0,
+    "defaultEnvironmentId": "crow",
+    "supportedAgeStages": ["baby", "teen", "adult"],
+    "supportedGenders": ["female", "male"],
+    "supportedColors": ["red", "orange", "yellow", "blue", "indigo", "violet"],
+    "primaryFoodGroupId": "birds-seed",
+    "secondaryFoodGroupId": "omnivore-scavenger"
   },
   {
     "id": "fox",
     "displayName": "Fox",
     "accentColor": "#D98C5F",
-    "baseSpeed": 122.0
+    "baseSpeed": 122.0,
+    "defaultEnvironmentId": "fox",
+    "supportedAgeStages": ["baby", "teen", "adult"],
+    "supportedGenders": ["female", "male"],
+    "supportedColors": ["red", "orange", "yellow", "blue", "indigo", "violet"],
+    "primaryFoodGroupId": "predator-reptile",
+    "secondaryFoodGroupId": "omnivore-scavenger"
+  },
+  {
+    "id": "snake",
+    "displayName": "Snake",
+    "accentColor": "#8CBF7F",
+    "baseSpeed": 88.0,
+    "defaultEnvironmentId": "snake",
+    "supportedAgeStages": ["baby", "teen", "adult"],
+    "supportedGenders": ["female", "male"],
+    "supportedColors": ["red", "orange", "yellow", "blue", "indigo", "violet"],
+    "primaryFoodGroupId": "predator-reptile",
+    "secondaryFoodGroupId": "birds-seed"
+  },
+  {
+    "id": "deer",
+    "displayName": "Deer",
+    "accentColor": "#B89D6A",
+    "baseSpeed": 92.0,
+    "defaultEnvironmentId": "deer",
+    "supportedAgeStages": ["baby", "teen", "adult"],
+    "supportedGenders": ["female", "male"],
+    "supportedColors": ["red", "orange", "yellow", "blue", "indigo", "violet"],
+    "primaryFoodGroupId": "herbivore-grazer",
+    "secondaryFoodGroupId": "birds-seed"
+  },
+  {
+    "id": "frog",
+    "displayName": "Frog",
+    "accentColor": "#74B86B",
+    "baseSpeed": 104.0,
+    "defaultEnvironmentId": "frog",
+    "supportedAgeStages": ["baby", "teen", "adult"],
+    "supportedGenders": ["female", "male"],
+    "supportedColors": ["red", "orange", "yellow", "blue", "indigo", "violet"],
+    "primaryFoodGroupId": "predator-reptile",
+    "secondaryFoodGroupId": "water"
+  },
+  {
+    "id": "pigeon",
+    "displayName": "Pigeon",
+    "accentColor": "#92A7C3",
+    "baseSpeed": 106.0,
+    "defaultEnvironmentId": "pigeon",
+    "supportedAgeStages": ["baby", "teen", "adult"],
+    "supportedGenders": ["female", "male"],
+    "supportedColors": ["red", "orange", "yellow", "blue", "indigo", "violet"],
+    "primaryFoodGroupId": "birds-seed",
+    "secondaryFoodGroupId": "herbivore-grazer"
+  },
+  {
+    "id": "raccoon",
+    "displayName": "Raccoon",
+    "accentColor": "#A59F90",
+    "baseSpeed": 108.0,
+    "defaultEnvironmentId": "raccoon",
+    "supportedAgeStages": ["baby", "teen", "adult"],
+    "supportedGenders": ["female", "male"],
+    "supportedColors": ["red", "orange", "yellow", "blue", "indigo", "violet"],
+    "primaryFoodGroupId": "omnivore-scavenger",
+    "secondaryFoodGroupId": "predator-reptile"
+  },
+  {
+    "id": "squirrel",
+    "displayName": "Squirrel",
+    "accentColor": "#C18C5D",
+    "baseSpeed": 114.0,
+    "defaultEnvironmentId": "squirrel",
+    "supportedAgeStages": ["baby", "teen", "adult"],
+    "supportedGenders": ["female", "male"],
+    "supportedColors": ["red", "orange", "yellow", "blue", "indigo", "violet"],
+    "primaryFoodGroupId": "herbivore-grazer",
+    "secondaryFoodGroupId": "omnivore-scavenger"
+  },
+  {
+    "id": "goose",
+    "displayName": "Goose",
+    "accentColor": "#D8D4C4",
+    "baseSpeed": 98.0,
+    "defaultEnvironmentId": "goose",
+    "supportedAgeStages": ["baby", "teen", "adult"],
+    "supportedGenders": ["female", "male"],
+    "supportedColors": ["red", "orange", "yellow", "blue", "indigo", "violet"],
+    "primaryFoodGroupId": "birds-seed",
+    "secondaryFoodGroupId": "herbivore-grazer"
   }
 ]

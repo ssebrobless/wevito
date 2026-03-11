@@ -13,6 +13,8 @@ $ShellExe = Join-Path $ProjectRoot "vnext\artifacts\shell\Wevito.VNext.Shell.exe
 $OutputRoot = Join-Path $ProjectRoot "vnext\artifacts\screenshots"
 $RunStamp = Get-Date -Format "yyyyMMdd-HHmmss"
 $OutputDir = Join-Path $OutputRoot $RunStamp
+$DataDir = Join-Path $OutputDir "data"
+$TraceDir = Join-Path $OutputDir "trace"
 
 if (-not $SkipBuild) {
     & powershell -NoProfile -ExecutionPolicy Bypass -File $BuildScript -Configuration $Configuration
@@ -26,9 +28,13 @@ if (-not (Test-Path $ShellExe)) {
 }
 
 New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null
+New-Item -ItemType Directory -Force -Path $DataDir | Out-Null
+New-Item -ItemType Directory -Force -Path $TraceDir | Out-Null
 
 Add-Type -AssemblyName System.Drawing
 Add-Type -AssemblyName System.Windows.Forms
+Add-Type -AssemblyName UIAutomationClient
+Add-Type -AssemblyName UIAutomationTypes
 
 Add-Type @"
 using System;
@@ -175,6 +181,86 @@ function Get-WindowInfo {
     throw "Timed out waiting for window '$Title' for process $ProcessId."
 }
 
+function Get-ToolWindowInfo {
+    param(
+        [int]$ProcessId,
+        [int]$TimeoutMs = 5000
+    )
+
+    $deadline = (Get-Date).AddMilliseconds($TimeoutMs)
+    while ((Get-Date) -lt $deadline) {
+        $windows = [WevitoVisualNative]::GetWindowsForProcess($ProcessId)
+        $match = $windows |
+            Where-Object { $_.Title -ne "Wevito Home Panel" -and $_.Title -ne "Wevito Roam Band" } |
+            Select-Object -First 1
+        if ($null -ne $match) {
+            return $match
+        }
+
+        Start-Sleep -Milliseconds 200
+    }
+
+    throw "Timed out waiting for tool popup window for process $ProcessId."
+}
+
+function Get-AutomationElementByName {
+    param(
+        [IntPtr]$Handle,
+        [string]$Name,
+        [System.Windows.Automation.ControlType]$ControlType = $null,
+        [int]$TimeoutMs = 2500
+    )
+
+    $deadline = (Get-Date).AddMilliseconds($TimeoutMs)
+    while ((Get-Date) -lt $deadline) {
+        $root = [System.Windows.Automation.AutomationElement]::FromHandle($Handle)
+        if ($null -ne $root) {
+            $conditions = [System.Collections.Generic.List[System.Windows.Automation.Condition]]::new()
+            $conditions.Add([System.Windows.Automation.PropertyCondition]::new([System.Windows.Automation.AutomationElement]::NameProperty, $Name))
+            if ($null -ne $ControlType) {
+                $conditions.Add([System.Windows.Automation.PropertyCondition]::new([System.Windows.Automation.AutomationElement]::ControlTypeProperty, $ControlType))
+            }
+
+            $condition = if ($conditions.Count -eq 1) {
+                $conditions[0]
+            }
+            else {
+                [System.Windows.Automation.AndCondition]::new($conditions.ToArray())
+            }
+
+            $match = $root.FindFirst([System.Windows.Automation.TreeScope]::Descendants, $condition)
+            if ($null -ne $match) {
+                return $match
+            }
+        }
+
+        Start-Sleep -Milliseconds 150
+    }
+
+    return $null
+}
+
+function Invoke-WindowButton {
+    param(
+        $WindowInfo,
+        [string[]]$Names
+    )
+
+    foreach ($name in $Names) {
+        $button = Get-AutomationElementByName -Handle $WindowInfo.Handle -Name $name -ControlType ([System.Windows.Automation.ControlType]::Button)
+        if ($null -eq $button) {
+            continue
+        }
+
+        $invoke = $button.GetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern)
+        $invoke.Invoke()
+        Start-Sleep -Milliseconds 800
+        return $true
+    }
+
+    return $false
+}
+
 function Set-WindowForeground {
     param($WindowInfo)
 
@@ -274,21 +360,37 @@ function Open-BasketWindow {
 
     Invoke-GlobalHotkey -Keys "^+o"
     try {
-        return Get-WindowInfo -ProcessId $ProcessId -Title "Wevito Basket" -TimeoutMs 1500
+        return Get-ToolWindowInfo -ProcessId $ProcessId -TimeoutMs 1800
     }
     catch {
-        $buttonX = [int]($HomeWindow.Left + $HomeWindow.Width - 92)
-        $buttonY = [int]($HomeWindow.Top + 22)
-        Invoke-LeftClickAt -X $buttonX -Y $buttonY
-        return Get-WindowInfo -ProcessId $ProcessId -Title "Wevito Basket" -TimeoutMs 3000
+        Set-WindowForeground -WindowInfo $HomeWindow
+        if (-not (Invoke-WindowButton -WindowInfo $HomeWindow -Names @("BIN", "HIDE"))) {
+            $buttonX = [int]($HomeWindow.Left + $HomeWindow.Width - 246)
+            $buttonY = [int]($HomeWindow.Top + 22)
+            Invoke-LeftClickAt -X $buttonX -Y $buttonY
+        }
+
+        return Get-ToolWindowInfo -ProcessId $ProcessId -TimeoutMs 4000
     }
+}
+
+function Start-ShellProcess {
+    param([string]$ExePath)
+
+    $psi = New-Object System.Diagnostics.ProcessStartInfo
+    $psi.FileName = $ExePath
+    $psi.WorkingDirectory = Split-Path -Parent $ExePath
+    $psi.UseShellExecute = $false
+    $psi.Environment["WEVITO_VNEXT_DATA_ROOT"] = $DataDir
+    $psi.Environment["WEVITO_VNEXT_TRACE_DIR"] = $TraceDir
+    return [System.Diagnostics.Process]::Start($psi)
 }
 
 $shellProcess = $null
 $notepadProcess = $null
 
 try {
-    $shellProcess = Start-Process -FilePath $ShellExe -PassThru
+    $shellProcess = Start-ShellProcess -ExePath $ShellExe
     Start-Sleep -Milliseconds $StartupDelayMs
 
     $homeWindow = Get-WindowInfo -ProcessId $shellProcess.Id -Title "Wevito Home Panel"

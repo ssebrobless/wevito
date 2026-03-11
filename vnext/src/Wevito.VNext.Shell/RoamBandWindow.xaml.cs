@@ -2,7 +2,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interop;
 using System.Windows.Media;
-using System.Windows.Shapes;
 using Wevito.VNext.Contracts;
 
 namespace Wevito.VNext.Shell;
@@ -19,7 +18,7 @@ public partial class RoamBandWindow : Window
 
     public long WindowHandle => new WindowInteropHelper(this).Handle.ToInt64();
 
-    public void Render(CompanionState state)
+    internal void Render(CompanionState state, SpriteAssetService assetService)
     {
         RoamCanvas.Children.Clear();
         if (state.Mode != CompanionMode.Passive)
@@ -29,22 +28,36 @@ public partial class RoamBandWindow : Window
 
         foreach (var pet in state.ActivePets)
         {
-            var brush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(pet.AccentColor));
-            var ellipse = new Ellipse
+            var source = assetService.GetPetFrame(pet, DateTimeOffset.UtcNow);
+            if (source is null)
             {
-                Width = 28,
-                Height = 18,
-                Fill = brush,
-                Stroke = Brushes.White,
-                StrokeThickness = 1
+                continue;
+            }
+
+            var scale = assetService.GetPetScale(pet);
+            var width = 28 * scale;
+            var height = 24 * scale;
+            var image = new Image
+            {
+                Source = source,
+                Width = width,
+                Height = height,
+                Stretch = Stretch.Fill,
+                RenderTransformOrigin = new Point(0.5, 0.5)
             };
-            Canvas.SetLeft(ellipse, pet.CurrentX - Left - 14);
-            Canvas.SetTop(ellipse, ActualHeight - 36);
-            RoamCanvas.Children.Add(ellipse);
+            RenderOptions.SetBitmapScalingMode(image, BitmapScalingMode.NearestNeighbor);
+            if (pet.FacingDirection == PetFacingDirection.Left)
+            {
+                image.RenderTransform = new ScaleTransform(-1, 1);
+            }
+
+            Canvas.SetLeft(image, pet.CurrentX - Left - width / 2);
+            Canvas.SetTop(image, ActualHeight - height - 8);
+            RoamCanvas.Children.Add(image);
         }
     }
 
-    public void CloseSilently()
+    internal void CloseSilently()
     {
         _closingSilently = true;
         Close();

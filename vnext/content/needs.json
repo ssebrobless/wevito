@@ -1,0 +1,44 @@
+[
+  {
+    "id": "hunger",
+    "displayName": "Hunger",
+    "iconId": "feed",
+    "accentColor": "#E8B35A"
+  },
+  {
+    "id": "thirst",
+    "displayName": "Thirst",
+    "iconId": "water",
+    "accentColor": "#6AB8E8"
+  },
+  {
+    "id": "energy",
+    "displayName": "Energy",
+    "iconId": "rest",
+    "accentColor": "#9CCB75"
+  },
+  {
+    "id": "cleanliness",
+    "displayName": "Cleanliness",
+    "iconId": "bathe",
+    "accentColor": "#D7E4EC"
+  },
+  {
+    "id": "affection",
+    "displayName": "Affection",
+    "iconId": "groom",
+    "accentColor": "#D49AB6"
+  },
+  {
+    "id": "comfort",
+    "displayName": "Comfort",
+    "iconId": "callback",
+    "accentColor": "#D0C386"
+  },
+  {
+    "id": "health",
+    "displayName": "Health",
+    "iconId": "medicine",
+    "accentColor": "#C98686"
+  }
+]

@@ -20,6 +20,7 @@ public static class ShellEventTypes
     public const string ClipboardUrlAvailable = "ClipboardUrlAvailable";
     public const string DropReceived = "DropReceived";
     public const string HotkeyPressed = "HotkeyPressed";
+    public const string OverlayClickReceived = "OverlayClickReceived";
     public const string WorkAreaChanged = "WorkAreaChanged";
     public const string PowerStateChanged = "PowerStateChanged";
     public const string ShellActionFailed = "ShellActionFailed";
@@ -48,6 +49,8 @@ public sealed record RequestDesktopContextCommand();
 public sealed record ShutdownBrokerCommand();
 
 public sealed record HotkeyPressedEvent(string ActionId);
+
+public sealed record OverlayClickEvent(WindowRole Role, PointInt ScreenPosition, DateTimeOffset ClickedAtUtc);
 
 public sealed record ShellActionFailedEvent(string ActionId, string Message);
 

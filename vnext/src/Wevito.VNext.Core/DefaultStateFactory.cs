@@ -13,7 +13,9 @@ public sealed class DefaultStateFactory
 
     public CompanionState Create(GameContent content)
     {
-        var environment = content.Environments.FirstOrDefault()?.Id ?? "corner-garden";
+        var environment = content.Species.FirstOrDefault()?.DefaultEnvironmentId
+            ?? content.Environments.FirstOrDefault()?.Id
+            ?? "rat";
         return new CompanionState(
             CompanionMode.Focused,
             false,

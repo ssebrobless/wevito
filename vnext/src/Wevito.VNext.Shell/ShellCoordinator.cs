@@ -1,5 +1,7 @@
-using System.IO;
 using System.Diagnostics;
+using System.IO;
+using System.Runtime.InteropServices;
+using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
 using Wevito.VNext.Contracts;
@@ -9,8 +11,10 @@ namespace Wevito.VNext.Shell;
 
 internal sealed class ShellCoordinator : IAsyncDisposable
 {
-    private const double HomeWindowWidth = 360;
-    private const double HomeWindowHeight = 300;
+    private const double HomeWindowWidth = 392;
+    private const double HomeWindowFullHeight = 560;
+    private const double HomeWindowCompactHeight = 320;
+    private const double HomeWindowPassiveHeight = 196;
     private const double ToolWindowWidth = 320;
     private const double ToolWindowHeight = 240;
     private const double RoamBandHeight = 118;
@@ -30,6 +34,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private Process? _brokerProcess;
     private ContentRepository? _contentRepository;
     private AppRepository? _repository;
+    private SpriteAssetService? _assetService;
     private GameContent? _content;
     private CompanionState? _state;
     private DesktopContext? _desktopContext;
@@ -50,6 +55,9 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _homeWindow.TogglePinnedRequested += async () => await TogglePinnedAsync();
         _homeWindow.ToggleBasketRequested += async () => await ToggleBasketAsync();
         _homeWindow.CaptureClipboardRequested += async () => await RequestClipboardCaptureAsync();
+        _homeWindow.OpenSettingsRequested += async () => await ToggleSettingsAsync();
+        _homeWindow.ToggleCompactRequested += async () => await ToggleCompactHudAsync();
+        _homeWindow.SaveRequested += async () => await SaveAsync();
         _homeWindow.ActionRequested += HandleAction;
         _homeWindow.Closed += (_, _) => _application.Shutdown();
 
@@ -67,6 +75,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _toolPopupWindow.OpenRequested += async id => await OpenBasketItemAsync(id);
         _toolPopupWindow.DeleteRequested += async id => await DeleteBasketItemAsync(id);
         _toolPopupWindow.LinksDropped += async urls => await AddLinksAsync(urls, "drop");
+        _toolPopupWindow.SettingChanged += OnSettingChanged;
     }
 
     public async Task StartAsync()
@@ -74,18 +83,18 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         TraceLog.Write("shell", "startup-begin");
         var contentRoot = BrokerProcessManager.ResolveContentRoot();
         _contentRepository = new ContentRepository(contentRoot);
+        _assetService = new SpriteAssetService(BrokerProcessManager.ResolveSpriteRoot());
         _content = await _contentRepository.LoadAsync();
         TraceLog.Write("shell", $"content-loaded path={contentRoot} species={_content.Species.Count} environments={_content.Environments.Count}");
 
-        var appDataPath = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "WevitoVNext",
-            "wevito-vnext.db");
+        var dataRoot = ResolveDataRoot();
+        var appDataPath = Path.Combine(dataRoot, "wevito-vnext.db");
         _repository = new AppRepository(appDataPath);
         await _repository.InitializeAsync();
 
         var defaultStateFactory = new DefaultStateFactory(_petSimulationEngine);
         _state = await _repository.LoadAsync() ?? defaultStateFactory.Create(_content);
+        _state = HydrateLoadedState(_state, _content);
         TraceLog.Write("shell", $"state-ready pinned={_state.IsPinned} pets={_state.ActivePets.Count} basket={_state.BasketItems.Count}");
 
         _homeWindow.Show();
@@ -135,6 +144,11 @@ internal sealed class ShellCoordinator : IAsyncDisposable
                 await HandleHotkeyAsync(hotkey.ActionId);
                 break;
 
+            case ShellEventTypes.OverlayClickReceived:
+                var overlayClick = PipeMessage.DeserializePayload<OverlayClickEvent>(envelope.Payload);
+                await HandleOverlayClickAsync(overlayClick);
+                break;
+
             case ShellEventTypes.ShellActionFailed:
                 var error = PipeMessage.DeserializePayload<ShellActionFailedEvent>(envelope.Payload);
                 SetFeedback(error.Message);
@@ -158,6 +172,21 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         }
     }
 
+    private async Task HandleOverlayClickAsync(OverlayClickEvent overlayClick)
+    {
+        var handled = overlayClick.Role switch
+        {
+            WindowRole.HomePanel => await _homeWindow.TryInvokeOverlayClickAsync(overlayClick.ScreenPosition),
+            WindowRole.ToolPopup => await _toolPopupWindow.TryInvokeOverlayClickAsync(overlayClick.ScreenPosition),
+            _ => false
+        };
+
+        if (handled)
+        {
+            TraceLog.Write("overlay-click", $"handled role={overlayClick.Role} x={overlayClick.ScreenPosition.X} y={overlayClick.ScreenPosition.Y}");
+        }
+    }
+
     private void OnTick(object? sender, EventArgs e)
     {
         if (_state is null)
@@ -174,10 +203,10 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         {
             ActivePets = _petSimulationEngine.ApplyLayout(
                 _state.ActivePets,
-                homeStageRect.X + 24,
-                homeStageRect.Y + 16,
+                _homeWindow.Left + homeStageRect.X + 24,
+                _homeWindow.Top + homeStageRect.Y + 20,
                 homeStageRect.Width - 48,
-                homeStageRect.Height - 28)
+                homeStageRect.Height - 36)
         };
 
         var roamBandRect = _desktopContext?.WorkArea is { } workArea
@@ -200,23 +229,6 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         }
 
         var workArea = _desktopContext?.WorkArea ?? new RectInt(0, 0, (int)SystemParameters.WorkArea.Width, (int)SystemParameters.WorkArea.Height);
-        var homeLeft = workArea.Right - HomeWindowWidth - HomeMargin;
-        var homeTop = workArea.Bottom - HomeWindowHeight - 20;
-        _homeWindow.Left = homeLeft;
-        _homeWindow.Top = homeTop;
-        _homeWindow.Width = HomeWindowWidth;
-        _homeWindow.Height = HomeWindowHeight;
-
-        _toolPopupWindow.Left = homeLeft + (HomeWindowWidth - ToolWindowWidth);
-        _toolPopupWindow.Top = homeTop - ToolWindowHeight - 10;
-        _toolPopupWindow.Width = ToolWindowWidth;
-        _toolPopupWindow.Height = ToolWindowHeight;
-
-        _roamBandWindow.Left = workArea.X;
-        _roamBandWindow.Top = workArea.Bottom - RoamBandHeight;
-        _roamBandWindow.Width = workArea.Width;
-        _roamBandWindow.Height = RoamBandHeight;
-
         var handles = new List<long>
         {
             _homeWindow.WindowHandle,
@@ -229,13 +241,32 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         {
             _state = _state with { Mode = nextMode };
         }
+
+        var homeHeight = GetHomeWindowHeight();
+        var homeLeft = workArea.Right - HomeWindowWidth - HomeMargin;
+        var homeTop = workArea.Bottom - homeHeight - 20;
+        _homeWindow.Left = homeLeft;
+        _homeWindow.Top = homeTop;
+        _homeWindow.Width = HomeWindowWidth;
+        _homeWindow.Height = homeHeight;
+
+        _toolPopupWindow.Left = homeLeft + (HomeWindowWidth - ToolWindowWidth);
+        _toolPopupWindow.Top = homeTop - ToolWindowHeight - 10;
+        _toolPopupWindow.Width = ToolWindowWidth;
+        _toolPopupWindow.Height = ToolWindowHeight;
+
+        _roamBandWindow.Left = workArea.X;
+        _roamBandWindow.Top = workArea.Bottom - RoamBandHeight;
+        _roamBandWindow.Width = workArea.Width;
+        _roamBandWindow.Height = RoamBandHeight;
+
         if (_lastLoggedMode != _state.Mode)
         {
             TraceLog.Write("mode", $"mode={_state.Mode} pinned={_state.IsPinned}");
             _lastLoggedMode = _state.Mode;
         }
 
-        TraceLog.Write("layout", $"home={homeLeft:0},{homeTop:0} {HomeWindowWidth:0}x{HomeWindowHeight:0} tool={_toolPopupWindow.Left:0},{_toolPopupWindow.Top:0} {ToolWindowWidth:0}x{ToolWindowHeight:0} roam={_roamBandWindow.Left:0},{_roamBandWindow.Top:0} {_roamBandWindow.Width:0}x{_roamBandWindow.Height:0}");
+        TraceLog.Write("layout", $"home={homeLeft:0},{homeTop:0} {HomeWindowWidth:0}x{homeHeight:0} tool={_toolPopupWindow.Left:0},{_toolPopupWindow.Top:0} {ToolWindowWidth:0}x{ToolWindowHeight:0} roam={_roamBandWindow.Left:0},{_roamBandWindow.Top:0} {_roamBandWindow.Width:0}x{_roamBandWindow.Height:0}");
 
         ApplyWindowStyles();
         Render();
@@ -256,21 +287,28 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         OverlayWindowStyler.Apply(_roamBandWindow, true, true);
         OverlayWindowStyler.Apply(_toolPopupWindow, passive || !_state.ActiveTool.IsOpen, passive || pinned);
 
-        _homeWindow.SetHudVisible(!passive);
+        _homeWindow.SetHudVisible(!passive, GetSettingBool("compact_hud"));
         SetWindowVisibility(_roamBandWindow, Visibility.Visible, "RoamBand");
         SetWindowVisibility(_toolPopupWindow, _state.ActiveTool.IsOpen && !passive ? Visibility.Visible : Visibility.Hidden, "ToolPopup");
     }
 
     private void Render()
     {
-        if (_state is null || _content is null)
+        if (_state is null || _content is null || _assetService is null)
         {
             return;
         }
 
-        var environment = _content.Environments.First(environment => environment.Id == _state.ActiveEnvironmentId);
-        _homeWindow.Render(_state, environment, _feedbackText);
-        _roamBandWindow.Render(_state);
+        var environment = ResolveEnvironment(_state);
+        var needSnapshot = _petSimulationEngine.BuildAverageNeedSnapshot(_state.ActivePets);
+        var aggregateStatuses = _petSimulationEngine.BuildAggregateStatuses(_state.ActivePets);
+        var actionEnabled = _content.Actions
+            .Where(action => action.IsPrimaryAction)
+            .ToDictionary(action => action.Id, action => _petSimulationEngine.IsActionEnabled(action.Id, _state.ActivePets), StringComparer.OrdinalIgnoreCase);
+        var recommendedItems = ResolveRecommendedItems(_state);
+
+        _homeWindow.Render(_state, environment, _feedbackText, _assetService, needSnapshot, aggregateStatuses, actionEnabled, recommendedItems);
+        _roamBandWindow.Render(_state, _assetService);
         _toolPopupWindow.Render(_state);
     }
 
@@ -315,30 +353,27 @@ internal sealed class ShellCoordinator : IAsyncDisposable
 
     private async Task ToggleBasketAsync()
     {
+        await ToggleToolAsync("basket");
+    }
+
+    private async Task ToggleSettingsAsync()
+    {
+        await ToggleToolAsync("settings");
+    }
+
+    private async Task ToggleCompactHudAsync()
+    {
         if (_state is null)
         {
             return;
         }
 
-        var nextToolState = !_state.ActiveTool.IsOpen;
-        var nextPinned = _state.IsPinned;
-        if (!_state.IsPinned && _state.Mode == CompanionMode.Passive && nextToolState)
+        var nextSettings = new Dictionary<string, string>(_state.SettingsSnapshot, StringComparer.OrdinalIgnoreCase)
         {
-            nextPinned = true;
-        }
-
-        _state = _state with
-        {
-            IsPinned = nextPinned,
-            ActiveTool = _state.ActiveTool with { IsOpen = nextToolState }
+            ["compact_hud"] = (!GetSettingBool("compact_hud")).ToString()
         };
-        TraceLog.Write("ui-command", $"toggle-basket open={nextToolState} pinned={nextPinned}");
-
-        if (_brokerClient is not null)
-        {
-            await _brokerClient.SendCommandAsync(ShellCommandTypes.SetPinned, new SetPinnedCommand(_state.IsPinned));
-        }
-
+        _state = _state with { SettingsSnapshot = nextSettings };
+        TraceLog.Write("ui-command", $"toggle-compact next={nextSettings["compact_hud"]}");
         ApplyModeAndLayout();
         await PersistAsync();
     }
@@ -356,35 +391,37 @@ internal sealed class ShellCoordinator : IAsyncDisposable
 
     private void HandleAction(string actionId)
     {
-        if (_state is null)
+        if (_state is null || _content is null)
         {
             return;
         }
 
-        _feedbackText = actionId switch
+        var actionDefinition = _content.Actions.FirstOrDefault(action => string.Equals(action.Id, actionId, StringComparison.OrdinalIgnoreCase));
+        if (actionDefinition is null)
         {
-            "feed" => "A snack appears in the corner habitat.",
-            "pet" => "The pets settle and lean into the attention.",
-            "rest" => "Everyone is encouraged back to the environment.",
-            _ => "Action applied."
-        };
-        TraceLog.Write("action", actionId);
-
-        if (actionId == "rest")
-        {
-            _state = _state with
-            {
-                ActivePets = _state.ActivePets
-                    .Select(pet => pet with
-                    {
-                        TargetX = pet.HomeX,
-                        TargetY = pet.HomeY,
-                        BehaviorState = PetBehaviorState.Recalling
-                    })
-                    .ToList()
-            };
+            return;
         }
 
+        if (!_petSimulationEngine.IsActionEnabled(actionId, _state.ActivePets))
+        {
+            SetFeedback($"{actionDefinition.DisplayName} is not needed right now.");
+            return;
+        }
+
+        _state = _state with
+        {
+            ActivePets = _petSimulationEngine.ApplyAction(actionId, _state.ActivePets, DateTimeOffset.UtcNow)
+        };
+
+        if (string.Equals(actionId, "home", StringComparison.OrdinalIgnoreCase))
+        {
+            _state = _state with { ActiveEnvironmentId = _state.ActivePets.FirstOrDefault()?.SpeciesId ?? _state.ActiveEnvironmentId };
+        }
+
+        _feedbackText = string.IsNullOrWhiteSpace(actionDefinition.FeedbackText)
+            ? actionDefinition.EffectSummary
+            : actionDefinition.FeedbackText;
+        TraceLog.Write("action", actionId);
         Render();
         _ = PersistAsync();
     }
@@ -426,7 +463,12 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             return;
         }
 
-        Clipboard.SetText(item.Url);
+        if (!TrySetClipboardText(item.Url))
+        {
+            SetFeedback("Clipboard is busy. Try again in a moment.");
+            return;
+        }
+
         SetFeedback($"Copied {item.Label}.");
         TraceLog.Write("basket", $"copy id={id} url={item.Url}");
         Render();
@@ -445,9 +487,11 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             return;
         }
 
-        Clipboard.SetText(item.Url);
+        var copiedToClipboard = TrySetClipboardText(item.Url);
         await _brokerClient.SendCommandAsync(ShellCommandTypes.OpenUrl, new OpenUrlCommand(item.Url));
-        SetFeedback($"Opened {item.Label}.");
+        SetFeedback(copiedToClipboard
+            ? $"Opened {item.Label}."
+            : $"Opened {item.Label}. Clipboard stayed unchanged.");
         TraceLog.Write("basket", $"open id={id} url={item.Url}");
         Render();
     }
@@ -462,6 +506,29 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _state = _state with { BasketItems = _basketService.Remove(id, _state.BasketItems) };
         TraceLog.Write("basket", $"delete id={id} count={_state.BasketItems.Count}");
         await PersistAndRenderAsync();
+    }
+
+    private void OnSettingChanged(string key, bool value)
+    {
+        if (_state is null)
+        {
+            return;
+        }
+
+        var nextSettings = new Dictionary<string, string>(_state.SettingsSnapshot, StringComparer.OrdinalIgnoreCase)
+        {
+            [key] = value.ToString()
+        };
+        _state = _state with { SettingsSnapshot = nextSettings };
+        TraceLog.Write("settings", $"{key}={value}");
+        ApplyModeAndLayout();
+        _ = PersistAsync();
+    }
+
+    private async Task SaveAsync()
+    {
+        await PersistAsync();
+        SetFeedback("Saved current companion state.");
     }
 
     private void SetFeedback(string message)
@@ -486,6 +553,28 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         }
     }
 
+    private static bool TrySetClipboardText(string value)
+    {
+        for (var attempt = 0; attempt < 8; attempt++)
+        {
+            try
+            {
+                Clipboard.SetDataObject(value, true);
+                return true;
+            }
+            catch (COMException)
+            {
+                Thread.Sleep(75);
+            }
+            catch (ExternalException)
+            {
+                Thread.Sleep(75);
+            }
+        }
+
+        return false;
+    }
+
     public async ValueTask DisposeAsync()
     {
         TraceLog.Write("shell", "shutdown-begin");
@@ -505,6 +594,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             {
                 // Ignore shutdown race.
             }
+
             await _brokerClient.DisposeAsync();
         }
 
@@ -517,6 +607,163 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _roamBandWindow.CloseSilently();
         _toolPopupWindow.CloseSilently();
         TraceLog.Write("shell", "shutdown-complete");
+    }
+
+    private EnvironmentDefinition ResolveEnvironment(CompanionState state)
+    {
+        var environmentId = state.ActiveEnvironmentId;
+        if (string.IsNullOrWhiteSpace(environmentId) && state.ActivePets.Count > 0)
+        {
+            environmentId = state.ActivePets[0].SelectedEnvironmentId;
+        }
+
+        return _content!.Environments.FirstOrDefault(environment => string.Equals(environment.Id, environmentId, StringComparison.OrdinalIgnoreCase))
+            ?? _content.Environments.First();
+    }
+
+    private CompanionState HydrateLoadedState(CompanionState state, GameContent content)
+    {
+        var speciesMap = content.Species.ToDictionary(species => species.Id, StringComparer.OrdinalIgnoreCase);
+        var hydratedPets = state.ActivePets
+            .Select((pet, index) =>
+            {
+                if (!speciesMap.TryGetValue(pet.SpeciesId, out var species))
+                {
+                    species = content.Species[Math.Min(index, content.Species.Count - 1)];
+                }
+
+                var color = string.IsNullOrWhiteSpace(pet.ColorVariant)
+                    ? (species.SupportedColors ?? ["blue"])[index % (species.SupportedColors ?? ["blue"]).Count]
+                    : pet.ColorVariant;
+
+                return pet with
+                {
+                    AccentColor = string.IsNullOrWhiteSpace(pet.AccentColor) ? species.AccentColor : pet.AccentColor,
+                    ColorVariant = color,
+                    SelectedEnvironmentId = string.IsNullOrWhiteSpace(pet.SelectedEnvironmentId) ? species.DefaultEnvironmentId : pet.SelectedEnvironmentId,
+                    AnimationStartedAtUtc = pet.AnimationStartedAtUtc == default ? DateTimeOffset.UtcNow : pet.AnimationStartedAtUtc,
+                    AgeStageStartedAtUtc = pet.AgeStageStartedAtUtc == default ? DateTimeOffset.UtcNow : pet.AgeStageStartedAtUtc,
+                    ActiveStatuses = pet.ActiveStatuses ?? []
+                };
+            })
+            .ToList();
+
+        var environmentId = string.IsNullOrWhiteSpace(state.ActiveEnvironmentId)
+            ? hydratedPets.FirstOrDefault()?.SelectedEnvironmentId ?? content.Environments.First().Id
+            : state.ActiveEnvironmentId;
+
+        return state with
+        {
+            ActiveEnvironmentId = environmentId,
+            ActivePets = hydratedPets,
+            ActiveTool = string.IsNullOrWhiteSpace(state.ActiveTool.ToolId)
+                ? new ToolSession("basket", state.ActiveTool.IsOpen)
+                : state.ActiveTool,
+            SettingsSnapshot = ApplyDefaultSettings(state.SettingsSnapshot)
+        };
+    }
+
+    private async Task ToggleToolAsync(string toolId)
+    {
+        if (_state is null)
+        {
+            return;
+        }
+
+        var currentlyOpen = _state.ActiveTool.IsOpen && string.Equals(_state.ActiveTool.ToolId, toolId, StringComparison.OrdinalIgnoreCase);
+        var nextToolState = !currentlyOpen;
+        var nextPinned = _state.IsPinned;
+        if (!_state.IsPinned && _state.Mode == CompanionMode.Passive && nextToolState)
+        {
+            nextPinned = true;
+        }
+
+        _state = _state with
+        {
+            IsPinned = nextPinned,
+            ActiveTool = new ToolSession(toolId, nextToolState)
+        };
+        TraceLog.Write("ui-command", $"toggle-tool tool={toolId} open={nextToolState} pinned={nextPinned}");
+
+        if (_brokerClient is not null)
+        {
+            await _brokerClient.SendCommandAsync(ShellCommandTypes.SetPinned, new SetPinnedCommand(_state.IsPinned));
+        }
+
+        ApplyModeAndLayout();
+        await PersistAsync();
+    }
+
+    private double GetHomeWindowHeight()
+    {
+        if (_state is null)
+        {
+            return HomeWindowFullHeight;
+        }
+
+        if (_state.Mode == CompanionMode.Passive)
+        {
+            return HomeWindowPassiveHeight;
+        }
+
+        return GetSettingBool("compact_hud") ? HomeWindowCompactHeight : HomeWindowFullHeight;
+    }
+
+    private bool GetSettingBool(string key, bool defaultValue = false)
+    {
+        if (_state is null)
+        {
+            return defaultValue;
+        }
+
+        if (_state.SettingsSnapshot.TryGetValue(key, out var raw) && bool.TryParse(raw, out var parsed))
+        {
+            return parsed;
+        }
+
+        return defaultValue;
+    }
+
+    private IReadOnlyList<ItemDefinition> ResolveRecommendedItems(CompanionState state)
+    {
+        if (_content is null || state.ActivePets.Count == 0)
+        {
+            return [];
+        }
+
+        var speciesIds = state.ActivePets
+            .Select(pet => pet.SpeciesId)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        return _content.Items
+            .Where(item =>
+                (item.SpeciesIds?.Count ?? 0) == 0 ||
+                (item.SpeciesIds?.Any(speciesId => speciesIds.Contains(speciesId)) ?? false))
+            .Take(4)
+            .ToList();
+    }
+
+    private static IReadOnlyDictionary<string, string> ApplyDefaultSettings(IReadOnlyDictionary<string, string> settings)
+    {
+        var hydrated = new Dictionary<string, string>(settings, StringComparer.OrdinalIgnoreCase);
+        hydrated.TryAdd("compact_hud", bool.FalseString);
+        hydrated.TryAdd("show_pet_names", bool.FalseString);
+        hydrated.TryAdd("show_status_summary", bool.TrueString);
+        return hydrated;
+    }
+
+    private static string ResolveDataRoot()
+    {
+        var overrideRoot = Environment.GetEnvironmentVariable("WEVITO_VNEXT_DATA_ROOT");
+        if (!string.IsNullOrWhiteSpace(overrideRoot))
+        {
+            return Path.GetFullPath(overrideRoot);
+        }
+
+        return Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "WevitoVNext");
     }
 
     private static void SetWindowVisibility(Window window, Visibility visibility, string name)

@@ -17,12 +17,16 @@ if (-not (Test-Path $Solution)) {
     throw "Missing vNext solution: $Solution"
 }
 
-if (Test-Path $ArtifactsRoot) {
-    Remove-Item -Recurse -Force $ArtifactsRoot
+New-Item -ItemType Directory -Path $ArtifactsRoot -Force | Out-Null
+if (Test-Path $BrokerOut) {
+    Remove-Item -Path $BrokerOut -Recurse -Force -ErrorAction SilentlyContinue
+}
+if (Test-Path $ShellOut) {
+    Remove-Item -Path $ShellOut -Recurse -Force -ErrorAction SilentlyContinue
 }
 
-New-Item -ItemType Directory -Path $BrokerOut | Out-Null
-New-Item -ItemType Directory -Path $ShellOut | Out-Null
+New-Item -ItemType Directory -Path $BrokerOut -Force | Out-Null
+New-Item -ItemType Directory -Path $ShellOut -Force | Out-Null
 
 dotnet test $Solution -c $Configuration
 if ($LASTEXITCODE -ne 0) {

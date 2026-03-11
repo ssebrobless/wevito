@@ -13,13 +13,16 @@ internal sealed class BrokerApplicationContext : ApplicationContext
     private readonly PipeServer _pipeServer;
     private readonly DesktopContextService _desktopContextService;
     private readonly System.Windows.Forms.Timer _desktopPollTimer;
+    private readonly System.Windows.Forms.Timer _overlayClickTimer;
     private readonly ToolStripMenuItem _pinMenuItem;
 
     private bool _isPinned;
+    private bool _wasLeftButtonDown;
     private DesktopContext? _lastDesktopContext;
     private string _lastDesktopContextKey = "";
     private ForegroundWindowInfo? _lastForegroundWindow;
     private RectInt? _lastWorkArea;
+    private IReadOnlyList<OverlayRegion> _overlayRegions = [];
 
     public BrokerApplicationContext(string pipeName)
     {
@@ -57,8 +60,15 @@ internal sealed class BrokerApplicationContext : ApplicationContext
         {
             Interval = 120
         };
-        _desktopPollTimer.Tick += async (_, _) => await PublishDesktopContextAsync();
+        _desktopPollTimer.Tick += async (_, _) => await OnDesktopTickAsync();
         _desktopPollTimer.Start();
+
+        _overlayClickTimer = new System.Windows.Forms.Timer
+        {
+            Interval = 16
+        };
+        _overlayClickTimer.Tick += async (_, _) => await PublishOverlayClickAsync();
+        _overlayClickTimer.Start();
 
         _ = _pipeServer.RunAsync();
         TraceLog.Write("broker", "startup-complete");
@@ -68,6 +78,7 @@ internal sealed class BrokerApplicationContext : ApplicationContext
     {
         TraceLog.Write("broker", "shutdown-begin");
         _desktopPollTimer.Stop();
+        _overlayClickTimer.Stop();
         _notifyIcon.Visible = false;
         _notifyIcon.Dispose();
         _hotkeyWindow.Dispose();
@@ -76,9 +87,19 @@ internal sealed class BrokerApplicationContext : ApplicationContext
         base.ExitThreadCore();
     }
 
-    private async Task PublishDesktopContextAsync()
+    private async Task OnDesktopTickAsync()
     {
         var desktopContext = _desktopContextService.Capture();
+        await PublishDesktopContextAsync(desktopContext);
+    }
+
+    private async Task PublishDesktopContextAsync()
+    {
+        await PublishDesktopContextAsync(_desktopContextService.Capture());
+    }
+
+    private async Task PublishDesktopContextAsync(DesktopContext desktopContext)
+    {
         var desktopContextKey = CreateDesktopContextKey(desktopContext);
         if (string.Equals(_lastDesktopContextKey, desktopContextKey, StringComparison.Ordinal))
         {
@@ -129,7 +150,11 @@ internal sealed class BrokerApplicationContext : ApplicationContext
                 break;
 
             case ShellCommandTypes.RegisterDropTarget:
+                break;
+
             case ShellCommandTypes.SetOverlayRegions:
+                var overlayRegions = PipeMessage.DeserializePayload<SetOverlayRegionsCommand>(envelope.Payload);
+                _overlayRegions = overlayRegions.Regions;
                 break;
 
             case ShellCommandTypes.Shutdown:
@@ -187,6 +212,47 @@ internal sealed class BrokerApplicationContext : ApplicationContext
         }
     }
 
+    private async Task PublishOverlayClickAsync()
+    {
+        var isLeftButtonDown = (NativeMethods.GetAsyncKeyState(0x01) & 0x8000) != 0;
+        if (!isLeftButtonDown || _wasLeftButtonDown || !_isPinned)
+        {
+            _wasLeftButtonDown = isLeftButtonDown;
+            return;
+        }
+
+        _wasLeftButtonDown = true;
+
+        if (_overlayRegions.Count == 0)
+        {
+            return;
+        }
+
+        if (!NativeMethods.GetCursorPos(out var position))
+        {
+            return;
+        }
+
+        var region = _overlayRegions.FirstOrDefault(candidate => candidate.Interactive && Contains(candidate.Bounds, position));
+        if (region is null)
+        {
+            return;
+        }
+
+        TraceLog.Write("overlay-click", $"role={region.Role} x={position.X} y={position.Y}");
+        await _pipeServer.SendEventAsync(
+            ShellEventTypes.OverlayClickReceived,
+            new OverlayClickEvent(region.Role, position, DateTimeOffset.UtcNow));
+    }
+
+    private static bool Contains(RectInt bounds, PointInt point)
+    {
+        return point.X >= bounds.X &&
+               point.X <= bounds.Right &&
+               point.Y >= bounds.Y &&
+               point.Y <= bounds.Bottom;
+    }
+
     private static string CreateDesktopContextKey(DesktopContext desktopContext)
     {
         var foreground = desktopContext.ForegroundWindow;
@@ -207,5 +273,24 @@ internal sealed class BrokerApplicationContext : ApplicationContext
             desktopContext.PrimaryMonitorBounds.Y,
             desktopContext.PrimaryMonitorBounds.Width,
             desktopContext.PrimaryMonitorBounds.Height);
+    }
+
+    private static class NativeMethods
+    {
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        public static extern short GetAsyncKeyState(int virtualKey);
+
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        [return: System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.Bool)]
+        public static extern bool GetCursorPos(out NativePoint point);
+    }
+
+    [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
+    private struct NativePoint
+    {
+        public int X;
+        public int Y;
+
+        public static implicit operator PointInt(NativePoint point) => new(point.X, point.Y);
     }
 }

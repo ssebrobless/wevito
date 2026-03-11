@@ -1,6 +1,7 @@
 <Window x:Class="Wevito.VNext.Shell.ToolPopupWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:automation="clr-namespace:System.Windows.Automation;assembly=PresentationCore"
         Title="Wevito Basket"
         Width="320"
         Height="240"
@@ -10,7 +11,6 @@
         ResizeMode="NoResize"
         ShowInTaskbar="False"
         Topmost="True"
-        ShowActivated="False"
         AllowDrop="True"
         Drop="ToolPopupWindow_OnDrop">
     <Border Background="#F61F242A"
@@ -30,32 +30,75 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <TextBlock Text="Basket"
+                <TextBlock x:Name="PopupTitle"
+                           Text="Basket"
                            Foreground="#FFF0F4F5"
                            FontSize="18"
                            FontWeight="SemiBold" />
-                <Button Grid.Column="1"
+                <Button x:Name="CloseButton"
+                        Grid.Column="1"
                         Padding="10,4"
+                        automation:AutomationProperties.AutomationId="ToolCloseButton"
                         Content="Close"
                         Click="CloseButton_OnClick" />
             </Grid>
 
-            <ListBox x:Name="BasketList"
-                     Grid.Row="1"
-                     Margin="0,10,0,10"
-                     DisplayMemberPath="Label" />
+            <Grid Grid.Row="1"
+                  Margin="0,10,0,10">
+                <Grid x:Name="BasketPanel">
+                    <ListBox x:Name="BasketList"
+                             automation:AutomationProperties.AutomationId="BasketList"
+                             DisplayMemberPath="Label" />
+                </Grid>
 
-            <UniformGrid Grid.Row="2"
+                <StackPanel x:Name="SettingsPanel"
+                            Visibility="Collapsed">
+                    <TextBlock Text="Tune the local HUD without affecting the passive roam behavior."
+                               Foreground="#FFD6DCDE"
+                               FontSize="11"
+                               TextWrapping="Wrap" />
+                    <CheckBox x:Name="CompactHudCheckBox"
+                              Margin="0,12,0,0"
+                              automation:AutomationProperties.AutomationId="CompactHudCheckBox"
+                              Content="Compact focused HUD"
+                              Foreground="#FFF0F4F5"
+                              Checked="CompactHudCheckBox_OnChanged"
+                              Unchecked="CompactHudCheckBox_OnChanged" />
+                    <CheckBox x:Name="ShowPetNamesCheckBox"
+                              Margin="0,8,0,0"
+                              automation:AutomationProperties.AutomationId="ShowPetNamesCheckBox"
+                              Content="Show pet names in the habitat"
+                              Foreground="#FFF0F4F5"
+                              Checked="ShowPetNamesCheckBox_OnChanged"
+                              Unchecked="ShowPetNamesCheckBox_OnChanged" />
+                    <CheckBox x:Name="ShowStatusSummaryCheckBox"
+                              Margin="0,8,0,0"
+                              automation:AutomationProperties.AutomationId="ShowStatusSummaryCheckBox"
+                              Content="Show status summary text"
+                              Foreground="#FFF0F4F5"
+                              Checked="ShowStatusSummaryCheckBox_OnChanged"
+                              Unchecked="ShowStatusSummaryCheckBox_OnChanged" />
+                </StackPanel>
+            </Grid>
+
+            <UniformGrid x:Name="BasketButtons"
+                         Grid.Row="2"
                          Columns="3">
-                <Button Margin="0,0,6,0"
+                <Button x:Name="CopyButton"
+                        Margin="0,0,6,0"
                         Padding="8,5"
+                        automation:AutomationProperties.AutomationId="CopyButton"
                         Content="Copy"
                         Click="CopyButton_OnClick" />
-                <Button Margin="0,0,6,0"
+                <Button x:Name="OpenButton"
+                        Margin="0,0,6,0"
                         Padding="8,5"
+                        automation:AutomationProperties.AutomationId="OpenButton"
                         Content="Open"
                         Click="OpenButton_OnClick" />
-                <Button Padding="8,5"
+                <Button x:Name="DeleteButton"
+                        Padding="8,5"
+                        automation:AutomationProperties.AutomationId="DeleteButton"
                         Content="Delete"
                         Click="DeleteButton_OnClick" />
             </UniformGrid>

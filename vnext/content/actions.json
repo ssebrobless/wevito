@@ -2,16 +2,82 @@
   {
     "id": "feed",
     "displayName": "Feed",
-    "effectSummary": "Restores hunger and comfort."
+    "effectSummary": "Restores hunger and comfort.",
+    "iconId": "feed",
+    "animationState": "eat",
+    "feedbackText": "Fresh food is set out in the habitat.",
+    "isPrimaryAction": true
   },
   {
-    "id": "pet",
-    "displayName": "Pet",
-    "effectSummary": "Raises affection and mood."
+    "id": "water",
+    "displayName": "Water",
+    "effectSummary": "Restores thirst and steadies comfort.",
+    "iconId": "water",
+    "animationState": "eat",
+    "feedbackText": "Clean water is refreshed for the group.",
+    "isPrimaryAction": true
   },
   {
     "id": "rest",
     "displayName": "Rest",
-    "effectSummary": "Recalls the pet home and restores energy."
+    "effectSummary": "Recalls the pets home and restores energy.",
+    "iconId": "rest",
+    "animationState": "sleep",
+    "feedbackText": "Everyone is encouraged back home to rest.",
+    "isPrimaryAction": true
+  },
+  {
+    "id": "play",
+    "displayName": "Play",
+    "effectSummary": "Raises affection and mood.",
+    "iconId": "exercise",
+    "animationState": "happy",
+    "feedbackText": "The pets perk up and play around the habitat.",
+    "isPrimaryAction": true
+  },
+  {
+    "id": "groom",
+    "displayName": "Groom",
+    "effectSummary": "Improves cleanliness and trust.",
+    "iconId": "groom",
+    "animationState": "happy",
+    "feedbackText": "A gentle grooming pass settles the group.",
+    "isPrimaryAction": true
+  },
+  {
+    "id": "bath",
+    "displayName": "Bath",
+    "effectSummary": "Deeply improves cleanliness.",
+    "iconId": "bathe",
+    "animationState": "bathe",
+    "feedbackText": "Bath time leaves the pets cleaner and calmer.",
+    "isPrimaryAction": true
+  },
+  {
+    "id": "medicine",
+    "displayName": "Medicine",
+    "effectSummary": "Helps pets recover when they feel unwell.",
+    "iconId": "medicine",
+    "animationState": "sick",
+    "feedbackText": "Medicine is applied carefully.",
+    "isPrimaryAction": true
+  },
+  {
+    "id": "doctor",
+    "displayName": "Doctor",
+    "effectSummary": "Provides stronger health recovery.",
+    "iconId": "doctor",
+    "animationState": "sick",
+    "feedbackText": "A closer health check is given to the pets.",
+    "isPrimaryAction": true
+  },
+  {
+    "id": "home",
+    "displayName": "Home",
+    "effectSummary": "Recalls the pets to their home environment.",
+    "iconId": "callback",
+    "animationState": "idle",
+    "feedbackText": "The pets are called back into the habitat.",
+    "isPrimaryAction": true
   }
 ]

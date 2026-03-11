@@ -1,8 +1,98 @@
 [
   {
-    "id": "corner-garden",
-    "displayName": "Corner Garden",
-    "primaryColor": "#43535D",
-    "secondaryColor": "#576A72"
+    "id": "rat",
+    "displayName": "Scrap Nest",
+    "primaryColor": "#4E5961",
+    "secondaryColor": "#68757B",
+    "assetId": "rat",
+    "isNightEnvironment": false
+  },
+  {
+    "id": "crow",
+    "displayName": "Perch Roost",
+    "primaryColor": "#485561",
+    "secondaryColor": "#5E6C75",
+    "assetId": "crow",
+    "isNightEnvironment": false
+  },
+  {
+    "id": "fox",
+    "displayName": "Den Brush",
+    "primaryColor": "#544A40",
+    "secondaryColor": "#786655",
+    "assetId": "fox",
+    "isNightEnvironment": false
+  },
+  {
+    "id": "snake",
+    "displayName": "Warm Stone",
+    "primaryColor": "#4E5645",
+    "secondaryColor": "#6E775F",
+    "assetId": "snake",
+    "isNightEnvironment": false
+  },
+  {
+    "id": "deer",
+    "displayName": "Meadow Edge",
+    "primaryColor": "#5F614B",
+    "secondaryColor": "#7D8560",
+    "assetId": "deer",
+    "isNightEnvironment": false
+  },
+  {
+    "id": "frog",
+    "displayName": "Reed Puddle",
+    "primaryColor": "#495C58",
+    "secondaryColor": "#668074",
+    "assetId": "frog",
+    "isNightEnvironment": false
+  },
+  {
+    "id": "pigeon",
+    "displayName": "Rooftop Ledge",
+    "primaryColor": "#535A64",
+    "secondaryColor": "#71808E",
+    "assetId": "pigeon",
+    "isNightEnvironment": false
+  },
+  {
+    "id": "raccoon",
+    "displayName": "Crate Hideout",
+    "primaryColor": "#564E47",
+    "secondaryColor": "#75675A",
+    "assetId": "raccoon",
+    "isNightEnvironment": false
+  },
+  {
+    "id": "squirrel",
+    "displayName": "Branch Litter",
+    "primaryColor": "#615246",
+    "secondaryColor": "#876B57",
+    "assetId": "squirrel",
+    "isNightEnvironment": false
+  },
+  {
+    "id": "goose",
+    "displayName": "Pond Bank",
+    "primaryColor": "#55605E",
+    "secondaryColor": "#748278",
+    "assetId": "goose",
+    "isNightEnvironment": false
+  },
+  {
+    "id": "indoor-room",
+    "displayName": "Indoor Room",
+    "primaryColor": "#52595C",
+    "secondaryColor": "#707C81",
+    "assetId": "indoor_room",
+    "isNightEnvironment": false
+  },
+  {
+    "id": "night-props",
+    "displayName": "Calm Night",
+    "primaryColor": "#36414D",
+    "secondaryColor": "#50606C",
+    "assetId": "night_props",
+    "isNightEnvironment": true
   }
 ]

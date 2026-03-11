@@ -3,5 +3,10 @@
     "id": "basket",
     "displayName": "Basket",
     "capacity": 5
+  },
+  {
+    "id": "settings",
+    "displayName": "Settings",
+    "capacity": 0
   }
 ]

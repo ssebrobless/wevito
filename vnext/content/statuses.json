@@ -1,0 +1,50 @@
+[
+  {
+    "id": "hungry",
+    "displayName": "Hungry",
+    "iconId": "hungry",
+    "description": "Needs food soon."
+  },
+  {
+    "id": "thirsty",
+    "displayName": "Thirsty",
+    "iconId": "thirsty",
+    "description": "Needs fresh water."
+  },
+  {
+    "id": "sleepy",
+    "displayName": "Sleepy",
+    "iconId": "sleepy",
+    "description": "Needs rest."
+  },
+  {
+    "id": "sick",
+    "displayName": "Sick",
+    "iconId": "sick",
+    "description": "Needs care or a doctor."
+  },
+  {
+    "id": "happy",
+    "displayName": "Happy",
+    "iconId": "happy",
+    "description": "Feeling safe and well cared for."
+  },
+  {
+    "id": "dirty",
+    "displayName": "Dirty",
+    "iconId": "dirty",
+    "description": "Needs grooming or a bath."
+  },
+  {
+    "id": "lonely",
+    "displayName": "Lonely",
+    "iconId": "lonely",
+    "description": "Needs comfort or play."
+  },
+  {
+    "id": "comforted",
+    "displayName": "Comforted",
+    "iconId": "comforted",
+    "description": "Feels settled and safe."
+  }
+]

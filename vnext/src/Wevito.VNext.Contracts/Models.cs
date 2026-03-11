@@ -21,6 +21,49 @@ public enum PetBehaviorState
     Recalling
 }
 
+public enum PetAgeStage
+{
+    Baby,
+    Teen,
+    Adult
+}
+
+public enum PetGender
+{
+    Female,
+    Male
+}
+
+public enum PetFacingDirection
+{
+    Left,
+    Right
+}
+
+public enum PetAnimationState
+{
+    Idle,
+    Walk,
+    Eat,
+    Happy,
+    Sad,
+    Sleep,
+    Sick,
+    Bathe
+}
+
+public enum PetStatusType
+{
+    Hungry,
+    Thirsty,
+    Sleepy,
+    Sick,
+    Happy,
+    Dirty,
+    Lonely,
+    Comforted
+}
+
 public sealed record ForegroundWindowInfo(
     int ProcessId,
     long Hwnd,
@@ -64,16 +107,34 @@ public sealed record PetActor(
     Guid Id,
     string Name,
     string SpeciesId,
-    string AccentColor,
-    double HomeX,
-    double HomeY,
-    double CurrentX,
-    double CurrentY,
-    double TargetX,
-    double TargetY,
-    double Speed,
-    PetBehaviorState BehaviorState,
-    DateTimeOffset NextDecisionAtUtc);
+    string AccentColor = "#FFFFFF",
+    PetAgeStage AgeStage = PetAgeStage.Adult,
+    PetGender Gender = PetGender.Female,
+    string ColorVariant = "blue",
+    double HomeX = 0,
+    double HomeY = 0,
+    double CurrentX = 0,
+    double CurrentY = 0,
+    double TargetX = 0,
+    double TargetY = 0,
+    double Speed = 96,
+    PetBehaviorState BehaviorState = PetBehaviorState.Home,
+    DateTimeOffset NextDecisionAtUtc = default,
+    PetFacingDirection FacingDirection = PetFacingDirection.Right,
+    PetAnimationState CurrentAnimationState = PetAnimationState.Idle,
+    DateTimeOffset AnimationStartedAtUtc = default,
+    PetAnimationState? OverrideAnimationState = null,
+    DateTimeOffset? OverrideAnimationEndsAtUtc = null,
+    DateTimeOffset AgeStageStartedAtUtc = default,
+    double Hunger = 84,
+    double Thirst = 82,
+    double Energy = 76,
+    double Cleanliness = 78,
+    double Affection = 72,
+    double Comfort = 74,
+    double Health = 88,
+    IReadOnlyList<PetStatusType>? ActiveStatuses = null,
+    string SelectedEnvironmentId = "");
 
 public sealed record ToolSession(
     string ToolId,

@@ -1,0 +1,58 @@
+[
+  {
+    "id": "food-omnivore-scavenger",
+    "displayName": "Omnivore Food",
+    "categoryId": "food",
+    "iconId": "food_meat",
+    "speciesIds": ["rat", "crow", "fox", "raccoon"],
+    "environmentIds": []
+  },
+  {
+    "id": "food-herbivore-grazer",
+    "displayName": "Grazer Food",
+    "categoryId": "food",
+    "iconId": "food_plant",
+    "speciesIds": ["deer", "squirrel", "goose"],
+    "environmentIds": []
+  },
+  {
+    "id": "food-birds-seed",
+    "displayName": "Seed Mix",
+    "categoryId": "food",
+    "iconId": "food_sweet",
+    "speciesIds": ["crow", "pigeon", "goose"],
+    "environmentIds": []
+  },
+  {
+    "id": "food-predator-reptile",
+    "displayName": "Protein Tray",
+    "categoryId": "food",
+    "iconId": "food_meat",
+    "speciesIds": ["snake", "frog", "fox"],
+    "environmentIds": []
+  },
+  {
+    "id": "water-bowl",
+    "displayName": "Water Bowl",
+    "categoryId": "water",
+    "iconId": "water_bowl",
+    "speciesIds": ["rat", "fox", "deer", "squirrel", "raccoon"],
+    "environmentIds": []
+  },
+  {
+    "id": "care-medicine",
+    "displayName": "Medicine Kit",
+    "categoryId": "care",
+    "iconId": "medicine",
+    "speciesIds": [],
+    "environmentIds": []
+  },
+  {
+    "id": "care-doctor",
+    "displayName": "Doctor Call",
+    "categoryId": "care",
+    "iconId": "doctor",
+    "speciesIds": [],
+    "environmentIds": []
+  }
+]
