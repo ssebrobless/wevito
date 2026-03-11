@@ -8,6 +8,11 @@ builds/
 # Local logs and scratch
 issue_run-latest.txt
 nul
+__pycache__/
+*.pyc
+tools/desktop_bridge/bin/
+tools/desktop_bridge/obj/
+tools/desktop_bridge/publish/
 
 # OS/editor
 .DS_Store

@@ -1,0 +1,131 @@
+Generate a single extraction-ready transparent PNG master sprite sheet for one Wevito animal.
+
+Animal:
+rat
+
+This is a production extraction sheet, not a concept board.
+
+Hard output requirements:
+- output exactly one PNG image
+- transparent background only
+- PNG must include an alpha channel
+- do not output JPG
+- do not output WEBP
+- do not output multiple files
+- do not output a reference collage
+- do not output labels
+- do not output text on the image
+- do not output borders
+- do not output decorative framing
+- do not output padding or gutters
+
+Do not optimize for visual presentation. Optimize for exact grid compliance and extractability.
+
+Master sheet layout:
+- 4 variant blocks across x 3 variant blocks down
+- 12 variant blocks total
+- each variant block is exactly 140x144 px
+- final master sheet size exactly 560x432 px
+
+Each variant block must contain:
+- 5 columns x 6 rows
+- 30 cells total
+- each cell exactly 28x24 px
+- no padding
+- no gutters
+- no margins
+- every sprite fully contained inside its own 28x24 cell
+- stable baseline across all 30 frames
+
+Variant block order in the master sheet:
+
+Top row of variant blocks, left to right:
+1. male/red
+2. male/orange
+3. male/yellow
+4. male/blue
+
+Middle row of variant blocks, left to right:
+5. male/indigo
+6. male/violet
+7. female/red
+8. female/orange
+
+Bottom row of variant blocks, left to right:
+9. female/yellow
+10. female/blue
+11. female/indigo
+12. female/violet
+
+Frame order inside every 140x144 variant block, left-to-right then top-to-bottom:
+
+Row 1:
+idle_00, idle_01, idle_02, idle_03, walk_00
+
+Row 2:
+walk_01, walk_02, walk_03, walk_04, walk_05
+
+Row 3:
+eat_00, eat_01, eat_02, eat_03, happy_00
+
+Row 4:
+happy_01, happy_02, happy_03, sad_00, sad_01
+
+Row 5:
+sleep_00, sleep_01, sick_00, sick_01, sick_02
+
+Row 6:
+sick_03, bathe_00, bathe_01, bathe_02, bathe_03
+
+Animation intent:
+- idle: subtle breathing/blink loop
+- walk: clean horizontal walk cycle, readable when flipped in-engine
+- eat: nibble/drink motion
+- happy: excited positive motion
+- sad: slumped low-energy pose
+- sleep: clearly asleep, distinct from idle
+- sick: visibly unwell, distinct from sad
+- bathe: self-cleaning / washing motion
+
+Style:
+- pixel art only
+- crisp edges
+- no antialiasing
+- slightly moody, cute, vulnerable desktop-pet tone
+- scrappy but cute rat
+- compact body
+- rounded ears
+- whisker-forward face
+- thin tail
+
+Variant styling rules:
+- male variants should read slightly larger and bolder
+- female variants should read slightly smaller and calmer
+- red, orange, yellow, blue, indigo, violet should act as dominant palette tints without losing rat readability
+- all 12 variants must clearly belong to one unified art direction
+
+Critical constraints:
+- do not let any late walk frames become larger than the 28x24 cell
+- do not crop ears, tail, nose, or feet
+- do not change the cell size anywhere in the sheet
+- do not generate a showcase image
+- do not use a checkerboard preview background
+- do not bake any background into the image
+- do not export a flattened JPEG-style preview
+- generate an extraction-ready sheet only
+
+Validation requirements:
+- final image must be exactly 560x432 pixels
+- every variant block must be exactly 140x144 pixels
+- every frame cell must be exactly 28x24 pixels
+- no sprite may extend outside its cell
+- no labels
+- no text
+- no decorative checkerboard
+- no framing
+- transparent background only
+- this image will be sliced automatically by coordinates, so layout accuracy matters more than presentation
+- if you cannot follow the exact geometry, say so instead of returning a malformed sheet
+
+Return:
+- one final 560x432 transparent PNG only

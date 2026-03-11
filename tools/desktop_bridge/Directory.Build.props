@@ -1,0 +1,6 @@
+<Project>
+  <PropertyGroup>
+    <BaseIntermediateOutputPath>$(TEMP)\wevito-desktop-bridge\obj\</BaseIntermediateOutputPath>
+    <BaseOutputPath>$(TEMP)\wevito-desktop-bridge\bin\</BaseOutputPath>
+  </PropertyGroup>
+</Project>

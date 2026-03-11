@@ -1,0 +1,20 @@
+Generate all pet sprites for animal: rat
+
+Species notes:
+- compact body
+- rounded ears
+- whisker-forward face
+- thin tail
+- should feel scrappy but cute
+
+Generate all combinations:
+- genders: male, female
+- colors: red, orange, yellow, blue, indigo, violet
+
+For each combination, generate the full 8-animation set using the exact filenames required.
+
+Output path:
+sprites/rat/<gender>/<color>/<animation>_<frame>.png
+
+Total expected for this batch:
+2 genders x 6 colors x 30 frames = 360 PNG files

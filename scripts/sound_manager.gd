@@ -1,5 +1,5 @@
-class_name SoundManager
 extends Node
+class_name SoundManager
 
 const MALE_PITCH_MULTIPLIER = 0.8
 var audio_player: AudioStreamPlayer

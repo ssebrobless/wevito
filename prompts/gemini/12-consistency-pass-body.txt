@@ -1,0 +1,32 @@
+I have already generated the Wevito sprite batches for:
+- icons
+- rat
+- crow
+- fox
+- snake
+- deer
+- frog
+- pigeon
+- raccoon
+- squirrel
+- goose
+
+Now do a consistency pass across the entire set.
+
+Goals:
+- unify palette handling across species
+- ensure male/female differences are subtle and consistent
+- ensure red/orange/yellow/blue/indigo/violet variants feel like one shared color system
+- ensure line weight, shading contrast, and silhouette readability match across batches
+- ensure all animation baselines are stable
+- ensure sleep, sad, sick are clearly differentiated for every species
+- ensure walk cycles are equally readable across all species
+- ensure icon style matches the pet sprite style
+
+Do not redesign the set from scratch.
+Only identify and correct style drift, readability issues, baseline jitter, inconsistent proportions, and inconsistent color logic.
+
+Return:
+- a short list of any files or groups that should be regenerated
+- exact reasons for each correction
+- corrected replacements using the same filenames and folder structure

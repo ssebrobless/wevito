@@ -1,0 +1,13 @@
+Generate all pet sprites for animal: raccoon
+
+Species notes:
+- masked face
+- ringed tail
+- scrappy silhouette
+- should feel clever and a little mischievous without becoming cartoony
+
+Output path:
+sprites/raccoon/<gender>/<color>/<animation>_<frame>.png
+
+Total expected:
+360 PNG files

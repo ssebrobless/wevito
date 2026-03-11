@@ -25,7 +25,9 @@ function Get-LatestSourceWriteTime {
         (Join-Path $Root "scripts"),
         (Join-Path $Root "scenes"),
         (Join-Path $Root "sprites"),
-        (Join-Path $Root "sounds")
+        (Join-Path $Root "sounds"),
+        (Join-Path $Root "tools\build-desktop-bridge.ps1"),
+        (Join-Path $Root "tools\desktop_bridge")
     )
 
     $latest = [datetime]::MinValue
@@ -87,11 +89,9 @@ $LaunchExe = $LatestExe
 if (Test-Path $BuildInfo) {
     $infoMap = @{}
     Get-Content -Path $BuildInfo | ForEach-Object {
-        if ($_ -match "^") {
-            $parts = $_.Split("=", 2)
-            if ($parts.Count -eq 2) {
-                $infoMap[$parts[0]] = $parts[1]
-            }
+        $parts = $_.Split("=", 2)
+        if ($parts.Count -eq 2) {
+            $infoMap[$parts[0]] = $parts[1]
         }
     }
 

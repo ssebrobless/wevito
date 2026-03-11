@@ -91,6 +91,13 @@ In Godot editor, use `Editor -> Manage Export Templates -> Download and Install`
 | G | Groom |
 | B | Bathe |
 | X | Exercise |
+| Ctrl+Shift+P | Pin/release the HUD over other apps |
+| Ctrl+Shift+B | Capture the current clipboard link into the basket |
+
+Overlay command:
+- `powershell -ExecutionPolicy Bypass -File .\tools\toggle-overlay-ui.ps1 -Command pin`
+- `powershell -ExecutionPolicy Bypass -File .\tools\toggle-overlay-ui.ps1 -Command release`
+- `powershell -ExecutionPolicy Bypass -File .\tools\capture-basket-link.ps1`
 
 ## Features Implemented
 
@@ -110,7 +117,10 @@ In Godot editor, use `Editor -> Manage Export Templates -> Download and Install`
 - Always-on-top overlay window
 - Transparent background
 - Borderless window
-- Focus detection: UI collapses when window loses focus
+- Focus detection: HUD collapses when another window takes focus
+- Default unfocused mode keeps the pet world visible while mouse input passes through to other apps
+- Pinned HUD mode keeps the UI visible and clickable over other apps
+- Link basket stores up to 5 URLs, supports clipboard capture, and can ingest dropped URL/text shortcut files
 - Positioned in bottom-right corner
 
 ## Project Structure

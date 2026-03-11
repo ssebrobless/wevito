@@ -1,0 +1,14 @@
+Generate all pet sprites for animal: snake
+
+Species notes:
+- low slither silhouette
+- readable head shape
+- coiled or stretched poses are fine
+- must remain readable at tiny scale
+- avoid over-detailing the patterning
+
+Output path:
+sprites/snake/<gender>/<color>/<animation>_<frame>.png
+
+Total expected:
+360 PNG files

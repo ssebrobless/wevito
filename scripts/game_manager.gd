@@ -1,6 +1,9 @@
 extends Node
 class_name GameManager
 
+const Pet = preload("res://scripts/pet.gd")
+const PetData = preload("res://scripts/pet_data.gd")
+
 const MAX_PETS = 3
 const ANIMAL_TYPES = ["rat", "crow", "fox", "snake", "deer", "frog", "pigeon", "raccoon", "squirrel", "goose"]
 const EGG_COLORS = ["red", "orange", "yellow", "blue", "indigo", "violet"]
@@ -193,6 +196,8 @@ func finish_hatching(pet_index: int):
 		return
 	
 	var pd = pet_datas[pet_index]
+	if not pd.is_hatching:
+		return
 	pd.is_hatching = false
 	pd.is_sleeping = false
 	pd.emotion = "happy"

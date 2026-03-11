@@ -1,0 +1,13 @@
+Generate all pet sprites for animal: goose
+
+Species notes:
+- longer neck
+- larger bird body
+- slightly awkward, stern, charming posture
+- should read as heavier and more assertive than pigeon
+
+Output path:
+sprites/goose/<gender>/<color>/<animation>_<frame>.png
+
+Total expected:
+360 PNG files

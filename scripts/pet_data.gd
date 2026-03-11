@@ -1,5 +1,5 @@
-class_name PetData
 extends Resource
+class_name PetData
 
 @export var name: String = "Wevito"
 @export var animal_type: String = "rat"

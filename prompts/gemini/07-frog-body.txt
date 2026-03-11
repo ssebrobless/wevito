@@ -1,0 +1,13 @@
+Generate all pet sprites for animal: frog
+
+Species notes:
+- squat body
+- large eyes
+- springy silhouette
+- strong readability in idle, happy, and sleep poses
+
+Output path:
+sprites/frog/<gender>/<color>/<animation>_<frame>.png
+
+Total expected:
+360 PNG files

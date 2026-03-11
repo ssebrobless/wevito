@@ -1,0 +1,37 @@
+Project: Wevito, a Godot desktop virtual pet game.
+
+Technical contract:
+- Output individual transparent PNG files only.
+- No sprite sheets unless the prompt explicitly asks for a single rigid sprite sheet.
+- Pet sprite canvas: exactly 28x24 px.
+- UI icon canvas: exactly 16x16 px.
+- Pixel art only, crisp edges, no antialiasing, no blur.
+- Keep all sprites centered consistently on canvas.
+- Preserve a stable visual baseline across frames.
+- The game scales pet sprites up 3x, so silhouettes and faces must stay readable.
+- Folder pattern for pets: sprites/<animal>/<gender>/<color>/<animation>_<frame>.png
+- Folder pattern for icons: sprites/icons/<icon>.png
+
+Animation contract for every pet variant:
+- idle_00..03 = 4 frames
+- walk_00..05 = 6 frames
+- eat_00..03 = 4 frames
+- happy_00..03 = 4 frames
+- sad_00..01 = 2 frames
+- sleep_00..01 = 2 frames
+- sick_00..03 = 4 frames
+- bathe_00..03 = 4 frames
+
+Variant matrix per animal:
+- genders: male, female
+- colors: red, orange, yellow, blue, indigo, violet
+
+Style rules:
+- slightly moody, cute, vulnerable desktop-pet tone
+- unified art direction across all animals
+- male = slightly larger, bolder silhouette
+- female = slightly smaller, calmer silhouette
+- color variants should tint/accent the species, not erase species readability
+- walk cycle must read clearly when horizontally flipped in-engine
+- idle should be subtle
+- sleep, sad, sick must each read as distinct states

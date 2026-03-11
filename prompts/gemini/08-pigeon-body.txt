@@ -1,0 +1,13 @@
+Generate all pet sprites for animal: pigeon
+
+Species notes:
+- rounder than crow
+- puffed chest
+- shorter beak
+- slightly awkward but lovable urban-bird posture
+
+Output path:
+sprites/pigeon/<gender>/<color>/<animation>_<frame>.png
+
+Total expected:
+360 PNG files

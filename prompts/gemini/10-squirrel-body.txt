@@ -1,0 +1,13 @@
+Generate all pet sprites for animal: squirrel
+
+Species notes:
+- upright small mammal silhouette
+- bushy tail is essential
+- nimble and alert posture
+- should read differently from rat and raccoon immediately
+
+Output path:
+sprites/squirrel/<gender>/<color>/<animation>_<frame>.png
+
+Total expected:
+360 PNG files

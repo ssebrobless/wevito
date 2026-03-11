@@ -1,7 +1,14 @@
 extends Node2D
 
+const GameManager = preload("res://scripts/game_manager.gd")
+const Pet = preload("res://scripts/pet.gd")
+const PetData = preload("res://scripts/pet_data.gd")
+const SoundManager = preload("res://scripts/sound_manager.gd")
+
 var game_manager: GameManager
 var ui_visible: bool = true
+var window_has_focus: bool = true
+var overlay_ui_pinned: bool = false
 var window_positioned: bool = false
 var egg_selection_active: bool = false
 var doctors_note_visible: bool = false
@@ -9,9 +16,12 @@ var doctors_note_visible: bool = false
 var stats_panel: VBoxContainer
 var actions_bar: HBoxContainer
 var title_label: Label
+var pet_portrait: TextureRect
 var pet_name_label: Label
 var pet_gender_label: Label
 var pet_age_label: Label
+var focus_backdrop: ColorRect
+var hud_hit_surface: ColorRect
 var background: ColorRect
 var bg_mid: ColorRect
 var bg_ground: ColorRect
@@ -21,6 +31,8 @@ var add_pet_button: Button
 var doctor_button: Button
 var minimize_button: Button
 var settings_button: Button
+var pin_ui_button: Button
+var basket_button: Button
 var ghost_button: Button
 var memoriam_button: Button
 var pet_indicators: HBoxContainer
@@ -31,22 +43,30 @@ var naming_overlay: Control
 var death_overlay: Control
 var memoriam_overlay: Control
 var settings_overlay: Control
+var basket_overlay: Control
 var doctors_note_overlay: Control
 var feeding_panel_overlay: Control
 var sound_player: AudioStreamPlayer
 var ghost_overlay: ColorRect
+var celestial_sprite: TextureRect
 var sound_manager: SoundManager
 var held_item_sprite: Sprite2D
 var held_item: Dictionary = {"type": "", "name": "", "icon": ""}
+var celestial_texture_cache: Dictionary = {}
+var egg_texture_cache: Dictionary = {}
+var basket_entries: Array[Dictionary] = []
+var portrait_texture_cache: Dictionary = {}
+var environment_texture_cache: Dictionary = {}
 
 
 # Game settings
-var settings = {
+const DEFAULT_SETTINGS = {
 	"bell": true,
 	"tick_rate": 60.0,
 	"auto_save": true,
 	"auto_save_interval": 3,
 	"click_through": false,
+	"desktop_companion_roam": true,
 	"ghost_mode": false,
 	"experimental_monitor_roam": false,
 	"sound_effects": true,
@@ -54,6 +74,7 @@ var settings = {
 	"detail_text_color": "#d8e0d8",
 	"status_box_palette": "classic"
 }
+var settings = DEFAULT_SETTINGS.duplicate(true)
 
 const STATUS_BOX_PALETTES = {
 	"classic": {
@@ -104,6 +125,7 @@ const TOAST_FADE_SEC := 0.2
 const TOAST_REPEAT_SUPPRESS_MS := 500
 
 var auto_save_timer: float = 0.0
+var celestial_update_timer: float = 0.0
 var last_open_action_tab: String = ""  # Track last open tab for focus restoration
 var action_tab_open: bool = false  # Is an action tab currently open
 var current_action_tab: String = ""  # Which action tab is open
@@ -114,6 +136,32 @@ var feedback_label: Label
 var feedback_tween: Tween
 var feedback_last_text: String = ""
 var feedback_last_at_ms: int = 0
+var automation_running: bool = false
+var overlay_command_poll_sec: float = 0.0
+var native_focus_poll_sec: float = 0.0
+var native_focus_watcher_pid: int = -1
+var native_focus_state: Dictionary = {}
+var native_focus_state_updated_at_ms: int = -1
+var native_focus_backend: String = ""
+var debug_last_pinned_dispatch: Dictionary = {}
+
+const AUTOMATION_ENV := "WEVITO_AUTOMATION"
+const AUTOMATION_SCENARIO_ENV := "WEVITO_AUTOMATION_SCENARIO"
+const AUTOMATION_REPORT_PATH := "user://automation_report.json"
+const AUTOMATION_SAVE_PATH := "user://save_slot.json"
+const RUNTIME_STATE_PATH := "user://runtime_state.json"
+const OVERLAY_PIN_ACTION := "toggle-overlay-ui"
+const OVERLAY_PIN_HOTKEY := "Ctrl+Shift+P"
+const BASKET_CAPTURE_ACTION := "capture-basket-link"
+const BASKET_CAPTURE_HOTKEY := "Ctrl+Shift+B"
+const OVERLAY_COMMAND_PATH := "user://overlay_command.json"
+const OVERLAY_COMMAND_POLL_INTERVAL_SEC := 0.2
+const NATIVE_FOCUS_POLL_INTERVAL_SEC := 0.04
+const NATIVE_FOCUS_STALE_MS := 450
+const NATIVE_CLICK_MAX_AGE_MS := 220
+const NATIVE_HELPER_EXE := "WevitoDesktopBridge.exe"
+const BASKET_MAX_LINKS := 5
+const BASKET_SUPPORTED_DROP_EXTENSIONS := ["url", "webloc", "desktop", "txt"]
 
 const WINDOW_FOCUSED_SIZE := Vector2i(320, 420)
 const WINDOW_UNFOCUSED_SIZE := Vector2i(320, 240)
@@ -139,6 +187,11 @@ const STAGE_MAX_WIDTH := 292.0
 const STAGE_TOP_INSET := 6.0
 const MONITOR_ROAM_MARGIN_X := 28.0
 const MONITOR_ROAM_MARGIN_Y := 38.0
+const MONITOR_ROAM_STRIP_HEIGHT := 170
+const PET_ROAM_BAND_HEIGHT := 112.0
+const DESKTOP_STAGE_MARGIN_RIGHT := 42.0
+const DESKTOP_STAGE_MARGIN_BOTTOM := 42.0
+const DESKTOP_STAGE_GAP := 10.0
 
 func _color_from_setting(key: String, fallback: Color) -> Color:
 	var val = settings.get(key, "")
@@ -212,8 +265,706 @@ func _apply_detail_text_theme(root: Node):
 	for child in root.get_children():
 		_apply_detail_text_theme(child)
 
+func _ensure_runtime_input_actions():
+	if not InputMap.has_action(OVERLAY_PIN_ACTION):
+		InputMap.add_action(OVERLAY_PIN_ACTION)
+
+	var has_pin_hotkey := false
+	for event in InputMap.action_get_events(OVERLAY_PIN_ACTION):
+		if event is InputEventKey:
+			var key_event = event as InputEventKey
+			if key_event.keycode == KEY_P and key_event.ctrl_pressed and key_event.shift_pressed:
+				has_pin_hotkey = true
+				break
+
+	if not has_pin_hotkey:
+		var pin_event = InputEventKey.new()
+		pin_event.keycode = KEY_P
+		pin_event.ctrl_pressed = true
+		pin_event.shift_pressed = true
+		InputMap.action_add_event(OVERLAY_PIN_ACTION, pin_event)
+
+	if not InputMap.has_action(BASKET_CAPTURE_ACTION):
+		InputMap.add_action(BASKET_CAPTURE_ACTION)
+
+	for event in InputMap.action_get_events(BASKET_CAPTURE_ACTION):
+		if event is InputEventKey:
+			var key_event = event as InputEventKey
+			if key_event.keycode == KEY_B and key_event.ctrl_pressed and key_event.shift_pressed:
+				return
+
+	var basket_event = InputEventKey.new()
+	basket_event.keycode = KEY_B
+	basket_event.ctrl_pressed = true
+	basket_event.shift_pressed = true
+	InputMap.action_add_event(BASKET_CAPTURE_ACTION, basket_event)
+
+func _is_passive_overlay_mode() -> bool:
+	return (not window_has_focus) and (not overlay_ui_pinned)
+
+func _is_pinned_overlay_mode() -> bool:
+	return (not window_has_focus) and overlay_ui_pinned
+
+func _should_show_runtime_ui() -> bool:
+	return window_has_focus or overlay_ui_pinned
+
+func _should_allow_runtime_ui_input() -> bool:
+	return window_has_focus or overlay_ui_pinned
+
+func _sync_legacy_overlay_settings():
+	settings["experimental_monitor_roam"] = settings.get("desktop_companion_roam", true)
+
+func _update_overlay_pin_button():
+	if pin_ui_button == null:
+		return
+	pin_ui_button.set_pressed_no_signal(overlay_ui_pinned)
+	pin_ui_button.add_theme_color_override("font_color", COLOR_TEXT if overlay_ui_pinned else _detail_text_color())
+	pin_ui_button.tooltip_text = "Pinned HUD %s. Toggle with %s." % [
+		"enabled" if overlay_ui_pinned else "disabled",
+		OVERLAY_PIN_HOTKEY
+	]
+
+func _apply_window_input_mode():
+	DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_MOUSE_PASSTHROUGH, _is_passive_overlay_mode())
+	DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_NO_FOCUS, _is_pinned_overlay_mode())
+	if _is_passive_overlay_mode():
+		get_window().mouse_passthrough_polygon = PackedVector2Array()
+	else:
+		get_window().mouse_passthrough_polygon = _build_active_overlay_input_polygon()
+	_update_overlay_pin_button()
+
+func _update_focus_backdrop():
+	if focus_backdrop == null:
+		return
+	focus_backdrop.position = Vector2.ZERO
+	focus_backdrop.size = Vector2(float(get_window().size.x), float(get_window().size.y))
+	# Keep the desktop visible behind the overlay; only the game elements should render.
+	focus_backdrop.visible = false
+
+func _apply_runtime_visibility_state():
+	ui_visible = _should_show_runtime_ui()
+	_set_all_ui_controls_visible(ui_visible)
+	_set_environment_stages_visible(true)
+	_set_ui_clickable(_should_allow_runtime_ui_input())
+	_update_focus_backdrop()
+	_apply_window_input_mode()
+
+func _set_overlay_ui_pin(enabled: bool, show_feedback: bool = true):
+	if overlay_ui_pinned == enabled:
+		_update_overlay_pin_button()
+		return
+
+	overlay_ui_pinned = enabled
+	_apply_window_mode_layout(window_has_focus)
+	if not overlay_ui_pinned and not window_has_focus:
+		if action_tab_open:
+			last_open_action_tab = current_action_tab
+		if action_tab_overlay:
+			action_tab_overlay.visible = false
+	if overlay_ui_pinned and not window_has_focus:
+		_recall_all_pets_home(1.2, true)
+	elif not overlay_ui_pinned and not window_has_focus:
+		if monitor_roam_active:
+			_start_monitor_roam_all_pets()
+		else:
+			_recall_all_pets_home(0.0)
+	_apply_runtime_visibility_state()
+	if not window_has_focus:
+		_restore_external_foreground_focus_if_needed()
+
+	if show_feedback:
+		var feedback_message = "HUD pinned. UI stays usable over other apps."
+		if not overlay_ui_pinned:
+			feedback_message = "HUD released. UI hides again when another app is focused."
+		_show_feedback_message(feedback_message)
+
+func _update_basket_button_state():
+	if basket_button == null:
+		return
+	var count = basket_entries.size()
+	var font_color = _detail_text_color()
+	if count > 0:
+		font_color = _main_text_color()
+	if count >= BASKET_MAX_LINKS:
+		font_color = Color(0.95, 0.72, 0.24, 1.0)
+	basket_button.text = "BIN"
+	basket_button.add_theme_color_override("font_color", font_color)
+	basket_button.tooltip_text = "Link basket %d/%d. Capture clipboard with %s." % [
+		count,
+		BASKET_MAX_LINKS,
+		BASKET_CAPTURE_HOTKEY
+	]
+
+func _strip_wrapping_punctuation(text: String) -> String:
+	var trimmed = text.strip_edges()
+	var leading = "\"'(<[{"
+	var trailing = "\"').,;:!?]}>"
+	while trimmed.length() > 0 and leading.contains(trimmed.substr(0, 1)):
+		trimmed = trimmed.substr(1)
+	while trimmed.length() > 0 and trailing.contains(trimmed.substr(trimmed.length() - 1, 1)):
+		trimmed = trimmed.substr(0, trimmed.length() - 1)
+	return trimmed
+
+func _normalize_basket_url(text: String) -> String:
+	var normalized = _strip_wrapping_punctuation(text)
+	if normalized == "":
+		return ""
+	var regex = RegEx.new()
+	if regex.compile("(?i)\\b((?:https?|ftp)://[^\\s\"'<>]+|mailto:[^\\s\"'<>]+|www\\.[^\\s\"'<>]+)") == OK:
+		var match = regex.search(normalized)
+		if match:
+			normalized = _strip_wrapping_punctuation(match.get_string(1))
+	if normalized == "":
+		return ""
+	if normalized.begins_with("www."):
+		normalized = "https://" + normalized
+	elif normalized.find("://") == -1 and not normalized.begins_with("mailto:") and normalized.find(" ") == -1 and normalized.find("\t") == -1 and normalized.find(".") >= 0:
+		normalized = "https://" + normalized
+	if normalized.find(" ") >= 0 or normalized.find("\t") >= 0:
+		return ""
+	return normalized
+
+func _basket_contains_url(url: String) -> bool:
+	for entry in basket_entries:
+		if str(entry.get("url", "")).to_lower() == url.to_lower():
+			return true
+	return false
+
+func _basket_source_label(source: String) -> String:
+	return _truncate_with_ellipsis(source.strip_edges(), 32)
+
+func _basket_entry_summary(entry: Dictionary) -> String:
+	var url = str(entry.get("url", ""))
+	var label = url
+	var scheme_index = label.find("://")
+	if scheme_index >= 0:
+		label = label.substr(scheme_index + 3)
+	if label.ends_with("/"):
+		label = label.substr(0, label.length() - 1)
+	return _truncate_with_ellipsis(label, 34)
+
+func _persist_basket_if_enabled():
+	if settings.get("auto_save", true):
+		_do_auto_save()
+
+func _basket_add_url(raw_url: String, source: String = "clipboard", show_feedback: bool = true) -> bool:
+	var url = _normalize_basket_url(raw_url)
+	if url == "":
+		if show_feedback:
+			_show_feedback_message("Basket only accepts valid links.")
+		return false
+	if _basket_contains_url(url):
+		if show_feedback:
+			_show_feedback_message("That link is already in the basket.")
+		return false
+	if basket_entries.size() >= BASKET_MAX_LINKS:
+		if show_feedback:
+			_show_feedback_message("Basket is full. Remove a link before adding another.")
+		return false
+	basket_entries.append({
+		"url": url,
+		"source": _basket_source_label(source),
+		"added_at": int(Time.get_unix_time_from_system())
+	})
+	_update_basket_button_state()
+	_refresh_basket_overlay()
+	_persist_basket_if_enabled()
+	if show_feedback:
+		_show_feedback_message("Saved link to basket (%d/%d)." % [basket_entries.size(), BASKET_MAX_LINKS])
+	return true
+
+func _remove_basket_entry(index: int, show_feedback: bool = true):
+	if index < 0 or index >= basket_entries.size():
+		return
+	basket_entries.remove_at(index)
+	_update_basket_button_state()
+	_refresh_basket_overlay()
+	_persist_basket_if_enabled()
+	if show_feedback:
+		_show_feedback_message("Removed link from basket.")
+
+func _capture_clipboard_link(show_feedback: bool = true) -> bool:
+	var clipboard_text = DisplayServer.clipboard_get().strip_edges()
+	if clipboard_text == "":
+		if show_feedback:
+			_show_feedback_message("Clipboard is empty.")
+		return false
+	return _basket_add_url(clipboard_text, "clipboard", show_feedback)
+
+func _copy_basket_entry_to_clipboard(index: int, close_after: bool = true):
+	if index < 0 or index >= basket_entries.size():
+		return
+	var entry = basket_entries[index]
+	var url = str(entry.get("url", ""))
+	if url == "":
+		return
+	DisplayServer.clipboard_set(url)
+	if close_after:
+		_close_basket_overlay()
+	_show_feedback_message("Copied link to clipboard.")
+
+func _open_basket_entry(index: int):
+	if index < 0 or index >= basket_entries.size():
+		return
+	var url = str(basket_entries[index].get("url", ""))
+	if url == "":
+		return
+	var err = OS.shell_open(url)
+	if err != OK:
+		_show_feedback_message("Could not open that link.")
+		return
+	_close_basket_overlay()
+	_show_feedback_message("Opened link.")
+
+func _read_url_from_drop_file(file_path: String) -> String:
+	var ext = file_path.get_extension().to_lower()
+	if not BASKET_SUPPORTED_DROP_EXTENSIONS.has(ext):
+		return ""
+	if not FileAccess.file_exists(file_path):
+		return ""
+	var file = FileAccess.open(file_path, FileAccess.READ)
+	if file == null:
+		return ""
+	var raw = file.get_as_text()
+	file.close()
+	if raw.strip_edges() == "":
+		return ""
+	if ext == "url" or ext == "desktop":
+		for line in raw.split("\n", false):
+			var trimmed = line.strip_edges()
+			if trimmed.to_upper().begins_with("URL="):
+				return _normalize_basket_url(trimmed.substr(4))
+	if ext == "webloc":
+		var plist_regex = RegEx.new()
+		if plist_regex.compile("(?is)<key>URL</key>\\s*<string>(.*?)</string>") == OK:
+			var plist_match = plist_regex.search(raw)
+			if plist_match:
+				return _normalize_basket_url(plist_match.get_string(1))
+	return _normalize_basket_url(raw)
+
+func _on_window_files_dropped(files: PackedStringArray):
+	var added := 0
+	for file_path in files:
+		var url = _read_url_from_drop_file(file_path)
+		if url != "" and _basket_add_url(url, file_path.get_file(), false):
+			added += 1
+	if added > 0:
+		_show_feedback_message("Added %d dropped link%s to basket." % [added, "" if added == 1 else "s"])
+	elif files.size() > 0:
+		_show_feedback_message("Drop a URL shortcut or a text file that contains a link.")
+
+func _on_overlay_pin_toggled(enabled: bool):
+	_set_overlay_ui_pin(enabled)
+
+func _native_focus_watcher_supported() -> bool:
+	return OS.get_name() == "Windows" and not str(DisplayServer.get_name()).containsn("headless")
+
+func _native_helper_candidates() -> PackedStringArray:
+	var candidates = PackedStringArray()
+	var executable_path = OS.get_executable_path()
+	if executable_path != "":
+		candidates.append(executable_path.get_base_dir().path_join(NATIVE_HELPER_EXE))
+	candidates.append(ProjectSettings.globalize_path("res://builds/release/%s" % NATIVE_HELPER_EXE))
+	candidates.append(ProjectSettings.globalize_path("res://builds/desktop_bridge/%s" % NATIVE_HELPER_EXE))
+	return candidates
+
+func _native_helper_path() -> String:
+	for candidate in _native_helper_candidates():
+		if candidate != "" and FileAccess.file_exists(candidate):
+			return candidate
+	return ""
+
+func _native_helper_available() -> bool:
+	return _native_helper_path() != ""
+
+func _native_focus_runtime_id() -> int:
+	return OS.get_process_id()
+
+func _native_focus_state_path() -> String:
+	return "user://native_focus_state_%d.json" % _native_focus_runtime_id()
+
+func _native_focus_stop_path() -> String:
+	return "user://native_focus_stop_%d.signal" % _native_focus_runtime_id()
+
+func _native_focus_script_path() -> String:
+	return "user://native_focus_watcher_%d.ps1" % _native_focus_runtime_id()
+
+func _ps_single_quote(text: String) -> String:
+	return "'" + text.replace("'", "''") + "'"
+
+func _native_focus_watcher_script_text() -> String:
+	var parent_pid = _native_focus_runtime_id()
+	var state_path = _ps_single_quote(ProjectSettings.globalize_path(_native_focus_state_path()))
+	var stop_path = _ps_single_quote(ProjectSettings.globalize_path(_native_focus_stop_path()))
+	var lines = PackedStringArray([
+		"$ErrorActionPreference = 'SilentlyContinue'",
+		"Add-Type @\"",
+		"using System;",
+		"using System.Text;",
+		"using System.Runtime.InteropServices;",
+		"public static class NativeWindow {",
+		"    [DllImport(\"user32.dll\")] public static extern IntPtr GetForegroundWindow();",
+		"    [DllImport(\"user32.dll\")] public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint pid);",
+		"    [DllImport(\"user32.dll\", CharSet = CharSet.Unicode)] public static extern int GetWindowTextW(IntPtr hWnd, StringBuilder text, int count);",
+		"    [DllImport(\"user32.dll\", CharSet = CharSet.Unicode)] public static extern int GetClassNameW(IntPtr hWnd, StringBuilder text, int count);",
+		"    [DllImport(\"user32.dll\")] public static extern short GetAsyncKeyState(int vKey);",
+		"}",
+		"\"@",
+		"$parentPid = %d" % parent_pid,
+		"$statePath = %s" % state_path,
+		"$stopPath = %s" % stop_path,
+		"$lastJson = ''",
+		"$lastLeftDown = $false",
+		"$lastLeftPressMs = 0",
+		"$lastLeftReleaseMs = 0",
+		"while ($true) {",
+		"    if (Test-Path $stopPath) { break }",
+		"    if ($null -eq (Get-Process -Id $parentPid -ErrorAction SilentlyContinue)) { break }",
+		"    $hwnd = [NativeWindow]::GetForegroundWindow()",
+		"    $foregroundPid = 0",
+		"    $windowTitle = ''",
+		"    $windowClass = ''",
+		"    if ($hwnd -ne [IntPtr]::Zero) {",
+		"        [void][NativeWindow]::GetWindowThreadProcessId($hwnd, [ref]$foregroundPid)",
+		"        $titleBuilder = New-Object System.Text.StringBuilder 512",
+		"        $classBuilder = New-Object System.Text.StringBuilder 128",
+		"        [void][NativeWindow]::GetWindowTextW($hwnd, $titleBuilder, $titleBuilder.Capacity)",
+		"        [void][NativeWindow]::GetClassNameW($hwnd, $classBuilder, $classBuilder.Capacity)",
+		"        $windowTitle = $titleBuilder.ToString()",
+		"        $windowClass = $classBuilder.ToString()",
+		"    }",
+		"    $processName = ''",
+		"    if ($foregroundPid -gt 0) {",
+		"        $proc = Get-Process -Id $foregroundPid -ErrorAction SilentlyContinue",
+		"        if ($proc) { $processName = $proc.ProcessName }",
+		"    }",
+		"    $isShellSurface = $windowClass -in @('Progman', 'WorkerW', 'Shell_TrayWnd')",
+		"    $leftButtonDown = ([NativeWindow]::GetAsyncKeyState(0x01) -band 0x8000) -ne 0",
+		"    $nowMs = [DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds()",
+		"    if ($leftButtonDown -and -not $lastLeftDown) { $lastLeftPressMs = $nowMs }",
+		"    elseif (-not $leftButtonDown -and $lastLeftDown) { $lastLeftReleaseMs = $nowMs }",
+		"    $lastLeftDown = $leftButtonDown",
+		"    $payload = @{",
+		"        foreground_pid = [int]$foregroundPid",
+		"        process_name = $processName",
+		"        window_class = $windowClass",
+		"        window_title = $windowTitle",
+		"        is_shell_surface = [bool]$isShellSurface",
+		"        left_button_down = [bool]$leftButtonDown",
+		"        last_left_press_ms = [int64]$lastLeftPressMs",
+		"        last_left_release_ms = [int64]$lastLeftReleaseMs",
+		"        updated_at_unix_ms = [int64]$nowMs",
+		"    } | ConvertTo-Json -Compress",
+		"    if ($payload -ne $lastJson) {",
+		"        Set-Content -Path $statePath -Value $payload -Encoding UTF8",
+		"        $lastJson = $payload",
+		"    }",
+		"    Start-Sleep -Milliseconds 40",
+		"}"
+	])
+	return "\n".join(lines)
+
+func _start_native_focus_watcher():
+	if not _native_focus_watcher_supported() or _automation_requested():
+		return
+
+	var stop_path = _native_focus_stop_path()
+	var state_path = _native_focus_state_path()
+	native_focus_backend = ""
+	if FileAccess.file_exists(stop_path):
+		DirAccess.remove_absolute(ProjectSettings.globalize_path(stop_path))
+	if FileAccess.file_exists(state_path):
+		DirAccess.remove_absolute(ProjectSettings.globalize_path(state_path))
+
+	var helper_path = _native_helper_path()
+	if helper_path != "":
+		native_focus_watcher_pid = OS.create_process(
+			helper_path,
+			PackedStringArray([
+				"watch-focus",
+				"--parent-pid",
+				str(_native_focus_runtime_id()),
+				"--state-path",
+				ProjectSettings.globalize_path(state_path),
+				"--stop-path",
+				ProjectSettings.globalize_path(stop_path)
+			]),
+			false
+		)
+		if native_focus_watcher_pid != -1:
+			native_focus_backend = "helper"
+			return
+
+	var script_path = _native_focus_script_path()
+	var script_file = FileAccess.open(script_path, FileAccess.WRITE)
+	if script_file == null:
+		return
+	script_file.store_string(_native_focus_watcher_script_text())
+	script_file.close()
+
+	native_focus_watcher_pid = OS.create_process(
+		"powershell.exe",
+		PackedStringArray([
+			"-NoProfile",
+			"-ExecutionPolicy",
+			"Bypass",
+			"-WindowStyle",
+			"Hidden",
+			"-File",
+			ProjectSettings.globalize_path(script_path)
+		]),
+		false
+	)
+	if native_focus_watcher_pid != -1:
+		native_focus_backend = "powershell"
+
+func _stop_native_focus_watcher():
+	if not _native_focus_watcher_supported():
+		return
+	var stop_file = FileAccess.open(_native_focus_stop_path(), FileAccess.WRITE)
+	if stop_file:
+		stop_file.store_string("stop")
+		stop_file.close()
+	native_focus_backend = ""
+
+func _poll_native_focus_state(delta: float):
+	if not _native_focus_watcher_supported() or _automation_requested():
+		return
+
+	native_focus_poll_sec += delta
+	if native_focus_poll_sec < NATIVE_FOCUS_POLL_INTERVAL_SEC:
+		return
+	native_focus_poll_sec = 0.0
+
+	var state_path = _native_focus_state_path()
+	if not FileAccess.file_exists(state_path):
+		return
+
+	var file = FileAccess.open(state_path, FileAccess.READ)
+	if file == null:
+		return
+	var raw = file.get_as_text().strip_edges()
+	file.close()
+	if raw == "":
+		return
+
+	var parsed = JSON.parse_string(raw)
+	if not (parsed is Dictionary):
+		return
+
+	native_focus_state = parsed as Dictionary
+	native_focus_state_updated_at_ms = int(native_focus_state.get("updated_at_unix_ms", native_focus_state_updated_at_ms))
+
+func _native_focus_state_is_fresh() -> bool:
+	if native_focus_state_updated_at_ms < 0:
+		return false
+	var now_ms = int(Time.get_unix_time_from_system() * 1000.0)
+	return abs(now_ms - native_focus_state_updated_at_ms) <= NATIVE_FOCUS_STALE_MS
+
+func _native_left_click_recent(max_age_ms: int = NATIVE_CLICK_MAX_AGE_MS) -> bool:
+	if not _native_focus_state_is_fresh():
+		return false
+	var now_ms = int(Time.get_unix_time_from_system() * 1000.0)
+	var last_press_ms = int(native_focus_state.get("last_left_press_ms", -1))
+	var last_release_ms = int(native_focus_state.get("last_left_release_ms", -1))
+	if last_press_ms > 0 and abs(now_ms - last_press_ms) <= max_age_ms:
+		return true
+	if last_release_ms > 0 and abs(now_ms - last_release_ms) <= max_age_ms:
+		return true
+	return false
+
+func _native_recent_click_info(max_age_ms: int = NATIVE_CLICK_MAX_AGE_MS) -> Dictionary:
+	if not _native_focus_state_is_fresh():
+		return {}
+
+	var now_ms = int(Time.get_unix_time_from_system() * 1000.0)
+	var release_ms = int(native_focus_state.get("last_left_release_ms", -1))
+	if release_ms > 0 and abs(now_ms - release_ms) <= max_age_ms:
+		var release_point = Vector2(
+			float(native_focus_state.get("last_left_release_x", -1000000.0)),
+			float(native_focus_state.get("last_left_release_y", -1000000.0))
+		)
+		if release_point.x > -100000.0 and release_point.y > -100000.0:
+			return {
+				"point": release_point,
+				"age_ms": abs(now_ms - release_ms),
+				"phase": "release"
+			}
+
+	var press_ms = int(native_focus_state.get("last_left_press_ms", -1))
+	if press_ms > 0 and abs(now_ms - press_ms) <= max_age_ms:
+		var press_point = Vector2(
+			float(native_focus_state.get("last_left_press_x", -1000000.0)),
+			float(native_focus_state.get("last_left_press_y", -1000000.0))
+		)
+		if press_point.x > -100000.0 and press_point.y > -100000.0:
+			return {
+				"point": press_point,
+				"age_ms": abs(now_ms - press_ms),
+				"phase": "press"
+			}
+
+	return {}
+
+func _screen_to_window_local_point(screen_point: Vector2) -> Vector2:
+	return screen_point - Vector2(get_window().position)
+
+func _native_cursor_screen_point() -> Vector2:
+	if not _native_focus_state_is_fresh():
+		return Vector2(-1000000.0, -1000000.0)
+	return Vector2(
+		float(native_focus_state.get("cursor_x", -1000000.0)),
+		float(native_focus_state.get("cursor_y", -1000000.0))
+	)
+
+func _native_focus_is_effectively_ours() -> bool:
+	if not _native_focus_state_is_fresh():
+		return get_window().has_focus()
+	var foreground_pid = int(native_focus_state.get("foreground_pid", -1))
+	if foreground_pid == _native_focus_runtime_id():
+		return true
+	if bool(native_focus_state.get("is_shell_surface", false)):
+		return true
+	if foreground_pid <= 0:
+		return true
+	return false
+
+func _restore_external_foreground_focus_if_needed():
+	if not _native_focus_watcher_supported() or _automation_requested():
+		return
+	if not _native_focus_state_is_fresh():
+		return
+
+	var foreground_pid = int(native_focus_state.get("foreground_pid", -1))
+	if foreground_pid <= 0 or foreground_pid == _native_focus_runtime_id():
+		return
+
+	var foreground_hwnd = int(native_focus_state.get("foreground_hwnd", 0))
+	var helper_path = _native_helper_path()
+	if helper_path != "" and foreground_hwnd > 0:
+		OS.create_process(
+			helper_path,
+			PackedStringArray([
+				"activate-window",
+				"--hwnd",
+				str(foreground_hwnd),
+				"--delay-ms",
+				"120"
+			]),
+			false
+		)
+		return
+
+	OS.create_process(
+		"powershell.exe",
+		PackedStringArray([
+			"-NoProfile",
+			"-ExecutionPolicy",
+			"Bypass",
+			"-WindowStyle",
+			"Hidden",
+			"-Command",
+			"Start-Sleep -Milliseconds 120; $shell = New-Object -ComObject WScript.Shell; [void]$shell.AppActivate(%d)" % foreground_pid
+		]),
+		false
+	)
+
+func _replay_current_left_click_after_focus():
+	if not _native_focus_watcher_supported() or _automation_requested():
+		return
+	var helper_path = _native_helper_path()
+	if helper_path != "":
+		OS.create_process(
+			helper_path,
+			PackedStringArray([
+				"left-click",
+				"--delay-ms",
+				"70",
+				"--hold-ms",
+				"18"
+			]),
+			false
+		)
+		return
+	OS.create_process(
+		"powershell.exe",
+		PackedStringArray([
+			"-NoProfile",
+			"-ExecutionPolicy",
+			"Bypass",
+			"-WindowStyle",
+			"Hidden",
+			"-Command",
+			"Start-Sleep -Milliseconds 70; Add-Type @\"`nusing System;`nusing System.Runtime.InteropServices;`npublic static class NativeClick {`n    [DllImport(\"user32.dll\")] public static extern void mouse_event(uint dwFlags, uint dx, uint dy, uint dwData, UIntPtr dwExtraInfo);`n}`n\"@; [NativeClick]::mouse_event(0x0002,0,0,0,[UIntPtr]::Zero); Start-Sleep -Milliseconds 18; [NativeClick]::mouse_event(0x0004,0,0,0,[UIntPtr]::Zero)"
+		]),
+		false
+	)
+
+func _poll_overlay_command(delta: float):
+	overlay_command_poll_sec += delta
+	if overlay_command_poll_sec < OVERLAY_COMMAND_POLL_INTERVAL_SEC:
+		return
+	overlay_command_poll_sec = 0.0
+
+	if not FileAccess.file_exists(OVERLAY_COMMAND_PATH):
+		return
+
+	var file = FileAccess.open(OVERLAY_COMMAND_PATH, FileAccess.READ)
+	if file == null:
+		return
+
+	var raw = file.get_as_text().strip_edges()
+	file.close()
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(OVERLAY_COMMAND_PATH))
+
+	if raw == "":
+		return
+
+	var parsed = JSON.parse_string(raw)
+	if not (parsed is Dictionary):
+		return
+
+	var command = str((parsed as Dictionary).get("command", "")).to_lower()
+	match command:
+		"toggle_overlay_ui":
+			_set_overlay_ui_pin(not overlay_ui_pinned)
+		"pin_overlay_ui":
+			_set_overlay_ui_pin(true)
+		"release_overlay_ui":
+			_set_overlay_ui_pin(false)
+		"capture_clipboard_link":
+			_capture_clipboard_link(false)
+		"dump_runtime_state":
+			_write_runtime_state()
+		"show_window":
+			_show_from_tray()
+
+func _reconcile_window_focus_state():
+	if startup_focus_guard or automation_running or _automation_requested():
+		return
+	var actual_focus = _native_focus_is_effectively_ours() if _native_focus_watcher_supported() else get_window().has_focus()
+	if actual_focus != window_has_focus:
+		_handle_focus_change(actual_focus)
+
 func _ready():
 	position_window()
+	window_has_focus = true
+	_ensure_runtime_input_actions()
+	_start_native_focus_watcher()
+	if get_window() and not get_window().files_dropped.is_connected(_on_window_files_dropped):
+		get_window().files_dropped.connect(_on_window_files_dropped)
+
+	focus_backdrop = ColorRect.new()
+	focus_backdrop.color = Color(0.0, 0.0, 0.0, 0.0)
+	focus_backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	focus_backdrop.z_index = -5
+	add_child(focus_backdrop)
+
+	hud_hit_surface = ColorRect.new()
+	hud_hit_surface.color = Color(0.0, 0.0, 0.0, 0.01)
+	hud_hit_surface.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	hud_hit_surface.z_index = 60
+	add_child(hud_hit_surface)
 	
 	# Create audio player
 	sound_player = AudioStreamPlayer.new()
@@ -226,9 +977,17 @@ func _ready():
 	
 	# Create environment stage layers (one slot initially; grows with pet count)
 	_ensure_environment_stage_nodes(1)
+
+	celestial_sprite = TextureRect.new()
+	celestial_sprite.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	celestial_sprite.z_index = -1
+	celestial_sprite.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	celestial_sprite.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	add_child(celestial_sprite)
 	
 	game_manager = GameManager.new()
 	add_child(game_manager)
+	_apply_runtime_settings()
 	
 	game_manager.stats_updated.connect(_on_stats_updated)
 	game_manager.pet_died.connect(_on_pet_died)
@@ -236,34 +995,60 @@ func _ready():
 	game_manager.pet_state_changed.connect(_on_pet_state_changed)
 	game_manager.active_pet_changed.connect(_on_active_pet_changed)
 	game_manager.pet_added.connect(_on_pet_added)
+
+	var restored_from_save = _load_save_state()
 	
 	create_ui()
-	_apply_window_mode_layout(true)
+	_update_basket_button_state()
+	_apply_window_mode_layout(window_has_focus)
+	_apply_ghost_mode()
+	_apply_runtime_visibility_state()
 	
-	# Enable UI clicks by default
-	_set_ui_clickable(true)
-	
-	# Add first pet with egg selection
-	show_egg_selection()
+	# Add first pet with egg selection if no save restored playable pets.
+	if not restored_from_save:
+		show_egg_selection()
 	
 	_on_stats_updated()
 	update_environment_background()
+	_update_celestial_sprite(true)
+	var pending_name_index = _find_pending_name_index()
+	if pending_name_index >= 0:
+		call_deferred("_show_naming_popup", pending_name_index)
 	call_deferred("_finalize_startup_focus")
+	if _automation_requested():
+		call_deferred("_run_automation_suite")
+
+func _exit_tree():
+	_stop_native_focus_watcher()
+
+func _apply_runtime_settings():
+	_sync_legacy_overlay_settings()
+	if game_manager:
+		game_manager.tick_rate = max(1.0, float(settings.get("tick_rate", game_manager.tick_rate)))
+	if sound_manager:
+		sound_manager.set_enabled(settings.get("sound_effects", true))
+
+func _automation_requested() -> bool:
+	return OS.get_environment(AUTOMATION_ENV) == "1"
 
 func _finalize_startup_focus():
-	_apply_window_mode_layout(true)
-	_set_environment_stages_visible(true)
-	_set_ui_clickable(true)
-	_apply_mouse_passthrough_for_mode(true)
+	window_has_focus = true
+	_apply_window_mode_layout(window_has_focus)
+	_apply_runtime_visibility_state()
 	await get_tree().create_timer(1.5).timeout
 	startup_focus_guard = false
 
 func _process(delta):
+	_poll_native_focus_state(delta)
+	_reconcile_window_focus_state()
+
 	# Pet nodes are processed automatically by Godot since they're in the scene tree
 	if not ui_visible:
 		# Enforce unfocused presentation in case any UI controls were created after focus-out.
 		_set_all_ui_controls_visible(false)
 		_set_environment_stages_visible(true)
+
+	_poll_overlay_command(delta)
 	
 	# Update held item sprite to follow mouse
 	if held_item_sprite and held_item.type != "":
@@ -276,13 +1061,20 @@ func _process(delta):
 			auto_save_timer = 0
 			_do_auto_save()
 
+	celestial_update_timer += delta
+	if celestial_update_timer >= 5.0:
+		celestial_update_timer = 0.0
+		_update_celestial_sprite()
+
 func _do_auto_save():
 	# Auto-save to single file
 	var save_data = {
 		"pets": [],
 		"in_memoriam": [],
+		"link_basket": [],
 		"timestamp": Time.get_unix_time_from_system(),
-		"auto": true
+		"auto": true,
+		"active_pet_index": game_manager.active_pet_index
 	}
 	
 	for pet_data in game_manager.pet_datas:
@@ -304,11 +1096,17 @@ func _do_auto_save():
 				"fitness": pet_data.fitness,
 				"conditions": pet_data.conditions,
 				"water_bowl_level": pet_data.water_bowl_level,
+				"water_bowl_capacity": pet_data.water_bowl_capacity,
 				"is_dead": pet_data.is_dead,
 				"is_sleeping": pet_data.is_sleeping,
 				"is_hatching": pet_data.is_hatching,
+				"is_naming_pending": pet_data.is_naming_pending,
 				"emotion": pet_data.emotion,
+				"stage": pet_data.stage,
 				"position": {"x": pet_data.position.x, "y": pet_data.position.y},
+				"target_position": {"x": pet_data.target_position.x, "y": pet_data.target_position.y},
+				"is_wandering": pet_data.is_wandering,
+				"active_treatments": pet_data.active_treatments,
 				"personality": {
 					"food_love": pet_data.food_love,
 					"cuddle_need": pet_data.cuddle_need,
@@ -334,12 +1132,695 @@ func _do_auto_save():
 	
 	# Save settings
 	save_data["settings"] = settings
+	for entry in basket_entries:
+		save_data["link_basket"].append({
+			"url": str(entry.get("url", "")),
+			"source": str(entry.get("source", "")),
+			"added_at": int(entry.get("added_at", int(Time.get_unix_time_from_system())))
+		})
 	
 	var save_path = "user://save_slot.json"
 	var file = FileAccess.open(save_path, FileAccess.WRITE)
 	if file:
 		file.store_string(JSON.stringify(save_data))
 		file.close()
+
+func _merge_settings(saved_settings: Dictionary) -> Dictionary:
+	var merged = DEFAULT_SETTINGS.duplicate(true)
+	for key in saved_settings.keys():
+		merged[key] = saved_settings[key]
+	return merged
+
+func _dict_to_vector2(value, fallback: Vector2) -> Vector2:
+	if value is Dictionary:
+		return Vector2(
+			float((value as Dictionary).get("x", fallback.x)),
+			float((value as Dictionary).get("y", fallback.y))
+		)
+	return fallback
+
+func _restore_in_memoriam_entry(entry: Dictionary):
+	var pd = PetData.new()
+	pd.name = str(entry.get("name", pd.name))
+	pd.animal_type = str(entry.get("animal_type", pd.animal_type))
+	pd.gender = str(entry.get("gender", pd.gender))
+	pd.age_at_death = int(entry.get("age_at_death", pd.age_at_death))
+	pd.death_sprite_path = str(entry.get("death_sprite_path", ""))
+	game_manager.in_memoriam.append(pd)
+
+func _restore_pet_from_save(entry: Dictionary):
+	if not game_manager.can_add_pet():
+		return
+
+	var pet = Pet.new()
+	add_child(pet)
+	game_manager.pets.append(pet)
+
+	var default_pos = Vector2(80.0 + (game_manager.pets.size() - 1) * 100.0, 280.0)
+	var pd = PetData.new()
+	pd.name = str(entry.get("name", pd.name))
+	pd.animal_type = str(entry.get("animal_type", pd.animal_type))
+	pd.egg_color = str(entry.get("egg_color", pd.egg_color))
+	pd.gender = str(entry.get("gender", pd.gender))
+	pd.age_minutes = int(entry.get("age_minutes", pd.age_minutes))
+	pd.hunger = float(entry.get("hunger", pd.hunger))
+	pd.hydration = float(entry.get("hydration", pd.hydration))
+	pd.happiness = float(entry.get("happiness", pd.happiness))
+	pd.energy = float(entry.get("energy", pd.energy))
+	pd.health = float(entry.get("health", pd.health))
+	pd.cleanliness = float(entry.get("cleanliness", pd.cleanliness))
+	pd.affection = float(entry.get("affection", pd.affection))
+	pd.grooming = float(entry.get("grooming", pd.grooming))
+	pd.fitness = float(entry.get("fitness", pd.fitness))
+	pd.water_bowl_level = float(entry.get("water_bowl_level", pd.water_bowl_level))
+	pd.water_bowl_capacity = float(entry.get("water_bowl_capacity", pd.water_bowl_capacity))
+	pd.is_dead = bool(entry.get("is_dead", false))
+	pd.is_sleeping = bool(entry.get("is_sleeping", false))
+	var was_hatching = bool(entry.get("is_hatching", false))
+	pd.is_hatching = false
+	pd.is_naming_pending = bool(entry.get("is_naming_pending", was_hatching and pd.name == "Wevito"))
+	pd.emotion = str(entry.get("emotion", pd.emotion))
+	pd.position = _dict_to_vector2(entry.get("position", {}), default_pos)
+	pd.target_position = _dict_to_vector2(entry.get("target_position", {}), pd.position)
+	pd.is_wandering = bool(entry.get("is_wandering", false))
+	var saved_conditions = entry.get("conditions", {})
+	if saved_conditions is Dictionary:
+		pd.conditions = (saved_conditions as Dictionary).duplicate(true)
+	var saved_treatments = entry.get("active_treatments", [])
+	if saved_treatments is Array:
+		pd.active_treatments.clear()
+		for treatment in saved_treatments:
+			if treatment is Dictionary:
+				pd.active_treatments.append((treatment as Dictionary).duplicate(true))
+
+	var personality = entry.get("personality", {})
+	if personality is Dictionary:
+		pd.food_love = float(personality.get("food_love", pd.food_love))
+		pd.cuddle_need = float(personality.get("cuddle_need", pd.cuddle_need))
+		pd.pet_cleanliness = float(personality.get("pet_cleanliness", pd.pet_cleanliness))
+		pd.activity_level = float(personality.get("activity_level", pd.activity_level))
+		pd.cheerfulness = float(personality.get("cheerfulness", pd.cheerfulness))
+		pd.social_need = float(personality.get("social_need", pd.social_need))
+		pd.playfulness = float(personality.get("playfulness", pd.playfulness))
+		pd.stubbornness = float(personality.get("stubbornness", pd.stubbornness))
+
+	pd.stage = int(entry.get("stage", pd.get_stage_from_age(pd.age_minutes)))
+	game_manager.pet_datas.append(pd)
+	pet.setup(pd)
+	if pd.is_sleeping:
+		pet.perform_action("rest")
+
+func _load_save_state() -> bool:
+	var save_path = "user://save_slot.json"
+	if not FileAccess.file_exists(save_path):
+		return false
+
+	var file = FileAccess.open(save_path, FileAccess.READ)
+	if file == null:
+		return false
+
+	var raw = file.get_as_text()
+	file.close()
+	var parsed = JSON.parse_string(raw)
+	if not (parsed is Dictionary):
+		return false
+
+	var save_data = parsed as Dictionary
+	var saved_settings = save_data.get("settings", {})
+	if saved_settings is Dictionary:
+		settings = _merge_settings(saved_settings as Dictionary)
+	_apply_runtime_settings()
+
+	basket_entries.clear()
+	var saved_basket = save_data.get("link_basket", [])
+	if saved_basket is Array:
+		for entry in saved_basket:
+			if not (entry is Dictionary):
+				continue
+			var url = _normalize_basket_url(str((entry as Dictionary).get("url", "")))
+			if url == "" or _basket_contains_url(url) or basket_entries.size() >= BASKET_MAX_LINKS:
+				continue
+			basket_entries.append({
+				"url": url,
+				"source": _basket_source_label(str((entry as Dictionary).get("source", "save"))),
+				"added_at": int((entry as Dictionary).get("added_at", int(Time.get_unix_time_from_system())))
+			})
+	_update_basket_button_state()
+
+	var saved_memoriam = save_data.get("in_memoriam", [])
+	if saved_memoriam is Array:
+		for entry in saved_memoriam:
+			if entry is Dictionary:
+				_restore_in_memoriam_entry(entry as Dictionary)
+
+	var saved_pets = save_data.get("pets", [])
+	if saved_pets is Array:
+		for entry in saved_pets:
+			if entry is Dictionary:
+				_restore_pet_from_save(entry as Dictionary)
+
+	var max_index = max(0, game_manager.pet_datas.size() - 1)
+	game_manager.active_pet_index = clamp(int(save_data.get("active_pet_index", 0)), 0, max_index)
+	return game_manager.get_pet_count() > 0
+
+func _find_pending_name_index() -> int:
+	for i in range(game_manager.pet_datas.size()):
+		var pd = game_manager.pet_datas[i]
+		if pd and pd.is_naming_pending:
+			return i
+	return -1
+
+func _clear_runtime_state():
+	close_all_overlays()
+	_clear_held_item()
+	basket_entries.clear()
+	_update_basket_button_state()
+	if feedback_label and is_instance_valid(feedback_label):
+		feedback_label.queue_free()
+		feedback_label = null
+	if feedback_tween and feedback_tween.is_running():
+		feedback_tween.kill()
+		feedback_tween = null
+	for pet in game_manager.pets:
+		if pet:
+			pet.queue_free()
+	game_manager.pets.clear()
+	game_manager.pet_datas.clear()
+	game_manager.in_memoriam.clear()
+	game_manager.forage_state.clear()
+	game_manager.workout_heat.clear()
+	game_manager.active_pet_index = 0
+	update_environment_background()
+	_on_stats_updated()
+	update_add_button()
+
+func _reload_runtime_from_save() -> bool:
+	_clear_runtime_state()
+	var restored = _load_save_state()
+	_apply_runtime_settings()
+	_apply_window_mode_layout(window_has_focus)
+	_apply_runtime_visibility_state()
+	update_environment_background()
+	_on_stats_updated()
+	update_add_button()
+	return restored
+
+func _set_pet_name(pet_index: int, pet_name: String):
+	var safe_name = pet_name.strip_edges()
+	if safe_name == "":
+		safe_name = "Wevito"
+	if pet_index >= 0 and pet_index < game_manager.pet_datas.size():
+		var pd = game_manager.pet_datas[pet_index]
+		pd.name = safe_name
+		pd.is_naming_pending = false
+
+func _spawn_pet_for_automation(egg_color: String, pet_name: String):
+	if not game_manager.can_add_pet():
+		return
+	add_new_pet_with_color(egg_color)
+	var pet_index = game_manager.get_pet_count() - 1
+	if pet_index >= 0:
+		game_manager.finish_hatching(pet_index)
+		_set_pet_name(pet_index, pet_name)
+		if naming_overlay:
+			naming_overlay.queue_free()
+			naming_overlay = null
+	_on_stats_updated()
+	update_environment_background()
+
+func _automation_assert(checks: Array, name: String, passed: bool, details: String = ""):
+	checks.append({
+		"name": name,
+		"passed": passed,
+		"details": details
+	})
+
+func _automation_read_json(path: String):
+	if not FileAccess.file_exists(path):
+		return null
+	var file = FileAccess.open(path, FileAccess.READ)
+	if file == null:
+		return null
+	var raw = file.get_as_text()
+	file.close()
+	if raw.strip_edges() == "":
+		return null
+	return JSON.parse_string(raw)
+
+func _automation_write_report(report: Dictionary):
+	var file = FileAccess.open(AUTOMATION_REPORT_PATH, FileAccess.WRITE)
+	if file:
+		file.store_string(JSON.stringify(report))
+		file.close()
+
+func _rect2_to_dict(rect: Rect2) -> Dictionary:
+	return {
+		"x": rect.position.x,
+		"y": rect.position.y,
+		"w": rect.size.x,
+		"h": rect.size.y
+	}
+
+func _control_rect_dict(ctrl: Control):
+	if ctrl == null or not is_instance_valid(ctrl):
+		return null
+	return _rect2_to_dict(ctrl.get_global_rect())
+
+func _collect_action_button_rects() -> Dictionary:
+	var rects := {}
+	if actions_bar == null:
+		return rects
+	for child in actions_bar.get_children():
+		if child is Button:
+			var btn = child as Button
+			rects[str(btn.text).to_lower()] = _control_rect_dict(btn)
+	return rects
+
+func _write_runtime_state():
+	var runtime_state = {
+		"window_has_focus": window_has_focus,
+		"overlay_ui_pinned": overlay_ui_pinned,
+		"ui_visible": ui_visible,
+		"monitor_roam_active": monitor_roam_active,
+		"native_focus_backend": native_focus_backend,
+		"native_helper_available": _native_helper_available(),
+		"last_pinned_dispatch": debug_last_pinned_dispatch,
+		"native_focus_state": native_focus_state,
+		"window_size": {
+			"x": get_window().size.x,
+			"y": get_window().size.y
+		},
+		"window_position": {
+			"x": get_window().position.x,
+			"y": get_window().position.y
+		},
+		"basket_button": _control_rect_dict(basket_button),
+		"pin_button": _control_rect_dict(pin_ui_button),
+		"settings_button": _control_rect_dict(settings_button),
+		"action_buttons": _collect_action_button_rects(),
+		"basket_overlay_visible": basket_overlay != null and basket_overlay.visible,
+		"basket_capture_button": null,
+		"basket_close_button": null
+	}
+	if basket_overlay:
+		runtime_state["basket_capture_button"] = _control_rect_dict(basket_overlay.find_child("basket_capture_button", true, false) as Control)
+		runtime_state["basket_close_button"] = _control_rect_dict(basket_overlay.find_child("Close", true, false) as Control)
+
+	var file = FileAccess.open(RUNTIME_STATE_PATH, FileAccess.WRITE)
+	if file:
+		file.store_string(JSON.stringify(runtime_state))
+		file.close()
+
+func _automation_hover_hits(target: Control) -> bool:
+	if target == null:
+		return false
+	var rect = target.get_global_rect()
+	if rect.size.x <= 0.0 or rect.size.y <= 0.0:
+		return false
+	Input.warp_mouse(rect.position + (rect.size * 0.5))
+	await get_tree().process_frame
+	var hovered = get_viewport().gui_get_hovered_control()
+	if hovered == null:
+		return false
+	return hovered == target or hovered.is_ancestor_of(target) or target.is_ancestor_of(hovered)
+
+func _automation_control_desc(ctrl: Control) -> String:
+	if ctrl == null:
+		return "<null>"
+	var desc = ctrl.get_class()
+	if ctrl.name != "":
+		desc += ":" + String(ctrl.name)
+	elif ctrl is Button and (ctrl as Button).text != "":
+		desc += ":" + (ctrl as Button).text
+	elif ctrl.tooltip_text != "":
+		desc += ":" + ctrl.tooltip_text
+	return desc
+
+func _automation_collect_controls_at_point(root: Node, point: Vector2, out: Array):
+	for i in range(root.get_child_count() - 1, -1, -1):
+		var child = root.get_child(i)
+		if child is Control:
+			var ctrl = child as Control
+			if not ctrl.visible:
+				continue
+			if ctrl.mouse_filter == Control.MOUSE_FILTER_IGNORE:
+				_automation_collect_controls_at_point(ctrl, point, out)
+				continue
+			if ctrl.get_global_rect().has_point(point):
+				out.append(_automation_control_desc(ctrl))
+				_automation_collect_controls_at_point(ctrl, point, out)
+		else:
+			_automation_collect_controls_at_point(child, point, out)
+
+func _automation_controls_at_target(target: Control) -> Array:
+	var hits: Array = []
+	if target == null:
+		return hits
+	var rect = target.get_global_rect()
+	if rect.size.x <= 0.0 or rect.size.y <= 0.0:
+		return hits
+	_automation_collect_controls_at_point(self, rect.position + (rect.size * 0.5), hits)
+	return hits
+
+func _run_automation_suite():
+	if automation_running:
+		return
+	automation_running = true
+	await get_tree().create_timer(1.8).timeout
+
+	var checks: Array = []
+	var scenario = OS.get_environment(AUTOMATION_SCENARIO_ENV)
+	var native_window_checks = not str(DisplayServer.get_name()).containsn("headless") and get_window().size.x > 100 and get_window().size.y > 100
+	var automation_colors = ["red", "blue", "yellow"]
+	var automation_names = ["Alpha", "Bravo", "Charlie"]
+	_automation_assert(checks, "boot_completed", true, scenario)
+	_automation_assert(checks, "startup_overlay_or_restore", game_manager.get_pet_count() > 0 or egg_selection_overlay != null, "pets=%d" % game_manager.get_pet_count())
+
+	while game_manager.can_add_pet() and game_manager.get_pet_count() < 3:
+		var next_index = game_manager.get_pet_count()
+		_spawn_pet_for_automation(automation_colors[next_index], automation_names[next_index])
+
+	await get_tree().process_frame
+	_apply_window_mode_layout(true)
+	update_environment_background()
+	_on_stats_updated()
+
+	var expected_pet_count = game_manager.get_pet_count()
+	_automation_assert(checks, "three_pets_active", expected_pet_count == 3, "count=%d" % expected_pet_count)
+	var hover_details: Array = []
+	var settings_hits = _automation_controls_at_target(settings_button)
+	var settings_hit_ok = false
+	for hit in settings_hits:
+		if str(hit).begins_with("Button:"):
+			settings_hit_ok = true
+			break
+	var basket_hits = _automation_controls_at_target(basket_button)
+	var basket_hit_ok = false
+	for hit in basket_hits:
+		if str(hit).begins_with("Button:"):
+			basket_hit_ok = true
+			break
+	var action_hit_ok = false
+	var action_hits: Array = []
+	if actions_bar and actions_bar.get_child_count() > 0:
+		action_hits = _automation_controls_at_target(actions_bar.get_child(0) as Control)
+		for hit in action_hits:
+			if str(hit).begins_with("Button:"):
+				action_hit_ok = true
+				break
+	hover_details.append("settings=" + ",".join(PackedStringArray(settings_hits)))
+	hover_details.append("basket=" + ",".join(PackedStringArray(basket_hits)))
+	hover_details.append("action=" + ",".join(PackedStringArray(action_hits)))
+	_automation_assert(checks, "core_ui_buttons_hit_testable", settings_hit_ok and basket_hit_ok and action_hit_ok, " | ".join(PackedStringArray(hover_details)))
+
+	var focused_overlay_ok = true
+	if native_window_checks and monitor_roam_active:
+		focused_overlay_ok = (
+			get_window().mouse_passthrough_polygon.size() >= 4
+			and not DisplayServer.window_get_flag(DisplayServer.WINDOW_FLAG_MOUSE_PASSTHROUGH)
+		)
+	_automation_assert(checks, "focused_overlay_input_region_enabled", focused_overlay_ok, "points=%d" % get_window().mouse_passthrough_polygon.size())
+
+	var all_tabs_ok = true
+	for tab_name in ["feed", "pet", "rest", "groom", "exercise", "medicine"]:
+		_show_action_tab(tab_name)
+		await get_tree().process_frame
+		all_tabs_ok = all_tabs_ok and action_tab_overlay != null and current_action_tab == tab_name
+	_automation_assert(checks, "all_action_tabs_open", all_tabs_ok)
+
+	var active_pd = game_manager.get_active_pet_data()
+	if active_pd:
+		active_pd.hunger = 40.0
+		active_pd.hydration = 35.0
+		active_pd.happiness = 30.0
+		active_pd.energy = 45.0
+		active_pd.health = 70.0
+		active_pd.cleanliness = 32.0
+		active_pd.affection = 28.0
+		active_pd.grooming = 24.0
+		active_pd.fitness = 22.0
+		active_pd.water_bowl_level = 100.0
+		active_pd.conditions.clear()
+	_on_stats_updated()
+
+	var slots = _get_environment_slot_rects(float(get_window().size.x), float(get_window().size.y), game_manager.get_pet_count())
+	_show_action_tab("feed")
+	await get_tree().process_frame
+	var recall_ok = true
+	for i in range(game_manager.pets.size()):
+		var pet = game_manager.pets[i]
+		if pet == null or i >= slots.size():
+			recall_ok = false
+			continue
+		var expected_x = slots[i].position.x + (slots[i].size.x * 0.5)
+		if abs(pet.pet_data.target_position.x - expected_x) > 1.0:
+			recall_ok = false
+	_automation_assert(checks, "action_tab_recalls_all_pets", recall_ok)
+	_do_action_from_tab("feed_small")
+	await get_tree().process_frame
+	var action_tab_refresh_ok = action_tab_overlay != null and current_action_tab == "feed"
+	_show_action_tab("pet")
+	await get_tree().process_frame
+	action_tab_refresh_ok = action_tab_refresh_ok and action_tab_overlay != null and current_action_tab == "pet"
+	_automation_assert(checks, "action_tabs_remain_switchable_after_action", action_tab_refresh_ok)
+
+	var action_effects_ok = true
+	active_pd = game_manager.get_active_pet_data()
+	if active_pd:
+		var hunger_before = active_pd.hunger
+		_show_action_tab("feed")
+		await get_tree().process_frame
+		_do_action_from_tab("feed_full")
+		await get_tree().process_frame
+		action_effects_ok = action_effects_ok and active_pd.hunger > hunger_before and current_action_tab == "feed"
+
+		var affection_before = active_pd.affection
+		_show_action_tab("pet")
+		await get_tree().process_frame
+		_do_action_from_tab("pet_pat")
+		await get_tree().process_frame
+		action_effects_ok = action_effects_ok and active_pd.affection > affection_before and current_action_tab == "pet"
+
+		var sleeping_before = active_pd.is_sleeping
+		_show_action_tab("rest")
+		await get_tree().process_frame
+		_do_action_from_tab("rest_toggle")
+		await get_tree().process_frame
+		action_effects_ok = action_effects_ok and active_pd.is_sleeping != sleeping_before and current_action_tab == "rest"
+		_do_action_from_tab("rest_toggle")
+		await get_tree().process_frame
+		action_effects_ok = action_effects_ok and active_pd.is_sleeping == sleeping_before and current_action_tab == "rest"
+
+		var grooming_before = active_pd.grooming
+		_show_action_tab("groom")
+		await get_tree().process_frame
+		_do_action_from_tab("groom_haircut")
+		await get_tree().process_frame
+		action_effects_ok = action_effects_ok and active_pd.grooming > grooming_before and current_action_tab == "groom"
+
+		var fitness_before = active_pd.fitness
+		_show_action_tab("exercise")
+		await get_tree().process_frame
+		_do_action_from_tab("exercise_workout")
+		await get_tree().process_frame
+		action_effects_ok = action_effects_ok and active_pd.fitness > fitness_before and current_action_tab == "exercise"
+	_automation_assert(checks, "core_actions_update_pet_state", action_effects_ok)
+
+	var medicine_flow_ok = true
+	active_pd = game_manager.get_active_pet_data()
+	if active_pd:
+		active_pd.conditions["respiratoryProblems"] = 1
+		medicine_inventory["antibiotics"] = 1
+		_show_action_tab("medicine")
+		await get_tree().process_frame
+		_show_medicine_collect()
+		await get_tree().process_frame
+		medicine_flow_ok = medicine_flow_ok and action_menu_overlay != null and guidebook_page == 2
+		_on_hold_medicine("antibiotics")
+		await get_tree().process_frame
+		medicine_flow_ok = medicine_flow_ok and held_item.get("type", "") == "medicine"
+		var active_pet = game_manager.get_active_pet()
+		if active_pet:
+			_handle_held_item_click(active_pet.position)
+			await get_tree().process_frame
+			medicine_flow_ok = medicine_flow_ok and held_item.get("type", "") == "" and medicine_inventory.get("antibiotics", 0) == 0 and not active_pd.conditions.has("respiratoryProblems")
+		else:
+			medicine_flow_ok = false
+	_automation_assert(checks, "medicine_tab_holds_and_applies_item", medicine_flow_ok)
+
+	var basket_flow_ok = true
+	var basket_details: Array[String] = []
+	basket_entries.clear()
+	_update_basket_button_state()
+	var automation_basket_url = "https://example.com/alpha?src=wevito-automation"
+	var clipboard_roundtrip_supported = not str(DisplayServer.get_name()).containsn("headless")
+	if clipboard_roundtrip_supported:
+		DisplayServer.clipboard_set(automation_basket_url)
+		basket_flow_ok = basket_flow_ok and _capture_clipboard_link(false)
+	else:
+		basket_flow_ok = basket_flow_ok and _basket_add_url(automation_basket_url, "automation", false)
+	basket_details.append("after_clipboard=%d" % basket_entries.size())
+	basket_flow_ok = basket_flow_ok and basket_entries.size() == 1
+	basket_flow_ok = basket_flow_ok and not _basket_add_url(automation_basket_url, "automation", false)
+	basket_details.append("after_duplicate=%d" % basket_entries.size())
+
+	var automation_drop_path = ProjectSettings.globalize_path("user://automation_drop.url")
+	var drop_file = FileAccess.open(automation_drop_path, FileAccess.WRITE)
+	if drop_file:
+		drop_file.store_string("[InternetShortcut]\nURL=https://example.com/drop-from-file\n")
+		drop_file.close()
+		_on_window_files_dropped(PackedStringArray([automation_drop_path]))
+		await get_tree().process_frame
+	else:
+		basket_flow_ok = false
+	basket_details.append("after_drop=%d" % basket_entries.size())
+	basket_flow_ok = basket_flow_ok and basket_entries.size() == 2
+
+	_show_basket_overlay()
+	await get_tree().process_frame
+	basket_flow_ok = basket_flow_ok and basket_overlay != null
+	_copy_basket_entry_to_clipboard(0, false)
+	await get_tree().process_frame
+	if clipboard_roundtrip_supported:
+		basket_flow_ok = basket_flow_ok and DisplayServer.clipboard_get() == str(basket_entries[0].get("url", ""))
+	_remove_basket_entry(1, false)
+	await get_tree().process_frame
+	basket_flow_ok = basket_flow_ok and basket_entries.size() == 1
+	basket_details.append("after_remove=%d" % basket_entries.size())
+	_close_basket_overlay()
+	if FileAccess.file_exists(automation_drop_path):
+		DirAccess.remove_absolute(automation_drop_path)
+	_automation_assert(checks, "basket_capture_drop_retrieve_flow", basket_flow_ok, " | ".join(PackedStringArray(basket_details)))
+
+	for i in range(game_manager.pets.size()):
+		var pet = game_manager.pets[i]
+		if pet == null or i >= slots.size():
+			continue
+		var home_x = slots[i].position.x + (slots[i].size.x * 0.5)
+		pet.position = Vector2(home_x, pet.position.y)
+		pet.pet_data.position = pet.position
+		pet.pet_data.target_position = pet.position
+		pet.pet_state = Pet.PetState.WANDERING
+	_show_action_tab("pet")
+	await get_tree().process_frame
+	_close_action_tab()
+	await get_tree().create_timer(0.05).timeout
+	var hold_ok = true
+	var hold_resume_ok = true
+	for pet in game_manager.pets:
+		if pet == null or float(pet.get("_home_lock_timer")) < 1.8:
+			hold_ok = false
+		if pet == null or not bool(pet.get("_resume_wandering_after_home_lock")):
+			hold_resume_ok = false
+	_automation_assert(checks, "action_tab_close_starts_home_hold", hold_ok)
+	_automation_assert(checks, "action_tab_close_marks_roam_resume", hold_resume_ok)
+	await get_tree().create_timer(2.15).timeout
+	var roam_resume_ok = false
+	var roam_resume_details: Array[String] = []
+	for i in range(game_manager.pets.size()):
+		var pet = game_manager.pets[i]
+		if pet == null or i >= slots.size():
+			continue
+		var home_x = slots[i].position.x + (slots[i].size.x * 0.5)
+		roam_resume_details.append("pet%d state=%s target=%.1f home=%.1f lock=%.2f resume=%s wander=%s" % [
+			i,
+			str(int(pet.pet_state)),
+			pet.pet_data.target_position.x,
+			home_x,
+			float(pet.get("_home_lock_timer")),
+			str(bool(pet.get("_resume_wandering_after_home_lock"))),
+			str(bool(pet.pet_data.is_wandering))
+		])
+		if abs(pet.pet_data.target_position.x - home_x) > 6.0:
+			roam_resume_ok = true
+			break
+	_automation_assert(checks, "pets_resume_roam_after_action_hold", roam_resume_ok, " | ".join(PackedStringArray(roam_resume_details)))
+
+	_handle_focus_change(false)
+	await get_tree().process_frame
+	_automation_assert(checks, "focus_out_hides_hud", (not ui_visible) and stats_panel != null and not stats_panel.visible)
+	var passive_overlay_ok = true if not native_window_checks else DisplayServer.window_get_flag(DisplayServer.WINDOW_FLAG_MOUSE_PASSTHROUGH)
+	_automation_assert(checks, "passive_overlay_passthrough_enabled", passive_overlay_ok)
+	_set_overlay_ui_pin(true, false)
+	await get_tree().process_frame
+	var pinned_overlay_ok = true if not native_window_checks else (
+		ui_visible
+		and stats_panel != null
+		and stats_panel.visible
+		and not DisplayServer.window_get_flag(DisplayServer.WINDOW_FLAG_MOUSE_PASSTHROUGH)
+	)
+	_automation_assert(checks, "pinned_overlay_keeps_ui_visible", pinned_overlay_ok)
+	_set_overlay_ui_pin(false, false)
+	await get_tree().process_frame
+	var released_overlay_ok = (not ui_visible)
+	if native_window_checks:
+		released_overlay_ok = released_overlay_ok and DisplayServer.window_get_flag(DisplayServer.WINDOW_FLAG_MOUSE_PASSTHROUGH)
+	_automation_assert(checks, "unpinned_overlay_restores_passive_mode", released_overlay_ok)
+	var command_file = FileAccess.open(OVERLAY_COMMAND_PATH, FileAccess.WRITE)
+	if command_file:
+		command_file.store_string(JSON.stringify({"command": "pin_overlay_ui"}))
+		command_file.close()
+	await get_tree().create_timer(OVERLAY_COMMAND_POLL_INTERVAL_SEC + 0.05).timeout
+	_automation_assert(checks, "external_pin_command_works", overlay_ui_pinned and ui_visible)
+	command_file = FileAccess.open(OVERLAY_COMMAND_PATH, FileAccess.WRITE)
+	if command_file:
+		command_file.store_string(JSON.stringify({"command": "release_overlay_ui"}))
+		command_file.close()
+	await get_tree().create_timer(OVERLAY_COMMAND_POLL_INTERVAL_SEC + 0.05).timeout
+	_automation_assert(checks, "external_release_command_works", (not overlay_ui_pinned) and (not ui_visible))
+	_handle_focus_change(true)
+	await get_tree().process_frame
+	var focus_in_ok = ui_visible and stats_panel != null and stats_panel.visible
+	if native_window_checks:
+		focus_in_ok = focus_in_ok and not DisplayServer.window_get_flag(DisplayServer.WINDOW_FLAG_MOUSE_PASSTHROUGH)
+	_automation_assert(checks, "focus_in_restores_hud", focus_in_ok)
+
+	settings["desktop_companion_roam"] = true
+	settings["experimental_monitor_roam"] = true
+	settings["ghost_mode"] = true
+	_apply_runtime_settings()
+	_handle_focus_change(false)
+	await get_tree().process_frame
+	var roam_layout_ok = true if not native_window_checks else monitor_roam_active and get_window().size.x > WINDOW_FOCUSED_SIZE.x and get_window().size.y > WINDOW_FOCUSED_SIZE.y
+	_automation_assert(checks, "horizontal_monitor_roam_layout", roam_layout_ok, "size=%s" % str(get_window().size))
+	_handle_focus_change(true)
+	await get_tree().process_frame
+	_do_auto_save()
+	var save_data = _automation_read_json(AUTOMATION_SAVE_PATH)
+	var save_ok = save_data is Dictionary and (save_data as Dictionary).get("pets", []).size() == game_manager.get_pet_count() and (save_data as Dictionary).get("link_basket", []).size() == basket_entries.size()
+	_automation_assert(checks, "save_writes_current_pet_count", save_ok)
+	var saved_before_reset = JSON.stringify(save_data) if save_data != null else ""
+
+	_reset_save()
+	await get_tree().create_timer(0.05).timeout
+	var reset_data = _automation_read_json(AUTOMATION_SAVE_PATH)
+	var reset_ok = reset_data is Dictionary and (reset_data as Dictionary).get("pets", []).size() == 0 and (reset_data as Dictionary).get("link_basket", []).size() == 0 and bool((reset_data as Dictionary).get("settings", {}).get("ghost_mode", false))
+	_automation_assert(checks, "reset_clears_pets_preserves_settings", reset_ok)
+
+	if saved_before_reset != "":
+		var restore_file = FileAccess.open(AUTOMATION_SAVE_PATH, FileAccess.WRITE)
+		if restore_file:
+			restore_file.store_string(saved_before_reset)
+			restore_file.close()
+	var restored = _reload_runtime_from_save()
+	await get_tree().process_frame
+	_automation_assert(checks, "reload_restores_previous_state", restored and game_manager.get_pet_count() == expected_pet_count and basket_entries.size() == 1 and bool(settings.get("desktop_companion_roam", true)))
+
+	var passed = true
+	for check in checks:
+		if not bool(check.get("passed", false)):
+			passed = false
+			break
+
+	var report = {
+		"scenario": scenario,
+		"passed": passed,
+		"checks": checks,
+		"pet_count": game_manager.get_pet_count(),
+		"settings": settings
+	}
+	_automation_write_report(report)
+	get_tree().quit(0 if passed else 1)
 
 func close_all_overlays():
 	if egg_selection_overlay:
@@ -368,6 +1849,9 @@ func close_all_overlays():
 	if settings_overlay:
 		settings_overlay.queue_free()
 		settings_overlay = null
+	if basket_overlay:
+		basket_overlay.queue_free()
+		basket_overlay = null
 	if doctors_note_overlay:
 		doctors_note_overlay.queue_free()
 		doctors_note_overlay = null
@@ -402,11 +1886,7 @@ func _recenter_modal_card(overlay: Control):
 	var card = overlay.get_node_or_null("modal_card") as Panel
 	if card == null:
 		return
-	var win_size = get_window().size
-	card.position = Vector2(
-		max(8.0, (float(win_size.x) - card.size.x) * 0.5),
-		max(8.0, (float(win_size.y) - card.size.y) * 0.5)
-	)
+	card.position = _modal_card_target_position(card.size)
 
 func _create_priority_modal(card_size: Vector2, backdrop_alpha: float = 0.6) -> Dictionary:
 	var overlay = Control.new()
@@ -423,11 +1903,7 @@ func _create_priority_modal(card_size: Vector2, backdrop_alpha: float = 0.6) -> 
 	var card = Panel.new()
 	card.name = "modal_card"
 	card.size = card_size
-	var win_size = get_window().size
-	card.position = Vector2(
-		max(8.0, (float(win_size.x) - card_size.x) * 0.5),
-		max(8.0, (float(win_size.y) - card_size.y) * 0.5)
-	)
+	card.position = _modal_card_target_position(card_size)
 	var card_style = StyleBoxFlat.new()
 	card_style.bg_color = COLOR_SURFACE
 	card_style.border_color = Color(0.2, 0.24, 0.3, 1.0)
@@ -470,25 +1946,7 @@ func show_egg_selection():
 	# Create egg buttons
 	var egg_colors = ["red", "orange", "yellow", "blue", "indigo", "violet"]
 	for egg_color in egg_colors:
-		var egg_btn = Button.new()
-		egg_btn.custom_minimum_size = Vector2(36, 44)
-		egg_btn.pressed.connect(_on_egg_selected.bind(egg_color))
-		
-		# Create egg appearance
-		var egg_style = StyleBoxFlat.new()
-		egg_style.bg_color = EGG_COLORS[egg_color]
-		egg_style.set_corner_radius_all(20)
-		egg_style.border_width_left = 2
-		egg_style.border_width_right = 2
-		egg_style.border_width_top = 2
-		egg_style.border_width_bottom = 2
-		egg_style.border_color = EGG_COLORS[egg_color].darkened(0.3)
-		egg_btn.add_theme_stylebox_override("normal", egg_style)
-		
-		var hover_style = egg_style.duplicate()
-		hover_style.border_color = _detail_text_color()
-		egg_btn.add_theme_stylebox_override("hover", hover_style)
-		
+		var egg_btn = _create_egg_choice_button(egg_color)
 		egg_container.add_child(egg_btn)
 
 	var hint = Label.new()
@@ -538,8 +1996,10 @@ func position_window():
 	window_positioned = true
 	
 	await get_tree().create_timer(0.1).timeout
-	
-	_pin_window_bottom_right()
+	if _monitor_roam_requested():
+		_attempt_monitor_roam_layout()
+	else:
+		_pin_window_bottom_right()
 
 func _pin_window_bottom_right():
 	var screen = DisplayServer.window_get_current_screen()
@@ -553,87 +2013,169 @@ func _pin_window_bottom_right():
 	)
 
 func _monitor_roam_requested() -> bool:
-	# Monitor-wide roaming is currently disabled due compositor/input instability
-	# on some Windows setups (black box/invisible pet/fullscreen UI lock).
-	return false
+	return bool(settings.get("desktop_companion_roam", true))
 
 func _attempt_monitor_roam_layout() -> bool:
 	var screen = DisplayServer.window_get_current_screen()
-	var screen_size = DisplayServer.screen_get_size(screen)
-	get_window().size = Vector2i(screen_size)
-	get_window().position = Vector2i.ZERO
+	var usable_rect = DisplayServer.screen_get_usable_rect(screen)
+	get_window().size = usable_rect.size
+	get_window().position = usable_rect.position
 	var actual = get_window().size
-	return actual.x >= int(screen_size.x * 0.9) and actual.y >= int(screen_size.y * 0.9)
+	return actual.x >= int(usable_rect.size.x * 0.9) and actual.y >= int(usable_rect.size.y * 0.9)
+
+func _get_overlay_panel_rect(window_width: float, window_height: float, pet_count: int) -> Rect2:
+	if not monitor_roam_active or window_width < 900.0:
+		return Rect2(Vector2.ZERO, Vector2(window_width, window_height))
+
+	var count = max(1, pet_count)
+	var desktop_stage_w = clamp(window_width * 0.06, 120.0, 180.0)
+	var desktop_total_w = (desktop_stage_w * count) + (DESKTOP_STAGE_GAP * max(0, count - 1))
+	var panel_w = min(window_width, max(float(WINDOW_FOCUSED_SIZE.x), desktop_total_w + (HUD_PADDING_X * 2.0) + 16.0))
+	var panel_h = min(window_height, float(WINDOW_FOCUSED_SIZE.y))
+	var panel_pos = Vector2(
+		max(0.0, window_width - panel_w - float(WINDOW_MARGIN.x)),
+		max(0.0, window_height - panel_h - float(WINDOW_MARGIN.y))
+	)
+	return Rect2(panel_pos, Vector2(panel_w, panel_h))
+
+func _get_pet_roam_band_top(window_height: float) -> float:
+	return max(0.0, window_height - PET_ROAM_BAND_HEIGHT)
+
+func _modal_card_target_position(card_size: Vector2) -> Vector2:
+	var win_size = Vector2(float(get_window().size.x), float(get_window().size.y))
+	if monitor_roam_active and win_size.x >= 900.0:
+		var count = max(1, game_manager.get_pet_count()) if game_manager else 1
+		var panel = _get_overlay_panel_rect(win_size.x, win_size.y, count)
+		return Vector2(
+			clamp(panel.position.x + panel.size.x - card_size.x - 8.0, 8.0, max(8.0, win_size.x - card_size.x - 8.0)),
+			clamp(panel.position.y + panel.size.y - card_size.y - 8.0, 8.0, max(8.0, win_size.y - card_size.y - 8.0))
+		)
+	return Vector2(
+		max(8.0, (win_size.x - card_size.x) * 0.5),
+		max(8.0, (win_size.y - card_size.y) * 0.5)
+	)
+
+func _build_active_overlay_input_polygon() -> PackedVector2Array:
+	var window_size = get_window().size
+	var w = float(window_size.x)
+	var h = float(window_size.y)
+	if w <= 0.0 or h <= 0.0:
+		return PackedVector2Array()
+	if not monitor_roam_active or w < 900.0:
+		return PackedVector2Array([
+			Vector2.ZERO,
+			Vector2(w, 0.0),
+			Vector2(w, h),
+			Vector2(0.0, h)
+		])
+
+	var count = max(1, game_manager.get_pet_count()) if game_manager else 1
+	var panel = _get_overlay_panel_rect(w, h, count)
+	var band_top = _get_pet_roam_band_top(h)
+	var panel_left = clamp(panel.position.x, 0.0, w)
+	var panel_top = clamp(panel.position.y, 0.0, h)
+	return PackedVector2Array([
+		Vector2(0.0, band_top),
+		Vector2(panel_left, band_top),
+		Vector2(panel_left, panel_top),
+		Vector2(w, panel_top),
+		Vector2(w, h),
+		Vector2(0.0, h)
+	])
 
 func _apply_window_mode_layout(focused: bool):
 	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
-	if focused:
-		get_window().size = WINDOW_FOCUSED_SIZE
-		_pin_window_bottom_right()
-		monitor_roam_active = false
-	else:
-		# Stable unfocused companion mode: compact bottom-right window.
-		monitor_roam_active = false
-		# Keep full companion visuals visible while UI is hidden.
-		get_window().size = WINDOW_FOCUSED_SIZE
-		_pin_window_bottom_right()
+	var should_monitor_roam = _monitor_roam_requested()
+	monitor_roam_active = should_monitor_roam and _attempt_monitor_roam_layout()
+	if not monitor_roam_active:
+		if focused or overlay_ui_pinned:
+			get_window().size = WINDOW_FOCUSED_SIZE
+			_pin_window_bottom_right()
+		else:
+			get_window().size = WINDOW_UNFOCUSED_SIZE
+			_pin_window_bottom_right()
 	_apply_responsive_ui_layout(get_window().size.y)
 	_apply_environment_layout(get_window().size.y)
-	_apply_pet_bounds_for_mode(focused)
+	_apply_pet_bounds_for_mode(focused or overlay_ui_pinned)
+	_update_focus_backdrop()
 
 func _apply_responsive_ui_layout(window_height: int):
 	var w = float(get_window().size.x)
 	var h = float(window_height)
-	var top_zone_h = h * TOP_ZONE_PCT
-	var hud_top = top_zone_h
-	var hud_h = h * HUD_ZONE_PCT
+	var count = max(1, game_manager.get_pet_count()) if game_manager else 1
+	var panel = _get_overlay_panel_rect(w, h, count)
+	var panel_x = panel.position.x
+	var panel_y = panel.position.y
+	var panel_w = panel.size.x
+	var panel_h = panel.size.y
+	var top_zone_h = panel_h * TOP_ZONE_PCT
+	var hud_top = panel_y + top_zone_h
+	var hud_h = panel_h * HUD_ZONE_PCT
 	var hud_bottom = hud_top + hud_h
-	var content_w = max(120.0, w - (HUD_PADDING_X * 2.0))
+	var content_w = max(120.0, panel_w - (HUD_PADDING_X * 2.0))
 
 	var icon_size = Vector2(28, 24)
+	var basket_size = Vector2(40, 24)
 	var icon_gap = 4.0
-	var top_row_y = 6.0
-	var second_row_y = 30.0
-	var right_x = w - HUD_PADDING_X - icon_size.x
-	var right_row3_start = right_x - ((icon_size.x + icon_gap) * 2.0)
-	var center_left = HUD_PADDING_X + icon_size.x + 8.0
-	var center_right = right_row3_start - 8.0
+	var top_row_y = panel_y + 6.0
+	var second_row_y = panel_y + 30.0
+	var right_x = panel_x + panel_w - HUD_PADDING_X - icon_size.x
+	var top_row_secondary_x = right_x - basket_size.x - icon_gap
+	var right_row4_start = right_x - ((icon_size.x + icon_gap) * 3.0)
+	var center_left = panel_x + HUD_PADDING_X + icon_size.x + 8.0
+	var center_right = right_row4_start - 8.0
 	var center_w = max(96.0, center_right - center_left)
 	var center_mid = center_left + (center_w * 0.5)
 	var nav_y = second_row_y + 1.0
 	var indicators_x = center_mid + 16.0
 	var identity_y = hud_top + IDENTITY_ROW_Y_OFFSET
-	var name_w = max(96.0, content_w * IDENTITY_NAME_RATIO)
-	var age_x = HUD_PADDING_X + name_w + IDENTITY_GENDER_WIDTH + (IDENTITY_INNER_GAP * 2.0)
-	var age_w = max(72.0, content_w - (name_w + IDENTITY_GENDER_WIDTH + (IDENTITY_INNER_GAP * 2.0)))
+	var portrait_size = 40.0
+	var portrait_gap = 8.0
+	var identity_left = panel_x + HUD_PADDING_X + portrait_size + portrait_gap
+	var identity_w = max(140.0, content_w - portrait_size - portrait_gap)
+	var name_w = max(88.0, identity_w * IDENTITY_NAME_RATIO)
+	var age_x = identity_left + name_w + IDENTITY_GENDER_WIDTH + (IDENTITY_INNER_GAP * 2.0)
+	var age_w = max(72.0, identity_w - (name_w + IDENTITY_GENDER_WIDTH + (IDENTITY_INNER_GAP * 2.0)))
+
+	if hud_hit_surface:
+		hud_hit_surface.position = Vector2(panel_x, panel_y)
+		hud_hit_surface.size = Vector2(panel_w, panel_h)
 
 	if doctor_button:
-		doctor_button.position = Vector2(HUD_PADDING_X, top_row_y)
+		doctor_button.position = Vector2(panel_x + HUD_PADDING_X, top_row_y)
 	if minimize_button:
-		minimize_button.position = Vector2(HUD_PADDING_X, second_row_y)
+		minimize_button.position = Vector2(panel_x + HUD_PADDING_X, second_row_y)
 	if add_pet_button:
 		add_pet_button.position = Vector2(right_x, top_row_y)
+	if basket_button:
+		basket_button.position = Vector2(top_row_secondary_x, top_row_y)
+	if pin_ui_button:
+		pin_ui_button.position = Vector2(right_row4_start, second_row_y)
 	if ghost_button:
-		ghost_button.position = Vector2(right_row3_start, second_row_y)
+		ghost_button.position = Vector2(right_row4_start + icon_size.x + icon_gap, second_row_y)
 	if memoriam_button:
-		memoriam_button.position = Vector2(right_row3_start + icon_size.x + icon_gap, second_row_y)
+		memoriam_button.position = Vector2(right_row4_start + ((icon_size.x + icon_gap) * 2.0), second_row_y)
 	if settings_button:
 		settings_button.position = Vector2(right_x, second_row_y)
 
 	if title_label:
-		title_label.position = Vector2(center_left, 8)
+		title_label.position = Vector2(center_left, panel_y + 8)
 		title_label.size = Vector2(center_w, 16)
 
 	if pet_indicators:
 		pet_indicators.position = Vector2(indicators_x, nav_y + 2.0)
 		pet_indicators.size = Vector2(max(40.0, center_right - indicators_x), 14)
 
+	if pet_portrait:
+		pet_portrait.position = Vector2(panel_x + HUD_PADDING_X, identity_y - 10.0)
+		pet_portrait.size = Vector2(portrait_size, portrait_size)
+
 	if pet_name_label:
-		pet_name_label.position = Vector2(HUD_PADDING_X, identity_y)
+		pet_name_label.position = Vector2(identity_left, identity_y)
 		pet_name_label.size = Vector2(name_w, 14)
 
 	if pet_gender_label:
-		pet_gender_label.position = Vector2(HUD_PADDING_X + name_w + IDENTITY_INNER_GAP, identity_y)
+		pet_gender_label.position = Vector2(identity_left + name_w + IDENTITY_INNER_GAP, identity_y)
 		pet_gender_label.size = Vector2(IDENTITY_GENDER_WIDTH, 14)
 		pet_gender_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 
@@ -646,11 +2188,11 @@ func _apply_responsive_ui_layout(window_height: int):
 		var actions_h = HUD_ACTIONS_HEIGHT
 		var actions_top = hud_bottom - actions_h
 		var stats_h = max(48.0, actions_top - stats_top - HUD_ACTIONS_GAP)
-		stats_panel.position = Vector2(HUD_PADDING_X, stats_top)
-		stats_panel.size = Vector2(content_w, stats_h)
+		stats_panel.position = Vector2(identity_left, stats_top)
+		stats_panel.size = Vector2(max(120.0, content_w - portrait_size - portrait_gap), stats_h)
 
 	if actions_bar:
-		actions_bar.position = Vector2(HUD_PADDING_X, hud_bottom - HUD_ACTIONS_HEIGHT)
+		actions_bar.position = Vector2(panel_x + HUD_PADDING_X, hud_bottom - HUD_ACTIONS_HEIGHT)
 		actions_bar.size = Vector2(content_w, HUD_ACTIONS_HEIGHT)
 		_layout_action_buttons()
 
@@ -701,11 +2243,30 @@ func _ensure_environment_stage_nodes(required_count: int):
 		stage_ground.z_index = -2
 		add_child(stage_ground)
 
-		environment_stages.append({"bg": stage_bg, "mid": stage_mid, "ground": stage_ground})
+		var stage_decor = TextureRect.new()
+		stage_decor.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		stage_decor.z_index = -1
+		stage_decor.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		stage_decor.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		add_child(stage_decor)
+
+		var stage_accent = TextureRect.new()
+		stage_accent.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		stage_accent.z_index = -1
+		stage_accent.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		stage_accent.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		add_child(stage_accent)
+
+		var stage_frame = Panel.new()
+		stage_frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		stage_frame.z_index = -1
+		add_child(stage_frame)
+
+		environment_stages.append({"bg": stage_bg, "mid": stage_mid, "ground": stage_ground, "decor": stage_decor, "accent": stage_accent, "frame": stage_frame})
 
 	while environment_stages.size() > target:
 		var stage = environment_stages.pop_back()
-		for key in ["ground", "mid", "bg"]:
+		for key in ["frame", "accent", "decor", "ground", "mid", "bg"]:
 			var node = stage.get(key)
 			if node:
 				node.queue_free()
@@ -718,6 +2279,20 @@ func _ensure_environment_stage_nodes(required_count: int):
 func _get_environment_slot_rects(window_width: float, window_height: float, count: int) -> Array[Rect2]:
 	var slots: Array[Rect2] = []
 	var c = max(1, count)
+	if monitor_roam_active and window_width >= 900.0:
+		var panel = _get_overlay_panel_rect(window_width, window_height, c)
+		var desktop_stage_w = clamp(window_width * 0.06, 120.0, 180.0)
+		var desktop_stage_h = clamp(window_height * 0.16, 110.0, 180.0)
+		var desktop_total_w = (desktop_stage_w * c) + (DESKTOP_STAGE_GAP * max(0, c - 1))
+		var desktop_start_x = panel.position.x + max(0.0, (panel.size.x - desktop_total_w) * 0.5)
+		var desktop_stage_top = max(panel.position.y + (panel.size.y * 0.56), panel.end.y - desktop_stage_h - 18.0)
+		for i in range(c):
+			slots.append(Rect2(
+				Vector2(desktop_start_x + (i * (desktop_stage_w + DESKTOP_STAGE_GAP)), desktop_stage_top),
+				Vector2(desktop_stage_w, desktop_stage_h)
+			))
+		return slots
+
 	var pet_top = window_height * (TOP_ZONE_PCT + HUD_ZONE_PCT + GAP_ZONE_PCT)
 	var stage_top = pet_top + STAGE_TOP_INSET
 	var stage_h = max(24.0, window_height - stage_top)
@@ -737,7 +2312,14 @@ func _get_environment_slot_rects(window_width: float, window_height: float, coun
 func _apply_pet_bounds_for_mode(focused: bool):
 	if game_manager == null:
 		return
-	if focused or not monitor_roam_active:
+	if monitor_roam_active:
+		var w = float(get_window().size.x)
+		var h = float(get_window().size.y)
+		var band_top = _get_pet_roam_band_top(h)
+		for pet in game_manager.pets:
+			if pet and pet.has_method("set_wander_bounds"):
+				pet.set_wander_bounds(Rect2(MONITOR_ROAM_MARGIN_X, band_top, max(24.0, w - (MONITOR_ROAM_MARGIN_X * 2.0)), PET_ROAM_BAND_HEIGHT))
+	elif focused:
 		var slots = _get_environment_slot_rects(float(get_window().size.x), float(get_window().size.y), game_manager.get_pet_count())
 		for i in range(game_manager.pets.size()):
 			var pet = game_manager.pets[i]
@@ -747,22 +2329,29 @@ func _apply_pet_bounds_for_mode(focused: bool):
 				var s = slots[i]
 				pet.set_wander_bounds(Rect2(s.position.x + 8.0, s.position.y, max(12.0, s.size.x - 16.0), s.size.y))
 	else:
-		var w = float(get_window().size.x)
-		var h = float(get_window().size.y)
-		for pet in game_manager.pets:
-			if pet and pet.has_method("set_wander_bounds"):
-				pet.set_wander_bounds(Rect2(MONITOR_ROAM_MARGIN_X, 0.0, max(24.0, w - (MONITOR_ROAM_MARGIN_X * 2.0)), max(24.0, h - MONITOR_ROAM_MARGIN_Y)))
+		var slots = _get_environment_slot_rects(float(get_window().size.x), float(get_window().size.y), game_manager.get_pet_count())
+		for i in range(game_manager.pets.size()):
+			var pet = game_manager.pets[i]
+			if pet == null:
+				continue
+			if i < slots.size() and pet.has_method("set_wander_bounds"):
+				var s = slots[i]
+				pet.set_wander_bounds(Rect2(s.position.x + 8.0, s.position.y, max(12.0, s.size.x - 16.0), s.size.y))
 
 func _set_environment_stages_visible(should_show: bool):
 	for stage in environment_stages:
-		for key in ["bg", "mid", "ground"]:
+		for key in ["bg", "mid", "ground", "decor", "accent", "frame"]:
 			var node = stage.get(key)
 			if node:
 				node.visible = should_show
 
 func _is_environment_stage_control(ctrl: Control) -> bool:
+	if focus_backdrop == ctrl:
+		return true
+	if celestial_sprite == ctrl:
+		return true
 	for stage in environment_stages:
-		for key in ["bg", "mid", "ground"]:
+		for key in ["bg", "mid", "ground", "decor", "accent", "frame"]:
 			if stage.get(key) == ctrl:
 				return true
 	return false
@@ -775,7 +2364,7 @@ func _set_all_ui_controls_visible(should_show: bool):
 				continue
 			ctrl.visible = should_show
 
-func _recall_all_pets_home(hold_seconds: float = 0.0):
+func _recall_all_pets_home(hold_seconds: float = 0.0, resume_wandering_after_hold: bool = false):
 	if game_manager == null:
 		return
 	var slots = _get_environment_slot_rects(float(get_window().size.x), float(get_window().size.y), game_manager.get_pet_count())
@@ -785,7 +2374,20 @@ func _recall_all_pets_home(hold_seconds: float = 0.0):
 			continue
 		if i < slots.size() and pet.has_method("move_to_home"):
 			var center_x = slots[i].position.x + (slots[i].size.x * 0.5)
-			pet.move_to_home(center_x, hold_seconds)
+			pet.move_to_home(center_x, hold_seconds, resume_wandering_after_hold)
+
+func get_pet_home_position_for_node(pet_node: Pet) -> Vector2:
+	var floor_y = float(get_window().size.y) - PET_FLOOR_INSET
+	if game_manager == null or pet_node == null:
+		return Vector2(float(get_window().size.x) * 0.5, floor_y)
+	var pet_index = game_manager.pets.find(pet_node)
+	if pet_index < 0:
+		return Vector2(float(get_window().size.x) * 0.5, floor_y)
+	var slots = _get_environment_slot_rects(float(get_window().size.x), float(get_window().size.y), game_manager.get_pet_count())
+	if pet_index >= slots.size():
+		return Vector2(float(get_window().size.x) * 0.5, floor_y)
+	var slot = slots[pet_index]
+	return Vector2(slot.position.x + (slot.size.x * 0.5), floor_y)
 
 func _start_monitor_roam_all_pets():
 	if game_manager == null:
@@ -814,6 +2416,9 @@ func _apply_environment_layout(window_height: int):
 		var stage_bg = stage["bg"] as ColorRect
 		var stage_mid = stage["mid"] as ColorRect
 		var stage_ground = stage["ground"] as ColorRect
+		var stage_decor = stage.get("decor") as TextureRect
+		var stage_accent = stage.get("accent") as TextureRect
+		var stage_frame = stage.get("frame") as Panel
 
 		if stage_bg:
 			stage_bg.position = Vector2(x, stage_top)
@@ -824,9 +2429,24 @@ func _apply_environment_layout(window_height: int):
 		if stage_ground:
 			stage_ground.position = Vector2(x, ground_top)
 			stage_ground.size = Vector2(stage_w, max(0.0, h - ground_top))
+		if stage_decor:
+			var decor_w = max(48.0, stage_w - 10.0)
+			var decor_h = max(48.0, stage_h * 0.72)
+			stage_decor.position = Vector2(x + ((stage_w - decor_w) * 0.5), stage_top + (stage_h - decor_h) - 10.0)
+			stage_decor.size = Vector2(decor_w, decor_h)
+		if stage_accent:
+			var accent_w = max(24.0, stage_w * 0.34)
+			var accent_h = max(24.0, stage_h * 0.28)
+			stage_accent.position = Vector2(x + stage_w - accent_w - 6.0, ground_top - (accent_h * 0.28))
+			stage_accent.size = Vector2(accent_w, accent_h)
+		if stage_frame:
+			stage_frame.position = Vector2(x, stage_top)
+			stage_frame.size = Vector2(stage_w, stage_h)
 
 	var floor_y = h - PET_FLOOR_INSET
 	_set_pet_floor(floor_y)
+	_update_environment_stage_selection()
+	_update_celestial_layout()
 
 func _set_pet_floor(floor_y: float):
 	if game_manager == null:
@@ -836,51 +2456,7 @@ func _set_pet_floor(floor_y: float):
 			pet.set_floor_y(floor_y)
 
 func _apply_mouse_passthrough_for_mode(focused: bool):
-	if focused:
-		get_window().mouse_passthrough_polygon = PackedVector2Array()
-		return
-
-	# In stable compact unfocused mode, keep window clickable so focus can return.
-	if not monitor_roam_active:
-		get_window().mouse_passthrough_polygon = PackedVector2Array()
-		return
-
-	# Respect setting for monitor roam mode.
-	if not settings.get("click_through", false):
-		get_window().mouse_passthrough_polygon = PackedVector2Array()
-		return
-
-	if game_manager.pets.is_empty():
-		get_window().mouse_passthrough_polygon = PackedVector2Array()
-		return
-
-	var min_x = 99999.0
-	var max_x = -99999.0
-	var min_y = 99999.0
-	var max_y = -99999.0
-	for pet in game_manager.pets:
-		if pet == null:
-			continue
-		min_x = min(min_x, pet.position.x - 36.0)
-		max_x = max(max_x, pet.position.x + 36.0)
-		min_y = min(min_y, pet.position.y - 48.0)
-		max_y = max(max_y, pet.position.y + 20.0)
-
-	min_x = clamp(min_x, 0.0, float(get_window().size.x))
-	max_x = clamp(max_x, 0.0, float(get_window().size.x))
-	min_y = clamp(min_y, 0.0, float(get_window().size.y))
-	max_y = clamp(max_y, 0.0, float(get_window().size.y))
-
-	if max_x <= min_x or max_y <= min_y:
-		get_window().mouse_passthrough_polygon = PackedVector2Array()
-		return
-
-	get_window().mouse_passthrough_polygon = PackedVector2Array([
-		Vector2(min_x, min_y),
-		Vector2(max_x, min_y),
-		Vector2(max_x, max_y),
-		Vector2(min_x, max_y),
-	])
+	_apply_window_input_mode()
 
 func _set_ui_clickable(clickable: bool):
 	# Set mouse filter on UI elements to enable/disable clicks
@@ -893,13 +2469,15 @@ func _set_ui_clickable(clickable: bool):
 	if stats_panel:
 		stats_panel.mouse_filter = filter
 	if actions_bar:
-		actions_bar.mouse_filter = filter
+		actions_bar.mouse_filter = Control.MOUSE_FILTER_PASS if clickable else Control.MOUSE_FILTER_IGNORE
 	if action_tab_overlay:
 		action_tab_overlay.mouse_filter = filter
 	if action_menu_overlay:
 		action_menu_overlay.mouse_filter = filter
 	if settings_overlay:
 		settings_overlay.mouse_filter = filter
+	if basket_overlay:
+		basket_overlay.mouse_filter = filter
 	if memoriam_overlay:
 		memoriam_overlay.mouse_filter = filter
 	if death_overlay:
@@ -911,15 +2489,17 @@ func _set_ui_clickable(clickable: bool):
 	
 	# Top UI elements
 	if title_label:
-		title_label.mouse_filter = filter
+		title_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if pet_portrait:
+		pet_portrait.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	if pet_name_label:
-		pet_name_label.mouse_filter = filter
+		pet_name_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	if pet_gender_label:
-		pet_gender_label.mouse_filter = filter
+		pet_gender_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	if pet_age_label:
-		pet_age_label.mouse_filter = filter
+		pet_age_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	if nav_arrows:
-		nav_arrows.mouse_filter = filter
+		nav_arrows.mouse_filter = Control.MOUSE_FILTER_PASS if clickable else Control.MOUSE_FILTER_IGNORE
 	if add_pet_button:
 		add_pet_button.mouse_filter = filter
 	if doctor_button:
@@ -928,25 +2508,149 @@ func _set_ui_clickable(clickable: bool):
 		minimize_button.mouse_filter = filter
 	if settings_button:
 		settings_button.mouse_filter = filter
+	if pin_ui_button:
+		pin_ui_button.mouse_filter = filter
+	if basket_button:
+		basket_button.mouse_filter = filter
 	if ghost_button:
 		ghost_button.mouse_filter = filter
 	if memoriam_button:
 		memoriam_button.mouse_filter = filter
 	if pet_indicators:
-		pet_indicators.mouse_filter = filter
+		pet_indicators.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	
 	# Set all children of actions_bar to ignore clicks when not focused
 	if actions_bar:
-		_set_container_clicks(actions_bar, clickable)
+		_set_container_clicks(actions_bar, clickable, true)
+	if nav_arrows:
+		_set_container_clicks(nav_arrows, clickable, true)
+	if stats_panel:
+		_set_container_clicks(stats_panel, false, false)
 
-func _set_container_clicks(container: Control, clickable: bool):
+func _set_container_clicks(container: Control, clickable: bool, allow_children: bool = false):
 	if container == null:
 		return
 	var filter = Control.MOUSE_FILTER_STOP if clickable else Control.MOUSE_FILTER_IGNORE
-	container.mouse_filter = filter
+	container.mouse_filter = Control.MOUSE_FILTER_PASS if clickable and allow_children else filter
 	for child in container.get_children():
 		if child is Control:
-			child.mouse_filter = filter
+			var child_control = child as Control
+			var is_interactive_child = child_control is Button or child_control is LineEdit or child_control is HSlider or child_control is ScrollContainer
+			if is_interactive_child:
+				child_control.mouse_filter = filter
+			else:
+				child_control.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			if not is_interactive_child:
+				_set_container_clicks(child_control, clickable, allow_children)
+
+func _collect_clickable_controls_at_point(root: Node, point: Vector2, out: Array):
+	for i in range(root.get_child_count() - 1, -1, -1):
+		var child = root.get_child(i)
+		if child is Control:
+			var ctrl = child as Control
+			if not ctrl.visible or ctrl.mouse_filter == Control.MOUSE_FILTER_IGNORE:
+				continue
+			if ctrl.get_global_rect().has_point(point):
+				_collect_clickable_controls_at_point(ctrl, point, out)
+				if ctrl is Button:
+					out.append(ctrl)
+		else:
+			_collect_clickable_controls_at_point(child, point, out)
+
+func _dispatch_overlay_button_at_point(point: Vector2) -> bool:
+	var btn = _find_top_clickable_button_at_point(point)
+	debug_last_pinned_dispatch = {
+		"mode": "point_dispatch",
+		"point": {"x": point.x, "y": point.y},
+		"button_text": btn.text if btn else "",
+		"button_name": btn.name if btn else "",
+		"window_has_focus": window_has_focus,
+		"overlay_ui_pinned": overlay_ui_pinned
+	}
+	if btn == null:
+		return false
+	_emit_button_action(btn)
+	debug_last_pinned_dispatch["result"] = "emitted"
+	return true
+
+func _dispatch_pinned_overlay_click(point: Vector2) -> bool:
+	if not overlay_ui_pinned or window_has_focus:
+		return false
+	var dispatch_point = point
+	var screen_point = _native_cursor_screen_point()
+	if screen_point.x > -100000.0 and screen_point.y > -100000.0:
+		dispatch_point = _screen_to_window_local_point(screen_point)
+	return _dispatch_overlay_button_at_point(dispatch_point)
+
+func _dispatch_recent_pinned_activation_click(attempt: int = 0):
+	if not overlay_ui_pinned or not window_has_focus:
+		debug_last_pinned_dispatch = {
+			"mode": "activation_dispatch",
+			"attempt": attempt,
+			"result": "skipped_not_pinned_or_focused",
+			"window_has_focus": window_has_focus,
+			"overlay_ui_pinned": overlay_ui_pinned
+		}
+		return
+	var click_info = _native_recent_click_info(NATIVE_CLICK_MAX_AGE_MS + (attempt * 80))
+	if click_info.is_empty():
+		debug_last_pinned_dispatch = {
+			"mode": "activation_dispatch",
+			"attempt": attempt,
+			"result": "no_click_info",
+			"window_has_focus": window_has_focus,
+			"overlay_ui_pinned": overlay_ui_pinned,
+			"native_focus_state": native_focus_state
+		}
+		if native_focus_backend == "helper" and attempt < 4:
+			await get_tree().create_timer(0.05).timeout
+			_dispatch_recent_pinned_activation_click(attempt + 1)
+		elif native_focus_backend != "helper":
+			_replay_current_left_click_after_focus()
+		return
+	var point_value = click_info.get("point", Vector2(-1000000.0, -1000000.0))
+	if typeof(point_value) != TYPE_VECTOR2:
+		debug_last_pinned_dispatch = {
+			"mode": "activation_dispatch",
+			"attempt": attempt,
+			"result": "invalid_point",
+			"click_info": click_info
+		}
+		if native_focus_backend == "helper" and attempt < 4:
+			await get_tree().create_timer(0.05).timeout
+			_dispatch_recent_pinned_activation_click(attempt + 1)
+		elif native_focus_backend != "helper":
+			_replay_current_left_click_after_focus()
+		return
+	var local_point = _screen_to_window_local_point(point_value)
+	debug_last_pinned_dispatch = {
+		"mode": "activation_dispatch",
+		"attempt": attempt,
+		"result": "dispatching",
+		"screen_point": {"x": point_value.x, "y": point_value.y},
+		"local_point": {"x": local_point.x, "y": local_point.y},
+		"click_info": click_info
+	}
+	_dispatch_overlay_button_at_point(local_point)
+
+func _find_top_clickable_button_at_point(point: Vector2) -> Button:
+	var hits: Array = []
+	_collect_clickable_controls_at_point(self, point, hits)
+	for hit in hits:
+		if hit is Button:
+			var btn = hit as Button
+			if not btn.disabled:
+				return btn
+	return null
+
+func _emit_button_action(btn: Button):
+	if btn == null or not is_instance_valid(btn) or btn.disabled:
+		return
+	if btn.toggle_mode:
+		var toggled_state = not btn.button_pressed
+		btn.set_pressed_no_signal(toggled_state)
+		btn.toggled.emit(toggled_state)
+	btn.pressed.emit()
 
 func _notification(what):
 	if what == NOTIFICATION_WM_WINDOW_FOCUS_IN:
@@ -958,94 +2662,106 @@ func _notification(what):
 	elif what == NOTIFICATION_WM_SIZE_CHANGED:
 		_apply_responsive_ui_layout(get_window().size.y)
 		_apply_environment_layout(get_window().size.y)
-		_apply_pet_bounds_for_mode(ui_visible)
+		_apply_pet_bounds_for_mode(window_has_focus)
 		_recenter_modal_card(egg_selection_overlay)
 		_recenter_modal_card(naming_overlay)
 		_recenter_modal_card(death_overlay)
 		_recenter_modal_card(settings_overlay)
+		_recenter_modal_card(basket_overlay)
 
 func _handle_focus_change(focused: bool):
+	var was_focused = window_has_focus
+	window_has_focus = focused
+
+	var activation_click_recent = _native_left_click_recent() or bool(native_focus_state.get("left_button_down", false)) or Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT)
+	var dispatch_activation_click = focused and overlay_ui_pinned and not was_focused and (activation_click_recent or native_focus_backend == "helper")
+
 	# Save current tab state when losing focus
-	if not focused and action_tab_open:
+	if not focused and action_tab_open and not overlay_ui_pinned:
 		last_open_action_tab = current_action_tab
-	if not focused and action_tab_overlay:
+	if not focused and action_tab_overlay and not overlay_ui_pinned:
 		action_tab_overlay.visible = false
 	
-	if focused != ui_visible:
-		ui_visible = focused
-		
-		if stats_panel:
-			stats_panel.visible = focused
-		if actions_bar:
-			actions_bar.visible = focused
-		if title_label:
-			title_label.visible = focused
-		if pet_name_label:
-			pet_name_label.visible = focused
-		if pet_gender_label:
-			pet_gender_label.visible = focused
-		if pet_age_label:
-			pet_age_label.visible = focused
-		if nav_arrows:
-			nav_arrows.visible = focused
-		if add_pet_button:
-			add_pet_button.visible = focused
-		if doctor_button:
-			doctor_button.visible = focused
-		if minimize_button:
-			minimize_button.visible = focused
-		if settings_button:
-			settings_button.visible = focused
-		if ghost_button:
-			ghost_button.visible = focused
-		if memoriam_button:
-			memoriam_button.visible = focused
-		if pet_indicators:
-			pet_indicators.visible = focused
-		if action_tab_overlay:
-			action_tab_overlay.visible = focused
-		if action_menu_overlay:
-			action_menu_overlay.visible = focused
-		if settings_overlay:
-			settings_overlay.visible = focused
-		if memoriam_overlay:
-			memoriam_overlay.visible = focused
-		if doctors_note_overlay:
-			doctors_note_overlay.visible = focused
-		if egg_selection_overlay:
-			egg_selection_overlay.visible = focused
-		if naming_overlay:
-			naming_overlay.visible = focused
-		if death_overlay:
-			death_overlay.visible = focused
-		if feeding_panel_overlay:
-			feeding_panel_overlay.visible = focused
-		if ghost_overlay:
-			ghost_overlay.visible = focused
-		
-		# Restore previous action tab when focus returns (unless a priority modal is open)
-		if focused and last_open_action_tab != "" and egg_selection_overlay == null and naming_overlay == null and death_overlay == null:
-			_show_action_tab(last_open_action_tab)
+	var should_show_ui = _should_show_runtime_ui()
+	if should_show_ui != ui_visible:
+		ui_visible = should_show_ui
 
-	# Keep all non-environment UI controls in sync even if focus events duplicate.
-	_set_all_ui_controls_visible(focused)
+		if stats_panel:
+			stats_panel.visible = should_show_ui
+		if actions_bar:
+			actions_bar.visible = should_show_ui
+		if title_label:
+			title_label.visible = should_show_ui
+		if pet_portrait:
+			pet_portrait.visible = should_show_ui
+		if pet_name_label:
+			pet_name_label.visible = should_show_ui
+		if pet_gender_label:
+			pet_gender_label.visible = should_show_ui
+		if pet_age_label:
+			pet_age_label.visible = should_show_ui
+		if nav_arrows:
+			nav_arrows.visible = should_show_ui
+		if add_pet_button:
+			add_pet_button.visible = should_show_ui
+		if doctor_button:
+			doctor_button.visible = should_show_ui
+		if minimize_button:
+			minimize_button.visible = should_show_ui
+		if settings_button:
+			settings_button.visible = should_show_ui
+		if pin_ui_button:
+			pin_ui_button.visible = should_show_ui
+		if basket_button:
+			basket_button.visible = should_show_ui
+		if ghost_button:
+			ghost_button.visible = should_show_ui
+		if memoriam_button:
+			memoriam_button.visible = should_show_ui
+		if pet_indicators:
+			pet_indicators.visible = should_show_ui
+		if action_tab_overlay:
+			action_tab_overlay.visible = should_show_ui
+		if action_menu_overlay:
+			action_menu_overlay.visible = should_show_ui
+		if settings_overlay:
+			settings_overlay.visible = should_show_ui
+		if basket_overlay:
+			basket_overlay.visible = should_show_ui
+		if memoriam_overlay:
+			memoriam_overlay.visible = should_show_ui
+		if doctors_note_overlay:
+			doctors_note_overlay.visible = should_show_ui
+		if egg_selection_overlay:
+			egg_selection_overlay.visible = should_show_ui
+		if naming_overlay:
+			naming_overlay.visible = should_show_ui
+		if death_overlay:
+			death_overlay.visible = should_show_ui
+		if feeding_panel_overlay:
+			feeding_panel_overlay.visible = should_show_ui
+		if ghost_overlay:
+			ghost_overlay.visible = should_show_ui
+	
+	# Restore previous action tab when focus returns (unless a priority modal is open).
+	if focused and last_open_action_tab != "" and egg_selection_overlay == null and naming_overlay == null and death_overlay == null and action_tab_overlay == null:
+		_show_action_tab(last_open_action_tab)
+
+	_apply_runtime_visibility_state()
 	
 	_apply_window_mode_layout(focused)
-	_set_environment_stages_visible(focused or not monitor_roam_active)
-	if focused:
+	if monitor_roam_active:
+		if focused or overlay_ui_pinned:
+			_recall_all_pets_home(1.2, true)
+		else:
+			_start_monitor_roam_all_pets()
+	elif focused or overlay_ui_pinned:
 		_recall_all_pets_home()
 	else:
-		if monitor_roam_active:
-			_start_monitor_roam_all_pets()
-		else:
-			_recall_all_pets_home(0.0)
-	
-	if not focused:
-		_set_ui_clickable(false)
-	else:
-		_set_ui_clickable(true)
+		_recall_all_pets_home(0.0)
 
-	_apply_mouse_passthrough_for_mode(focused)
+	if dispatch_activation_click:
+		call_deferred("_dispatch_recent_pinned_activation_click", 0)
 
 func create_ui():
 	# Title
@@ -1061,6 +2777,7 @@ func create_ui():
 	# Pet navigation arrows
 	nav_arrows = HBoxContainer.new()
 	nav_arrows.position = Vector2(100, 31)
+	nav_arrows.z_index = 120
 	nav_arrows.add_theme_constant_override("separation", 8)
 	add_child(nav_arrows)
 	
@@ -1082,6 +2799,7 @@ func create_ui():
 	pet_indicators.size = Vector2(68, 14)
 	pet_indicators.clip_contents = true
 	pet_indicators.alignment = BoxContainer.ALIGNMENT_CENTER
+	pet_indicators.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	pet_indicators.add_theme_constant_override("separation", 4)
 	add_child(pet_indicators)
 	update_pet_indicators()
@@ -1101,11 +2819,39 @@ func create_ui():
 	add_pet_button = create_icon_button("add", _on_add_pet, "", "Add new pet")
 	add_pet_button.position = Vector2(282, 6)
 	add_child(add_pet_button)
+
+	basket_button = Button.new()
+	basket_button.text = "BIN"
+	basket_button.custom_minimum_size = Vector2(40, 24)
+	basket_button.size = Vector2(40, 24)
+	basket_button.position = Vector2(238, 6)
+	basket_button.z_index = 120
+	basket_button.add_theme_font_size_override("font_size", 8)
+	basket_button.add_theme_stylebox_override("normal", create_button_style_normal())
+	basket_button.add_theme_stylebox_override("hover", create_button_style_hover())
+	basket_button.add_theme_stylebox_override("pressed", create_button_style_pressed())
+	basket_button.pressed.connect(_show_basket_overlay)
+	add_child(basket_button)
 	
 	# Settings button
 	settings_button = create_icon_button("settings", _show_settings_menu, "", "Settings")
 	settings_button.position = Vector2(282, 30)
 	add_child(settings_button)
+
+	# Manual HUD pin keeps the UI usable while another app has focus.
+	pin_ui_button = Button.new()
+	pin_ui_button.text = "PIN"
+	pin_ui_button.toggle_mode = true
+	pin_ui_button.custom_minimum_size = Vector2(28, 24)
+	pin_ui_button.size = Vector2(28, 24)
+	pin_ui_button.position = Vector2(186, 30)
+	pin_ui_button.z_index = 120
+	pin_ui_button.add_theme_font_size_override("font_size", 8)
+	pin_ui_button.add_theme_stylebox_override("normal", create_button_style_normal())
+	pin_ui_button.add_theme_stylebox_override("hover", create_button_style_hover())
+	pin_ui_button.add_theme_stylebox_override("pressed", create_button_style_pressed())
+	pin_ui_button.toggled.connect(_on_overlay_pin_toggled)
+	add_child(pin_ui_button)
 	
 	# Ghost mode button (moved to make room)
 	ghost_button = create_icon_button("ghost", _toggle_ghost_mode, "", "Ghost mode")
@@ -1117,12 +2863,21 @@ func create_ui():
 	memoriam_button.position = Vector2(250, 30)
 	add_child(memoriam_button)
 	
+	# Pet portrait
+	pet_portrait = TextureRect.new()
+	pet_portrait.position = Vector2(10, 38)
+	pet_portrait.size = Vector2(40, 40)
+	pet_portrait.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	pet_portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	pet_portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	add_child(pet_portrait)
+
 	# Pet name
 	pet_name_label = Label.new()
 	pet_name_label.add_theme_font_size_override("font_size", 10)
 	pet_name_label.add_theme_color_override("font_color", _main_text_color())
-	pet_name_label.position = Vector2(10, 48)
-	pet_name_label.size = Vector2(146, 14)
+	pet_name_label.position = Vector2(58, 48)
+	pet_name_label.size = Vector2(108, 14)
 	pet_name_label.clip_text = true
 	pet_name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 	add_child(pet_name_label)
@@ -1131,7 +2886,7 @@ func create_ui():
 	pet_gender_label = Label.new()
 	pet_gender_label.add_theme_font_size_override("font_size", 9)
 	pet_gender_label.add_theme_color_override("font_color", _main_text_color().darkened(0.2))
-	pet_gender_label.position = Vector2(160, 48)
+	pet_gender_label.position = Vector2(170, 48)
 	pet_gender_label.size = Vector2(20, 14)
 	pet_gender_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	add_child(pet_gender_label)
@@ -1140,17 +2895,18 @@ func create_ui():
 	pet_age_label = Label.new()
 	pet_age_label.add_theme_font_size_override("font_size", 10)
 	pet_age_label.add_theme_color_override("font_color", _main_text_color().darkened(0.2))
-	pet_age_label.position = Vector2(186, 48)
-	pet_age_label.size = Vector2(130, 14)
+	pet_age_label.position = Vector2(196, 48)
+	pet_age_label.size = Vector2(120, 14)
 	pet_age_label.clip_text = true
 	pet_age_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	add_child(pet_age_label)
 	
 	# Stats panel (upper UI area, above pet/environment)
 	stats_panel = VBoxContainer.new()
-	stats_panel.position = Vector2(10, 70)
-	stats_panel.size = Vector2(300, 126)
+	stats_panel.position = Vector2(58, 70)
+	stats_panel.size = Vector2(252, 126)
 	stats_panel.clip_contents = true
+	stats_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	stats_panel.add_theme_constant_override("separation", 2)
 	add_child(stats_panel)
 	
@@ -1175,6 +2931,7 @@ func create_ui():
 	actions_bar.position = Vector2(10, 210)
 	actions_bar.size = Vector2(300, 22)
 	actions_bar.clip_contents = true
+	actions_bar.z_index = 120
 	actions_bar.alignment = BoxContainer.ALIGNMENT_CENTER
 	actions_bar.add_theme_constant_override("separation", int(HUD_ACTION_BUTTON_GAP))
 	add_child(actions_bar)
@@ -1221,16 +2978,54 @@ func update_pet_indicators():
 			indicator.add_theme_color_override("font_color", _main_text_color().darkened(0.35))
 		pet_indicators.add_child(indicator)
 
+func _update_environment_stage_selection():
+	if environment_stages.is_empty():
+		return
+
+	var active_index = clamp(game_manager.active_pet_index if game_manager else 0, 0, max(0, environment_stages.size() - 1))
+	for i in range(environment_stages.size()):
+		var frame = environment_stages[i].get("frame") as Panel
+		if frame == null:
+			continue
+
+		var has_pet = game_manager != null and i < game_manager.get_pet_count()
+		var is_active = has_pet and i == active_index
+		var frame_style = StyleBoxFlat.new()
+		frame_style.bg_color = Color(0.0, 0.0, 0.0, 0.0)
+		frame_style.set_corner_radius_all(6)
+		frame_style.set_border_width_all(1 if has_pet else 0)
+		frame_style.border_color = Color(1.0, 1.0, 1.0, 0.0)
+
+		if has_pet:
+			frame_style.bg_color = Color(1.0, 1.0, 1.0, 0.02)
+			frame_style.border_color = _detail_text_color().darkened(0.25)
+		if is_active:
+			frame_style.bg_color = Color(0.96, 0.83, 0.2, 0.08)
+			frame_style.border_color = _main_text_color().lightened(0.2)
+			frame_style.set_border_width_all(3)
+
+		frame.add_theme_stylebox_override("panel", frame_style)
+
 func create_stat_bar(label_text, stat_name):
 	var container = HBoxContainer.new()
 	container.custom_minimum_size = Vector2(280, 12)
 	container.add_theme_constant_override("separation", 8)
 	container.name = stat_name + "_row"
 
+	var icon_ref = _status_icon_ref_for_stat(stat_name)
+	if icon_ref != "":
+		var icon = TextureRect.new()
+		icon.name = stat_name + "_icon"
+		icon.custom_minimum_size = Vector2(12, 12)
+		icon.texture = _load_ui_asset_texture(icon_ref)
+		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		container.add_child(icon)
+
 	var label = Label.new()
 	label.name = stat_name + "_label"
 	label.text = label_text
-	label.custom_minimum_size = Vector2(96, 12)
+	label.custom_minimum_size = Vector2(88 if icon_ref != "" else 96, 12)
 	label.add_theme_font_size_override("font_size", 9)
 	label.add_theme_color_override("font_color", _main_text_color())
 	container.add_child(label)
@@ -1257,15 +3052,289 @@ func create_stat_bar(label_text, stat_name):
 	
 	return container
 
+func _load_texture(path: String) -> Texture2D:
+	if path == "":
+		return null
+	var lower_path = path.to_lower()
+	var absolute_path = ProjectSettings.globalize_path(path)
+	if not OS.has_feature("editor"):
+		var packed_resource = load(path)
+		if packed_resource is Texture2D:
+			return packed_resource
+	if lower_path.ends_with(".png") or lower_path.ends_with(".jpg") or lower_path.ends_with(".jpeg") or lower_path.ends_with(".webp"):
+		if not FileAccess.file_exists(absolute_path):
+			return null
+		var image = Image.new()
+		if image.load(absolute_path) == OK:
+			return ImageTexture.create_from_image(image)
+		return null
+	var resource = load(path)
+	if resource is Texture2D:
+		return resource
+	if not FileAccess.file_exists(absolute_path):
+		return null
+	return null
+
 func load_icon_texture(icon_name: String) -> Texture2D:
 	var path = "res://sprites/icons/" + icon_name + ".png"
-	if ResourceLoader.exists(path):
-		return load(path)
-	return null
+	return _load_texture(path)
+
+func _load_egg_texture(stage_index: int) -> Texture2D:
+	var key = str(stage_index)
+	if egg_texture_cache.has(key):
+		return egg_texture_cache[key]
+	var path = "res://sprites/egg/egg_%02d.png" % stage_index
+	var tex = _load_texture(path)
+	if tex:
+		egg_texture_cache[key] = tex
+	return tex
+
+func _load_celestial_texture(path: String) -> Texture2D:
+	if celestial_texture_cache.has(path):
+		return celestial_texture_cache[path]
+	var tex = _load_texture(path)
+	if tex:
+		celestial_texture_cache[path] = tex
+	return tex
+
+func _load_environment_texture(path: String) -> Texture2D:
+	if environment_texture_cache.has(path):
+		return environment_texture_cache[path]
+	var tex = _load_texture(path)
+	if tex:
+		environment_texture_cache[path] = tex
+	return tex
+
+func _load_portrait_texture(path: String) -> Texture2D:
+	if portrait_texture_cache.has(path):
+		return portrait_texture_cache[path]
+	var tex = _load_texture(path)
+	if tex:
+		portrait_texture_cache[path] = tex
+	return tex
+
+func _portrait_age_key(pd: PetData) -> String:
+	if pd == null:
+		return "adult"
+	match pd.stage:
+		1:
+			return "baby"
+		2:
+			return "teen"
+		_:
+			return "adult"
+
+func _update_pet_portrait():
+	if pet_portrait == null:
+		return
+	var pd = game_manager.get_active_pet_data() if game_manager else null
+	if pd == null:
+		pet_portrait.visible = false
+		pet_portrait.texture = null
+		pet_portrait.tooltip_text = ""
+		return
+
+	pet_portrait.visible = true
+	if pd.stage <= 0 or pd.is_hatching:
+		pet_portrait.texture = _load_egg_texture(0)
+		pet_portrait.modulate = EGG_COLORS.get(pd.egg_color, Color.WHITE)
+		pet_portrait.tooltip_text = "%s egg" % pd.egg_color.capitalize()
+		return
+
+	var portrait_path = "res://sprites/portraits/%s/%s_%s_%s.png" % [pd.animal_type, _portrait_age_key(pd), pd.gender, pd.egg_color]
+	var portrait_tex = _load_portrait_texture(portrait_path)
+	if portrait_tex == null:
+		portrait_path = "res://sprites/portraits/%s/%s_%s.png" % [pd.animal_type, _portrait_age_key(pd), pd.gender]
+		portrait_tex = _load_portrait_texture(portrait_path)
+	pet_portrait.texture = portrait_tex
+	var tint = EGG_COLORS.get(pd.egg_color, Color.WHITE)
+	pet_portrait.modulate = Color.WHITE if portrait_path.contains("_" + pd.egg_color + ".png") else Color.WHITE.lerp(tint, 0.45)
+	pet_portrait.tooltip_text = "%s %s %s" % [_portrait_age_key(pd).capitalize(), pd.gender.capitalize(), pd.animal_type.capitalize()]
+
+func _environment_decor_path(animal_type: String) -> String:
+	if animal_type == "":
+		return ""
+	return "res://sprites/environment/%s.png" % animal_type
+
+func _environment_accent_path(animal_type: String) -> String:
+	match animal_type:
+		"rat":
+			return "res://sprites/items/toys_b/crate_hideout.png"
+		"crow":
+			return "res://sprites/items/toys_a/branch_perch.png"
+		"fox":
+			return "res://sprites/items/toys_b/log_shelter.png"
+		"snake":
+			return "res://sprites/items/toys_b/rock_basking_spot.png"
+		"deer":
+			return "res://sprites/items/food_herbivore/hay_bundle.png"
+		"frog":
+			return "res://sprites/items/containers/pond_dish.png"
+		"pigeon":
+			return "res://sprites/items/containers/hanging_feeder.png"
+		"raccoon":
+			return "res://sprites/items/utility/food_crate.png"
+		"squirrel":
+			return "res://sprites/items/toys_b/stump_perch.png"
+		"goose":
+			return "res://sprites/items/containers/shallow_water_dish.png"
+		_:
+			return ""
+
+func _load_ui_asset_texture(asset_ref: String) -> Texture2D:
+	if asset_ref.begins_with("res://"):
+		return _load_texture(asset_ref)
+	return load_icon_texture(asset_ref)
+
+func _apply_button_icon(button: Button, asset_ref: String):
+	if button == null or asset_ref == "":
+		return
+	var tex = _load_ui_asset_texture(asset_ref)
+	if tex:
+		button.icon = tex
+		button.icon_alignment = HORIZONTAL_ALIGNMENT_LEFT
+
+func _status_icon_ref_for_stat(stat_name: String) -> String:
+	match stat_name:
+		"hunger":
+			return "res://sprites/status/hungry.png"
+		"hydration":
+			return "res://sprites/status/thirsty.png"
+		"happiness":
+			return "res://sprites/status/happy.png"
+		"energy":
+			return "res://sprites/status/sleepy.png"
+		"health":
+			return "res://sprites/status/sick.png"
+		"cleanliness":
+			return "res://sprites/status/dirty.png"
+		"affection":
+			return "res://sprites/status/comforted.png"
+		_:
+			return ""
+
+func _moon_phase_index() -> int:
+	var date = Time.get_date_dict_from_system()
+	var year = int(date.get("year", 2000))
+	var month = int(date.get("month", 1))
+	var day = int(date.get("day", 1))
+	if month < 3:
+		year -= 1
+		month += 12
+	month += 1
+	var c = int(365.25 * year)
+	var e = int(30.6 * month)
+	var jd = (c + e + day - 694039.09) / 29.5305882
+	var phase = jd - floor(jd)
+	var index = int(round(phase * 8.0))
+	return ((index % 8) + 8) % 8
+
+func _current_time_hours() -> float:
+	var dt = Time.get_datetime_dict_from_system()
+	return float(int(dt.get("hour", 12))) + (float(int(dt.get("minute", 0))) / 60.0)
+
+func _celestial_is_moon_time() -> bool:
+	var hour = _current_time_hours()
+	return hour < 5.0 or hour >= 20.0
+
+func _celestial_arc_progress() -> float:
+	var hour = _current_time_hours()
+	if _celestial_is_moon_time():
+		var night_hour = hour if hour >= 20.0 else hour + 24.0
+		return clamp((night_hour - 20.0) / 9.0, 0.0, 1.0)
+	return clamp((hour - 5.0) / 15.0, 0.0, 1.0)
+
+func _current_celestial_texture_path() -> String:
+	var dt = Time.get_datetime_dict_from_system()
+	var hour = int(dt.get("hour", 12))
+	if hour < 5 or hour >= 20:
+		return "res://sprites/celestial/moon_%02d.png" % _moon_phase_index()
+	if hour < 8:
+		return "res://sprites/celestial/sun_00.png"
+	if hour < 16:
+		return "res://sprites/celestial/sun_01.png"
+	if hour < 19:
+		return "res://sprites/celestial/sun_02.png"
+	return "res://sprites/celestial/sun_03.png"
+
+func _update_celestial_layout():
+	if celestial_sprite == null:
+		return
+	if environment_stages.is_empty() or game_manager == null or game_manager.get_pet_count() == 0:
+		celestial_sprite.visible = false
+		return
+	var slots = _get_environment_slot_rects(float(get_window().size.x), float(get_window().size.y), game_manager.get_pet_count())
+	var active_index = clamp(game_manager.active_pet_index, 0, max(0, slots.size() - 1))
+	if active_index >= slots.size():
+		celestial_sprite.visible = false
+		return
+	var slot = slots[active_index]
+	var is_moon = _celestial_is_moon_time()
+	var progress = _celestial_arc_progress()
+	var size = 34.0 if is_moon else 42.0
+	var margin_x = 12.0
+	var start_x = slot.position.x + margin_x
+	var end_x = slot.position.x + slot.size.x - size - margin_x
+	var arc_span = max(0.0, end_x - start_x)
+	var x = start_x + (arc_span * progress)
+	var base_y = slot.position.y + (slot.size.y * 0.18)
+	var arc_height = max(14.0, slot.size.y * 0.16)
+	var arc_lift = sin(progress * PI) * arc_height
+	var y = base_y + (arc_height - arc_lift)
+	celestial_sprite.visible = true
+	celestial_sprite.position = Vector2(x, y)
+	celestial_sprite.size = Vector2(size, size)
+	celestial_sprite.modulate = Color(1.0, 1.0, 1.0, 0.9 if is_moon else 1.0)
+
+func _update_celestial_sprite(force: bool = false):
+	if celestial_sprite == null:
+		return
+	var path = _current_celestial_texture_path()
+	if force or celestial_sprite.texture == null or str(celestial_sprite.get_meta("asset_path", "")) != path:
+		var tex = _load_celestial_texture(path)
+		if tex:
+			celestial_sprite.texture = tex
+			celestial_sprite.set_meta("asset_path", path)
+	_update_celestial_layout()
+
+func _create_egg_choice_button(egg_color: String) -> Button:
+	var egg_btn = Button.new()
+	egg_btn.custom_minimum_size = Vector2(40, 52)
+	egg_btn.pressed.connect(_on_egg_selected.bind(egg_color))
+
+	var egg_style = StyleBoxFlat.new()
+	egg_style.bg_color = Color(1.0, 1.0, 1.0, 0.02)
+	egg_style.set_corner_radius_all(8)
+	egg_style.set_border_width_all(1)
+	egg_style.border_color = EGG_COLORS[egg_color].darkened(0.25)
+	egg_btn.add_theme_stylebox_override("normal", egg_style)
+
+	var hover_style = egg_style.duplicate()
+	hover_style.border_color = _detail_text_color()
+	hover_style.bg_color = Color(1.0, 1.0, 1.0, 0.06)
+	egg_btn.add_theme_stylebox_override("hover", hover_style)
+
+	var press_style = egg_style.duplicate()
+	press_style.bg_color = Color(1.0, 1.0, 1.0, 0.1)
+	egg_btn.add_theme_stylebox_override("pressed", press_style)
+
+	var egg_texture = TextureRect.new()
+	egg_texture.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	egg_texture.texture = _load_egg_texture(0)
+	egg_texture.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	egg_texture.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	egg_texture.position = Vector2(4, 3)
+	egg_texture.size = Vector2(32, 40)
+	egg_texture.modulate = EGG_COLORS[egg_color]
+	egg_btn.add_child(egg_texture)
+
+	return egg_btn
 
 func create_icon_button(icon_name: String, action_callback: Callable, action_arg: String = "", tooltip: String = "") -> Button:
 	var btn = Button.new()
 	btn.custom_minimum_size = Vector2(28, 24)
+	btn.size = Vector2(28, 24)
+	btn.z_index = 120
 	
 	var tex = load_icon_texture(icon_name)
 	if tex:
@@ -1325,6 +3394,8 @@ func create_button_style_pressed():
 func _on_stats_updated():
 	var pd = game_manager.get_active_pet_data()
 	if pd == null:
+		if pet_portrait:
+			pet_portrait.visible = false
 		if pet_name_label:
 			pet_name_label.text = "No Pet"
 			pet_name_label.tooltip_text = ""
@@ -1335,6 +3406,7 @@ func _on_stats_updated():
 		return
 	
 	var gender_symbol = "M" if pd.gender == "male" else "F"
+	_update_pet_portrait()
 	if pet_name_label:
 		pet_name_label.text = _truncate_with_ellipsis(pd.name, 14)
 		pet_name_label.tooltip_text = pd.name
@@ -1364,6 +3436,7 @@ func _on_stats_updated():
 		_populate_action_focus_stats(current_action_tab)
 	
 	update_pet_indicators()
+	_update_environment_stage_selection()
 	update_add_button()
 
 func update_stat_bar(stat_name, value):
@@ -1505,6 +3578,7 @@ func _show_action_tab(action_name: String):
 			_create_pet_tab_content(content)
 
 	_apply_detail_text_theme(action_tab_overlay)
+	_set_ui_clickable(ui_visible)
 
 func _close_action_tab():
 	if action_tab_overlay:
@@ -1516,8 +3590,9 @@ func _close_action_tab():
 	current_action_tab = ""
 	last_open_action_tab = ""
 	if action_tab_recall_pending_hold:
-		_recall_all_pets_home(2.0)
+		_recall_all_pets_home(2.0, monitor_roam_active)
 	action_tab_recall_pending_hold = false
+	_set_ui_clickable(ui_visible)
 
 func _populate_action_focus_stats(action_name: String):
 	if action_tab_overlay == null:
@@ -1612,6 +3687,13 @@ func _create_feed_tab_content(content: VBoxContainer):
 		btn.text = item[0]
 		btn.custom_minimum_size = Vector2(84, 24)
 		btn.pressed.connect(_do_action_from_tab.bind(item[1]))
+		match item[1]:
+			"feed_small":
+				_apply_button_icon(btn, "res://sprites/items/food_omnivore/grain_mix.png")
+			"feed_full":
+				_apply_button_icon(btn, "res://sprites/items/food_omnivore/snack_bowl.png")
+			"feed_treat":
+				_apply_button_icon(btn, "res://sprites/items/food_omnivore/berry_cluster.png")
 		options.add_child(btn)
 	_fit_row_buttons(options, row_w, 24)
 
@@ -1624,6 +3706,11 @@ func _create_feed_tab_content(content: VBoxContainer):
 		btn2.text = item[0]
 		btn2.custom_minimum_size = Vector2(90, 24)
 		btn2.pressed.connect(_do_action_from_tab.bind(item[1]))
+		match item[1]:
+			"feed_hydrate":
+				_apply_button_icon(btn2, "res://sprites/items/containers/water_bowl.png")
+			"feed_forage":
+				_apply_button_icon(btn2, "res://sprites/items/toys_a/leaf_pile.png")
 		options2.add_child(btn2)
 	_fit_row_buttons(options2, row_w, 24)
 
@@ -1635,6 +3722,7 @@ func _create_feed_tab_content(content: VBoxContainer):
 	refill_btn.text = "Refill Bowl"
 	refill_btn.custom_minimum_size = Vector2(86, 24)
 	refill_btn.pressed.connect(_on_refill_water)
+	_apply_button_icon(refill_btn, "res://sprites/items/containers/water_bowl.png")
 	utility.add_child(refill_btn)
 
 	var pd = game_manager.get_active_pet_data()
@@ -1663,6 +3751,7 @@ func _create_medicine_tab_content(content: VBoxContainer):
 	open_btn.custom_minimum_size = Vector2(200, 30)
 	open_btn.add_theme_color_override("font_color", _detail_text_color())
 	open_btn.pressed.connect(_show_medicine_collect)
+	_apply_button_icon(open_btn, "res://sprites/items/care/first_aid_kit.png")
 	content.add_child(open_btn)
 	_append_tab_hint(content, "Hold a treatment, then click your pet to apply it.")
 
@@ -1672,6 +3761,7 @@ func _create_rest_tab_content(content: VBoxContainer):
 	toggle.text = "Wake Up" if pd and pd.is_sleeping else "Sleep"
 	toggle.custom_minimum_size = Vector2(180, 30)
 	toggle.pressed.connect(_do_action_from_tab.bind("rest_toggle"))
+	_apply_button_icon(toggle, "res://sprites/items/toys_b/nest_bed.png")
 	content.add_child(toggle)
 	_append_tab_hint(content, "Sleeping restores energy and health over time.")
 
@@ -1685,6 +3775,13 @@ func _create_groom_tab_content(content: VBoxContainer):
 		btn.text = item[0]
 		btn.custom_minimum_size = Vector2(86, 24)
 		btn.pressed.connect(_do_action_from_tab.bind(item[1]))
+		match item[1]:
+			"groom_haircut":
+				_apply_button_icon(btn, "res://sprites/items/care/grooming_brush.png")
+			"groom_dental":
+				_apply_button_icon(btn, "res://sprites/items/care/thermometer.png")
+			"groom_bathing":
+				_apply_button_icon(btn, "res://sprites/items/care/soap_bottle.png")
 		row.add_child(btn)
 	_fit_row_buttons(row, row_w, 24)
 	_append_tab_hint(content, "Grooming improves coat quality and overall comfort.")
@@ -1699,6 +3796,11 @@ func _create_exercise_tab_content(content: VBoxContainer):
 		btn.text = item[0]
 		btn.custom_minimum_size = Vector2(110, 28)
 		btn.pressed.connect(_do_action_from_tab.bind(item[1]))
+		match item[1]:
+			"exercise_play":
+				_apply_button_icon(btn, "res://sprites/items/toys_a/ball.png")
+			"exercise_workout":
+				_apply_button_icon(btn, "res://sprites/items/toys_a/rope_toy.png")
 		row.add_child(btn)
 	_fit_row_buttons(row, row_w, 28)
 	_append_tab_hint(content, "Workout builds fitness faster but can cause injury if overused.")
@@ -1712,17 +3814,27 @@ func _create_pet_tab_content(content: VBoxContainer):
 		btn.custom_minimum_size = Vector2(row_w, 24)
 		btn.add_theme_color_override("font_color", _detail_text_color())
 		btn.pressed.connect(_do_action_from_tab.bind(opt[1]))
+		match opt[1]:
+			"pet_pat":
+				_apply_button_icon(btn, "res://sprites/status/comforted.png")
+			"pet_cuddle":
+				_apply_button_icon(btn, "res://sprites/items/toys_b/blanket_mat.png")
+			"pet_play":
+				_apply_button_icon(btn, "res://sprites/items/toys_a/ball.png")
+			"pet_talk":
+				_apply_button_icon(btn, "res://sprites/status/happy.png")
 		content.add_child(btn)
 	_append_tab_hint(content, "Play chances improve as affection rises.")
 
 func _do_action_from_tab(action_name: String):
+	var reopen_tab = _base_action_name(action_name)
 	var result = game_manager.perform_action(action_name)
-	_play_action_sound(_base_action_name(action_name))
+	_play_action_sound(reopen_tab)
 	if result is Dictionary and result.get("message", "") != "":
 		_show_feedback_message(result.get("message", ""))
 	_on_stats_updated()
-	if action_name == "rest_toggle":
-		_show_action_tab("rest")
+	if action_tab_open and reopen_tab != "":
+		_show_action_tab(reopen_tab)
 
 func _base_action_name(action_name: String) -> String:
 	if action_name.begins_with("feed_"):
@@ -1820,6 +3932,150 @@ func _close_action_menu():
 	if action_menu_overlay:
 		action_menu_overlay.queue_free()
 		action_menu_overlay = null
+
+func _show_basket_overlay():
+	close_all_overlays()
+	var auto_captured = false
+	if overlay_ui_pinned and not window_has_focus:
+		auto_captured = _capture_clipboard_link(false)
+	var modal = _create_priority_modal(Vector2(292, 336), 0.58)
+	basket_overlay = modal["overlay"]
+	var card = modal["card"] as Panel
+	card.name = "basket_card"
+
+	var title = Label.new()
+	title.text = "Link Basket"
+	title.add_theme_font_size_override("font_size", 14)
+	title.add_theme_color_override("font_color", _detail_text_color())
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.position = Vector2(0, 8)
+	title.size = Vector2(292, 22)
+	card.add_child(title)
+
+	var hint = Label.new()
+	hint.name = "basket_hint"
+	hint.text = "Copy a link, then capture it. Dropped URL shortcut/text files are accepted too."
+	hint.add_theme_font_size_override("font_size", 9)
+	hint.add_theme_color_override("font_color", _detail_text_color())
+	hint.position = Vector2(12, 34)
+	hint.size = Vector2(268, 34)
+	hint.autowrap_mode = TextServer.AUTOWRAP_WORD
+	card.add_child(hint)
+
+	var capture_btn = Button.new()
+	capture_btn.name = "basket_capture_button"
+	capture_btn.text = "Capture Clipboard"
+	capture_btn.custom_minimum_size = Vector2(136, 24)
+	capture_btn.position = Vector2(12, 74)
+	capture_btn.pressed.connect(_capture_clipboard_link)
+	card.add_child(capture_btn)
+
+	var count_label = Label.new()
+	count_label.name = "basket_count_label"
+	count_label.position = Vector2(160, 76)
+	count_label.size = Vector2(120, 20)
+	count_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	count_label.add_theme_font_size_override("font_size", 9)
+	count_label.add_theme_color_override("font_color", _detail_text_color())
+	card.add_child(count_label)
+
+	var scroll = ScrollContainer.new()
+	scroll.name = "basket_scroll"
+	scroll.position = Vector2(12, 106)
+	scroll.size = Vector2(268, 184)
+	card.add_child(scroll)
+
+	var content = VBoxContainer.new()
+	content.name = "basket_content"
+	content.custom_minimum_size = Vector2(252, 184)
+	content.add_theme_constant_override("separation", 8)
+	scroll.add_child(content)
+
+	var close_btn = Button.new()
+	close_btn.text = "Close"
+	close_btn.custom_minimum_size = Vector2(96, 24)
+	close_btn.position = Vector2(98, 300)
+	close_btn.pressed.connect(_close_basket_overlay)
+	card.add_child(close_btn)
+
+	_refresh_basket_overlay()
+	_apply_detail_text_theme(basket_overlay)
+	if auto_captured:
+		_show_feedback_message("Captured copied link into basket.")
+
+func _refresh_basket_overlay():
+	_update_basket_button_state()
+	if basket_overlay == null:
+		return
+	var count_label = basket_overlay.find_child("basket_count_label", true, false) as Label
+	if count_label:
+		count_label.text = "%d / %d saved" % [basket_entries.size(), BASKET_MAX_LINKS]
+
+	var content = basket_overlay.find_child("basket_content", true, false) as VBoxContainer
+	if content == null:
+		return
+	for child in content.get_children():
+		child.queue_free()
+
+	if basket_entries.is_empty():
+		var empty_label = Label.new()
+		empty_label.text = "No links saved yet."
+		empty_label.add_theme_font_size_override("font_size", 10)
+		empty_label.add_theme_color_override("font_color", _detail_text_color())
+		content.add_child(empty_label)
+
+		var hotkey_label = Label.new()
+		hotkey_label.text = "Shortcut: %s" % BASKET_CAPTURE_HOTKEY
+		hotkey_label.add_theme_font_size_override("font_size", 9)
+		hotkey_label.add_theme_color_override("font_color", COLOR_TEXT_DIM)
+		content.add_child(hotkey_label)
+		return
+
+	for i in range(basket_entries.size()):
+		var entry = basket_entries[i]
+		var row = VBoxContainer.new()
+		row.custom_minimum_size = Vector2(252, 48)
+		row.add_theme_constant_override("separation", 4)
+		content.add_child(row)
+
+		var pick_btn = Button.new()
+		pick_btn.text = "%d. %s" % [i + 1, _basket_entry_summary(entry)]
+		pick_btn.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		pick_btn.clip_text = true
+		pick_btn.custom_minimum_size = Vector2(252, 22)
+		pick_btn.tooltip_text = str(entry.get("url", ""))
+		pick_btn.pressed.connect(_copy_basket_entry_to_clipboard.bind(i, true))
+		row.add_child(pick_btn)
+
+		var meta_row = HBoxContainer.new()
+		meta_row.add_theme_constant_override("separation", 6)
+		row.add_child(meta_row)
+
+		var source_label = Label.new()
+		source_label.text = str(entry.get("source", "saved"))
+		source_label.custom_minimum_size = Vector2(118, 18)
+		source_label.add_theme_font_size_override("font_size", 8)
+		source_label.add_theme_color_override("font_color", COLOR_TEXT_DIM)
+		meta_row.add_child(source_label)
+
+		var open_btn = Button.new()
+		open_btn.text = "OPEN"
+		open_btn.custom_minimum_size = Vector2(48, 18)
+		open_btn.add_theme_font_size_override("font_size", 8)
+		open_btn.pressed.connect(_open_basket_entry.bind(i))
+		meta_row.add_child(open_btn)
+
+		var remove_btn = Button.new()
+		remove_btn.text = "DEL"
+		remove_btn.custom_minimum_size = Vector2(42, 18)
+		remove_btn.add_theme_font_size_override("font_size", 8)
+		remove_btn.pressed.connect(_remove_basket_entry.bind(i, true))
+		meta_row.add_child(remove_btn)
+
+func _close_basket_overlay():
+	if basket_overlay:
+		_fade_out_and_free(basket_overlay, UI_FADE_OUT_SEC)
+		basket_overlay = null
 
 # Medical Guidebook Data
 const CONDITIONS_DATA = {
@@ -1935,14 +4191,24 @@ func show_medicine_menu():
 	action_menu_overlay.add_child(close_btn)
 
 func _show_guidebook_conditions():
+	if action_menu_overlay == null:
+		show_medicine_menu()
+		return
 	guidebook_page = 0
 	_update_guidebook_content()
 
 func _show_guidebook_medicines():
+	if action_menu_overlay == null:
+		show_medicine_menu()
+		guidebook_page = 1
+		_update_guidebook_content()
+		return
 	guidebook_page = 1
 	_update_guidebook_content()
 
 func _update_guidebook_content():
+	if action_menu_overlay == null:
+		return
 	var scroll = action_menu_overlay.find_child("guidebook_scroll", true, false)
 	if not scroll:
 		return
@@ -2041,6 +4307,13 @@ func _update_guidebook_content():
 			use_btn.disabled = count < 1
 			use_btn.pressed.connect(_on_hold_medicine.bind(med_id))
 			med_row.add_child(use_btn)
+
+			var icon = TextureRect.new()
+			icon.custom_minimum_size = Vector2(18, 18)
+			icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			icon.texture = _load_ui_asset_texture(str(med_info.get("icon", "")))
+			med_row.add_child(icon)
 			
 			# Name label
 			var name_lbl = Label.new()
@@ -2051,6 +4324,11 @@ func _update_guidebook_content():
 			med_row.add_child(name_lbl)
 
 func _show_medicine_collect():
+	if action_menu_overlay == null:
+		show_medicine_menu()
+		guidebook_page = 2
+		_update_guidebook_content()
+		return
 	guidebook_page = 2
 	_update_guidebook_content()
 
@@ -2065,7 +4343,8 @@ func _collect_medicine(med_id: String):
 func _on_hold_medicine(med_id: String):
 	# Pick up medicine from inventory to hold
 	if medicine_inventory.get(med_id, 0) > 0:
-		held_item = {"type": "medicine", "name": med_id, "icon": "medicine"}
+		var med_info = MEDICINE_INFO.get(med_id, {"icon": "medicine"})
+		held_item = {"type": "medicine", "name": med_id, "icon": med_info.get("icon", "medicine")}
 		_close_action_menu()
 		_create_held_item_sprite()
 		print("Holding medicine: " + med_id)
@@ -2096,22 +4375,44 @@ func update_environment_background():
 		var stage_bg = stage.get("bg") as ColorRect
 		var stage_mid = stage.get("mid") as ColorRect
 		var stage_ground = stage.get("ground") as ColorRect
+		var stage_decor = stage.get("decor") as TextureRect
+		var stage_accent = stage.get("accent") as TextureRect
 		if stage_bg:
 			stage_bg.color = env.get("bg", COLOR_BG)
 		if stage_mid:
 			stage_mid.color = env.get("mid", Color(0.18, 0.2, 0.21))
 		if stage_ground:
 			stage_ground.color = env.get("ground", Color(0.06, 0.07, 0.08))
+		if stage_decor:
+			if slot_pet_data:
+				var decor_path = _environment_decor_path(slot_pet_data.animal_type)
+				stage_decor.texture = _load_environment_texture(decor_path)
+				stage_decor.visible = stage_decor.texture != null
+			else:
+				stage_decor.texture = null
+				stage_decor.visible = false
+		if stage_accent:
+			if slot_pet_data:
+				var accent_path = _environment_accent_path(slot_pet_data.animal_type)
+				stage_accent.texture = _load_environment_texture(accent_path)
+				stage_accent.visible = stage_accent.texture != null
+			else:
+				stage_accent.texture = null
+				stage_accent.visible = false
 
 	_apply_environment_layout(get_window().size.y)
+	_update_environment_stage_selection()
+	_update_celestial_sprite(true)
 
 func _on_active_pet_changed(_index):
 	update_environment_background()
 	_on_stats_updated()
+	_update_celestial_sprite(true)
 
 func _on_pet_added(_index):
 	update_environment_background()
 	_on_stats_updated()
+	_update_celestial_sprite(true)
 
 func _on_pet_state_changed(_state):
 	pass
@@ -2136,6 +4437,7 @@ func _on_pet_died(pet_data: PetData):
 	
 	update_environment_background()
 	_on_stats_updated()
+	_update_celestial_sprite(true)
 
 func _show_death_popup(pet_data: PetData):
 	if pet_data == null:
@@ -2232,14 +4534,7 @@ func _show_naming_popup(pet_index: int):
 	card.add_child(confirm_btn)
 
 func _on_name_confirmed(pet_index: int, name_input: LineEdit):
-	var pet_name = name_input.text.strip_edges()
-	if pet_name == "":
-		pet_name = "Wevito"
-	
-	if pet_index >= 0 and pet_index < game_manager.pet_datas.size():
-		var pd = game_manager.pet_datas[pet_index]
-		pd.name = pet_name
-		pd.is_naming_pending = false
+	_set_pet_name(pet_index, name_input.text)
 	
 	if naming_overlay:
 		_fade_out_and_free(naming_overlay, UI_FADE_OUT_SEC)
@@ -2390,23 +4685,57 @@ func _show_settings_menu():
 	auto_save_btn.pressed.connect(_toggle_auto_save.bind(auto_save_btn))
 	auto_save_row.add_child(auto_save_btn)
 	
-	# Click-through toggle
-	var click_through_row = HBoxContainer.new()
-	click_through_row.add_theme_constant_override("separation", 10)
-	options_container.add_child(click_through_row)
-	
-	var click_through_label = Label.new()
-	click_through_label.text = "Click-Through:"
-	click_through_label.add_theme_font_size_override("font_size", 10)
-	click_through_label.add_theme_color_override("font_color", _detail_text_color())
-	click_through_label.custom_minimum_size = Vector2(120, 20)
-	click_through_row.add_child(click_through_label)
-	
-	var click_through_btn = Button.new()
-	click_through_btn.text = "ON" if settings["click_through"] else "OFF"
-	click_through_btn.custom_minimum_size = Vector2(60, 20)
-	click_through_btn.pressed.connect(_toggle_click_through.bind(click_through_btn))
-	click_through_row.add_child(click_through_btn)
+	var pin_hint_row = HBoxContainer.new()
+	pin_hint_row.add_theme_constant_override("separation", 10)
+	options_container.add_child(pin_hint_row)
+
+	var pin_hint_label = Label.new()
+	pin_hint_label.text = "HUD Pin:"
+	pin_hint_label.add_theme_font_size_override("font_size", 10)
+	pin_hint_label.add_theme_color_override("font_color", _detail_text_color())
+	pin_hint_label.custom_minimum_size = Vector2(120, 20)
+	pin_hint_row.add_child(pin_hint_label)
+
+	var pin_hint_value = Label.new()
+	pin_hint_value.text = OVERLAY_PIN_HOTKEY
+	pin_hint_value.add_theme_font_size_override("font_size", 10)
+	pin_hint_value.add_theme_color_override("font_color", _detail_text_color())
+	pin_hint_row.add_child(pin_hint_value)
+
+	var basket_hint_row = HBoxContainer.new()
+	basket_hint_row.add_theme_constant_override("separation", 10)
+	options_container.add_child(basket_hint_row)
+
+	var basket_hint_label = Label.new()
+	basket_hint_label.text = "Basket Capture:"
+	basket_hint_label.add_theme_font_size_override("font_size", 10)
+	basket_hint_label.add_theme_color_override("font_color", _detail_text_color())
+	basket_hint_label.custom_minimum_size = Vector2(120, 20)
+	basket_hint_row.add_child(basket_hint_label)
+
+	var basket_hint_value = Label.new()
+	basket_hint_value.text = BASKET_CAPTURE_HOTKEY
+	basket_hint_value.add_theme_font_size_override("font_size", 10)
+	basket_hint_value.add_theme_color_override("font_color", _detail_text_color())
+	basket_hint_row.add_child(basket_hint_value)
+
+	# Desktop roam toggle
+	var roam_row = HBoxContainer.new()
+	roam_row.add_theme_constant_override("separation", 10)
+	options_container.add_child(roam_row)
+
+	var roam_label = Label.new()
+	roam_label.text = "Desktop Roam:"
+	roam_label.add_theme_font_size_override("font_size", 10)
+	roam_label.add_theme_color_override("font_color", _detail_text_color())
+	roam_label.custom_minimum_size = Vector2(120, 20)
+	roam_row.add_child(roam_label)
+
+	var roam_btn = Button.new()
+	roam_btn.text = "ON" if settings["desktop_companion_roam"] else "OFF"
+	roam_btn.custom_minimum_size = Vector2(60, 20)
+	roam_btn.pressed.connect(_toggle_monitor_roam.bind(roam_btn))
+	roam_row.add_child(roam_btn)
 	
 	# Sound effects toggle
 	var sound_row = HBoxContainer.new()
@@ -2480,14 +4809,26 @@ func _toggle_auto_save(btn: Button):
 	btn.text = "ON" if settings["auto_save"] else "OFF"
 
 func _toggle_click_through(btn: Button):
-	settings["click_through"] = not settings["click_through"]
-	btn.text = "ON" if settings["click_through"] else "OFF"
-	_apply_click_through_mode()
+	_set_overlay_ui_pin(not overlay_ui_pinned)
+	if btn:
+		btn.text = "ON" if overlay_ui_pinned else "OFF"
+
+func _toggle_monitor_roam(btn: Button):
+	settings["desktop_companion_roam"] = not settings["desktop_companion_roam"]
+	settings["experimental_monitor_roam"] = settings["desktop_companion_roam"]
+	btn.text = "ON" if settings["desktop_companion_roam"] else "OFF"
+	_apply_window_mode_layout(window_has_focus)
+	if not window_has_focus:
+		if _monitor_roam_requested():
+			_start_monitor_roam_all_pets()
+		else:
+			_recall_all_pets_home(0.0)
+	_apply_runtime_visibility_state()
 
 func _apply_click_through_mode():
-	_set_ui_clickable(ui_visible)
-	_apply_mouse_passthrough_for_mode(ui_visible)
-	_pin_window_bottom_right()
+	_apply_runtime_visibility_state()
+	if window_has_focus or not monitor_roam_active:
+		_pin_window_bottom_right()
 
 func _minimize_window():
 	get_window().visible = false
@@ -2495,21 +4836,26 @@ func _minimize_window():
 func _input(event):
 	if event.is_action_pressed("show-window"):
 		_show_from_tray()
+	elif event.is_action_pressed(OVERLAY_PIN_ACTION):
+		_set_overlay_ui_pin(not overlay_ui_pinned)
+	elif event.is_action_pressed(BASKET_CAPTURE_ACTION):
+		_capture_clipboard_link()
 	
 	# Handle click to feed/medicate pet
-	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		if held_item.type != "":
-			_handle_held_item_click(event.position)
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		var mouse_event = event as InputEventMouseButton
+		if mouse_event.pressed:
+			if _dispatch_pinned_overlay_click(mouse_event.position):
+				get_viewport().set_input_as_handled()
+				return
+			if held_item.type != "":
+				_handle_held_item_click(mouse_event.position)
 
 func _show_from_tray():
 	get_window().visible = true
 	get_window().mode = Window.MODE_WINDOWED
 	position_window()
-	
-	if settings.get("click_through", false):
-		settings["click_through"] = false
-		_apply_click_through_mode()
-		print("Click-through disabled: window manually shown")
+	_handle_focus_change(true)
 
 func _toggle_ghost_mode():
 	settings["ghost_mode"] = not settings["ghost_mode"]
@@ -2656,8 +5002,8 @@ func _show_in_memoriam():
 			var sprite = Sprite2D.new()
 			var sprite_loaded = false
 			
-			if mem_pd.death_sprite_path != "" and ResourceLoader.exists(mem_pd.death_sprite_path):
-				var tex = load(mem_pd.death_sprite_path)
+			if mem_pd.death_sprite_path != "":
+				var tex = _load_texture(mem_pd.death_sprite_path)
 				if tex:
 					sprite.texture = tex
 					sprite_loaded = true
@@ -2703,10 +5049,10 @@ func _close_in_memoriam():
 
 # Food types definition
 const FOOD_TYPES = {
-	"plant": {"name": "Plant", "icon": "food_plant", "stat": "hunger", "value": 20},
-	"meat": {"name": "Meat", "icon": "food_meat", "stat": "hunger", "value": 25},
-	"sweet": {"name": "Treat", "icon": "food_sweet", "stat": "happiness", "value": 15},
-	"salty": {"name": "Salty", "icon": "food_salty", "stat": "energy", "value": 10}
+	"plant": {"name": "Plant", "icon": "res://sprites/items/food_herbivore/leafy_greens.png", "stat": "hunger", "value": 20},
+	"meat": {"name": "Meat", "icon": "res://sprites/items/food_predator/meat_chunk.png", "stat": "hunger", "value": 25},
+	"sweet": {"name": "Treat", "icon": "res://sprites/items/food_omnivore/berry_cluster.png", "stat": "happiness", "value": 15},
+	"salty": {"name": "Salty", "icon": "res://sprites/items/food_omnivore/fish_scrap.png", "stat": "energy", "value": 10}
 }
 
 # Medicine inventory - player can hold 1 of each medicine type
@@ -2724,16 +5070,16 @@ var medicine_inventory: Dictionary = {
 }
 
 const MEDICINE_INFO = {
-	"woundClean": {"name": "Wound Cleaning", "icon": "medicine"},
-	"antibiotics": {"name": "Antibiotics", "icon": "medicine"},
-	"jointSupport": {"name": "Joint Support", "icon": "medicine"},
-	"immuneBoost": {"name": "Immune Booster", "icon": "medicine"},
-	"dentalCare": {"name": "Dental Care", "icon": "medicine"},
-	"moodStabilizer": {"name": "Mood Stabilizer", "icon": "medicine"},
-	"energyTonic": {"name": "Energy Tonic", "icon": "medicine"},
-	"appetiteStimulant": {"name": "Appetite Stimulant", "icon": "medicine"},
-	"detoxHerbs": {"name": "Detox Herbs", "icon": "medicine"},
-	"vitaminSupplements": {"name": "Vitamins", "icon": "medicine"}
+	"woundClean": {"name": "Wound Cleaning", "icon": "res://sprites/items/care/bandage_roll.png"},
+	"antibiotics": {"name": "Antibiotics", "icon": "res://sprites/items/care/pill_bottle.png"},
+	"jointSupport": {"name": "Joint Support", "icon": "res://sprites/items/care/thermometer.png"},
+	"immuneBoost": {"name": "Immune Booster", "icon": "res://sprites/items/care/medicine_dropper.png"},
+	"dentalCare": {"name": "Dental Care", "icon": "res://sprites/items/care/grooming_brush.png"},
+	"moodStabilizer": {"name": "Mood Stabilizer", "icon": "res://sprites/items/care/soap_bottle.png"},
+	"energyTonic": {"name": "Energy Tonic", "icon": "res://sprites/items/care/syringe.png"},
+	"appetiteStimulant": {"name": "Appetite Stimulant", "icon": "res://sprites/items/care/first_aid_kit.png"},
+	"detoxHerbs": {"name": "Detox Herbs", "icon": "res://sprites/items/care/towel.png"},
+	"vitaminSupplements": {"name": "Vitamins", "icon": "res://sprites/items/care/medicine_dropper.png"}
 }
 
 
@@ -2754,7 +5100,7 @@ func _on_food_item_selected(food_key: String):
 	_create_held_item_sprite()
 
 func _on_water_selected():
-	held_item = {"type": "water", "name": "water", "icon": "water"}
+	held_item = {"type": "water", "name": "water", "icon": "res://sprites/items/containers/water_bowl.png"}
 	_close_feeding_panel()
 	_create_held_item_sprite()
 
@@ -2763,7 +5109,8 @@ func _create_held_item_sprite():
 		held_item_sprite.queue_free()
 	
 	held_item_sprite = Sprite2D.new()
-	var tex = load_icon_texture(held_item["icon"])
+	var icon_ref = str(held_item.get("icon", ""))
+	var tex = _load_ui_asset_texture(icon_ref)
 	if tex:
 		held_item_sprite.texture = tex
 		held_item_sprite.scale = Vector2(2, 2)
@@ -2910,6 +5257,7 @@ func _apply_ghost_mode():
 			ghost_overlay.name = "ghost_overlay"
 			ghost_overlay.color = Color(0.1, 0.1, 0.15, 0.3)
 			ghost_overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
+			ghost_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			add_child(ghost_overlay)
 			# Move to front
 			move_child(ghost_overlay, get_child_count() - 1)
@@ -2919,17 +5267,7 @@ func _apply_ghost_mode():
 			ghost_overlay = null
 
 func _reset_save():
-	# Clear all pets (fresh start) but keep settings
-	game_manager.pet_datas.clear()
-	game_manager.in_memoriam.clear()
-	
-	# Remove all pet nodes
-	for pet in game_manager.pets:
-		if pet:
-			pet.queue_free()
-	game_manager.pets.clear()
-	game_manager.active_pet_index = 0
-	
+	_clear_runtime_state()
 	# Save empty state
 	_do_auto_save()
 	

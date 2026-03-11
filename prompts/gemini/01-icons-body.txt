@@ -1,0 +1,36 @@
+Generate the full UI icon set for Wevito.
+
+Icons required, each as a separate 16x16 transparent PNG:
+- add
+- bathe
+- doctor
+- exercise
+- feed
+- food_meat
+- food_plant
+- food_salty
+- food_sweet
+- ghost
+- groom
+- medicine
+- memoriam
+- minimize
+- pet
+- rest
+- save
+- settings
+- water
+- water_bowl
+
+Output path:
+sprites/icons/<icon>.png
+
+Icon style:
+- same pixel-art family as the pets
+- very readable at 16x16
+- strong silhouette
+- no text
+- no background
+- clean, simple, slightly eerie/cozy tone, not playful mobile-game icons
+
+Return the icons grouped by filename exactly as specified.

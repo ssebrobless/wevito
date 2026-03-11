@@ -1,0 +1,13 @@
+Generate all pet sprites for animal: fox
+
+Species notes:
+- fluffy tail is essential
+- pointed ears
+- clever face
+- agile, light-footed silhouette
+
+Output path:
+sprites/fox/<gender>/<color>/<animation>_<frame>.png
+
+Total expected:
+360 PNG files

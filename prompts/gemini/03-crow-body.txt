@@ -1,0 +1,13 @@
+Generate all pet sprites for animal: crow
+
+Species notes:
+- sharp beak
+- angular posture
+- intelligent silhouette
+- distinct from pigeon by being sleeker, darker-feeling, more pointed
+
+Output path:
+sprites/crow/<gender>/<color>/<animation>_<frame>.png
+
+Total expected:
+360 PNG files

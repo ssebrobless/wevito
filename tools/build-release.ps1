@@ -10,6 +10,8 @@ $ProjectRoot = Split-Path -Parent $PSScriptRoot
 $BuildDir = Join-Path $ProjectRoot "builds\release"
 $PresetName = "Windows Desktop"
 $AppExeBase = "WevitoDesktopPet"
+$HelperBuildScript = Join-Path $ProjectRoot "tools\build-desktop-bridge.ps1"
+$HelperExe = Join-Path $ProjectRoot "builds\desktop_bridge\WevitoDesktopBridge.exe"
 
 function Get-GodotTemplateVersion {
     param([string]$Executable)
@@ -101,7 +103,9 @@ if (-not $HasWindowsTemplates) {
 $Candidates = @(
     $GodotPath,
     $env:GODOT_PATH,
+    "C:\Users\fishe\AppData\Local\Microsoft\WinGet\Packages\GodotEngine.GodotEngine_Microsoft.Winget.Source_8wekyb3d8bbwe\Godot_v4.6.1-stable_win64_console.exe",
     "C:\Users\fishe\AppData\Local\Microsoft\WinGet\Packages\GodotEngine.GodotEngine_Microsoft.Winget.Source_8wekyb3d8bbwe\Godot_v4.6.1-stable_win64.exe",
+    "C:\Program Files\Godot\Godot_v4.6.1-stable_win64_console.exe",
     "C:\Program Files\Godot\Godot_v4.6.1-stable_win64.exe",
     "C:\Program Files\Godot\Godot.exe"
 ) | Where-Object { $_ -and $_.Trim() -ne "" }
@@ -137,6 +141,19 @@ if (-not $HasWindowsTemplates) {
 }
 
 $ExportFlag = if ($Debug) { "--export-debug" } else { "--export-release" }
+
+if (-not (Test-Path $HelperBuildScript)) {
+    throw "Missing desktop bridge build script: $HelperBuildScript"
+}
+
+Write-Host "Building Wevito desktop bridge..."
+& powershell -NoProfile -ExecutionPolicy Bypass -File $HelperBuildScript
+if ($LASTEXITCODE -ne 0) {
+    throw "Desktop bridge build failed with exit code $LASTEXITCODE"
+}
+if (-not (Test-Path $HelperExe)) {
+    throw "Desktop bridge executable not found after build: $HelperExe"
+}
 
 Write-Host "Building Wevito..."
 Write-Host "Godot: $ResolvedGodot"
@@ -216,6 +233,9 @@ catch {
     $LatestAvailable = $ResolvedOutput
 }
 
+$BuildHelperTarget = Join-Path $BuildDir "WevitoDesktopBridge.exe"
+Copy-Item -Path $HelperExe -Destination $BuildHelperTarget -Force
+
 $BuildType = if ($Debug) { "debug" } else { "release" }
 @(
     "timestamp=$(Get-Date -Format s)",
@@ -223,7 +243,8 @@ $BuildType = if ($Debug) { "debug" } else { "release" }
     "build_type=$BuildType",
     "godot=$ResolvedGodot",
     "output=$ResolvedOutput",
-    "latest_available=$LatestAvailable"
+    "latest_available=$LatestAvailable",
+    "desktop_bridge=$BuildHelperTarget"
 ) | Set-Content -Path $BuildInfo -Encoding UTF8
 
 Write-Host ""

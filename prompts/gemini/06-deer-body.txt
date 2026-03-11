@@ -1,0 +1,13 @@
+Generate all pet sprites for animal: deer
+
+Species notes:
+- delicate legs
+- elegant face and ears
+- soft, gentle body language
+- if antlers appear, keep them subtle and readable at small scale
+
+Output path:
+sprites/deer/<gender>/<color>/<animation>_<frame>.png
+
+Total expected:
+360 PNG files
