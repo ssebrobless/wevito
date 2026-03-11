@@ -99,6 +99,32 @@ Overlay command:
 - `powershell -ExecutionPolicy Bypass -File .\tools\toggle-overlay-ui.ps1 -Command release`
 - `powershell -ExecutionPolicy Bypass -File .\tools\capture-basket-link.ps1`
 
+## vNext Visual Loop
+
+Use the Windows-native vNext build and capture a visual proof set for focused, passive, pinned, and basket states:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\tools\capture-vnext-visuals.ps1 -Configuration Debug
+```
+
+Artifacts are written under `vnext\artifacts\screenshots\<timestamp>\` with:
+- desktop screenshots for each state
+- cropped home/roam/basket window captures
+- `summary.json` containing window bounds and paths
+
+For flicker and transition debugging, record a short desktop clip with app/broker traces and frame-diff analysis:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\tools\record-vnext-flicker.ps1 -Configuration Debug
+```
+
+Artifacts are written under `vnext\artifacts\flicker\<timestamp>\` with:
+- `transition-capture.mp4`
+- `trace\*.trace.log`
+- `automation.log`
+- `flicker-summary.json` with nearest automation marker annotations for each spike
+- extracted spike frames under `spikes\`
+
 ## Features Implemented
 
 ### Pet Behavior
