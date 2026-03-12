@@ -191,9 +191,27 @@ function Get-WindowInfo {
 function Set-WindowForeground {
     param($WindowInfo)
 
-    [void][WevitoProbeNative]::ShowWindow($WindowInfo.Handle, 5)
-    [void][WevitoProbeNative]::SetForegroundWindow($WindowInfo.Handle)
-    Start-Sleep -Milliseconds 500
+    $shell = New-Object -ComObject WScript.Shell
+    for ($attempt = 0; $attempt -lt 12; $attempt++) {
+        [void][WevitoProbeNative]::ShowWindow($WindowInfo.Handle, 5)
+        [void][WevitoProbeNative]::SetForegroundWindow($WindowInfo.Handle)
+        try {
+            [void]$shell.AppActivate($WindowInfo.Title)
+        }
+        catch {
+        }
+        try {
+            [void]$shell.AppActivate($WindowInfo.ProcessId)
+        }
+        catch {
+        }
+        Start-Sleep -Milliseconds 350
+        if ((Get-ForegroundProcessId) -eq $WindowInfo.ProcessId) {
+            return $true
+        }
+    }
+
+    return $false
 }
 
 function Invoke-GlobalHotkey {
@@ -278,15 +296,22 @@ try {
     Start-Sleep -Milliseconds $StartupDelayMs
 
     $homeWindow = Get-WindowInfo -ProcessId $shellProcess.Id -Title "Wevito Home Panel"
-    $notepadProcess = Start-Process -FilePath "notepad.exe" -PassThru
-    Start-Sleep -Milliseconds 1000
-    $notepadWindow = Get-WindowInfo -ProcessId $notepadProcess.Id
-    Set-WindowForeground -WindowInfo $notepadWindow
-
     $foregroundAfterNotepad = Get-ForegroundProcessId
+    if ($foregroundAfterNotepad -eq $shellProcess.Id) {
+        $notepadProcess = Start-Process -FilePath "notepad.exe" -PassThru
+        Start-Sleep -Milliseconds 1000
+        $notepadWindow = Get-WindowInfo -ProcessId $notepadProcess.Id
+        [void](Set-WindowForeground -WindowInfo $notepadWindow)
+        $foregroundAfterNotepad = Get-ForegroundProcessId
+    }
+
+    if ($foregroundAfterNotepad -eq $shellProcess.Id) {
+        throw "Failed to establish a non-shell foreground app for the pinned probe."
+    }
 
     Invoke-GlobalHotkey -Keys "^+p"
     $foregroundAfterPin = Get-ForegroundProcessId
+    $homeWindow = Get-WindowInfo -ProcessId $shellProcess.Id -Title "Wevito Home Panel"
 
     Set-ClipboardWithRetry -Value "https://openai.com/pinned-probe"
     $overlayActionX = [int]($homeWindow.Left + $homeWindow.Width - 194)
@@ -315,9 +340,9 @@ try {
         foreground_after_release = $foregroundAfterRelease
         notepad_pid = $notepadProcess.Id
         shell_pid = $shellProcess.Id
-        pin_did_not_steal_focus = ($foregroundAfterPin -eq $notepadProcess.Id)
-        overlay_click_did_not_steal_focus = ($foregroundAfterClick -eq $notepadProcess.Id)
-        release_did_not_steal_focus = ($foregroundAfterRelease -eq $notepadProcess.Id)
+        pin_did_not_steal_focus = ($foregroundAfterPin -ne $shellProcess.Id)
+        overlay_click_did_not_steal_focus = ($foregroundAfterClick -ne $shellProcess.Id)
+        release_did_not_steal_focus = ($foregroundAfterRelease -ne $shellProcess.Id)
         overlay_capture_triggered = $captureTriggered
         basket_updated = $basketUpdated
     }

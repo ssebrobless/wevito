@@ -27,6 +27,11 @@ internal static class BrokerProcessManager
         return ResolveDirectory("sprites", "sprites", "Could not resolve sprite directory.");
     }
 
+    public static string ResolveSpriteRuntimeRoot()
+    {
+        return ResolveDirectory("sprites_runtime", "sprites_runtime", "Could not resolve runtime sprite directory.");
+    }
+
     private static (string FileName, string Arguments) ResolveBrokerLaunch(string pipeName)
     {
         var exeNextToShell = Path.Combine(AppContext.BaseDirectory, "Wevito.VNext.Broker.exe");

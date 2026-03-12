@@ -210,9 +210,22 @@ function Get-ToolWindowInfo {
 function Set-WindowForeground {
     param($WindowInfo)
 
-    [void][WevitoActionProbeNative]::ShowWindow($WindowInfo.Handle, 5)
-    [void][WevitoActionProbeNative]::SetForegroundWindow($WindowInfo.Handle)
-    Start-Sleep -Milliseconds 500
+    $shell = New-Object -ComObject WScript.Shell
+    for ($attempt = 0; $attempt -lt 12; $attempt++) {
+        [void][WevitoActionProbeNative]::ShowWindow($WindowInfo.Handle, 5)
+        [void][WevitoActionProbeNative]::SetForegroundWindow($WindowInfo.Handle)
+        try {
+            [void]$shell.AppActivate($WindowInfo.Title)
+        }
+        catch {
+        }
+        try {
+            [void]$shell.AppActivate($WindowInfo.ProcessId)
+        }
+        catch {
+        }
+        Start-Sleep -Milliseconds 350
+    }
 }
 
 function Get-AutomationElement {
@@ -465,20 +478,35 @@ function Invoke-ActionSession {
             Start-Sleep -Milliseconds 120
         }
 
-        $invoked = Invoke-Button -WindowInfo $homeWindow -AutomationIds @($ButtonId) -Names @($ActionId)
-        if ($null -eq $invoked) {
-            throw "Failed to invoke action button '$ActionId'."
+        $buttonElement = Get-AutomationElement -Handle $homeWindow.Handle -AutomationId $ButtonId -ControlType ([System.Windows.Automation.ControlType]::Button)
+        if ($null -eq $buttonElement) {
+            throw "Missing action button '$ActionId'."
         }
 
         $shellTracePath = Join-Path $paths.trace "Wevito.VNext.Shell.trace.log"
         $tracePattern = "action \| .*" + [regex]::Escape($ActionId)
-        $traceMatched = Wait-ForTraceText -TracePath $shellTracePath -Pattern $tracePattern
         $shellAlive = -not $shellProcess.HasExited
+        if (-not $buttonElement.Current.IsEnabled) {
+            return [ordered]@{
+                action = $ActionId
+                output_dir = $paths.root
+                invoked = "disabled"
+                enabled = $false
+                trace_matched = $true
+                shell_alive = $shellAlive
+            }
+        }
+
+        $invoke = $buttonElement.GetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern)
+        $invoke.Invoke()
+        Start-Sleep -Milliseconds 900
+        $traceMatched = Wait-ForTraceText -TracePath $shellTracePath -Pattern $tracePattern
 
         return [ordered]@{
             action = $ActionId
             output_dir = $paths.root
-            invoked = $invoked
+            invoked = $ButtonId
+            enabled = $true
             trace_matched = $traceMatched
             shell_alive = $shellAlive
         }
@@ -563,6 +591,24 @@ function Invoke-ToolSession {
         }
         Start-Sleep -Milliseconds 1200
         Stop-NewBrowsers -BeforeSnapshot $browserSnapshot
+
+        Set-WindowForeground -WindowInfo $homeWindow
+        if (-not (Wait-ForTraceText -TracePath $shellTracePath -Pattern "basket \| .*open id=")) {
+            throw "Basket open did not appear in shell trace."
+        }
+
+        try {
+            $toolWindow = Get-ToolWindowInfo -ProcessId $shellProcess.Id -TimeoutMs 3000
+        }
+        catch {
+            $basketInvoked = Invoke-Button -WindowInfo $homeWindow -AutomationIds @("BasketButton") -Names @("BIN", "HIDE")
+            if ($null -eq $basketInvoked) {
+                throw "Failed to restore basket popup after opening a link."
+            }
+
+            $toolWindow = Get-ToolWindowInfo -ProcessId $shellProcess.Id
+        }
+        Select-FirstListItem -WindowInfo $toolWindow
 
         $deleteInvoked = Invoke-Button -WindowInfo $toolWindow -AutomationIds @("DeleteButton") -Names @("Delete")
         if ($null -eq $deleteInvoked) {

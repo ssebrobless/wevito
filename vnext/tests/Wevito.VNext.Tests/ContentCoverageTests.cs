@@ -22,14 +22,14 @@ public sealed class ContentCoverageTests
     }
 
     [Fact]
-    public void SpriteInventory_ContainsRequiredFramesForEnabledVariants()
+    public void RuntimeSpriteInventory_ContainsRequiredFramesForEnabledVariants()
     {
-        var spriteRoot = FindPath("sprites");
+        var spriteRoot = FindPath("sprites_runtime");
 
         var minimumFrameCounts = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase)
         {
             ["idle"] = 4,
-            ["walk"] = 4,
+            ["walk"] = 6,
             ["eat"] = 4,
             ["happy"] = 4,
             ["sad"] = 2,
@@ -45,7 +45,7 @@ public sealed class ContentCoverageTests
             {
                 var relative = Path.GetRelativePath(spriteRoot, path);
                 var parts = relative.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-                return parts.Length >= 4 && !parts.Contains("obj", StringComparer.OrdinalIgnoreCase);
+                return parts.Length == 4;
             })
             .ToList();
 

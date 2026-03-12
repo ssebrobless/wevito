@@ -9,12 +9,14 @@ $ErrorActionPreference = "Stop"
 
 $ProjectRoot = Split-Path -Parent $PSScriptRoot
 $BuildScript = Join-Path $ProjectRoot "tools\build-vnext.ps1"
+$SpritePreviewScript = Join-Path $ProjectRoot "tools\render_runtime_sprite_previews.py"
 $ShellExe = Join-Path $ProjectRoot "vnext\artifacts\shell\Wevito.VNext.Shell.exe"
 $OutputRoot = Join-Path $ProjectRoot "vnext\artifacts\screenshots"
 $RunStamp = Get-Date -Format "yyyyMMdd-HHmmss"
 $OutputDir = Join-Path $OutputRoot $RunStamp
 $DataDir = Join-Path $OutputDir "data"
 $TraceDir = Join-Path $OutputDir "trace"
+$SpritePreviewDir = Join-Path $OutputDir "sprite-previews"
 
 if (-not $SkipBuild) {
     & powershell -NoProfile -ExecutionPolicy Bypass -File $BuildScript -Configuration $Configuration
@@ -30,6 +32,12 @@ if (-not (Test-Path $ShellExe)) {
 New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null
 New-Item -ItemType Directory -Force -Path $DataDir | Out-Null
 New-Item -ItemType Directory -Force -Path $TraceDir | Out-Null
+New-Item -ItemType Directory -Force -Path $SpritePreviewDir | Out-Null
+
+& python $SpritePreviewScript --sprite-root (Join-Path $ProjectRoot "sprites_runtime") --output-root $SpritePreviewDir
+if ($LASTEXITCODE -ne 0) {
+    throw "Sprite preview generation failed with exit code $LASTEXITCODE"
+}
 
 Add-Type -AssemblyName System.Drawing
 Add-Type -AssemblyName System.Windows.Forms
@@ -315,9 +323,11 @@ function Save-Image {
 function Save-WindowCapture {
     param(
         [string]$Name,
-        $WindowInfo
+        [int]$ProcessId,
+        [string]$Title
     )
 
+    $WindowInfo = Get-WindowInfo -ProcessId $ProcessId -Title $Title -TimeoutMs 5000
     if ($WindowInfo.Width -le 0 -or $WindowInfo.Height -le 0) {
         return $null
     }
@@ -398,7 +408,7 @@ try {
 
     Set-WindowForeground -WindowInfo $homeWindow
     $focusedDesktop = Save-DesktopCapture -Name "01-focused-desktop"
-    $focusedHome = Save-WindowCapture -Name "02-focused-home" -WindowInfo $homeWindow
+    $focusedHome = Save-WindowCapture -Name "02-focused-home" -ProcessId $shellProcess.Id -Title "Wevito Home Panel"
 
     $notepadProcess = Start-Process -FilePath "notepad.exe" -PassThru
     Start-Sleep -Milliseconds 1000
@@ -406,18 +416,23 @@ try {
     Set-WindowForeground -WindowInfo $notepadWindow
 
     $passiveDesktop = Save-DesktopCapture -Name "03-passive-desktop"
-    $passiveRoam = Save-WindowCapture -Name "04-passive-roam-band" -WindowInfo $roamWindow
+    $passiveRoam = Save-WindowCapture -Name "04-passive-roam-band" -ProcessId $shellProcess.Id -Title "Wevito Roam Band"
 
     Set-ClipboardWithRetry -Value "https://openai.com/"
     Invoke-GlobalHotkey -Keys "^+p"
     $pinnedDesktop = Save-DesktopCapture -Name "05-pinned-desktop"
-    $pinnedHome = Save-WindowCapture -Name "06-pinned-home" -WindowInfo $homeWindow
+    $pinnedHome = Save-WindowCapture -Name "06-pinned-home" -ProcessId $shellProcess.Id -Title "Wevito Home Panel"
 
     Invoke-GlobalHotkey -Keys "^+b"
+    $homeWindow = Get-WindowInfo -ProcessId $shellProcess.Id -Title "Wevito Home Panel"
     Set-WindowForeground -WindowInfo $homeWindow
     $basketWindow = Open-BasketWindow -HomeWindow $homeWindow -ProcessId $shellProcess.Id
     $basketDesktop = Save-DesktopCapture -Name "07-basket-desktop"
-    $basketPopup = Save-WindowCapture -Name "08-basket-popup" -WindowInfo $basketWindow
+    $basketPopup = Save-WindowCapture -Name "08-basket-popup" -ProcessId $shellProcess.Id -Title $basketWindow.Title
+
+    $homeWindow = Get-WindowInfo -ProcessId $shellProcess.Id -Title "Wevito Home Panel"
+    $roamWindow = Get-WindowInfo -ProcessId $shellProcess.Id -Title "Wevito Roam Band"
+    $basketWindow = Get-ToolWindowInfo -ProcessId $shellProcess.Id
 
     $summary = [ordered]@{
         captured_at = (Get-Date).ToString("s")
@@ -438,6 +453,10 @@ try {
             pinned_home = $pinnedHome
             basket_desktop = $basketDesktop
             basket_popup = $basketPopup
+        }
+        sprite_previews = [ordered]@{
+            output_dir = $SpritePreviewDir
+            index = (Join-Path $SpritePreviewDir "index.txt")
         }
     }
 

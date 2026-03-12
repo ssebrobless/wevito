@@ -8,13 +8,15 @@ namespace Wevito.VNext.Shell;
 
 internal sealed class SpriteAssetService
 {
-    private readonly string _spriteRoot;
+    private readonly string _petSpriteRoot;
+    private readonly string _sharedAssetRoot;
     private readonly ConcurrentDictionary<string, BitmapImage?> _imageCache = new(StringComparer.OrdinalIgnoreCase);
     private readonly ConcurrentDictionary<string, IReadOnlyList<string>> _animationCache = new(StringComparer.OrdinalIgnoreCase);
 
-    public SpriteAssetService(string spriteRoot)
+    public SpriteAssetService(string petSpriteRoot, string sharedAssetRoot)
     {
-        _spriteRoot = spriteRoot;
+        _petSpriteRoot = petSpriteRoot;
+        _sharedAssetRoot = sharedAssetRoot;
     }
 
     public ImageSource? GetPetFrame(PetActor pet, DateTimeOffset now)
@@ -40,23 +42,23 @@ internal sealed class SpriteAssetService
 
     public ImageSource? GetEnvironment(string assetId)
     {
-        return LoadByRelativePath(Path.Combine("environment", $"{assetId}.png"));
+        return LoadSharedAsset(Path.Combine("environment", $"{assetId}.png"));
     }
 
     public ImageSource? GetIcon(string iconId)
     {
-        return LoadByRelativePath(Path.Combine("icons", $"{iconId}.png"));
+        return LoadSharedAsset(Path.Combine("icons", $"{iconId}.png"));
     }
 
     public ImageSource? GetStatusIcon(string statusId)
     {
-        return LoadByRelativePath(Path.Combine("status", $"{statusId}.png"));
+        return LoadSharedAsset(Path.Combine("status", $"{statusId}.png"));
     }
 
     public ImageSource? GetCelestial(DateTimeOffset now, bool nightMode)
     {
         var prefix = nightMode ? "moon" : "sun";
-        var folder = Path.Combine(_spriteRoot, "celestial");
+        var folder = Path.Combine(_sharedAssetRoot, "celestial");
         if (!Directory.Exists(folder))
         {
             return null;
@@ -94,83 +96,30 @@ internal sealed class SpriteAssetService
 
     private IReadOnlyList<string> ResolveAnimationFrames(PetActor pet, string animationId)
     {
-        foreach (var directory in BuildCandidateDirectories(pet))
+        var directory = BuildPetDirectory(pet);
+        if (!Directory.Exists(directory))
         {
-            if (!Directory.Exists(directory))
-            {
-                continue;
-            }
-
-            var frames = Directory
-                .EnumerateFiles(directory, $"{animationId}_*.png", SearchOption.TopDirectoryOnly)
-                .Where(path => !path.EndsWith(".import", StringComparison.OrdinalIgnoreCase))
-                .OrderBy(path => path, StringComparer.OrdinalIgnoreCase)
-                .ToList();
-            if (frames.Count > 0)
-            {
-                return frames;
-            }
+            return [];
         }
 
-        foreach (var directory in BuildFallbackDirectories(pet))
-        {
-            if (!Directory.Exists(directory))
-            {
-                continue;
-            }
-
-            var frames = Directory
-                .EnumerateFiles(directory, $"{animationId}_*.png", SearchOption.TopDirectoryOnly)
-                .Where(path => !path.EndsWith(".import", StringComparison.OrdinalIgnoreCase))
-                .OrderBy(path => path, StringComparer.OrdinalIgnoreCase)
-                .ToList();
-            if (frames.Count > 0)
-            {
-                return frames;
-            }
-        }
-
-        return [];
+        return Directory
+            .EnumerateFiles(directory, $"{animationId}_*.png", SearchOption.TopDirectoryOnly)
+            .Where(path => !path.EndsWith(".import", StringComparison.OrdinalIgnoreCase))
+            .OrderBy(path => path, StringComparer.OrdinalIgnoreCase)
+            .ToList();
     }
 
-    private IEnumerable<string> BuildCandidateDirectories(PetActor pet)
+    private string BuildPetDirectory(PetActor pet)
     {
         var age = pet.AgeStage.ToString().ToLowerInvariant();
         var gender = pet.Gender.ToString().ToLowerInvariant();
         var color = pet.ColorVariant.ToLowerInvariant();
-        yield return Path.Combine(_spriteRoot, pet.SpeciesId, age, gender, color);
-        yield return Path.Combine(_spriteRoot, pet.SpeciesId, gender, color);
-        yield return Path.Combine(_spriteRoot, pet.SpeciesId, "adult", gender, color);
+        return Path.Combine(_petSpriteRoot, pet.SpeciesId, age, gender, color);
     }
 
-    private IEnumerable<string> BuildFallbackDirectories(PetActor pet)
+    private ImageSource? LoadSharedAsset(string relativePath)
     {
-        var age = pet.AgeStage.ToString().ToLowerInvariant();
-        var gender = pet.Gender.ToString().ToLowerInvariant();
-
-        var ageGenderRoot = Path.Combine(_spriteRoot, pet.SpeciesId, age, gender);
-        if (Directory.Exists(ageGenderRoot))
-        {
-            foreach (var directory in Directory.GetDirectories(ageGenderRoot).OrderBy(path => path, StringComparer.OrdinalIgnoreCase))
-            {
-                yield return directory;
-            }
-        }
-
-        var adultGenderRoot = Path.Combine(_spriteRoot, pet.SpeciesId, "adult", gender);
-        if (Directory.Exists(adultGenderRoot))
-        {
-            foreach (var directory in Directory.GetDirectories(adultGenderRoot).OrderBy(path => path, StringComparer.OrdinalIgnoreCase))
-            {
-                yield return directory;
-            }
-        }
-    }
-
-    private ImageSource? LoadByRelativePath(string relativePath)
-    {
-        var fullPath = Path.Combine(_spriteRoot, relativePath);
-        return LoadImage(fullPath);
+        return LoadImage(Path.Combine(_sharedAssetRoot, relativePath));
     }
 
     private BitmapImage? LoadImage(string fullPath)

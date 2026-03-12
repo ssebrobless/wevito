@@ -83,7 +83,9 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         TraceLog.Write("shell", "startup-begin");
         var contentRoot = BrokerProcessManager.ResolveContentRoot();
         _contentRepository = new ContentRepository(contentRoot);
-        _assetService = new SpriteAssetService(BrokerProcessManager.ResolveSpriteRoot());
+        _assetService = new SpriteAssetService(
+            BrokerProcessManager.ResolveSpriteRuntimeRoot(),
+            BrokerProcessManager.ResolveSpriteRoot());
         _content = await _contentRepository.LoadAsync();
         TraceLog.Write("shell", $"content-loaded path={contentRoot} species={_content.Species.Count} environments={_content.Environments.Count}");
 
