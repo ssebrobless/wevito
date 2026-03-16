@@ -1,0 +1,60 @@
+{
+  "notes": [
+    "Customize these motion families for your project.",
+    "Split dense families into smaller packs when Gemini output gets blurry.",
+    "The examples below are defaults, not requirements."
+  ],
+  "families": {
+    "locomotion_idle": {
+      "description": "idle-only refinement for sharpness-sensitive sprites",
+      "frames": [
+        "idle_00",
+        "idle_01",
+        "idle_02",
+        "idle_03"
+      ]
+    },
+    "locomotion_walk_a": {
+      "description": "first half of a locomotion cycle",
+      "frames": [
+        "walk_00",
+        "walk_01",
+        "walk_02"
+      ]
+    },
+    "locomotion_walk_b": {
+      "description": "second half of a locomotion cycle",
+      "frames": [
+        "walk_03",
+        "walk_04",
+        "walk_05"
+      ]
+    },
+    "interaction": {
+      "description": "common interaction poses",
+      "frames": [
+        "interact_00",
+        "interact_01",
+        "interact_02"
+      ]
+    },
+    "expression": {
+      "description": "reaction or emotion poses",
+      "frames": [
+        "react_00",
+        "react_01",
+        "react_02"
+      ]
+    }
+  },
+  "variantAxes": [
+  "state",
+  "faction",
+  "palette"
+],
+  "seedEntities": [
+  "hero",
+  "turret",
+  "explosion"
+]
+}

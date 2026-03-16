@@ -64,12 +64,39 @@ public sealed class SpriteRuntimeCoverageTests
                 foreach (var frame in frames)
                 {
                     var png = ReadPngMetadata(frame);
-                    Assert.Equal(28u, png.Width);
-                    Assert.Equal(24u, png.Height);
+                    var expectedCanvas = ResolveExpectedCanvas(spriteRoot, frame);
+                    Assert.Equal(expectedCanvas.Width, png.Width);
+                    Assert.Equal(expectedCanvas.Height, png.Height);
                     Assert.Contains(png.ColorType, new byte[] { 4, 6 });
                 }
             }
         }
+    }
+
+    private static (uint Width, uint Height) ResolveExpectedCanvas(string spriteRoot, string framePath)
+    {
+        var relative = Path.GetRelativePath(spriteRoot, framePath);
+        var parts = relative.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+        if (parts.Length < 5)
+        {
+            return (72u, 64u);
+        }
+
+        var species = parts[0];
+        var ageStage = parts[1];
+        var animationName = Path.GetFileNameWithoutExtension(parts[^1]).Split('_', 2)[0];
+        if (string.Equals(species, "snake", StringComparison.OrdinalIgnoreCase) &&
+            string.Equals(animationName, "walk", StringComparison.OrdinalIgnoreCase))
+        {
+            return ageStage.ToLowerInvariant() switch
+            {
+                "baby" => (104u, 64u),
+                "teen" => (112u, 64u),
+                _ => (120u, 64u)
+            };
+        }
+
+        return (72u, 64u);
     }
 
     private static (uint Width, uint Height, byte ColorType) ReadPngMetadata(string path)

@@ -1,0 +1,22 @@
+﻿{
+    "regions":  {
+                    "home_panel":  {
+                                       "x":  1532,
+                                       "y":  720,
+                                       "width":  360,
+                                       "height":  300
+                                   },
+                    "roam_band":  {
+                                      "x":  0,
+                                      "y":  922,
+                                      "width":  1920,
+                                      "height":  118
+                                  },
+                    "basket_popup":  {
+                                         "x":  1572,
+                                         "y":  470,
+                                         "width":  320,
+                                         "height":  240
+                                     }
+                }
+}

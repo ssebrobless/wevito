@@ -24,7 +24,16 @@ public static class TraceLog
 
         lock (Sync)
         {
-            File.AppendAllText(path, line, Encoding.UTF8);
+            try
+            {
+                using var stream = new FileStream(path, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
+                using var writer = new StreamWriter(stream, Encoding.UTF8);
+                writer.Write(line);
+            }
+            catch (IOException)
+            {
+                // Capture runs can overlap briefly; tracing should never take the app down.
+            }
         }
     }
 

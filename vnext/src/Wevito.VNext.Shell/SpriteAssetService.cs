@@ -8,15 +8,29 @@ namespace Wevito.VNext.Shell;
 
 internal sealed class SpriteAssetService
 {
+    private readonly string _authoredPetSpriteRoot;
     private readonly string _petSpriteRoot;
+    private readonly string _sharedAssetRuntimeRoot;
     private readonly string _sharedAssetRoot;
+    private readonly bool _preferVerifiedLocomotion;
+    private readonly bool _preferAuthoredAll;
     private readonly ConcurrentDictionary<string, BitmapImage?> _imageCache = new(StringComparer.OrdinalIgnoreCase);
     private readonly ConcurrentDictionary<string, IReadOnlyList<string>> _animationCache = new(StringComparer.OrdinalIgnoreCase);
 
-    public SpriteAssetService(string petSpriteRoot, string sharedAssetRoot)
+    public SpriteAssetService(
+        string authoredPetSpriteRoot,
+        string petSpriteRoot,
+        string sharedAssetRuntimeRoot,
+        string sharedAssetRoot,
+        bool preferVerifiedLocomotion,
+        bool preferAuthoredAll)
     {
+        _authoredPetSpriteRoot = authoredPetSpriteRoot;
         _petSpriteRoot = petSpriteRoot;
+        _sharedAssetRuntimeRoot = sharedAssetRuntimeRoot;
         _sharedAssetRoot = sharedAssetRoot;
+        _preferVerifiedLocomotion = preferVerifiedLocomotion;
+        _preferAuthoredAll = preferAuthoredAll;
     }
 
     public ImageSource? GetPetFrame(PetActor pet, DateTimeOffset now)
@@ -55,6 +69,16 @@ internal sealed class SpriteAssetService
         return LoadSharedAsset(Path.Combine("status", $"{statusId}.png"));
     }
 
+    public ImageSource? GetItem(string categoryFolder, string assetId)
+    {
+        return LoadSharedAsset(Path.Combine("items", categoryFolder, $"{assetId}.png"));
+    }
+
+    public ImageSource? GetPortrait(string speciesId)
+    {
+        return LoadSharedAsset(Path.Combine("portraits", $"{speciesId}.png"));
+    }
+
     public ImageSource? GetCelestial(DateTimeOffset now, bool nightMode)
     {
         var prefix = nightMode ? "moon" : "sun";
@@ -80,11 +104,12 @@ internal sealed class SpriteAssetService
 
     public double GetPetScale(PetActor pet)
     {
-        return pet.AgeStage switch
+        // Keep pet rendering on integer multiples so WPF does not soften the sprites.
+        return pet.SpeciesId switch
         {
-            PetAgeStage.Baby => 2.2,
-            PetAgeStage.Teen => 2.6,
-            _ => 3.0
+            "snake" => 2.0,
+            "frog" => 3.0,
+            _ => 2.0
         };
     }
 
@@ -96,7 +121,41 @@ internal sealed class SpriteAssetService
 
     private IReadOnlyList<string> ResolveAnimationFrames(PetActor pet, string animationId)
     {
-        var directory = BuildPetDirectory(pet);
+        var runtimeFrames = EnumerateAnimationFrames(BuildPetDirectory(_petSpriteRoot, pet), animationId);
+        var authoredFrames = EnumerateAnimationFrames(BuildPetDirectory(_authoredPetSpriteRoot, pet), animationId);
+
+        if (ShouldPreferAuthored(animationId, authoredFrames.Count > 0))
+        {
+            return authoredFrames;
+        }
+
+        if (runtimeFrames.Count > 0)
+        {
+            return runtimeFrames;
+        }
+
+        return authoredFrames;
+    }
+
+    private bool ShouldPreferAuthored(string animationId, bool hasAuthoredFrames)
+    {
+        if (!hasAuthoredFrames)
+        {
+            return false;
+        }
+
+        if (_preferAuthoredAll)
+        {
+            return true;
+        }
+
+        return _preferVerifiedLocomotion &&
+               (string.Equals(animationId, "idle", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(animationId, "walk", StringComparison.OrdinalIgnoreCase));
+    }
+
+    private static IReadOnlyList<string> EnumerateAnimationFrames(string directory, string animationId)
+    {
         if (!Directory.Exists(directory))
         {
             return [];
@@ -109,17 +168,40 @@ internal sealed class SpriteAssetService
             .ToList();
     }
 
-    private string BuildPetDirectory(PetActor pet)
+    private static string BuildPetDirectory(string root, PetActor pet)
     {
         var age = pet.AgeStage.ToString().ToLowerInvariant();
         var gender = pet.Gender.ToString().ToLowerInvariant();
         var color = pet.ColorVariant.ToLowerInvariant();
-        return Path.Combine(_petSpriteRoot, pet.SpeciesId, age, gender, color);
+        return Path.Combine(root, pet.SpeciesId, age, gender, color);
     }
 
     private ImageSource? LoadSharedAsset(string relativePath)
     {
-        return LoadImage(Path.Combine(_sharedAssetRoot, relativePath));
+        var cleanedPath = Path.Combine(_sharedAssetRuntimeRoot, relativePath);
+        var image = LoadImage(cleanedPath);
+        if (image is not null)
+        {
+            if (relativePath.Contains("hay_bed", StringComparison.OrdinalIgnoreCase) ||
+                relativePath.Contains("nest_bed", StringComparison.OrdinalIgnoreCase) ||
+                relativePath.Contains("water_bowl", StringComparison.OrdinalIgnoreCase))
+            {
+                TraceLog.Write("shared-asset", $"cleaned {relativePath} => {cleanedPath}");
+            }
+            return image;
+        }
+
+        var fallbackPath = Path.Combine(_sharedAssetRoot, relativePath);
+        var fallback = LoadImage(fallbackPath);
+        if (fallback is not null &&
+            (relativePath.Contains("hay_bed", StringComparison.OrdinalIgnoreCase) ||
+             relativePath.Contains("nest_bed", StringComparison.OrdinalIgnoreCase) ||
+             relativePath.Contains("water_bowl", StringComparison.OrdinalIgnoreCase)))
+        {
+            TraceLog.Write("shared-asset", $"fallback {relativePath} => {fallbackPath}");
+        }
+
+        return fallback;
     }
 
     private BitmapImage? LoadImage(string fullPath)

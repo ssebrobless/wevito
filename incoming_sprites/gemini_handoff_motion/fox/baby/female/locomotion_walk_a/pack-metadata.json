@@ -1,0 +1,25 @@
+{
+  "species": "fox",
+  "ageStage": "baby",
+  "gender": "female",
+  "family": "locomotion_walk_a",
+  "boardImage": "locomotion_walk_a-editable-board.png",
+  "runtimeReferenceImage": "locomotion_walk_a-runtime-reference-blue.png",
+  "frameLayout": [
+    [
+      "walk_00",
+      "walk_01",
+      "walk_02",
+      null,
+      null
+    ]
+  ],
+  "colors": [
+    "red",
+    "orange",
+    "yellow",
+    "blue",
+    "indigo",
+    "violet"
+  ]
+}

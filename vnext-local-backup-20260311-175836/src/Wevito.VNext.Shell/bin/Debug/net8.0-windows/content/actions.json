@@ -1,0 +1,17 @@
+[
+  {
+    "id": "feed",
+    "displayName": "Feed",
+    "effectSummary": "Restores hunger and comfort."
+  },
+  {
+    "id": "pet",
+    "displayName": "Pet",
+    "effectSummary": "Raises affection and mood."
+  },
+  {
+    "id": "rest",
+    "displayName": "Rest",
+    "effectSummary": "Recalls the pet home and restores energy."
+  }
+]

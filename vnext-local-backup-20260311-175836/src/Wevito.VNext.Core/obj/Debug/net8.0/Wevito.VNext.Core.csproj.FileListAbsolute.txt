@@ -1,0 +1,16 @@
+C:\Users\fishe\Documents\projects\wevito\vnext\src\Wevito.VNext.Core\obj\Debug\net8.0\Wevito.VNext.Core.csproj.AssemblyReference.cache
+C:\Users\fishe\Documents\projects\wevito\vnext\src\Wevito.VNext.Core\obj\Debug\net8.0\Wevito.VNext.Core.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\fishe\Documents\projects\wevito\vnext\src\Wevito.VNext.Core\obj\Debug\net8.0\Wevito.VNext.Core.AssemblyInfoInputs.cache
+C:\Users\fishe\Documents\projects\wevito\vnext\src\Wevito.VNext.Core\obj\Debug\net8.0\Wevito.VNext.Core.AssemblyInfo.cs
+C:\Users\fishe\Documents\projects\wevito\vnext\src\Wevito.VNext.Core\obj\Debug\net8.0\Wevito.VNext.Core.csproj.CoreCompileInputs.cache
+C:\Users\fishe\Documents\projects\wevito\vnext\src\Wevito.VNext.Core\obj\Debug\net8.0\Wevito.VNext.Core.sourcelink.json
+C:\Users\fishe\Documents\projects\wevito\vnext\src\Wevito.VNext.Core\bin\Debug\net8.0\Wevito.VNext.Core.deps.json
+C:\Users\fishe\Documents\projects\wevito\vnext\src\Wevito.VNext.Core\bin\Debug\net8.0\Wevito.VNext.Core.dll
+C:\Users\fishe\Documents\projects\wevito\vnext\src\Wevito.VNext.Core\bin\Debug\net8.0\Wevito.VNext.Core.pdb
+C:\Users\fishe\Documents\projects\wevito\vnext\src\Wevito.VNext.Core\bin\Debug\net8.0\Wevito.VNext.Contracts.dll
+C:\Users\fishe\Documents\projects\wevito\vnext\src\Wevito.VNext.Core\bin\Debug\net8.0\Wevito.VNext.Contracts.pdb
+C:\Users\fishe\Documents\projects\wevito\vnext\src\Wevito.VNext.Core\obj\Debug\net8.0\Wevito.V.181A82CD.Up2Date
+C:\Users\fishe\Documents\projects\wevito\vnext\src\Wevito.VNext.Core\obj\Debug\net8.0\Wevito.VNext.Core.dll
+C:\Users\fishe\Documents\projects\wevito\vnext\src\Wevito.VNext.Core\obj\Debug\net8.0\refint\Wevito.VNext.Core.dll
+C:\Users\fishe\Documents\projects\wevito\vnext\src\Wevito.VNext.Core\obj\Debug\net8.0\Wevito.VNext.Core.pdb
+C:\Users\fishe\Documents\projects\wevito\vnext\src\Wevito.VNext.Core\obj\Debug\net8.0\ref\Wevito.VNext.Core.dll

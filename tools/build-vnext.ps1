@@ -9,24 +9,116 @@ $ProjectRoot = Split-Path -Parent $PSScriptRoot
 $Solution = Join-Path $ProjectRoot "vnext\Wevito.VNext.sln"
 $BrokerProject = Join-Path $ProjectRoot "vnext\src\Wevito.VNext.Broker\Wevito.VNext.Broker.csproj"
 $ShellProject = Join-Path $ProjectRoot "vnext\src\Wevito.VNext.Shell\Wevito.VNext.Shell.csproj"
+$GeneratePetRuntimeScript = Join-Path $ProjectRoot "tools\generate_runtime_pose_sprites.py"
+$CleanSharedScript = Join-Path $ProjectRoot "tools\clean_shared_sprite_assets.py"
+$CleanPetRuntimeScript = Join-Path $ProjectRoot "tools\clean_runtime_pet_frames.py"
+$ExtractStagePropsScript = Join-Path $ProjectRoot "tools\extract_stage_safe_props.py"
 $ArtifactsRoot = Join-Path $ProjectRoot "vnext\artifacts"
 $BrokerOut = Join-Path $ArtifactsRoot "broker"
 $ShellOut = Join-Path $ArtifactsRoot "shell"
+
+function Stop-WevitoProcesses {
+    $processNames = @("Wevito.VNext.Shell", "Wevito.VNext.Broker")
+    foreach ($name in $processNames) {
+        Get-Process -Name $name -ErrorAction SilentlyContinue | ForEach-Object {
+            try {
+                Stop-Process -Id $_.Id -Force -ErrorAction Stop
+            }
+            catch {
+                Write-Warning "Could not stop $name ($($_.Id)): $($_.Exception.Message)"
+            }
+        }
+    }
+    Start-Sleep -Milliseconds 350
+}
+
+function Reset-Directory {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Path
+    )
+
+    if (Test-Path $Path) {
+        for ($attempt = 0; $attempt -lt 6; $attempt++) {
+            try {
+                Remove-Item -Path $Path -Recurse -Force -ErrorAction Stop
+                break
+            }
+            catch {
+                if (-not (Test-Path $Path)) {
+                    break
+                }
+
+                Stop-WevitoProcesses
+
+                try {
+                    Get-ChildItem -Path $Path -Recurse -Force -ErrorAction SilentlyContinue | ForEach-Object {
+                        try {
+                            $_.Attributes = [System.IO.FileAttributes]::Normal
+                        }
+                        catch {
+                        }
+                    }
+                }
+                catch {
+                }
+
+                if ($attempt -ge 5) {
+                    $fallbackPath = "$Path-stale-$([DateTime]::Now.ToString('yyyyMMdd-HHmmss-fff'))"
+                    try {
+                        Move-Item -Path $Path -Destination $fallbackPath -Force -ErrorAction Stop
+                        break
+                    }
+                    catch {
+                        throw
+                    }
+                }
+
+                Start-Sleep -Milliseconds 700
+            }
+        }
+    }
+
+    New-Item -ItemType Directory -Path $Path -Force | Out-Null
+}
 
 if (-not (Test-Path $Solution)) {
     throw "Missing vNext solution: $Solution"
 }
 
+Stop-WevitoProcesses
+
 New-Item -ItemType Directory -Path $ArtifactsRoot -Force | Out-Null
-if (Test-Path $BrokerOut) {
-    Remove-Item -Path $BrokerOut -Recurse -Force -ErrorAction SilentlyContinue
-}
-if (Test-Path $ShellOut) {
-    Remove-Item -Path $ShellOut -Recurse -Force -ErrorAction SilentlyContinue
+Reset-Directory -Path $BrokerOut
+Reset-Directory -Path $ShellOut
+
+python $CleanSharedScript `
+    --source (Join-Path $ProjectRoot "sprites") `
+    --output (Join-Path $ProjectRoot "sprites_shared_runtime") `
+    --clean-folders environment items status `
+    --copy-folders icons celestial portraits
+if ($LASTEXITCODE -ne 0) {
+    throw "Shared sprite cleanup failed with exit code $LASTEXITCODE"
 }
 
-New-Item -ItemType Directory -Path $BrokerOut -Force | Out-Null
-New-Item -ItemType Directory -Path $ShellOut -Force | Out-Null
+python $ExtractStagePropsScript `
+    --source (Join-Path $ProjectRoot "incoming_sprites") `
+    --output (Join-Path $ProjectRoot "sprites_shared_runtime")
+if ($LASTEXITCODE -ne 0) {
+    throw "Stage-safe prop extraction failed with exit code $LASTEXITCODE"
+}
+
+python $GeneratePetRuntimeScript `
+    --source-root (Join-Path $ProjectRoot "incoming_sprites") `
+    --output-root (Join-Path $ProjectRoot "sprites_runtime")
+if ($LASTEXITCODE -ne 0) {
+    throw "Runtime pet sprite generation failed with exit code $LASTEXITCODE"
+}
+
+python $CleanPetRuntimeScript --root (Join-Path $ProjectRoot "sprites_runtime")
+if ($LASTEXITCODE -ne 0) {
+    throw "Runtime pet sprite cleanup failed with exit code $LASTEXITCODE"
+}
 
 dotnet test $Solution -c $Configuration
 if ($LASTEXITCODE -ne 0) {

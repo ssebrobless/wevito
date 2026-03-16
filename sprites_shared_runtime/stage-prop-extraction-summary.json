@@ -1,0 +1,138 @@
+{
+  "count": 19,
+  "items": [
+    {
+      "board": "utility-shelter-props.png",
+      "row": "0",
+      "col": "2",
+      "target": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites_shared_runtime\\items\\toys_b\\rock_basking_spot.png",
+      "size": "105x65"
+    },
+    {
+      "board": "utility-shelter-props.png",
+      "row": "2",
+      "col": "1",
+      "target": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites_shared_runtime\\items\\toys_b\\moss_bed.png",
+      "size": "502x338"
+    },
+    {
+      "board": "utility-shelter-props.png",
+      "row": "2",
+      "col": "2",
+      "target": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites_shared_runtime\\items\\toys_b\\blanket_mat.png",
+      "size": "2x2"
+    },
+    {
+      "board": "water-feeding-containers.png",
+      "row": "0",
+      "col": "0",
+      "target": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites_shared_runtime\\items\\containers\\water_bowl.png",
+      "size": "328x135"
+    },
+    {
+      "board": "water-feeding-containers.png",
+      "row": "0",
+      "col": "1",
+      "target": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites_shared_runtime\\items\\containers\\shallow_water_dish.png",
+      "size": "234x24"
+    },
+    {
+      "board": "water-feeding-containers.png",
+      "row": "1",
+      "col": "0",
+      "target": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites_shared_runtime\\items\\containers\\seed_tray.png",
+      "size": "364x221"
+    },
+    {
+      "board": "water-feeding-containers.png",
+      "row": "1",
+      "col": "1",
+      "target": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites_shared_runtime\\items\\containers\\hanging_feeder.png",
+      "size": "70x198"
+    },
+    {
+      "board": "water-feeding-containers.png",
+      "row": "1",
+      "col": "2",
+      "target": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites_shared_runtime\\items\\containers\\pond_dish.png",
+      "size": "176x163"
+    },
+    {
+      "board": "water-feeding-containers.png",
+      "row": "2",
+      "col": "1",
+      "target": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites_shared_runtime\\items\\containers\\treat_cup.png",
+      "size": "188x210"
+    },
+    {
+      "board": "toys-enrichment-A.png",
+      "row": "1",
+      "col": "0",
+      "target": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites_shared_runtime\\items\\toys_a\\bell_toy.png",
+      "size": "187x244"
+    },
+    {
+      "board": "toys-enrichment-A.png",
+      "row": "1",
+      "col": "1",
+      "target": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites_shared_runtime\\items\\toys_a\\branch_perch.png",
+      "size": "564x297"
+    },
+    {
+      "board": "toys-enrichment-A.png",
+      "row": "2",
+      "col": "1",
+      "target": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites_shared_runtime\\items\\toys_a\\mirror_trinket.png",
+      "size": "275x345"
+    },
+    {
+      "board": "toys-enrichment-A.png",
+      "row": "2",
+      "col": "2",
+      "target": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites_shared_runtime\\items\\toys_a\\leaf_pile.png",
+      "size": "579x275"
+    },
+    {
+      "board": "toys-enrichment-A.png",
+      "row": "0",
+      "col": "2",
+      "target": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites_shared_runtime\\items\\toys_a\\rope_toy.png",
+      "size": "269x118"
+    },
+    {
+      "board": "toys-enrichment-B.png",
+      "row": "0",
+      "col": "0",
+      "target": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites_shared_runtime\\items\\toys_b\\nest_bed.png",
+      "size": "493x305"
+    },
+    {
+      "board": "toys-enrichment-B.png",
+      "row": "0",
+      "col": "1",
+      "target": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites_shared_runtime\\items\\toys_b\\crate_hideout.png",
+      "size": "400x393"
+    },
+    {
+      "board": "toys-enrichment-B.png",
+      "row": "1",
+      "col": "1",
+      "target": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites_shared_runtime\\items\\toys_b\\stump_perch.png",
+      "size": "431x343"
+    },
+    {
+      "board": "toys-enrichment-B.png",
+      "row": "2",
+      "col": "0",
+      "target": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites_shared_runtime\\items\\toys_b\\hay_bed.png",
+      "size": "581x352"
+    },
+    {
+      "board": "toys-enrichment-B.png",
+      "row": "2",
+      "col": "1",
+      "target": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites_shared_runtime\\items\\toys_b\\log_shelter.png",
+      "size": "516x353"
+    }
+  ]
+}

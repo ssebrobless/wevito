@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Text.Json;
 using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
@@ -11,12 +12,14 @@ namespace Wevito.VNext.Shell;
 
 internal sealed class ShellCoordinator : IAsyncDisposable
 {
-    private const double HomeWindowWidth = 392;
-    private const double HomeWindowFullHeight = 560;
-    private const double HomeWindowCompactHeight = 320;
-    private const double HomeWindowPassiveHeight = 196;
-    private const double ToolWindowWidth = 320;
-    private const double ToolWindowHeight = 240;
+    private const double HomeWindowWidth = 660;
+    private const double HomeWindowFullHeight = 910;
+    private const double HomeWindowCompactHeight = 560;
+    private const double HomeWindowPassiveHeight = 340;
+    private const double ToolWindowWidth = 520;
+    private const double ToolWindowHeight = 420;
+    private const double DevToolWindowWidth = 520;
+    private const double DevToolWindowHeight = 760;
     private const double RoamBandHeight = 118;
     private const double HomeMargin = 28;
 
@@ -25,6 +28,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private readonly PetSimulationEngine _petSimulationEngine = new();
     private readonly BasketService _basketService = new(5);
     private readonly DispatcherTimer _tickTimer;
+    private readonly bool _devToolsEnabled = BrokerProcessManager.IsDevelopmentBuild();
 
     private readonly HomePanelWindow _homeWindow = new();
     private readonly RoamBandWindow _roamBandWindow = new();
@@ -53,11 +57,13 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _tickTimer.Tick += OnTick;
 
         _homeWindow.TogglePinnedRequested += async () => await TogglePinnedAsync();
+        _homeWindow.ToggleActionsRequested += async () => await ToggleActionsAsync();
+        _homeWindow.ToggleWebToolsRequested += async () => await ToggleWebToolsAsync();
         _homeWindow.ToggleBasketRequested += async () => await ToggleBasketAsync();
-        _homeWindow.CaptureClipboardRequested += async () => await RequestClipboardCaptureAsync();
         _homeWindow.OpenSettingsRequested += async () => await ToggleSettingsAsync();
         _homeWindow.ToggleCompactRequested += async () => await ToggleCompactHudAsync();
         _homeWindow.SaveRequested += async () => await SaveAsync();
+        _homeWindow.ToggleDevRequested += async () => await ToggleDevAsync();
         _homeWindow.ActionRequested += HandleAction;
         _homeWindow.Closed += (_, _) => _application.Shutdown();
 
@@ -71,11 +77,16 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             _state = _state with { ActiveTool = _state.ActiveTool with { IsOpen = false } };
             await PersistAndRenderAsync();
         };
-        _toolPopupWindow.CopyRequested += CopyBasketItem;
+        _toolPopupWindow.PasteRequested += async () => await RequestClipboardCaptureAsync();
+        _toolPopupWindow.SaveRequested += async () => await SaveAsync();
+        _toolPopupWindow.OpenDevRequested += async () => await ToggleDevAsync();
         _toolPopupWindow.OpenRequested += async id => await OpenBasketItemAsync(id);
-        _toolPopupWindow.DeleteRequested += async id => await DeleteBasketItemAsync(id);
+        _toolPopupWindow.DeleteRequested += async ids => await DeleteBasketItemsAsync(ids);
         _toolPopupWindow.LinksDropped += async urls => await AddLinksAsync(urls, "drop");
         _toolPopupWindow.SettingChanged += OnSettingChanged;
+        _toolPopupWindow.DevToolCommandRequested += async command => await HandleDevToolCommandAsync(command);
+        _toolPopupWindow.ActionMenuRequested += async actionId => HandleAction(actionId);
+        _toolPopupWindow.ActionOptionRequested += async (actionId, itemId) => await ApplyActionSelectionAsync(actionId, itemId);
     }
 
     public async Task StartAsync()
@@ -83,9 +94,15 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         TraceLog.Write("shell", "startup-begin");
         var contentRoot = BrokerProcessManager.ResolveContentRoot();
         _contentRepository = new ContentRepository(contentRoot);
+        var preferAuthored = string.Equals(Environment.GetEnvironmentVariable("WEVITO_VNEXT_PREFER_AUTHORED"), "1", StringComparison.OrdinalIgnoreCase);
+        var disableVerifiedLocomotion = string.Equals(Environment.GetEnvironmentVariable("WEVITO_VNEXT_DISABLE_AUTHORED_LOCOMOTION"), "1", StringComparison.OrdinalIgnoreCase);
         _assetService = new SpriteAssetService(
+            BrokerProcessManager.ResolveSpriteAuthoredRoot(),
             BrokerProcessManager.ResolveSpriteRuntimeRoot(),
-            BrokerProcessManager.ResolveSpriteRoot());
+            BrokerProcessManager.ResolveSharedSpriteRuntimeRoot(),
+            BrokerProcessManager.ResolveSpriteRoot(),
+            !disableVerifiedLocomotion,
+            preferAuthored);
         _content = await _contentRepository.LoadAsync();
         TraceLog.Write("shell", $"content-loaded path={contentRoot} species={_content.Species.Count} environments={_content.Environments.Count}");
 
@@ -97,6 +114,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         var defaultStateFactory = new DefaultStateFactory(_petSimulationEngine);
         _state = await _repository.LoadAsync() ?? defaultStateFactory.Create(_content);
         _state = HydrateLoadedState(_state, _content);
+        _state = ApplyAuditScenarioOverride(_state, _content);
         TraceLog.Write("shell", $"state-ready pinned={_state.IsPinned} pets={_state.ActivePets.Count} basket={_state.BasketItems.Count}");
 
         _homeWindow.Show();
@@ -170,6 +188,12 @@ internal sealed class ShellCoordinator : IAsyncDisposable
                 break;
             case "open-basket":
                 await ToggleBasketAsync();
+                break;
+            case "open-dev-tools":
+                if (_devToolsEnabled)
+                {
+                    await ToggleDevAsync();
+                }
                 break;
         }
     }
@@ -252,10 +276,11 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _homeWindow.Width = HomeWindowWidth;
         _homeWindow.Height = homeHeight;
 
-        _toolPopupWindow.Left = homeLeft + (HomeWindowWidth - ToolWindowWidth);
-        _toolPopupWindow.Top = homeTop - ToolWindowHeight - 10;
-        _toolPopupWindow.Width = ToolWindowWidth;
-        _toolPopupWindow.Height = ToolWindowHeight;
+        var (toolWidth, toolHeight) = GetToolWindowSize();
+        _toolPopupWindow.Left = homeLeft + (HomeWindowWidth - toolWidth);
+        _toolPopupWindow.Width = toolWidth;
+        _toolPopupWindow.Height = toolHeight;
+        _toolPopupWindow.Top = Math.Max(workArea.Y + 10, homeTop - toolHeight - 10);
 
         _roamBandWindow.Left = workArea.X;
         _roamBandWindow.Top = workArea.Bottom - RoamBandHeight;
@@ -268,7 +293,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             _lastLoggedMode = _state.Mode;
         }
 
-        TraceLog.Write("layout", $"home={homeLeft:0},{homeTop:0} {HomeWindowWidth:0}x{homeHeight:0} tool={_toolPopupWindow.Left:0},{_toolPopupWindow.Top:0} {ToolWindowWidth:0}x{ToolWindowHeight:0} roam={_roamBandWindow.Left:0},{_roamBandWindow.Top:0} {_roamBandWindow.Width:0}x{_roamBandWindow.Height:0}");
+        TraceLog.Write("layout", $"home={homeLeft:0},{homeTop:0} {HomeWindowWidth:0}x{homeHeight:0} tool={_toolPopupWindow.Left:0},{_toolPopupWindow.Top:0} {toolWidth:0}x{toolHeight:0} roam={_roamBandWindow.Left:0},{_roamBandWindow.Top:0} {_roamBandWindow.Width:0}x{_roamBandWindow.Height:0}");
 
         ApplyWindowStyles();
         Render();
@@ -290,6 +315,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         OverlayWindowStyler.Apply(_toolPopupWindow, passive || !_state.ActiveTool.IsOpen, passive || pinned);
 
         _homeWindow.SetHudVisible(!passive, GetSettingBool("compact_hud"));
+        _homeWindow.SetDevToolsVisible(_devToolsEnabled && !passive);
         SetWindowVisibility(_roamBandWindow, Visibility.Visible, "RoamBand");
         SetWindowVisibility(_toolPopupWindow, _state.ActiveTool.IsOpen && !passive ? Visibility.Visible : Visibility.Hidden, "ToolPopup");
     }
@@ -307,11 +333,11 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         var actionEnabled = _content.Actions
             .Where(action => action.IsPrimaryAction)
             .ToDictionary(action => action.Id, action => _petSimulationEngine.IsActionEnabled(action.Id, _state.ActivePets), StringComparer.OrdinalIgnoreCase);
-        var recommendedItems = ResolveRecommendedItems(_state);
+        var habitatLoadout = HabitatLoadoutResolver.Resolve(_state, _content);
 
-        _homeWindow.Render(_state, environment, _feedbackText, _assetService, needSnapshot, aggregateStatuses, actionEnabled, recommendedItems);
+        _homeWindow.Render(_state, environment, _feedbackText, _assetService, needSnapshot, aggregateStatuses, actionEnabled, habitatLoadout);
         _roamBandWindow.Render(_state, _assetService);
-        _toolPopupWindow.Render(_state);
+        _toolPopupWindow.Render(_state, _content, habitatLoadout, _assetService, _devToolsEnabled);
     }
 
     private async Task PublishOverlayRegionsAsync(RectInt workArea)
@@ -353,14 +379,56 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         await PersistAsync();
     }
 
+    private async Task ToggleWebToolsAsync()
+    {
+        if (_state is null)
+        {
+            return;
+        }
+
+        var nextVisible = !GetSettingBool("webtools_visible");
+        var nextState = _state with
+        {
+            SettingsSnapshot = WithSetting(_state.SettingsSnapshot, "webtools_visible", nextVisible.ToString())
+        };
+
+        if (!nextVisible && nextState.ActiveTool.IsOpen)
+        {
+            nextState = nextState with
+            {
+                ActiveTool = nextState.ActiveTool with { IsOpen = false }
+            };
+        }
+
+        _state = nextState;
+        TraceLog.Write("ui-command", $"toggle-webtools visible={nextVisible}");
+        ApplyModeAndLayout();
+        await PersistAsync();
+    }
+
     private async Task ToggleBasketAsync()
     {
         await ToggleToolAsync("basket");
     }
 
+    private async Task ToggleActionsAsync()
+    {
+        await ToggleToolAsync("actions");
+    }
+
     private async Task ToggleSettingsAsync()
     {
         await ToggleToolAsync("settings");
+    }
+
+    private async Task ToggleDevAsync()
+    {
+        if (!_devToolsEnabled)
+        {
+            return;
+        }
+
+        await ToggleToolAsync("dev");
     }
 
     private async Task ToggleCompactHudAsync()
@@ -410,9 +478,48 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             return;
         }
 
+        if (string.Equals(actionId, "home", StringComparison.OrdinalIgnoreCase))
+        {
+            _ = ApplyActionSelectionAsync(actionId, null);
+            return;
+        }
+
+        var habitatLoadout = HabitatLoadoutResolver.Resolve(_state, _content);
+        if (!habitatLoadout.ActionOptions.TryGetValue(actionId, out var options) || options.Count <= 1)
+        {
+            _ = ApplyActionSelectionAsync(actionId, options?.FirstOrDefault()?.Id);
+            return;
+        }
+
+        _state = _state with { ActiveTool = new ToolSession($"action:{actionId}", true) };
+        TraceLog.Write("ui-command", $"open-action action={actionId} count={options.Count}");
+        ApplyModeAndLayout();
+        _ = PersistAsync();
+    }
+
+    private async Task ApplyActionSelectionAsync(string actionId, string? itemId)
+    {
+        if (_state is null || _content is null)
+        {
+            return;
+        }
+
+        var actionDefinition = _content.Actions.FirstOrDefault(action => string.Equals(action.Id, actionId, StringComparison.OrdinalIgnoreCase));
+        if (actionDefinition is null)
+        {
+            return;
+        }
+
+        if (!_petSimulationEngine.IsActionEnabled(actionId, _state.ActivePets))
+        {
+            SetFeedback($"{actionDefinition.DisplayName} is not needed right now.");
+            return;
+        }
+
         _state = _state with
         {
-            ActivePets = _petSimulationEngine.ApplyAction(actionId, _state.ActivePets, DateTimeOffset.UtcNow)
+            ActivePets = _petSimulationEngine.ApplyAction(actionId, _state.ActivePets, DateTimeOffset.UtcNow),
+            ActiveTool = new ToolSession("basket", false)
         };
 
         if (string.Equals(actionId, "home", StringComparison.OrdinalIgnoreCase))
@@ -420,12 +527,34 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             _state = _state with { ActiveEnvironmentId = _state.ActivePets.FirstOrDefault()?.SpeciesId ?? _state.ActiveEnvironmentId };
         }
 
-        _feedbackText = string.IsNullOrWhiteSpace(actionDefinition.FeedbackText)
-            ? actionDefinition.EffectSummary
-            : actionDefinition.FeedbackText;
-        TraceLog.Write("action", actionId);
-        Render();
-        _ = PersistAsync();
+        var habitatLoadout = HabitatLoadoutResolver.Resolve(_state, _content);
+        var selectedItem = !string.IsNullOrWhiteSpace(itemId) &&
+                           habitatLoadout.ActionOptions.TryGetValue(actionId, out var options)
+            ? options.FirstOrDefault(option => string.Equals(option.Id, itemId, StringComparison.OrdinalIgnoreCase))
+            : null;
+
+        _feedbackText = selectedItem is null
+            ? HabitatLoadoutResolver.BuildActionFeedback(actionId, actionDefinition, habitatLoadout)
+            : BuildSelectedActionFeedback(actionId, actionDefinition.DisplayName, selectedItem);
+        TraceLog.Write("action", $"{actionId}:{selectedItem?.Id ?? "default"}");
+        await PersistAndRenderAsync();
+    }
+
+    private static string BuildSelectedActionFeedback(string actionId, string actionLabel, HabitatDisplayItem selectedItem)
+    {
+        return actionId switch
+        {
+            "feed" => $"Served {selectedItem.Label.ToLowerInvariant()} for feeding time.",
+            "water" => $"Set out {selectedItem.Label.ToLowerInvariant()} for fresh water.",
+            "rest" => $"Settled everyone into the {selectedItem.Label.ToLowerInvariant()}.",
+            "play" => $"Brought out the {selectedItem.Label.ToLowerInvariant()} for play.",
+            "groom" => $"Used the {selectedItem.Label.ToLowerInvariant()} for grooming.",
+            "bath" => $"Set up bath time with the {selectedItem.Label.ToLowerInvariant()}.",
+            "medicine" => $"Applied the {selectedItem.Label.ToLowerInvariant()} for treatment.",
+            "doctor" => $"Checked everyone over with the {selectedItem.Label.ToLowerInvariant()}.",
+            "home" => $"Called everyone back toward the {selectedItem.Label.ToLowerInvariant()}.",
+            _ => $"{actionLabel} used {selectedItem.Label.ToLowerInvariant()}."
+        };
     }
 
     private async Task AddLinksAsync(IEnumerable<string> urls, string source)
@@ -446,34 +575,14 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             basketItems = _basketService.Add(item, basketItems).ToList();
         }
 
-        _state = _state with { BasketItems = basketItems };
+        _state = _state with
+        {
+            BasketItems = basketItems,
+            SettingsSnapshot = WithSetting(_state.SettingsSnapshot, "webtools_visible", bool.TrueString)
+        };
         SetFeedback(basketItems.Count == 0 ? "No valid links found." : $"Basket now holds {basketItems.Count} link(s).");
         TraceLog.Write("basket", $"source={source} count={basketItems.Count}");
         await PersistAndRenderAsync();
-    }
-
-    private void CopyBasketItem(Guid id)
-    {
-        if (_state is null)
-        {
-            return;
-        }
-
-        var item = _basketService.Get(id, _state.BasketItems);
-        if (item is null)
-        {
-            return;
-        }
-
-        if (!TrySetClipboardText(item.Url))
-        {
-            SetFeedback("Clipboard is busy. Try again in a moment.");
-            return;
-        }
-
-        SetFeedback($"Copied {item.Label}.");
-        TraceLog.Write("basket", $"copy id={id} url={item.Url}");
-        Render();
     }
 
     private async Task OpenBasketItemAsync(Guid id)
@@ -498,15 +607,22 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         Render();
     }
 
-    private async Task DeleteBasketItemAsync(Guid id)
+    private async Task DeleteBasketItemsAsync(IReadOnlyList<Guid> ids)
     {
-        if (_state is null)
+        if (_state is null || ids.Count == 0)
         {
             return;
         }
 
-        _state = _state with { BasketItems = _basketService.Remove(id, _state.BasketItems) };
-        TraceLog.Write("basket", $"delete id={id} count={_state.BasketItems.Count}");
+        var basketItems = _state.BasketItems;
+        foreach (var id in ids)
+        {
+            basketItems = _basketService.Remove(id, basketItems);
+        }
+
+        _state = _state with { BasketItems = basketItems };
+        SetFeedback(ids.Count == 1 ? "Deleted 1 saved link." : $"Deleted {ids.Count} saved links.");
+        TraceLog.Write("basket", $"delete count={ids.Count} remaining={_state.BasketItems.Count}");
         await PersistAndRenderAsync();
     }
 
@@ -642,6 +758,22 @@ internal sealed class ShellCoordinator : IAsyncDisposable
                 {
                     AccentColor = string.IsNullOrWhiteSpace(pet.AccentColor) ? species.AccentColor : pet.AccentColor,
                     ColorVariant = color,
+                    BaseSpeed = pet.BaseSpeed <= 0 ? species.BaseSpeed : pet.BaseSpeed,
+                    Fitness = pet.Fitness <= 0 ? 68 : pet.Fitness,
+                    BiologicalAgeMinutes = pet.BiologicalAgeMinutes <= 0 && pet.AgeStage != PetAgeStage.Baby
+                        ? pet.AgeStage switch
+                        {
+                            PetAgeStage.Teen => 72,
+                            PetAgeStage.Adult => 258,
+                            _ => 0
+                        }
+                        : pet.BiologicalAgeMinutes,
+                    Personality = pet.Personality ?? species.PersonalitySeed ?? new PetPersonalityProfile(),
+                    HabitProfile = pet.HabitProfile ?? new PetHabitProfile(),
+                    ActiveConditions = pet.ActiveConditions ?? (
+                        string.IsNullOrWhiteSpace(species.InnateConditionId)
+                            ? []
+                            : [new PetConditionRecord(species.InnateConditionId, 1, true)]),
                     SelectedEnvironmentId = string.IsNullOrWhiteSpace(pet.SelectedEnvironmentId) ? species.DefaultEnvironmentId : pet.SelectedEnvironmentId,
                     AnimationStartedAtUtc = pet.AnimationStartedAtUtc == default ? DateTimeOffset.UtcNow : pet.AnimationStartedAtUtc,
                     AgeStageStartedAtUtc = pet.AgeStageStartedAtUtc == default ? DateTimeOffset.UtcNow : pet.AgeStageStartedAtUtc,
@@ -665,6 +797,127 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         };
     }
 
+    private CompanionState ApplyAuditScenarioOverride(CompanionState state, GameContent content)
+    {
+        var scenarioPath = Environment.GetEnvironmentVariable("WEVITO_VNEXT_SCENARIO_PATH");
+        if (string.IsNullOrWhiteSpace(scenarioPath) || !File.Exists(scenarioPath))
+        {
+            return state;
+        }
+
+        try
+        {
+            var scenario = JsonSerializer.Deserialize<SpriteAuditScenario>(
+                File.ReadAllText(scenarioPath),
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            if (scenario is null)
+            {
+                return state;
+            }
+
+            var now = DateTimeOffset.UtcNow;
+            var pets = new List<PetActor>();
+            var speciesMap = content.Species.ToDictionary(species => species.Id, StringComparer.OrdinalIgnoreCase);
+            var nextIndex = 1;
+
+            foreach (var petScenario in scenario.Pets ?? [])
+            {
+                if (string.IsNullOrWhiteSpace(petScenario.SpeciesId) || !speciesMap.TryGetValue(petScenario.SpeciesId, out var species))
+                {
+                    continue;
+                }
+
+                var age = Enum.TryParse<PetAgeStage>(petScenario.AgeStage, true, out var parsedAge)
+                    ? parsedAge
+                    : species.SupportedAgeStages?.FirstOrDefault() ?? PetAgeStage.Adult;
+                var gender = Enum.TryParse<PetGender>(petScenario.Gender, true, out var parsedGender)
+                    ? parsedGender
+                    : species.SupportedGenders?.FirstOrDefault() ?? PetGender.Female;
+                var color = ResolveColor(species, string.IsNullOrWhiteSpace(petScenario.ColorVariant) ? "blue" : petScenario.ColorVariant);
+                var pet = _petSimulationEngine.CreatePet(
+                    species,
+                    age,
+                    gender,
+                    color,
+                    string.IsNullOrWhiteSpace(petScenario.Name) ? $"{species.DisplayName} {nextIndex}" : petScenario.Name!,
+                    now,
+                    activeStatuses: [PetStatusType.Comforted],
+                    nextDecisionOffsetSeconds: 0.2 * nextIndex);
+
+                if (Enum.TryParse<PetAnimationState>(petScenario.AnimationState, true, out var parsedAnimation))
+                {
+                    pet = pet with
+                    {
+                        CurrentAnimationState = parsedAnimation,
+                        AnimationStartedAtUtc = now,
+                        OverrideAnimationState = parsedAnimation,
+                        OverrideAnimationEndsAtUtc = now.AddMinutes(10)
+                    };
+                }
+
+                if (!string.IsNullOrWhiteSpace(petScenario.LastActionId))
+                {
+                    var lastActionAtUtc = now.AddSeconds(-Math.Max(0, petScenario.LastActionSecondsAgo ?? 0));
+                    pet = pet with
+                    {
+                        LastActionId = petScenario.LastActionId!,
+                        LastActionAtUtc = lastActionAtUtc,
+                        OverrideAnimationEndsAtUtc = now.AddMinutes(10)
+                    };
+                }
+
+                if (TryParseFacingDirection(petScenario.FacingDirection, out var parsedFacing))
+                {
+                    pet = pet with { FacingDirection = parsedFacing };
+                }
+
+                if (!string.IsNullOrWhiteSpace(petScenario.EnvironmentId))
+                {
+                    pet = pet with { SelectedEnvironmentId = petScenario.EnvironmentId! };
+                }
+
+                pets.Add(pet);
+                nextIndex++;
+            }
+
+            var mode = Enum.TryParse<CompanionMode>(scenario.Mode, true, out var parsedMode)
+                ? parsedMode
+                : state.Mode;
+            var environmentId = !string.IsNullOrWhiteSpace(scenario.ActiveEnvironmentId)
+                ? scenario.ActiveEnvironmentId!
+                : pets.FirstOrDefault()?.SelectedEnvironmentId
+                  ?? pets.FirstOrDefault()?.SpeciesId
+                  ?? state.ActiveEnvironmentId;
+            var settings = state.SettingsSnapshot.ToDictionary(entry => entry.Key, entry => entry.Value, StringComparer.OrdinalIgnoreCase);
+            if (scenario.SettingsSnapshot is not null)
+            {
+                foreach (var entry in scenario.SettingsSnapshot)
+                {
+                    settings[entry.Key] = entry.Value;
+                }
+            }
+
+            TraceLog.Write("audit-scenario", $"path={scenarioPath} pets={pets.Count} mode={mode} env={environmentId}");
+            return state with
+            {
+                Mode = mode,
+                IsPinned = mode == CompanionMode.Pinned,
+                ActiveEnvironmentId = environmentId,
+                ActivePets = pets.Count > 0 ? pets : state.ActivePets,
+                BasketItems = scenario.ClearBasket ? [] : state.BasketItems,
+                ActiveTool = string.IsNullOrWhiteSpace(scenario.ToolId)
+                    ? state.ActiveTool with { IsOpen = scenario.ToolIsOpen ?? state.ActiveTool.IsOpen }
+                    : new ToolSession(scenario.ToolId!, scenario.ToolIsOpen ?? true),
+                SettingsSnapshot = settings
+            };
+        }
+        catch (Exception ex)
+        {
+            TraceLog.Write("audit-scenario", $"failed path={scenarioPath} error={ex.Message}");
+            return state;
+        }
+    }
+
     private async Task ToggleToolAsync(string toolId)
     {
         if (_state is null)
@@ -683,7 +936,8 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _state = _state with
         {
             IsPinned = nextPinned,
-            ActiveTool = new ToolSession(toolId, nextToolState)
+            ActiveTool = new ToolSession(toolId, nextToolState),
+            SettingsSnapshot = WithSetting(_state.SettingsSnapshot, "webtools_visible", bool.TrueString)
         };
         TraceLog.Write("ui-command", $"toggle-tool tool={toolId} open={nextToolState} pinned={nextPinned}");
 
@@ -694,6 +948,87 @@ internal sealed class ShellCoordinator : IAsyncDisposable
 
         ApplyModeAndLayout();
         await PersistAsync();
+    }
+
+    private async Task HandleDevToolCommandAsync(DevToolCommand command)
+    {
+        if (!_devToolsEnabled || _state is null || _content is null)
+        {
+            return;
+        }
+
+        switch (command.Kind)
+        {
+            case DevToolCommandKind.SelectPet:
+                _state = _state with { SettingsSnapshot = WithSetting(_state.SettingsSnapshot, "dev_selected_pet_id", command.PetId?.ToString() ?? string.Empty) };
+                break;
+
+            case DevToolCommandKind.AddPet:
+                _state = AddDevPet(_state, command);
+                break;
+
+            case DevToolCommandKind.RemovePet:
+                _state = RemoveDevPet(_state, command.PetId);
+                break;
+
+            case DevToolCommandKind.RemoveAllPets:
+                _state = RemoveAllDevPets(_state);
+                break;
+
+            case DevToolCommandKind.SpawnColorSet:
+                _state = SpawnDevColorSet(_state, command);
+                break;
+
+            case DevToolCommandKind.ApplyAppearance:
+                _state = ApplyPetAppearance(_state, command);
+                break;
+
+            case DevToolCommandKind.ApplyEnvironment:
+                _state = ApplyDevEnvironment(_state, command);
+                break;
+
+            case DevToolCommandKind.ApplyPreset:
+                _state = ApplyDevPreset(_state, command);
+                break;
+
+            case DevToolCommandKind.ApplyVitals:
+                _state = ApplyDevVitals(_state, command);
+                break;
+
+            case DevToolCommandKind.ApplyAnimation:
+                _state = ApplyDevAnimation(_state, command);
+                break;
+
+            case DevToolCommandKind.ClearAnimation:
+                _state = ClearDevAnimation(_state, command.PetId);
+                break;
+
+            case DevToolCommandKind.SetCondition:
+                _state = SetDevCondition(_state, command);
+                break;
+
+            case DevToolCommandKind.ClearCondition:
+                _state = ClearDevCondition(_state, command);
+                break;
+        }
+
+        _state = _state with
+        {
+            ActivePets = _petSimulationEngine.ApplyLayout(
+                _state.ActivePets,
+                _homeWindow.Left + _homeWindow.GetStageRect().X + 24,
+                _homeWindow.Top + _homeWindow.GetStageRect().Y + 20,
+                _homeWindow.GetStageRect().Width - 48,
+                _homeWindow.GetStageRect().Height - 36)
+        };
+        var workArea = _desktopContext?.WorkArea ?? new RectInt(0, 0, (int)SystemParameters.WorkArea.Width, (int)SystemParameters.WorkArea.Height);
+        var roamBandRect = new RectInt(workArea.X, workArea.Bottom - (int)RoamBandHeight, workArea.Width, (int)RoamBandHeight);
+        _state = _state with
+        {
+            ActivePets = _petSimulationEngine.Tick(_state.ActivePets, _state.Mode, roamBandRect, DateTimeOffset.UtcNow, 0)
+        };
+        SetFeedback($"Dev command applied: {command.Kind}");
+        await PersistAndRenderAsync();
     }
 
     private double GetHomeWindowHeight()
@@ -711,6 +1046,16 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         return GetSettingBool("compact_hud") ? HomeWindowCompactHeight : HomeWindowFullHeight;
     }
 
+    private (double Width, double Height) GetToolWindowSize()
+    {
+        if (_state is not null && string.Equals(_state.ActiveTool.ToolId, "dev", StringComparison.OrdinalIgnoreCase) && _devToolsEnabled)
+        {
+            return (DevToolWindowWidth, DevToolWindowHeight);
+        }
+
+        return (ToolWindowWidth, ToolWindowHeight);
+    }
+
     private bool GetSettingBool(string key, bool defaultValue = false)
     {
         if (_state is null)
@@ -726,32 +1071,13 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         return defaultValue;
     }
 
-    private IReadOnlyList<ItemDefinition> ResolveRecommendedItems(CompanionState state)
-    {
-        if (_content is null || state.ActivePets.Count == 0)
-        {
-            return [];
-        }
-
-        var speciesIds = state.ActivePets
-            .Select(pet => pet.SpeciesId)
-            .Distinct(StringComparer.OrdinalIgnoreCase)
-            .ToHashSet(StringComparer.OrdinalIgnoreCase);
-
-        return _content.Items
-            .Where(item =>
-                (item.SpeciesIds?.Count ?? 0) == 0 ||
-                (item.SpeciesIds?.Any(speciesId => speciesIds.Contains(speciesId)) ?? false))
-            .Take(4)
-            .ToList();
-    }
-
     private static IReadOnlyDictionary<string, string> ApplyDefaultSettings(IReadOnlyDictionary<string, string> settings)
     {
         var hydrated = new Dictionary<string, string>(settings, StringComparer.OrdinalIgnoreCase);
         hydrated.TryAdd("compact_hud", bool.FalseString);
         hydrated.TryAdd("show_pet_names", bool.FalseString);
         hydrated.TryAdd("show_status_summary", bool.TrueString);
+        hydrated.TryAdd("webtools_visible", bool.FalseString);
         return hydrated;
     }
 
@@ -778,4 +1104,463 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         window.Visibility = visibility;
         TraceLog.Write("visibility", $"window={name} visibility={visibility}");
     }
+
+    private IReadOnlyDictionary<string, string> WithSetting(IReadOnlyDictionary<string, string> settings, string key, string value)
+    {
+        var next = new Dictionary<string, string>(settings, StringComparer.OrdinalIgnoreCase);
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            next.Remove(key);
+        }
+        else
+        {
+            next[key] = value;
+        }
+
+        return next;
+    }
+
+    private CompanionState AddDevPet(CompanionState state, DevToolCommand command)
+    {
+        var species = ResolveSpecies(command.SpeciesId);
+        var ageStage = command.AgeStage ?? species.SupportedAgeStages?.FirstOrDefault() ?? PetAgeStage.Adult;
+        var gender = command.Gender ?? species.SupportedGenders?.FirstOrDefault() ?? PetGender.Female;
+        var color = ResolveColor(species, command.ColorVariant);
+        var existingCount = state.ActivePets.Count(pet => string.Equals(pet.SpeciesId, species.Id, StringComparison.OrdinalIgnoreCase));
+        var pet = _petSimulationEngine.CreatePet(
+            species,
+            ageStage,
+            gender,
+            color,
+            $"{species.DisplayName} {existingCount + 1}",
+            DateTimeOffset.UtcNow,
+            activeStatuses: [PetStatusType.Comforted]);
+        var pets = state.ActivePets.Concat([pet]).ToList();
+        return state with
+        {
+            ActivePets = pets,
+            ActiveEnvironmentId = string.IsNullOrWhiteSpace(state.ActiveEnvironmentId) ? species.DefaultEnvironmentId : state.ActiveEnvironmentId,
+            SettingsSnapshot = WithSetting(state.SettingsSnapshot, "dev_selected_pet_id", pet.Id.ToString())
+        };
+    }
+
+    private CompanionState RemoveDevPet(CompanionState state, Guid? petId)
+    {
+        if (petId is null)
+        {
+            return state;
+        }
+
+        var pets = state.ActivePets.Where(pet => pet.Id != petId.Value).ToList();
+        var nextSelected = pets.FirstOrDefault()?.Id.ToString() ?? string.Empty;
+        return state with
+        {
+            ActivePets = pets,
+            SettingsSnapshot = WithSetting(state.SettingsSnapshot, "dev_selected_pet_id", nextSelected)
+        };
+    }
+
+    private CompanionState RemoveAllDevPets(CompanionState state)
+    {
+        return state with
+        {
+            ActivePets = [],
+            SettingsSnapshot = WithSetting(state.SettingsSnapshot, "dev_selected_pet_id", string.Empty)
+        };
+    }
+
+    private CompanionState SpawnDevColorSet(CompanionState state, DevToolCommand command)
+    {
+        var species = ResolveSpecies(command.SpeciesId);
+        var ageStage = command.AgeStage ?? species.SupportedAgeStages?.FirstOrDefault() ?? PetAgeStage.Adult;
+        var gender = command.Gender ?? species.SupportedGenders?.FirstOrDefault() ?? PetGender.Female;
+        var colors = species.SupportedColors?.ToList() ?? ["blue"];
+        var now = DateTimeOffset.UtcNow;
+        var pets = state.ActivePets.ToList();
+
+        foreach (var color in colors)
+        {
+            if (pets.Any(pet =>
+                string.Equals(pet.SpeciesId, species.Id, StringComparison.OrdinalIgnoreCase) &&
+                pet.AgeStage == ageStage &&
+                pet.Gender == gender &&
+                string.Equals(pet.ColorVariant, color, StringComparison.OrdinalIgnoreCase)))
+            {
+                continue;
+            }
+
+            var variantIndex = pets.Count(pet => string.Equals(pet.SpeciesId, species.Id, StringComparison.OrdinalIgnoreCase)) + 1;
+            pets.Add(_petSimulationEngine.CreatePet(
+                species,
+                ageStage,
+                gender,
+                color,
+                $"{species.DisplayName} {variantIndex}",
+                now,
+                activeStatuses: [PetStatusType.Comforted]));
+        }
+
+        var selectedPetId = pets.LastOrDefault()?.Id.ToString() ?? string.Empty;
+        return state with
+        {
+            ActivePets = pets,
+            ActiveEnvironmentId = species.DefaultEnvironmentId,
+            SettingsSnapshot = WithSetting(state.SettingsSnapshot, "dev_selected_pet_id", selectedPetId)
+        };
+    }
+
+    private CompanionState ApplyPetAppearance(CompanionState state, DevToolCommand command)
+    {
+        if (command.PetId is null)
+        {
+            return state;
+        }
+
+        var species = ResolveSpecies(command.SpeciesId);
+        var ageStage = command.AgeStage ?? PetAgeStage.Adult;
+        var gender = command.Gender ?? PetGender.Female;
+        var color = ResolveColor(species, command.ColorVariant);
+        var now = DateTimeOffset.UtcNow;
+        var pets = state.ActivePets
+            .Select(pet => pet.Id != command.PetId.Value
+                ? pet
+                : _petSimulationEngine.ReconfigurePet(pet, species, ageStage, gender, color, now))
+            .ToList();
+        return state with
+        {
+            ActivePets = pets,
+            ActiveEnvironmentId = species.DefaultEnvironmentId,
+            SettingsSnapshot = WithSetting(state.SettingsSnapshot, "dev_selected_pet_id", command.PetId.Value.ToString())
+        };
+    }
+
+    private CompanionState ApplyDevEnvironment(CompanionState state, DevToolCommand command)
+    {
+        if (string.IsNullOrWhiteSpace(command.EnvironmentId) || _content is null)
+        {
+            return state;
+        }
+
+        var environment = _content.Environments.FirstOrDefault(item => string.Equals(item.Id, command.EnvironmentId, StringComparison.OrdinalIgnoreCase));
+        if (environment is null)
+        {
+            return state;
+        }
+
+        var pets = state.ActivePets
+            .Select(pet => command.PetId is null || pet.Id == command.PetId.Value
+                ? pet with { SelectedEnvironmentId = environment.Id }
+                : pet)
+            .ToList();
+
+        return state with
+        {
+            ActiveEnvironmentId = environment.Id,
+            ActivePets = pets
+        };
+    }
+
+    private CompanionState ApplyDevPreset(CompanionState state, DevToolCommand command)
+    {
+        if (command.PetId is null)
+        {
+            return state;
+        }
+
+        var now = DateTimeOffset.UtcNow;
+        var pets = state.ActivePets.Select(pet =>
+        {
+            if (pet.Id != command.PetId.Value)
+            {
+                return pet;
+            }
+
+            return command.PresetId switch
+            {
+                "hungry" => pet with { Hunger = 8, Health = Math.Max(pet.Health, 72) },
+                "thirsty" => pet with { Thirst = 8, Health = Math.Max(pet.Health, 72) },
+                "tired" => pet with { Energy = 8 },
+                "dirty" => pet with { Cleanliness = 8 },
+                "lonely" => pet with { Affection = 8, Comfort = 18 },
+                "sick" => pet with { Health = 26, Comfort = 30 },
+                "healthy" => pet with
+                {
+                    Health = 100,
+                    Hunger = Math.Max(pet.Hunger, 70),
+                    Thirst = Math.Max(pet.Thirst, 70),
+                    Energy = Math.Max(pet.Energy, 70),
+                    Cleanliness = Math.Max(pet.Cleanliness, 70),
+                    Fitness = Math.Max(pet.Fitness, 64),
+                    HabitProfile = (pet.HabitProfile ?? new PetHabitProfile()) with { Nutrition = 78, Hydration = 78, Exercise = 72, Hygiene = 76, Affection = 76, Rest = 76, Medical = 82, Stress = 16 },
+                    ActiveConditions = (pet.ActiveConditions ?? []).Where(condition => condition.IsInnate).ToList()
+                },
+                "comforted" => pet with { Comfort = 96, Affection = 96, Health = Math.Max(pet.Health, 80) },
+                "obese" => pet with
+                {
+                    Hunger = 98,
+                    Fitness = 18,
+                    ActiveConditions = ReplaceCondition(pet.ActiveConditions, new PetConditionRecord("obesity", 2, false))
+                },
+                "malnourished" => pet with
+                {
+                    Hunger = 6,
+                    Health = Math.Min(pet.Health, 42),
+                    ActiveConditions = ReplaceCondition(pet.ActiveConditions, new PetConditionRecord("malnutrition", 2, false))
+                },
+                "anxious" => pet with
+                {
+                    Affection = 10,
+                    Comfort = 12,
+                    ActiveConditions = ReplaceCondition(pet.ActiveConditions, new PetConditionRecord("anxiety", 2, false))
+                },
+                "depressed" => pet with
+                {
+                    Affection = 12,
+                    Comfort = 16,
+                    Health = Math.Min(pet.Health, 56),
+                    ActiveConditions = ReplaceCondition(pet.ActiveConditions, new PetConditionRecord("depression", 2, false))
+                },
+                "injured" => pet with
+                {
+                    Fitness = 14,
+                    Energy = 18,
+                    Health = Math.Min(pet.Health, 44),
+                    ActiveConditions = ReplaceCondition(pet.ActiveConditions, new PetConditionRecord("injury", 2, false))
+                },
+                "elder" => pet with
+                {
+                    BiologicalAgeMinutes = 520,
+                    Energy = Math.Min(pet.Energy, 48),
+                    Fitness = Math.Min(pet.Fitness, 40)
+                },
+                "foodie" => pet with { Personality = (pet.Personality ?? new PetPersonalityProfile()) with { FoodLove = 68, Cheerfulness = 18 } },
+                "cuddly" => pet with { Personality = (pet.Personality ?? new PetPersonalityProfile()) with { CuddleNeed = 70, SocialNeed = 56 } },
+                "neat" => pet with { Personality = (pet.Personality ?? new PetPersonalityProfile()) with { CleanlinessPreference = 72, Stubbornness = -12 } },
+                "playful" => pet with { Personality = (pet.Personality ?? new PetPersonalityProfile()) with { Playfulness = 72, ActivityLevel = 64, Cheerfulness = 32 } },
+                "stubborn" => pet with { Personality = (pet.Personality ?? new PetPersonalityProfile()) with { Stubbornness = 76, Cheerfulness = -10 } },
+                "resilient" => pet with
+                {
+                    Personality = (pet.Personality ?? new PetPersonalityProfile()) with { Cheerfulness = 60, Stubbornness = -18 },
+                    HabitProfile = (pet.HabitProfile ?? new PetHabitProfile()) with { Nutrition = 82, Hydration = 82, Exercise = 78, Hygiene = 80, Affection = 82, Rest = 80, Medical = 84, Stress = 14 }
+                },
+                "recall" => pet with
+                {
+                    TargetX = pet.HomeX,
+                    TargetY = pet.HomeY,
+                    BehaviorState = PetBehaviorState.Recalling,
+                    OverrideAnimationState = PetAnimationState.Idle,
+                    OverrideAnimationEndsAtUtc = now.AddSeconds(1.0),
+                    AnimationStartedAtUtc = now
+                },
+                _ => pet
+            };
+        }).ToList();
+
+        return state with { ActivePets = pets };
+    }
+
+    private CompanionState ApplyDevVitals(CompanionState state, DevToolCommand command)
+    {
+        if (command.PetId is null)
+        {
+            return state;
+        }
+
+        var pets = state.ActivePets.Select(pet =>
+        {
+            if (pet.Id != command.PetId.Value)
+            {
+                return pet;
+            }
+
+            return pet with
+            {
+                Hunger = command.Hunger ?? pet.Hunger,
+                Thirst = command.Thirst ?? pet.Thirst,
+                Energy = command.Energy ?? pet.Energy,
+                Cleanliness = command.Cleanliness ?? pet.Cleanliness,
+                Affection = command.Affection ?? pet.Affection,
+                Comfort = command.Comfort ?? pet.Comfort,
+                Health = command.Health ?? pet.Health,
+                Fitness = command.Fitness ?? pet.Fitness,
+                BiologicalAgeMinutes = command.BiologicalAgeMinutes ?? pet.BiologicalAgeMinutes
+            };
+        }).ToList();
+
+        return state with { ActivePets = pets };
+    }
+
+    private CompanionState ApplyDevAnimation(CompanionState state, DevToolCommand command)
+    {
+        if (command.PetId is null || command.AnimationState is null)
+        {
+            return state;
+        }
+
+        var now = DateTimeOffset.UtcNow;
+        var durationSeconds = Math.Clamp(command.OverrideDurationSeconds ?? 8.0, 0.5, 600);
+        var pets = state.ActivePets.Select(pet =>
+        {
+            if (pet.Id != command.PetId.Value)
+            {
+                return pet;
+            }
+
+            return pet with
+            {
+                CurrentAnimationState = command.AnimationState.Value,
+                OverrideAnimationState = command.AnimationState.Value,
+                OverrideAnimationEndsAtUtc = now.AddSeconds(durationSeconds),
+                AnimationStartedAtUtc = now
+            };
+        }).ToList();
+
+        return state with { ActivePets = pets };
+    }
+
+    private CompanionState ClearDevAnimation(CompanionState state, Guid? petId)
+    {
+        if (petId is null)
+        {
+            return state;
+        }
+
+        var pets = state.ActivePets.Select(pet =>
+        {
+            if (pet.Id != petId.Value)
+            {
+                return pet;
+            }
+
+            return pet with
+            {
+                OverrideAnimationState = null,
+                OverrideAnimationEndsAtUtc = null,
+                AnimationStartedAtUtc = DateTimeOffset.UtcNow
+            };
+        }).ToList();
+
+        return state with { ActivePets = pets };
+    }
+
+    private CompanionState SetDevCondition(CompanionState state, DevToolCommand command)
+    {
+        if (command.PetId is null || string.IsNullOrWhiteSpace(command.ConditionId))
+        {
+            return state;
+        }
+
+        var severity = Math.Clamp(command.ConditionSeverity ?? 1, 1, 3);
+        var pets = state.ActivePets.Select(pet =>
+        {
+            if (pet.Id != command.PetId.Value)
+            {
+                return pet;
+            }
+
+            var isInnate = (pet.ActiveConditions ?? []).Any(condition =>
+                string.Equals(condition.Id, command.ConditionId, StringComparison.OrdinalIgnoreCase) &&
+                condition.IsInnate);
+
+            return pet with
+            {
+                ActiveConditions = ReplaceCondition(pet.ActiveConditions, new PetConditionRecord(command.ConditionId, severity, isInnate))
+            };
+        }).ToList();
+
+        return state with { ActivePets = pets };
+    }
+
+    private CompanionState ClearDevCondition(CompanionState state, DevToolCommand command)
+    {
+        if (command.PetId is null || string.IsNullOrWhiteSpace(command.ConditionId))
+        {
+            return state;
+        }
+
+        var pets = state.ActivePets.Select(pet =>
+        {
+            if (pet.Id != command.PetId.Value)
+            {
+                return pet;
+            }
+
+            var nextConditions = (pet.ActiveConditions ?? [])
+                .Where(condition =>
+                    !string.Equals(condition.Id, command.ConditionId, StringComparison.OrdinalIgnoreCase) ||
+                    condition.IsInnate)
+                .ToList();
+
+            return pet with
+            {
+                ActiveConditions = nextConditions
+            };
+        }).ToList();
+
+        return state with { ActivePets = pets };
+    }
+
+    private static IReadOnlyList<PetConditionRecord> ReplaceCondition(IReadOnlyList<PetConditionRecord>? source, PetConditionRecord replacement)
+    {
+        var next = (source ?? []).Where(condition => !string.Equals(condition.Id, replacement.Id, StringComparison.OrdinalIgnoreCase)).ToList();
+        next.Add(replacement);
+        return next.OrderBy(condition => condition.Id, StringComparer.OrdinalIgnoreCase).ToList();
+    }
+
+    private SpeciesDefinition ResolveSpecies(string speciesId)
+    {
+        return _content!.Species.FirstOrDefault(species => string.Equals(species.Id, speciesId, StringComparison.OrdinalIgnoreCase))
+            ?? _content.Species.First();
+    }
+
+    private static string ResolveColor(SpeciesDefinition species, string requestedColor)
+    {
+        var supported = species.SupportedColors?.ToList() ?? ["blue"];
+        return supported.FirstOrDefault(color => string.Equals(color, requestedColor, StringComparison.OrdinalIgnoreCase))
+            ?? supported.First();
+    }
+
+    private static bool TryParseFacingDirection(JsonElement? value, out PetFacingDirection direction)
+    {
+        direction = PetFacingDirection.Right;
+        if (value is null)
+        {
+            return false;
+        }
+
+        var element = value.Value;
+        if (element.ValueKind == JsonValueKind.String)
+        {
+            return Enum.TryParse(element.GetString(), true, out direction);
+        }
+
+        if (element.ValueKind == JsonValueKind.Number && element.TryGetInt32(out var numeric))
+        {
+            direction = numeric < 0 ? PetFacingDirection.Left : PetFacingDirection.Right;
+            return true;
+        }
+
+        return false;
+    }
+
+    private sealed record SpriteAuditScenario(
+        string? Mode,
+        string? ActiveEnvironmentId,
+        bool ClearBasket = false,
+        string? ToolId = null,
+        bool? ToolIsOpen = null,
+        IReadOnlyDictionary<string, string>? SettingsSnapshot = null,
+        IReadOnlyList<SpriteAuditPetScenario>? Pets = null);
+
+    private sealed record SpriteAuditPetScenario(
+        string? SpeciesId,
+        string? AgeStage,
+        string? Gender,
+        string? ColorVariant,
+        string? AnimationState,
+        string? LastActionId,
+        double? LastActionSecondsAgo,
+        JsonElement? FacingDirection,
+        string? EnvironmentId,
+        string? Name);
 }

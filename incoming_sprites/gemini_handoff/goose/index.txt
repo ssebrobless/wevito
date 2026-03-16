@@ -1,0 +1,6 @@
+C:\Users\fishe\Documents\projects\wevito\incoming_sprites\gemini_handoff\goose\adult\male
+C:\Users\fishe\Documents\projects\wevito\incoming_sprites\gemini_handoff\goose\adult\female
+C:\Users\fishe\Documents\projects\wevito\incoming_sprites\gemini_handoff\goose\teen\male
+C:\Users\fishe\Documents\projects\wevito\incoming_sprites\gemini_handoff\goose\teen\female
+C:\Users\fishe\Documents\projects\wevito\incoming_sprites\gemini_handoff\goose\baby\male
+C:\Users\fishe\Documents\projects\wevito\incoming_sprites\gemini_handoff\goose\baby\female

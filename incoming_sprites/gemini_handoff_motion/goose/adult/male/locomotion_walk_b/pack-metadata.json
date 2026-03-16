@@ -1,0 +1,25 @@
+{
+  "species": "goose",
+  "ageStage": "adult",
+  "gender": "male",
+  "family": "locomotion_walk_b",
+  "boardImage": "locomotion_walk_b-editable-board.png",
+  "runtimeReferenceImage": "locomotion_walk_b-runtime-reference-blue.png",
+  "frameLayout": [
+    [
+      "walk_03",
+      "walk_04",
+      "walk_05",
+      null,
+      null
+    ]
+  ],
+  "colors": [
+    "red",
+    "orange",
+    "yellow",
+    "blue",
+    "indigo",
+    "violet"
+  ]
+}

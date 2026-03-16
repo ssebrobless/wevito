@@ -5,6 +5,15 @@ namespace Wevito.VNext.Shell;
 
 internal static class BrokerProcessManager
 {
+    public static bool IsDevelopmentBuild()
+    {
+#if DEBUG
+        return true;
+#else
+        return string.Equals(Environment.GetEnvironmentVariable("WEVITO_VNEXT_DEVTOOLS"), "1", StringComparison.Ordinal);
+#endif
+    }
+
     public static Process Start(string pipeName)
     {
         var (fileName, arguments) = ResolveBrokerLaunch(pipeName);
@@ -27,9 +36,19 @@ internal static class BrokerProcessManager
         return ResolveDirectory("sprites", "sprites", "Could not resolve sprite directory.");
     }
 
+    public static string ResolveSharedSpriteRuntimeRoot()
+    {
+        return ResolveDirectory("sprites_shared_runtime", "sprites_shared_runtime", "Could not resolve cleaned shared sprite directory.");
+    }
+
     public static string ResolveSpriteRuntimeRoot()
     {
         return ResolveDirectory("sprites_runtime", "sprites_runtime", "Could not resolve runtime sprite directory.");
+    }
+
+    public static string ResolveSpriteAuthoredRoot()
+    {
+        return ResolveOrCreateDirectory("sprites_authored_verified", "sprites_authored_verified");
     }
 
     private static (string FileName, string Arguments) ResolveBrokerLaunch(string pipeName)
@@ -97,5 +116,25 @@ internal static class BrokerProcessManager
         }
 
         throw new DirectoryNotFoundException(errorMessage);
+    }
+
+    private static string ResolveOrCreateDirectory(string siblingDirectory, string repoRelativeDirectory)
+    {
+        var nextToExe = Path.Combine(AppContext.BaseDirectory, siblingDirectory);
+        if (Directory.Exists(nextToExe))
+        {
+            return nextToExe;
+        }
+
+        var repoRoot = FindRepoRoot(AppContext.BaseDirectory);
+        if (repoRoot is not null)
+        {
+            var candidate = Path.Combine(repoRoot, repoRelativeDirectory);
+            Directory.CreateDirectory(candidate);
+            return candidate;
+        }
+
+        Directory.CreateDirectory(nextToExe);
+        return nextToExe;
     }
 }

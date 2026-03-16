@@ -39,6 +39,7 @@ internal sealed class BrokerApplicationContext : ApplicationContext
         _pinMenuItem = new ToolStripMenuItem("Pin HUD", null, (_, _) => PublishHotkey("toggle-pinned"));
         var captureMenuItem = new ToolStripMenuItem("Capture Clipboard Link", null, (_, _) => PublishHotkey("capture-basket"));
         var basketMenuItem = new ToolStripMenuItem("Open Basket", null, (_, _) => PublishHotkey("open-basket"));
+        var devMenuItem = new ToolStripMenuItem("Open Dev Tools", null, (_, _) => PublishHotkey("open-dev-tools"));
 
         _notifyIcon = new NotifyIcon
         {
@@ -52,6 +53,7 @@ internal sealed class BrokerApplicationContext : ApplicationContext
             _pinMenuItem,
             captureMenuItem,
             basketMenuItem,
+            devMenuItem,
             new ToolStripSeparator(),
             new ToolStripMenuItem("Exit", null, (_, _) => ExitThread())
         ]);

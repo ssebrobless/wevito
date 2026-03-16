@@ -1,0 +1,7 @@
+C:\Users\fishe\Documents\projects\wevito\vnext\artifacts\broker\Wevito.VNext.Broker.exe
+C:\Users\fishe\Documents\projects\wevito\vnext\artifacts\broker\Wevito.VNext.Broker.dll
+C:\Users\fishe\Documents\projects\wevito\vnext\artifacts\broker\Wevito.VNext.Broker.deps.json
+C:\Users\fishe\Documents\projects\wevito\vnext\artifacts\broker\Wevito.VNext.Broker.runtimeconfig.json
+C:\Users\fishe\Documents\projects\wevito\vnext\artifacts\broker\Wevito.VNext.Broker.pdb
+C:\Users\fishe\Documents\projects\wevito\vnext\artifacts\broker\Wevito.VNext.Contracts.dll
+C:\Users\fishe\Documents\projects\wevito\vnext\artifacts\broker\Wevito.VNext.Contracts.pdb

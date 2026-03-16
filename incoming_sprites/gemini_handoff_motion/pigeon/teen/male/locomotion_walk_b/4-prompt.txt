@@ -1,0 +1,60 @@
+Generate an IMAGE ONLY.
+
+Do not answer with text.
+Do not explain anything.
+Do not provide JSON.
+Do not provide a table.
+
+You are editing a focused pixel-art motion board for a desktop virtual pet game.
+
+Use the uploaded teen male pigeon motion pack as the design anchor.
+The single uploaded image contains:
+- the canonical base pose
+- the current motion reference
+- the editable labeled motion board
+
+Preserve the exact uploaded pigeon identity, proportions, face, silhouette, outline weight, and shading style.
+Do not redesign the pigeon.
+
+Treat the editable motion board panel inside the uploaded pack as the board to edit.
+Keep the board layout, frame positions, transparency, and labels intact.
+Do not remove labels.
+Do not add labels.
+Do not add extra frames.
+Do not change the board dimensions.
+
+Only improve these frames:
+- walk_03
+- walk_04
+- walk_05
+
+Leave all other frames in this board unchanged.
+
+Goals:
+- Only improve walk_03 through walk_05.
+- These frames should complete the second half of a realistic species-specific locomotion cycle.
+- Keep the animal grounded, readable, and on-model with stable pacing that matches the first half.
+- Move as a grounded hop-step bird with visible leg motion, full chest silhouette, and tiny balancing wing flutters when hopping.
+
+
+Style goals:
+- pixel art only
+- crisp edges
+- no blur
+- no anti-aliasing
+- preserve the original uploaded pigeon appearance exactly
+
+Important:
+- male should stay slightly larger and bolder
+- teen motion should feel a little lighter and more alert than adult
+- background must be fully transparent anywhere outside the animal and board labels
+- each labeled frame cell must contain a complete readable pose for that frame
+- do not leave checkerboard residue, matte halos, clipped silhouettes, or bright cleanup specks
+- do not change palette relationships
+- do not make it look like a different artist
+
+- Preserve a fully filled chest and body mass in every frame.
+- Do NOT hollow out the torso, chest, wing interior, or belly.
+- Keep the internal shading and solid silhouette volume intact.
+
+Return only the edited image.

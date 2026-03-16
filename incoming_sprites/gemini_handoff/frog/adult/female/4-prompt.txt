@@ -1,0 +1,70 @@
+Generate an IMAGE ONLY.
+
+Do not answer with text.
+Do not explain anything.
+Do not provide JSON.
+Do not provide a table.
+
+You are editing an existing pixel-art animation board for a small desktop virtual pet game.
+
+Use the uploaded adult female frog reference pack as the design anchor.
+The single uploaded image contains:
+- the canonical base pose
+- the current runtime reference
+- the editable labeled animation board
+
+Preserve the exact uploaded frog identity, proportions, face, silhouette, outline weight, paws/feet placement language, and shading style.
+Do not redesign the frog.
+
+Treat the editable labeled board panel inside the uploaded reference pack as the board to edit.
+Keep the board layout, frame positions, transparency, and labels intact.
+Do not remove labels.
+Do not add labels.
+Do not add extra frames.
+Do not change the board dimensions.
+
+Only improve these frames:
+- idle_00
+- idle_01
+- idle_02
+- idle_03
+- walk_00
+- walk_01
+- walk_02
+- walk_03
+- walk_04
+- walk_05
+
+Leave all other frames visually unchanged.
+
+Idle goals:
+- subtle breathing
+- tiny head motion
+- tiny ear / whisker / blink variation only when appropriate
+- no exaggerated bounce
+
+Walk goals:
+- grounded side-view walk
+- clear foot alternation
+- slight body weight shift
+- stable baseline
+- no jitter
+- no sliding
+- no exaggerated vertical bobbing
+
+Style goals:
+- pixel art only
+- crisp edges
+- no blur
+- no anti-aliasing
+- slightly moody, cute, vulnerable tone
+- preserve the original uploaded frog appearance exactly
+
+Important:
+- female should stay slightly smaller and calmer
+- adult motion should feel mature, grounded, and controlled
+- do not repaint untouched frames
+- do not change palette relationships
+- do not make it look like a different artist
+
+Return only the edited image.

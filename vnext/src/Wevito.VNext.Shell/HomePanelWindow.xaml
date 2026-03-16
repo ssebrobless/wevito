@@ -3,14 +3,75 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:automation="clr-namespace:System.Windows.Automation;assembly=PresentationCore"
         Title="Wevito Home Panel"
-        Width="392"
-        Height="560"
+        Width="660"
+        Height="910"
         WindowStyle="None"
         AllowsTransparency="True"
         Background="Transparent"
         ResizeMode="NoResize"
         ShowInTaskbar="False"
         Topmost="True">
+    <Window.Resources>
+        <Style x:Key="HudButtonStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="#FFF0F4F5" />
+            <Setter Property="Background" Value="#20323D" />
+            <Setter Property="BorderBrush" Value="#617C88" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="8,4" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="ButtonBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              Margin="{TemplateBinding Padding}" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.92" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.8" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.45" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="WebToolTabStyle"
+               TargetType="Button"
+               BasedOn="{StaticResource HudButtonStyle}">
+            <Setter Property="Background" Value="#1A2831" />
+            <Setter Property="BorderBrush" Value="#50626B" />
+            <Setter Property="FontSize" Value="10" />
+        </Style>
+
+        <Style x:Key="ActionButtonStyle"
+               TargetType="Button"
+               BasedOn="{StaticResource HudButtonStyle}">
+            <Setter Property="Background" Value="#15212A" />
+            <Setter Property="BorderBrush" Value="#465D68" />
+            <Setter Property="Padding" Value="6,4" />
+            <Setter Property="FontWeight" Value="Normal" />
+        </Style>
+
+        <Style x:Key="HudProgressBarStyle" TargetType="ProgressBar">
+            <Setter Property="Height" Value="10" />
+            <Setter Property="Foreground" Value="#5ED36D" />
+            <Setter Property="Background" Value="#1B242C" />
+            <Setter Property="BorderBrush" Value="#40515A" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+    </Window.Resources>
     <Border x:Name="PanelBorder"
             Background="#F61B2228"
             BorderBrush="#FF72858B"
@@ -21,17 +82,18 @@
             UseLayoutRounding="True">
         <StackPanel>
             <Grid x:Name="HeaderPanel">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
-                <StackPanel Orientation="Vertical">
+                <StackPanel Grid.Row="0"
+                            Grid.Column="0"
+                            Orientation="Vertical">
                     <TextBlock x:Name="TitleText"
                                Text="Wevito"
                                Foreground="#FFF1F3F4"
@@ -44,49 +106,123 @@
                                FontSize="11" />
                 </StackPanel>
 
-                <Button x:Name="PinButton"
-                        Grid.Column="1"
-                        Margin="6,0,0,0"
-                        Padding="8,4"
-                        automation:AutomationProperties.AutomationId="PinButton"
-                        Content="PIN"
-                        Click="PinButton_OnClick" />
-                <Button x:Name="BasketButton"
-                        Grid.Column="2"
-                        Margin="6,0,0,0"
-                        Padding="8,4"
-                        automation:AutomationProperties.AutomationId="BasketButton"
-                        Content="BIN"
-                        Click="BasketButton_OnClick" />
-                <Button x:Name="CaptureButton"
-                        Grid.Column="3"
-                        Margin="6,0,0,0"
-                        Padding="8,4"
-                        automation:AutomationProperties.AutomationId="CaptureButton"
-                        Content="CAP"
-                        Click="CaptureButton_OnClick" />
-                <Button x:Name="SettingsButton"
-                        Grid.Column="4"
-                        Margin="6,0,0,0"
-                        Padding="8,4"
-                        automation:AutomationProperties.AutomationId="SettingsButton"
-                        Content="SET"
-                        Click="SettingsButton_OnClick" />
-                <Button x:Name="CompactButton"
-                        Grid.Column="5"
-                        Margin="6,0,0,0"
-                        Padding="8,4"
-                        automation:AutomationProperties.AutomationId="CompactButton"
-                        Content="MIN"
-                        Click="CompactButton_OnClick" />
-                <Button x:Name="SaveButton"
-                        Grid.Column="6"
-                        Margin="6,0,0,0"
-                        Padding="8,4"
-                        automation:AutomationProperties.AutomationId="SaveButton"
-                        Content="SAVE"
-                        Click="SaveButton_OnClick" />
+                <WrapPanel Grid.Row="0"
+                           Grid.Column="1"
+                           HorizontalAlignment="Right"
+                           VerticalAlignment="Top"
+                           Margin="8,0,0,0">
+                    <Button x:Name="PinButton"
+                            Margin="6,0,0,0"
+                            Style="{StaticResource HudButtonStyle}"
+                            MinWidth="42"
+                            automation:AutomationProperties.AutomationId="PinButton"
+                            Content="PIN"
+                            Click="PinButton_OnClick" />
+                    <Button x:Name="ActionsButton"
+                            Margin="6,0,0,0"
+                            Style="{StaticResource HudButtonStyle}"
+                            MinWidth="60"
+                            automation:AutomationProperties.AutomationId="ActionsButton"
+                            Content="ACTIONS"
+                            Click="ActionsButton_OnClick" />
+                    <Button x:Name="WebToolsButton"
+                            Margin="6,0,0,0"
+                            Style="{StaticResource HudButtonStyle}"
+                            MinWidth="54"
+                            automation:AutomationProperties.AutomationId="WebToolsButton"
+                            Content="TOOLS"
+                            Click="WebToolsButton_OnClick" />
+                    <Button x:Name="SettingsButton"
+                            Margin="6,0,0,0"
+                            Style="{StaticResource HudButtonStyle}"
+                            MinWidth="66"
+                            automation:AutomationProperties.AutomationId="SettingsButton"
+                            Content="SETTINGS"
+                            Click="SettingsButton_OnClick" />
+                </WrapPanel>
+
+                <WrapPanel Grid.Row="1"
+                           Grid.ColumnSpan="2"
+                           HorizontalAlignment="Right"
+                           Margin="0,8,0,0"
+                           Visibility="Collapsed">
+                    <Button x:Name="CompactButton"
+                            Margin="6,0,0,0"
+                            Style="{StaticResource HudButtonStyle}"
+                            MinWidth="44"
+                            automation:AutomationProperties.AutomationId="CompactButton"
+                            Content="MIN"
+                            Click="CompactButton_OnClick" />
+                    <Button x:Name="SaveButton"
+                            Margin="6,0,0,0"
+                            Style="{StaticResource HudButtonStyle}"
+                            MinWidth="48"
+                            automation:AutomationProperties.AutomationId="SaveButton"
+                            Content="SAVE"
+                            Click="SaveButton_OnClick" />
+                    <Button x:Name="DevButton"
+                            Margin="6,0,0,0"
+                            Style="{StaticResource HudButtonStyle}"
+                            MinWidth="42"
+                            Visibility="Collapsed"
+                            automation:AutomationProperties.AutomationId="DevButton"
+                            Content="DEV"
+                            Click="DevButton_OnClick" />
+                </WrapPanel>
             </Grid>
+
+            <Border x:Name="WebToolsBar"
+                    Margin="0,10,0,0"
+                    Padding="8"
+                    Background="#D028323A"
+                    BorderBrush="#FF61757C"
+                    BorderThickness="1"
+                    CornerRadius="12"
+                    Visibility="Collapsed">
+                <StackPanel>
+                    <TextBlock Text="Web tools"
+                               Foreground="#FFF0F4F5"
+                               FontSize="11"
+                               FontWeight="SemiBold" />
+                    <UniformGrid Margin="0,8,0,0"
+                                 Columns="5">
+                        <Button x:Name="LinkBinTabButton"
+                                Style="{StaticResource WebToolTabStyle}"
+                                Margin="0,0,6,0"
+                                automation:AutomationProperties.AutomationId="LinkBinTabButton"
+                                Content="LINK BIN"
+                                Click="LinkBinTabButton_OnClick" />
+                        <Button x:Name="WebToolSlot2Button"
+                                Style="{StaticResource WebToolTabStyle}"
+                                Margin="0,0,6,0"
+                                IsEnabled="False"
+                                automation:AutomationProperties.AutomationId="WebToolSlot2Button"
+                                Content="EMPTY" />
+                        <Button x:Name="WebToolSlot3Button"
+                                Style="{StaticResource WebToolTabStyle}"
+                                Margin="0,0,6,0"
+                                IsEnabled="False"
+                                automation:AutomationProperties.AutomationId="WebToolSlot3Button"
+                                Content="EMPTY" />
+                        <Button x:Name="WebToolSlot4Button"
+                                Style="{StaticResource WebToolTabStyle}"
+                                Margin="0,0,6,0"
+                                IsEnabled="False"
+                                automation:AutomationProperties.AutomationId="WebToolSlot4Button"
+                                Content="EMPTY" />
+                        <Button x:Name="WebToolSlot5Button"
+                                Style="{StaticResource WebToolTabStyle}"
+                                IsEnabled="False"
+                                automation:AutomationProperties.AutomationId="WebToolSlot5Button"
+                                Content="EMPTY" />
+                    </UniformGrid>
+                    <TextBlock x:Name="WebToolsHintText"
+                               Margin="0,8,0,0"
+                               Foreground="#FFD3DBDE"
+                               FontSize="10"
+                               Text="Open the link bin to save, browse, and launch copied links." />
+                </StackPanel>
+            </Border>
 
             <TextBlock x:Name="ModeText"
                        Margin="0,10,0,10"
@@ -94,52 +230,14 @@
                        FontSize="11"
                        Text="Focused" />
 
-            <Border x:Name="StageBorder"
-                    CornerRadius="14"
-                    Background="#FF52616B"
-                    BorderBrush="#FF92A6A6"
-                    BorderThickness="1">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*" />
-                        <RowDefinition Height="22" />
-                    </Grid.RowDefinitions>
-                    <Image x:Name="StageBackgroundImage"
-                           Grid.RowSpan="2"
-                           Stretch="Fill"
-                           SnapsToDevicePixels="True"
-                           RenderOptions.BitmapScalingMode="NearestNeighbor" />
-                    <Rectangle x:Name="StageGradient"
-                               Grid.RowSpan="2"
-                               RadiusX="14"
-                               RadiusY="14"
-                               Fill="#88434F57" />
-                    <Image x:Name="CelestialImage"
-                           Width="28"
-                           Height="28"
-                           Margin="0,10,10,0"
-                           HorizontalAlignment="Right"
-                           VerticalAlignment="Top"
-                           Stretch="Fill"
-                           RenderOptions.BitmapScalingMode="NearestNeighbor" />
-                    <Canvas x:Name="HomePetCanvas"
-                            Margin="0,0,0,10" />
-                    <Border x:Name="EnvironmentChrome"
-                            Grid.Row="1"
-                            Background="#AA2F3B41"
-                            CornerRadius="0,0,14,14">
-                        <TextBlock x:Name="EnvironmentLabel"
-                                   Margin="12,0"
-                                   VerticalAlignment="Center"
-                                   Foreground="#FFE6ECEF"
-                                   FontSize="11"
-                                   Text="Corner Garden" />
-                    </Border>
-                </Grid>
-            </Border>
-
-            <StackPanel x:Name="StatusPanel"
-                        Margin="0,10,0,0">
+            <Border x:Name="StatusCard"
+                    Margin="0,10,0,0"
+                    Padding="8"
+                    Background="#8E182129"
+                    BorderBrush="#3348545B"
+                    BorderThickness="1"
+                    CornerRadius="12">
+            <StackPanel x:Name="StatusPanel">
                 <TextBlock x:Name="StatusText"
                            Foreground="#FFE1E6E9"
                            FontSize="11"
@@ -149,15 +247,23 @@
                 <WrapPanel x:Name="RecommendedItemPanel"
                            Margin="0,6,0,0" />
             </StackPanel>
+            </Border>
 
-            <StackPanel x:Name="HudPanel"
-                        Margin="0,10,0,0">
+            <Border x:Name="HudCard"
+                    Margin="0,10,0,0"
+                    Padding="10"
+                    Background="#8E182129"
+                    BorderBrush="#3348545B"
+                    BorderThickness="1"
+                    CornerRadius="12">
+            <StackPanel x:Name="HudPanel">
                 <UniformGrid Columns="2">
                     <StackPanel Margin="0,0,8,8">
                         <TextBlock Text="Hunger"
                                    Foreground="#FFF0F4F5"
                                    FontSize="10" />
                         <ProgressBar x:Name="HungerBar"
+                                     Style="{StaticResource HudProgressBarStyle}"
                                      Height="10"
                                      Maximum="100"
                                      Value="80" />
@@ -167,37 +273,43 @@
                                    Foreground="#FFF0F4F5"
                                    FontSize="10" />
                         <ProgressBar x:Name="ThirstBar"
+                                     Style="{StaticResource HudProgressBarStyle}"
                                      Height="10"
                                      Maximum="100"
                                      Value="80" />
                     </StackPanel>
-                    <StackPanel Margin="0,0,8,8">
+                    <StackPanel Margin="0,0,8,0">
                         <TextBlock Text="Energy"
                                    Foreground="#FFF0F4F5"
                                    FontSize="10" />
                         <ProgressBar x:Name="EnergyBar"
+                                     Style="{StaticResource HudProgressBarStyle}"
                                      Height="10"
                                      Maximum="100"
                                      Value="80" />
                     </StackPanel>
-                    <StackPanel Margin="0,0,0,8">
+                    <StackPanel Margin="0,0,0,0">
                         <TextBlock Text="Clean"
                                    Foreground="#FFF0F4F5"
                                    FontSize="10" />
                         <ProgressBar x:Name="CleanlinessBar"
+                                     Style="{StaticResource HudProgressBarStyle}"
                                      Height="10"
                                      Maximum="100"
                                      Value="80" />
                     </StackPanel>
                 </UniformGrid>
 
-                <UniformGrid Margin="0,8,0,0"
+                <UniformGrid x:Name="HiddenActionGrid"
+                             Margin="0,8,0,0"
                              Columns="3"
-                             Rows="3">
+                             Rows="3"
+                             Visibility="Collapsed">
                     <Button x:Name="FeedButton"
                             Margin="0,0,6,6"
-                            Padding="6,4"
+                            Style="{StaticResource ActionButtonStyle}"
                             automation:AutomationProperties.AutomationId="FeedButton"
+                            automation:AutomationProperties.Name="Feed"
                             Click="FeedButton_OnClick">
                         <StackPanel>
                             <Image x:Name="FeedIcon"
@@ -211,8 +323,9 @@
                     </Button>
                     <Button x:Name="WaterButton"
                             Margin="0,0,6,6"
-                            Padding="6,4"
+                            Style="{StaticResource ActionButtonStyle}"
                             automation:AutomationProperties.AutomationId="WaterButton"
+                            automation:AutomationProperties.Name="Water"
                             Click="WaterButton_OnClick">
                         <StackPanel>
                             <Image x:Name="WaterIcon"
@@ -226,8 +339,9 @@
                     </Button>
                     <Button x:Name="RestButton"
                             Margin="0,0,0,6"
-                            Padding="6,4"
+                            Style="{StaticResource ActionButtonStyle}"
                             automation:AutomationProperties.AutomationId="RestButton"
+                            automation:AutomationProperties.Name="Rest"
                             Click="RestButton_OnClick">
                         <StackPanel>
                             <Image x:Name="RestIcon"
@@ -241,8 +355,9 @@
                     </Button>
                     <Button x:Name="PlayButton"
                             Margin="0,0,6,6"
-                            Padding="6,4"
+                            Style="{StaticResource ActionButtonStyle}"
                             automation:AutomationProperties.AutomationId="PlayButton"
+                            automation:AutomationProperties.Name="Play"
                             Click="PlayButton_OnClick">
                         <StackPanel>
                             <Image x:Name="PlayIcon"
@@ -256,8 +371,9 @@
                     </Button>
                     <Button x:Name="GroomButton"
                             Margin="0,0,6,6"
-                            Padding="6,4"
+                            Style="{StaticResource ActionButtonStyle}"
                             automation:AutomationProperties.AutomationId="GroomButton"
+                            automation:AutomationProperties.Name="Groom"
                             Click="GroomButton_OnClick">
                         <StackPanel>
                             <Image x:Name="GroomIcon"
@@ -271,8 +387,9 @@
                     </Button>
                     <Button x:Name="BathButton"
                             Margin="0,0,0,6"
-                            Padding="6,4"
+                            Style="{StaticResource ActionButtonStyle}"
                             automation:AutomationProperties.AutomationId="BathButton"
+                            automation:AutomationProperties.Name="Bath"
                             Click="BathButton_OnClick">
                         <StackPanel>
                             <Image x:Name="BathIcon"
@@ -286,8 +403,9 @@
                     </Button>
                     <Button x:Name="MedicineButton"
                             Margin="0,0,6,0"
-                            Padding="6,4"
+                            Style="{StaticResource ActionButtonStyle}"
                             automation:AutomationProperties.AutomationId="MedicineButton"
+                            automation:AutomationProperties.Name="Medicine"
                             Click="MedicineButton_OnClick">
                         <StackPanel>
                             <Image x:Name="MedicineIcon"
@@ -301,8 +419,9 @@
                     </Button>
                     <Button x:Name="DoctorButton"
                             Margin="0,0,6,0"
-                            Padding="6,4"
+                            Style="{StaticResource ActionButtonStyle}"
                             automation:AutomationProperties.AutomationId="DoctorButton"
+                            automation:AutomationProperties.Name="Doctor"
                             Click="DoctorButton_OnClick">
                         <StackPanel>
                             <Image x:Name="DoctorIcon"
@@ -315,8 +434,9 @@
                         </StackPanel>
                     </Button>
                     <Button x:Name="HomeButton"
-                            Padding="6,4"
+                            Style="{StaticResource ActionButtonStyle}"
                             automation:AutomationProperties.AutomationId="HomeButton"
+                            automation:AutomationProperties.Name="Home"
                             Click="HomeButton_OnClick">
                         <StackPanel>
                             <Image x:Name="HomeIcon"
@@ -330,12 +450,50 @@
                     </Button>
                 </UniformGrid>
             </StackPanel>
+            </Border>
 
             <TextBlock x:Name="FeedbackText"
-                       Margin="0,12,0,0"
+                       Margin="0,10,0,0"
                        Foreground="#FFF3C969"
                        FontSize="11"
                        TextWrapping="Wrap" />
+
+            <Border x:Name="StageBorder"
+                    Margin="0,12,0,0"
+                    CornerRadius="14"
+                    Background="Transparent"
+                    BorderBrush="#66889795"
+                    BorderThickness="1"
+                    Height="300">
+                <Grid>
+                    <Image x:Name="StageBackgroundImage"
+                           Visibility="Collapsed"
+                           Stretch="Fill"
+                           SnapsToDevicePixels="True"
+                           RenderOptions.BitmapScalingMode="NearestNeighbor" />
+                    <Rectangle x:Name="StageGradient"
+                               Visibility="Collapsed"
+                               RadiusX="14"
+                               RadiusY="14"
+                               Fill="#88434F57" />
+                    <Image x:Name="CelestialImage"
+                           Width="44"
+                           Height="44"
+                           Margin="0,10,10,0"
+                           HorizontalAlignment="Right"
+                           VerticalAlignment="Top"
+                           Stretch="Fill"
+                           RenderOptions.BitmapScalingMode="NearestNeighbor" />
+                    <Canvas x:Name="StageBackdropCanvas"
+                            IsHitTestVisible="False" />
+                    <Canvas x:Name="StagePropCanvas"
+                            IsHitTestVisible="False" />
+                    <Canvas x:Name="StageDecorationCanvas"
+                            IsHitTestVisible="False" />
+                    <Canvas x:Name="HomePetCanvas"
+                            IsHitTestVisible="False" />
+                </Grid>
+            </Border>
         </StackPanel>
     </Border>
 </Window>

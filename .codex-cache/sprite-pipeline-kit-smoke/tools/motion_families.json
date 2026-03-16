@@ -1,0 +1,57 @@
+{
+  "notes": [
+    "Customize these motion families for your project.",
+    "Split dense families into smaller packs when Gemini output gets blurry.",
+    "The examples below are defaults, not requirements."
+  ],
+  "preset": "prop",
+  "families": {
+  "idle": {
+    "description": "static or ambient idle state",
+    "frames": [
+      "idle_00"
+    ]
+  },
+  "open_close_a": {
+    "description": "first half of open/close cycle",
+    "frames": [
+      "open_00",
+      "open_01",
+      "open_02"
+    ]
+  },
+  "open_close_b": {
+    "description": "second half of open/close cycle",
+    "frames": [
+      "open_03",
+      "open_04",
+      "open_05"
+    ]
+  },
+  "active_loop": {
+    "description": "powered/active loop",
+    "frames": [
+      "active_00",
+      "active_01",
+      "active_02"
+    ]
+  },
+  "break": {
+    "description": "break or failure state",
+    "frames": [
+      "break_00",
+      "break_01"
+    ]
+  }
+},
+  "variantAxes": [
+  "state",
+  "theme",
+  "palette"
+],
+  "seedEntities": [
+  "door",
+  "console",
+  "chest"
+]
+}

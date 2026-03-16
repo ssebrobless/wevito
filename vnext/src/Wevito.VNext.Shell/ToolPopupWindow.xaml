@@ -3,8 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:automation="clr-namespace:System.Windows.Automation;assembly=PresentationCore"
         Title="Wevito Basket"
-        Width="320"
-        Height="240"
+        Width="450"
+        Height="344"
         WindowStyle="None"
         AllowsTransparency="True"
         Background="Transparent"
@@ -13,6 +13,193 @@
         Topmost="True"
         AllowDrop="True"
         Drop="ToolPopupWindow_OnDrop">
+    <Window.Resources>
+        <Style x:Key="PopupButtonStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="#FFF0F4F5" />
+            <Setter Property="Background" Value="#20394A" />
+            <Setter Property="BorderBrush" Value="#5F88A1" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="8,6" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="ButtonBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              Margin="{TemplateBinding Padding}" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.92" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.8" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.45" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="PopupDangerButtonStyle"
+               TargetType="Button"
+               BasedOn="{StaticResource PopupButtonStyle}">
+            <Setter Property="Background" Value="#3D2626" />
+            <Setter Property="BorderBrush" Value="#8E5B5B" />
+        </Style>
+
+        <Style x:Key="PopupMiniButtonStyle"
+               TargetType="Button"
+               BasedOn="{StaticResource PopupButtonStyle}">
+            <Setter Property="Padding" Value="6,3" />
+            <Setter Property="FontSize" Value="10" />
+        </Style>
+
+        <Style x:Key="PopupComboBoxItemStyle" TargetType="ComboBoxItem">
+            <Setter Property="Foreground" Value="#FFF0F4F5" />
+            <Setter Property="Background" Value="#1A2831" />
+            <Setter Property="Padding" Value="8,5" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBoxItem">
+                        <Border x:Name="ItemBorder"
+                                Background="{TemplateBinding Background}"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsHighlighted" Value="True">
+                                <Setter TargetName="ItemBorder" Property="Background" Value="#284455" />
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="ItemBorder" Property="Background" Value="#305569" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="PopupComboBoxStyle" TargetType="ComboBox">
+            <Setter Property="Foreground" Value="#FFF0F4F5" />
+            <Setter Property="Background" Value="#1A2831" />
+            <Setter Property="BorderBrush" Value="#52656F" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="8,5" />
+            <Setter Property="ItemContainerStyle" Value="{StaticResource PopupComboBoxItemStyle}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Grid>
+                            <Border x:Name="RootBorder"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="4">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="28" />
+                                    </Grid.ColumnDefinitions>
+                                    <ContentPresenter Grid.Column="0"
+                                                      Margin="{TemplateBinding Padding}"
+                                                      VerticalAlignment="Center"
+                                                      Content="{TemplateBinding SelectionBoxItem}"
+                                                      ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" />
+                                    <Border Grid.Column="1"
+                                            Background="#243640"
+                                            BorderBrush="#52656F"
+                                            BorderThickness="1,0,0,0"
+                                            CornerRadius="0,4,4,0">
+                                        <Path HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              Fill="#FFD9E5EA"
+                                              Data="M 0 0 L 4 4 L 8 0 Z" />
+                                    </Border>
+                                </Grid>
+                            </Border>
+                            <Popup x:Name="PART_Popup"
+                                   Placement="Bottom"
+                                   AllowsTransparency="True"
+                                   Focusable="False"
+                                   IsOpen="{TemplateBinding IsDropDownOpen}"
+                                   PopupAnimation="Fade">
+                                <Border Margin="0,4,0,0"
+                                        MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}"
+                                        Background="#1A2831"
+                                        BorderBrush="#52656F"
+                                        BorderThickness="1"
+                                        CornerRadius="4">
+                                    <ScrollViewer MaxHeight="240"
+                                                  SnapsToDevicePixels="True">
+                                        <StackPanel IsItemsHost="True"
+                                                    KeyboardNavigation.DirectionalNavigation="Contained" />
+                                    </ScrollViewer>
+                                </Border>
+                            </Popup>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="RootBorder" Property="BorderBrush" Value="#7FA2B5" />
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                                <Setter TargetName="RootBorder" Property="BorderBrush" Value="#9AC4D8" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="RootBorder" Property="Opacity" Value="0.5" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="PopupCheckBoxStyle" TargetType="CheckBox">
+            <Setter Property="Foreground" Value="#FFF0F4F5" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <StackPanel Orientation="Horizontal">
+                            <Border x:Name="CheckBorder"
+                                    Width="16"
+                                    Height="16"
+                                    Margin="0,0,8,0"
+                                    Background="#1A2831"
+                                    BorderBrush="#52656F"
+                                    BorderThickness="1"
+                                    CornerRadius="3">
+                                <Path x:Name="CheckMark"
+                                      Data="M 2 8 L 6 12 L 13 3"
+                                      Stroke="#FFF0F4F5"
+                                      StrokeThickness="2"
+                                      Stretch="Fill"
+                                      Visibility="Collapsed" />
+                            </Border>
+                            <ContentPresenter VerticalAlignment="Center" />
+                        </StackPanel>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="CheckBorder" Property="Background" Value="#24465A" />
+                                <Setter TargetName="CheckBorder" Property="BorderBrush" Value="#7FA2B5" />
+                                <Setter TargetName="CheckMark" Property="Visibility" Value="Visible" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="CheckBorder" Property="Opacity" Value="0.45" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
     <Border Background="#F61F242A"
             BorderBrush="#FF86939B"
             BorderThickness="1"
@@ -38,6 +225,7 @@
                 <Button x:Name="CloseButton"
                         Grid.Column="1"
                         Padding="10,4"
+                        Style="{StaticResource PopupButtonStyle}"
                         automation:AutomationProperties.AutomationId="ToolCloseButton"
                         Content="Close"
                         Click="CloseButton_OnClick" />
@@ -46,10 +234,326 @@
             <Grid Grid.Row="1"
                   Margin="0,10,0,10">
                 <Grid x:Name="BasketPanel">
-                    <ListBox x:Name="BasketList"
-                             automation:AutomationProperties.AutomationId="BasketList"
-                             DisplayMemberPath="Label" />
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock x:Name="BasketSummaryText"
+                               Margin="0,0,0,8"
+                               Foreground="#FFD6DCDE"
+                               FontSize="11"
+                               Text="Saved links appear here." />
+
+                    <DataGrid x:Name="BasketGrid"
+                              Grid.Row="1"
+                              automation:AutomationProperties.AutomationId="BasketGrid"
+                              MouseDoubleClick="BasketGrid_OnMouseDoubleClick"
+                              AutoGenerateColumns="False"
+                              HeadersVisibility="Column"
+                              CanUserAddRows="False"
+                              CanUserDeleteRows="False"
+                              CanUserResizeRows="False"
+                              CanUserReorderColumns="False"
+                              IsReadOnly="False"
+                              GridLinesVisibility="Horizontal"
+                              RowHeaderWidth="0"
+                              SelectionMode="Single"
+                              SelectionUnit="FullRow"
+                              RowHeight="32"
+                              ColumnHeaderHeight="28"
+                              Background="#192026"
+                              BorderBrush="#44525A"
+                              BorderThickness="1"
+                              AlternatingRowBackground="#12272E"
+                              RowBackground="#0E1A20">
+                        <DataGrid.Resources>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="Background" Value="#203039" />
+                                <Setter Property="Foreground" Value="#FFF0F4F5" />
+                                <Setter Property="BorderBrush" Value="#44525A" />
+                                <Setter Property="BorderThickness" Value="0,0,0,1" />
+                                <Setter Property="FontSize" Value="10" />
+                                <Setter Property="FontWeight" Value="SemiBold" />
+                                <Setter Property="Padding" Value="8,5" />
+                            </Style>
+                            <Style TargetType="DataGridCell">
+                                <Setter Property="Foreground" Value="#FFF0F4F5" />
+                                <Setter Property="BorderThickness" Value="0" />
+                                <Setter Property="Padding" Value="6,4" />
+                                <Setter Property="VerticalContentAlignment" Value="Center" />
+                                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                            </Style>
+                            <Style TargetType="DataGridRow">
+                                <Setter Property="Background" Value="#0E1A20" />
+                                <Setter Property="Foreground" Value="#FFF0F4F5" />
+                                <Setter Property="BorderThickness" Value="0" />
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#12303A" />
+                                    </Trigger>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="Background" Value="#1A3946" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGrid.Resources>
+                        <DataGrid.Columns>
+                            <DataGridCheckBoxColumn Binding="{Binding IsMarked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                    Width="44"
+                                                    Header="DEL" />
+                            <DataGridTemplateColumn Header="LINK"
+                                                    Width="*">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Padding="0"
+                                                Background="Transparent"
+                                                BorderThickness="0"
+                                                HorizontalAlignment="Left"
+                                                HorizontalContentAlignment="Left"
+                                                automation:AutomationProperties.AutomationId="BasketLinkButton"
+                                                Tag="{Binding Id}"
+                                                Click="BasketLinkButton_OnClick">
+                                            <TextBlock Text="{Binding Label}"
+                                                       TextTrimming="CharacterEllipsis"
+                                                       FontSize="12"
+                                                       Foreground="#FFBFE7FF" />
+                                        </Button>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Header="HOST"
+                                                    Width="112"
+                                                    IsReadOnly="True">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Border Background="#20313A"
+                                                BorderBrush="#4A6672"
+                                                BorderThickness="1"
+                                                CornerRadius="9"
+                                                Padding="6,2"
+                                                HorizontalAlignment="Left">
+                                            <TextBlock Text="{Binding Host}"
+                                                       FontSize="10"
+                                                       Foreground="#FFE7EEF1" />
+                                        </Border>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Header="SAVED"
+                                                    Width="86"
+                                                    IsReadOnly="True">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding CapturedLabel}"
+                                                   FontSize="10"
+                                                   Foreground="#FFB7C4C9"
+                                                   HorizontalAlignment="Right" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
                 </Grid>
+
+                <Grid x:Name="ActionPanel"
+                      Visibility="Collapsed">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock x:Name="ActionSummaryText"
+                               Margin="0,0,0,8"
+                               Foreground="#FFD6DCDE"
+                               FontSize="11"
+                               Text="Choose an item for this action." />
+
+                    <DataGrid x:Name="ActionGrid"
+                              Grid.Row="1"
+                              automation:AutomationProperties.AutomationId="ActionGrid"
+                              AutoGenerateColumns="False"
+                              HeadersVisibility="Column"
+                              CanUserAddRows="False"
+                              CanUserDeleteRows="False"
+                              CanUserResizeRows="False"
+                              CanUserReorderColumns="False"
+                              IsReadOnly="True"
+                              GridLinesVisibility="Horizontal"
+                              RowHeaderWidth="0"
+                              SelectionMode="Single"
+                              SelectionUnit="FullRow"
+                              RowHeight="38"
+                              ColumnHeaderHeight="28"
+                              Background="#192026"
+                              BorderBrush="#44525A"
+                              BorderThickness="1"
+                              AlternatingRowBackground="#12272E"
+                              RowBackground="#0E1A20">
+                        <DataGrid.Resources>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="Background" Value="#203039" />
+                                <Setter Property="Foreground" Value="#FFF0F4F5" />
+                                <Setter Property="BorderBrush" Value="#44525A" />
+                                <Setter Property="BorderThickness" Value="0,0,0,1" />
+                                <Setter Property="FontSize" Value="10" />
+                                <Setter Property="FontWeight" Value="SemiBold" />
+                                <Setter Property="Padding" Value="8,5" />
+                            </Style>
+                            <Style TargetType="DataGridCell">
+                                <Setter Property="Foreground" Value="#FFF0F4F5" />
+                                <Setter Property="BorderThickness" Value="0" />
+                                <Setter Property="Padding" Value="6,4" />
+                                <Setter Property="VerticalContentAlignment" Value="Center" />
+                                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                            </Style>
+                            <Style TargetType="DataGridRow">
+                                <Setter Property="Background" Value="#0E1A20" />
+                                <Setter Property="Foreground" Value="#FFF0F4F5" />
+                                <Setter Property="BorderThickness" Value="0" />
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#12303A" />
+                                    </Trigger>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="Background" Value="#1A3946" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGrid.Resources>
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn Header="USE"
+                                                    Width="58">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Padding="8,3"
+                                                Style="{StaticResource PopupMiniButtonStyle}"
+                                                automation:AutomationProperties.AutomationId="ActionOptionButton"
+                                                Tag="{Binding Key}"
+                                                Click="ActionOptionButton_OnClick"
+                                                Content="USE" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Header="ITEM"
+                                                    Width="*">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Image Source="{Binding Preview}"
+                                                   Width="28"
+                                                   Height="28"
+                                                   Margin="0,0,8,0"
+                                                   SnapsToDevicePixels="True"
+                                                   UseLayoutRounding="True"
+                                                   RenderOptions.BitmapScalingMode="NearestNeighbor"
+                                                   RenderOptions.EdgeMode="Aliased" />
+                                            <StackPanel>
+                                                <TextBlock Text="{Binding Label}"
+                                                           FontSize="12"
+                                                           Foreground="#FFF0F4F5" />
+                                                <TextBlock Text="{Binding DetailLabel}"
+                                                           FontSize="10"
+                                                           Foreground="#FFB7C4C9" />
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Header="TYPE"
+                                                    Width="86">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Border Background="#20313A"
+                                                BorderBrush="#4A6672"
+                                                BorderThickness="1"
+                                                CornerRadius="9"
+                                                Padding="6,2"
+                                                HorizontalAlignment="Left">
+                                            <TextBlock Text="{Binding CategoryLabel}"
+                                                       FontSize="10"
+                                                       Foreground="#FFE7EEF1" />
+                                        </Border>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+
+                <StackPanel x:Name="ActionMenuPanel"
+                            Visibility="Collapsed">
+                    <TextBlock x:Name="ActionMenuSummaryText"
+                               Margin="0,0,0,8"
+                               Foreground="#FFD6DCDE"
+                               FontSize="11"
+                               Text="Choose an action to open its prepared options." />
+                    <UniformGrid Columns="3"
+                                 Rows="3">
+                        <Button x:Name="ActionMenuFeedButton"
+                                Margin="0,0,6,6"
+                                Style="{StaticResource PopupButtonStyle}"
+                                automation:AutomationProperties.AutomationId="ActionMenuFeedButton"
+                                Content="Feed"
+                                Click="ActionMenuButton_OnClick"
+                                Tag="feed" />
+                        <Button x:Name="ActionMenuWaterButton"
+                                Margin="0,0,6,6"
+                                Style="{StaticResource PopupButtonStyle}"
+                                automation:AutomationProperties.AutomationId="ActionMenuWaterButton"
+                                Content="Water"
+                                Click="ActionMenuButton_OnClick"
+                                Tag="water" />
+                        <Button x:Name="ActionMenuRestButton"
+                                Margin="0,0,0,6"
+                                Style="{StaticResource PopupButtonStyle}"
+                                automation:AutomationProperties.AutomationId="ActionMenuRestButton"
+                                Content="Rest"
+                                Click="ActionMenuButton_OnClick"
+                                Tag="rest" />
+                        <Button x:Name="ActionMenuPlayButton"
+                                Margin="0,0,6,6"
+                                Style="{StaticResource PopupButtonStyle}"
+                                automation:AutomationProperties.AutomationId="ActionMenuPlayButton"
+                                Content="Play"
+                                Click="ActionMenuButton_OnClick"
+                                Tag="play" />
+                        <Button x:Name="ActionMenuGroomButton"
+                                Margin="0,0,6,6"
+                                Style="{StaticResource PopupButtonStyle}"
+                                automation:AutomationProperties.AutomationId="ActionMenuGroomButton"
+                                Content="Groom"
+                                Click="ActionMenuButton_OnClick"
+                                Tag="groom" />
+                        <Button x:Name="ActionMenuBathButton"
+                                Margin="0,0,0,6"
+                                Style="{StaticResource PopupButtonStyle}"
+                                automation:AutomationProperties.AutomationId="ActionMenuBathButton"
+                                Content="Bath"
+                                Click="ActionMenuButton_OnClick"
+                                Tag="bath" />
+                        <Button x:Name="ActionMenuMedicineButton"
+                                Margin="0,0,6,0"
+                                Style="{StaticResource PopupButtonStyle}"
+                                automation:AutomationProperties.AutomationId="ActionMenuMedicineButton"
+                                Content="Medicine"
+                                Click="ActionMenuButton_OnClick"
+                                Tag="medicine" />
+                        <Button x:Name="ActionMenuDoctorButton"
+                                Margin="0,0,6,0"
+                                Style="{StaticResource PopupButtonStyle}"
+                                automation:AutomationProperties.AutomationId="ActionMenuDoctorButton"
+                                Content="Doctor"
+                                Click="ActionMenuButton_OnClick"
+                                Tag="doctor" />
+                        <Button x:Name="ActionMenuHomeButton"
+                                Style="{StaticResource PopupButtonStyle}"
+                                automation:AutomationProperties.AutomationId="ActionMenuHomeButton"
+                                Content="Home"
+                                Click="ActionMenuButton_OnClick"
+                                Tag="home" />
+                    </UniformGrid>
+                </StackPanel>
 
                 <StackPanel x:Name="SettingsPanel"
                             Visibility="Collapsed">
@@ -59,6 +563,7 @@
                                TextWrapping="Wrap" />
                     <CheckBox x:Name="CompactHudCheckBox"
                               Margin="0,12,0,0"
+                              Style="{StaticResource PopupCheckBoxStyle}"
                               automation:AutomationProperties.AutomationId="CompactHudCheckBox"
                               Content="Compact focused HUD"
                               Foreground="#FFF0F4F5"
@@ -66,6 +571,7 @@
                               Unchecked="CompactHudCheckBox_OnChanged" />
                     <CheckBox x:Name="ShowPetNamesCheckBox"
                               Margin="0,8,0,0"
+                              Style="{StaticResource PopupCheckBoxStyle}"
                               automation:AutomationProperties.AutomationId="ShowPetNamesCheckBox"
                               Content="Show pet names in the habitat"
                               Foreground="#FFF0F4F5"
@@ -73,33 +579,437 @@
                               Unchecked="ShowPetNamesCheckBox_OnChanged" />
                     <CheckBox x:Name="ShowStatusSummaryCheckBox"
                               Margin="0,8,0,0"
+                              Style="{StaticResource PopupCheckBoxStyle}"
                               automation:AutomationProperties.AutomationId="ShowStatusSummaryCheckBox"
                               Content="Show status summary text"
                               Foreground="#FFF0F4F5"
                               Checked="ShowStatusSummaryCheckBox_OnChanged"
                               Unchecked="ShowStatusSummaryCheckBox_OnChanged" />
+                    <UniformGrid Margin="0,12,0,0"
+                                 Columns="2">
+                        <Button x:Name="SettingsSaveButton"
+                                Margin="0,0,6,0"
+                                Style="{StaticResource PopupButtonStyle}"
+                                automation:AutomationProperties.AutomationId="SettingsSaveButton"
+                                Content="Save now"
+                                Click="SettingsSaveButton_OnClick" />
+                        <Button x:Name="SettingsDevButton"
+                                Style="{StaticResource PopupButtonStyle}"
+                                automation:AutomationProperties.AutomationId="SettingsDevButton"
+                                Content="Open dev tools"
+                                Click="SettingsDevButton_OnClick" />
+                    </UniformGrid>
                 </StackPanel>
+
+                <ScrollViewer x:Name="DevPanel"
+                              Visibility="Collapsed"
+                              VerticalScrollBarVisibility="Auto">
+                    <ScrollViewer.Resources>
+                        <Style TargetType="Button"
+                               BasedOn="{StaticResource PopupButtonStyle}" />
+                        <Style TargetType="ComboBox"
+                               BasedOn="{StaticResource PopupComboBoxStyle}" />
+                        <Style TargetType="CheckBox"
+                               BasedOn="{StaticResource PopupCheckBoxStyle}" />
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Foreground" Value="#FFD6DCDE" />
+                        </Style>
+                    </ScrollViewer.Resources>
+                    <StackPanel>
+                        <TextBlock Text="Debug controls for scenario testing. These are for development builds only."
+                                   Foreground="#FFD6DCDE"
+                                   FontSize="11"
+                                   TextWrapping="Wrap" />
+
+                        <TextBlock Margin="0,12,0,4"
+                                   Text="Selected pet"
+                                   Foreground="#FFF0F4F5"
+                                   FontSize="11" />
+                        <ComboBox x:Name="SelectedPetComboBox"
+                                  automation:AutomationProperties.AutomationId="SelectedPetComboBox"
+                                  DisplayMemberPath="Label"
+                                  SelectedValuePath="Id"
+                                  SelectionChanged="SelectedPetComboBox_OnSelectionChanged" />
+
+                        <UniformGrid Margin="0,8,0,0"
+                                     Columns="3">
+                            <Button x:Name="AddPetButton"
+                                    Margin="0,0,6,0"
+                                    Padding="8,5"
+                                    automation:AutomationProperties.AutomationId="AddPetButton"
+                                    Content="Add Pet"
+                                    Click="AddPetButton_OnClick" />
+                            <Button x:Name="RemovePetButton"
+                                    Margin="0,0,6,0"
+                                    Padding="8,5"
+                                    automation:AutomationProperties.AutomationId="RemovePetButton"
+                                    Content="Remove Pet"
+                                    Click="RemovePetButton_OnClick" />
+                            <Button x:Name="ClearPetsButton"
+                                    Padding="8,5"
+                                    automation:AutomationProperties.AutomationId="ClearPetsButton"
+                                    Content="Clear All"
+                                    Click="ClearPetsButton_OnClick" />
+                        </UniformGrid>
+
+                        <TextBlock Margin="0,12,0,4"
+                                   Text="Appearance"
+                                   Foreground="#FFF0F4F5"
+                                   FontSize="11" />
+                        <UniformGrid Columns="2">
+                            <StackPanel Margin="0,0,6,6">
+                                <TextBlock Text="Species"
+                                           Foreground="#FFD6DCDE"
+                                           FontSize="10" />
+                                <ComboBox x:Name="SpeciesComboBox"
+                                          automation:AutomationProperties.AutomationId="SpeciesComboBox"
+                                          SelectionChanged="SpeciesComboBox_OnSelectionChanged" />
+                            </StackPanel>
+                            <StackPanel Margin="0,0,0,6">
+                                <TextBlock Text="Color"
+                                           Foreground="#FFD6DCDE"
+                                           FontSize="10" />
+                                <ComboBox x:Name="ColorComboBox"
+                                          automation:AutomationProperties.AutomationId="ColorComboBox" />
+                            </StackPanel>
+                            <StackPanel Margin="0,0,6,0">
+                                <TextBlock Text="Age"
+                                           Foreground="#FFD6DCDE"
+                                           FontSize="10" />
+                                <ComboBox x:Name="AgeComboBox"
+                                          automation:AutomationProperties.AutomationId="AgeComboBox" />
+                            </StackPanel>
+                            <StackPanel>
+                                <TextBlock Text="Gender"
+                                           Foreground="#FFD6DCDE"
+                                           FontSize="10" />
+                                <ComboBox x:Name="GenderComboBox"
+                                          automation:AutomationProperties.AutomationId="GenderComboBox" />
+                            </StackPanel>
+                        </UniformGrid>
+
+                        <UniformGrid Margin="0,8,0,0"
+                                     Columns="2">
+                            <Button x:Name="ApplyAppearanceButton"
+                                    Margin="0,0,6,0"
+                                    Padding="8,5"
+                                    automation:AutomationProperties.AutomationId="ApplyAppearanceButton"
+                                    Content="Apply Appearance"
+                                    Click="ApplyAppearanceButton_OnClick" />
+                            <Button x:Name="SpawnColorSetButton"
+                                    Padding="8,5"
+                                    automation:AutomationProperties.AutomationId="SpawnColorSetButton"
+                                    Content="Spawn Colors"
+                                    Click="SpawnColorSetButton_OnClick" />
+                        </UniformGrid>
+
+                        <TextBlock Margin="0,12,0,4"
+                                   Text="Environment"
+                                   Foreground="#FFF0F4F5"
+                                   FontSize="11" />
+                        <UniformGrid Columns="2">
+                            <ComboBox x:Name="EnvironmentComboBox"
+                                      Margin="0,0,6,0"
+                                      automation:AutomationProperties.AutomationId="EnvironmentComboBox"
+                                      DisplayMemberPath="Label"
+                                      SelectedValuePath="Id" />
+                            <Button x:Name="ApplyEnvironmentButton"
+                                    Padding="8,5"
+                                    automation:AutomationProperties.AutomationId="ApplyEnvironmentButton"
+                                    Content="Apply Env"
+                                    Click="ApplyEnvironmentButton_OnClick" />
+                        </UniformGrid>
+
+                        <TextBlock Margin="0,12,0,4"
+                                   Text="Animation lab"
+                                   Foreground="#FFF0F4F5"
+                                   FontSize="11" />
+                        <UniformGrid Columns="2">
+                            <StackPanel Margin="0,0,6,0">
+                                <TextBlock Text="Animation"
+                                           Foreground="#FFD6DCDE"
+                                           FontSize="10" />
+                                <ComboBox x:Name="AnimationComboBox"
+                                          automation:AutomationProperties.AutomationId="AnimationComboBox" />
+                            </StackPanel>
+                            <StackPanel>
+                                <TextBlock Text="Seconds"
+                                           Foreground="#FFD6DCDE"
+                                           FontSize="10" />
+                                <ComboBox x:Name="AnimationDurationComboBox"
+                                          automation:AutomationProperties.AutomationId="AnimationDurationComboBox" />
+                            </StackPanel>
+                        </UniformGrid>
+
+                        <UniformGrid Margin="0,8,0,0"
+                                     Columns="2">
+                            <Button x:Name="ApplyAnimationButton"
+                                    Margin="0,0,6,0"
+                                    Padding="8,5"
+                                    automation:AutomationProperties.AutomationId="ApplyAnimationButton"
+                                    Content="Force Anim"
+                                    Click="ApplyAnimationButton_OnClick" />
+                            <Button x:Name="ClearAnimationButton"
+                                    Padding="8,5"
+                                    automation:AutomationProperties.AutomationId="ClearAnimationButton"
+                                    Content="Clear Anim"
+                                    Click="ClearAnimationButton_OnClick" />
+                        </UniformGrid>
+
+                        <TextBlock Margin="0,12,0,4"
+                                   Text="Condition lab"
+                                   Foreground="#FFF0F4F5"
+                                   FontSize="11" />
+                        <UniformGrid Columns="2">
+                            <StackPanel Margin="0,0,6,0">
+                                <TextBlock Text="Condition"
+                                           Foreground="#FFD6DCDE"
+                                           FontSize="10" />
+                                <ComboBox x:Name="ConditionComboBox"
+                                          automation:AutomationProperties.AutomationId="ConditionComboBox" />
+                            </StackPanel>
+                            <StackPanel>
+                                <TextBlock Text="Severity"
+                                           Foreground="#FFD6DCDE"
+                                           FontSize="10" />
+                                <ComboBox x:Name="ConditionSeverityComboBox"
+                                          automation:AutomationProperties.AutomationId="ConditionSeverityComboBox" />
+                            </StackPanel>
+                        </UniformGrid>
+
+                        <UniformGrid Margin="0,8,0,0"
+                                     Columns="2">
+                            <Button x:Name="ApplyConditionButton"
+                                    Margin="0,0,6,0"
+                                    Padding="8,5"
+                                    automation:AutomationProperties.AutomationId="ApplyConditionButton"
+                                    Content="Set Condition"
+                                    Click="ApplyConditionButton_OnClick" />
+                            <Button x:Name="ClearConditionButton"
+                                    Padding="8,5"
+                                    automation:AutomationProperties.AutomationId="ClearConditionButton"
+                                    Content="Clear Condition"
+                                    Click="ClearConditionButton_OnClick" />
+                        </UniformGrid>
+
+                        <TextBlock Margin="0,12,0,4"
+                                   Text="Quick presets"
+                                   Foreground="#FFF0F4F5"
+                                   FontSize="11" />
+                        <WrapPanel>
+                            <Button x:Name="HungryPresetButton"
+                                    Margin="0,0,6,6"
+                                    Padding="8,4"
+                                    Content="Hungry"
+                                    Click="HungryPresetButton_OnClick" />
+                            <Button x:Name="ThirstyPresetButton"
+                                    Margin="0,0,6,6"
+                                    Padding="8,4"
+                                    Content="Thirsty"
+                                    Click="ThirstyPresetButton_OnClick" />
+                            <Button x:Name="TiredPresetButton"
+                                    Margin="0,0,6,6"
+                                    Padding="8,4"
+                                    Content="Tired"
+                                    Click="TiredPresetButton_OnClick" />
+                            <Button x:Name="DirtyPresetButton"
+                                    Margin="0,0,6,6"
+                                    Padding="8,4"
+                                    Content="Dirty"
+                                    Click="DirtyPresetButton_OnClick" />
+                            <Button x:Name="LonelyPresetButton"
+                                    Margin="0,0,6,6"
+                                    Padding="8,4"
+                                    Content="Lonely"
+                                    Click="LonelyPresetButton_OnClick" />
+                            <Button x:Name="SickPresetButton"
+                                    Margin="0,0,6,6"
+                                    Padding="8,4"
+                                    Content="Sick"
+                                    Click="SickPresetButton_OnClick" />
+                            <Button x:Name="HealthyPresetButton"
+                                    Margin="0,0,6,6"
+                                    Padding="8,4"
+                                    Content="Healthy"
+                                    Click="HealthyPresetButton_OnClick" />
+                            <Button x:Name="ComfortedPresetButton"
+                                    Margin="0,0,6,6"
+                                    Padding="8,4"
+                                    Content="Comforted"
+                                    Click="ComfortedPresetButton_OnClick" />
+                            <Button x:Name="RecallPresetButton"
+                                    Margin="0,0,6,6"
+                                    Padding="8,4"
+                                    Content="Recall"
+                                    Click="RecallPresetButton_OnClick" />
+                            <Button x:Name="ObesePresetButton"
+                                    Margin="0,0,6,6"
+                                    Padding="8,4"
+                                    Content="Obese"
+                                    Click="ObesePresetButton_OnClick" />
+                            <Button x:Name="MalnourishedPresetButton"
+                                    Margin="0,0,6,6"
+                                    Padding="8,4"
+                                    Content="Malnourish"
+                                    Click="MalnourishedPresetButton_OnClick" />
+                            <Button x:Name="AnxiousPresetButton"
+                                    Margin="0,0,6,6"
+                                    Padding="8,4"
+                                    Content="Anxious"
+                                    Click="AnxiousPresetButton_OnClick" />
+                            <Button x:Name="DepressedPresetButton"
+                                    Margin="0,0,6,6"
+                                    Padding="8,4"
+                                    Content="Depressed"
+                                    Click="DepressedPresetButton_OnClick" />
+                            <Button x:Name="InjuredPresetButton"
+                                    Margin="0,0,6,6"
+                                    Padding="8,4"
+                                    Content="Injured"
+                                    Click="InjuredPresetButton_OnClick" />
+                            <Button x:Name="ElderPresetButton"
+                                    Margin="0,0,6,6"
+                                    Padding="8,4"
+                                    Content="Elder"
+                                    Click="ElderPresetButton_OnClick" />
+                            <Button x:Name="FoodiePresetButton"
+                                    Margin="0,0,6,6"
+                                    Padding="8,4"
+                                    Content="Foodie"
+                                    Click="FoodiePresetButton_OnClick" />
+                            <Button x:Name="CuddlyPresetButton"
+                                    Margin="0,0,6,6"
+                                    Padding="8,4"
+                                    Content="Cuddly"
+                                    Click="CuddlyPresetButton_OnClick" />
+                            <Button x:Name="NeatPresetButton"
+                                    Margin="0,0,6,6"
+                                    Padding="8,4"
+                                    Content="Neat"
+                                    Click="NeatPresetButton_OnClick" />
+                            <Button x:Name="PlayfulPresetButton"
+                                    Margin="0,0,6,6"
+                                    Padding="8,4"
+                                    Content="Playful"
+                                    Click="PlayfulPresetButton_OnClick" />
+                            <Button x:Name="StubbornPresetButton"
+                                    Margin="0,0,6,6"
+                                    Padding="8,4"
+                                    Content="Stubborn"
+                                    Click="StubbornPresetButton_OnClick" />
+                            <Button x:Name="ResilientPresetButton"
+                                    Margin="0,0,6,6"
+                                    Padding="8,4"
+                                    Content="Resilient"
+                                    Click="ResilientPresetButton_OnClick" />
+                        </WrapPanel>
+
+                        <TextBlock Margin="0,12,0,4"
+                                   Text="Long-term state"
+                                   Foreground="#FFF0F4F5"
+                                   FontSize="11" />
+                        <TextBlock x:Name="PersonalitySummaryText"
+                                   Foreground="#FFD6DCDE"
+                                   FontSize="10"
+                                   TextWrapping="Wrap" />
+                        <TextBlock x:Name="HabitSummaryText"
+                                   Margin="0,4,0,0"
+                                   Foreground="#FFD6DCDE"
+                                   FontSize="10"
+                                   TextWrapping="Wrap" />
+                        <TextBlock x:Name="AgingSummaryText"
+                                   Margin="0,4,0,0"
+                                   Foreground="#FFD6DCDE"
+                                   FontSize="10"
+                                   TextWrapping="Wrap" />
+                        <TextBlock x:Name="ConditionSummaryText"
+                                   Margin="0,4,0,0"
+                                   Foreground="#FFD6DCDE"
+                                   FontSize="10"
+                                   TextWrapping="Wrap" />
+
+                        <TextBlock Margin="0,12,0,4"
+                                   Text="Vitals"
+                                   Foreground="#FFF0F4F5"
+                                   FontSize="11" />
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="74" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="36" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0" Text="Hunger" Foreground="#FFD6DCDE" FontSize="10" />
+                            <Slider x:Name="HungerSlider" Grid.Row="0" Grid.Column="1" Minimum="0" Maximum="100" TickFrequency="5" IsSnapToTickEnabled="False" />
+                            <TextBlock x:Name="HungerValueText" Grid.Row="0" Grid.Column="2" Foreground="#FFF0F4F5" FontSize="10" VerticalAlignment="Center" />
+
+                            <TextBlock Grid.Row="1" Text="Thirst" Foreground="#FFD6DCDE" FontSize="10" />
+                            <Slider x:Name="ThirstSlider" Grid.Row="1" Grid.Column="1" Minimum="0" Maximum="100" TickFrequency="5" IsSnapToTickEnabled="False" />
+                            <TextBlock x:Name="ThirstValueText" Grid.Row="1" Grid.Column="2" Foreground="#FFF0F4F5" FontSize="10" VerticalAlignment="Center" />
+
+                            <TextBlock Grid.Row="2" Text="Energy" Foreground="#FFD6DCDE" FontSize="10" />
+                            <Slider x:Name="EnergySlider" Grid.Row="2" Grid.Column="1" Minimum="0" Maximum="100" TickFrequency="5" IsSnapToTickEnabled="False" />
+                            <TextBlock x:Name="EnergyValueText" Grid.Row="2" Grid.Column="2" Foreground="#FFF0F4F5" FontSize="10" VerticalAlignment="Center" />
+
+                            <TextBlock Grid.Row="3" Text="Clean" Foreground="#FFD6DCDE" FontSize="10" />
+                            <Slider x:Name="CleanlinessSlider" Grid.Row="3" Grid.Column="1" Minimum="0" Maximum="100" TickFrequency="5" IsSnapToTickEnabled="False" />
+                            <TextBlock x:Name="CleanlinessValueText" Grid.Row="3" Grid.Column="2" Foreground="#FFF0F4F5" FontSize="10" VerticalAlignment="Center" />
+
+                            <TextBlock Grid.Row="4" Text="Affect" Foreground="#FFD6DCDE" FontSize="10" />
+                            <Slider x:Name="AffectionSlider" Grid.Row="4" Grid.Column="1" Minimum="0" Maximum="100" TickFrequency="5" IsSnapToTickEnabled="False" />
+                            <TextBlock x:Name="AffectionValueText" Grid.Row="4" Grid.Column="2" Foreground="#FFF0F4F5" FontSize="10" VerticalAlignment="Center" />
+
+                            <TextBlock Grid.Row="5" Text="Comfort" Foreground="#FFD6DCDE" FontSize="10" />
+                            <Slider x:Name="ComfortSlider" Grid.Row="5" Grid.Column="1" Minimum="0" Maximum="100" TickFrequency="5" IsSnapToTickEnabled="False" />
+                            <TextBlock x:Name="ComfortValueText" Grid.Row="5" Grid.Column="2" Foreground="#FFF0F4F5" FontSize="10" VerticalAlignment="Center" />
+
+                            <TextBlock Grid.Row="6" Text="Health" Foreground="#FFD6DCDE" FontSize="10" />
+                            <Slider x:Name="HealthSlider" Grid.Row="6" Grid.Column="1" Minimum="0" Maximum="100" TickFrequency="5" IsSnapToTickEnabled="False" />
+                            <TextBlock x:Name="HealthValueText" Grid.Row="6" Grid.Column="2" Foreground="#FFF0F4F5" FontSize="10" VerticalAlignment="Center" />
+
+                            <TextBlock Grid.Row="7" Text="Fitness" Foreground="#FFD6DCDE" FontSize="10" />
+                            <Slider x:Name="FitnessSlider" Grid.Row="7" Grid.Column="1" Minimum="0" Maximum="100" TickFrequency="5" IsSnapToTickEnabled="False" />
+                            <TextBlock x:Name="FitnessValueText" Grid.Row="7" Grid.Column="2" Foreground="#FFF0F4F5" FontSize="10" VerticalAlignment="Center" />
+
+                            <TextBlock Grid.Row="8" Text="Bio Age" Foreground="#FFD6DCDE" FontSize="10" />
+                            <Slider x:Name="BiologicalAgeSlider" Grid.Row="8" Grid.Column="1" Minimum="0" Maximum="720" TickFrequency="15" IsSnapToTickEnabled="False" />
+                            <TextBlock x:Name="BiologicalAgeValueText" Grid.Row="8" Grid.Column="2" Foreground="#FFF0F4F5" FontSize="10" VerticalAlignment="Center" />
+                        </Grid>
+
+                        <Button x:Name="ApplyVitalsButton"
+                                Margin="0,10,0,0"
+                                Padding="8,5"
+                                automation:AutomationProperties.AutomationId="ApplyVitalsButton"
+                                Content="Apply Vitals"
+                                Click="ApplyVitalsButton_OnClick" />
+                    </StackPanel>
+                </ScrollViewer>
             </Grid>
 
             <UniformGrid x:Name="BasketButtons"
                          Grid.Row="2"
-                         Columns="3">
-                <Button x:Name="CopyButton"
+                         Columns="2">
+                <Button x:Name="PasteButton"
                         Margin="0,0,6,0"
-                        Padding="8,5"
-                        automation:AutomationProperties.AutomationId="CopyButton"
-                        Content="Copy"
-                        Click="CopyButton_OnClick" />
-                <Button x:Name="OpenButton"
-                        Margin="0,0,6,0"
-                        Padding="8,5"
-                        automation:AutomationProperties.AutomationId="OpenButton"
-                        Content="Open"
-                        Click="OpenButton_OnClick" />
+                        Style="{StaticResource PopupButtonStyle}"
+                        automation:AutomationProperties.AutomationId="PasteButton"
+                        Content="PASTE"
+                        Click="PasteButton_OnClick" />
                 <Button x:Name="DeleteButton"
-                        Padding="8,5"
+                        Style="{StaticResource PopupDangerButtonStyle}"
                         automation:AutomationProperties.AutomationId="DeleteButton"
-                        Content="Delete"
+                        Content="DELETE"
                         Click="DeleteButton_OnClick" />
             </UniformGrid>
         </Grid>

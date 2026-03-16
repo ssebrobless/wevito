@@ -1,0 +1,114 @@
+[
+  {
+    "id": "respiratoryProblems",
+    "displayName": "Respiratory Problems",
+    "category": "innate",
+    "description": "Breathing stays more delicate and needs steady care.",
+    "treatmentHint": "Keep the pet rested, hydrated, and medically supported."
+  },
+  {
+    "id": "parasites",
+    "displayName": "Parasites",
+    "category": "innate",
+    "description": "Recurring low-grade sickness that responds to care and hygiene.",
+    "treatmentHint": "Baths, grooming, and medicine help keep this under control."
+  },
+  {
+    "id": "dentalProblems",
+    "displayName": "Dental Problems",
+    "category": "innate",
+    "description": "Feeding can become uncomfortable if neglected for too long.",
+    "treatmentHint": "Grooming, medical care, and timely feeding reduce the strain."
+  },
+  {
+    "id": "sheddingIssues",
+    "displayName": "Shedding Issues",
+    "category": "innate",
+    "description": "Comfort and cleanliness drop faster without proper care.",
+    "treatmentHint": "Bathing and comfort-focused care reduce flare-ups."
+  },
+  {
+    "id": "jointStiffness",
+    "displayName": "Joint Stiffness",
+    "category": "innate",
+    "description": "Movement and aging feel heavier when fitness falls behind.",
+    "treatmentHint": "Balanced play and doctor visits help keep movement easier."
+  },
+  {
+    "id": "skinInfections",
+    "displayName": "Skin Infections",
+    "category": "innate",
+    "description": "Poor hygiene can quickly become a health problem.",
+    "treatmentHint": "Baths, grooming, and medicine keep this manageable."
+  },
+  {
+    "id": "viralSusceptibility",
+    "displayName": "Viral Susceptibility",
+    "category": "innate",
+    "description": "Illness hits harder and recovery can take longer.",
+    "treatmentHint": "Rest, medicine, and doctor care matter more than usual."
+  },
+  {
+    "id": "dentalOvergrowth",
+    "displayName": "Dental Overgrowth",
+    "category": "innate",
+    "description": "Comfort and appetite drift down if care gets inconsistent.",
+    "treatmentHint": "Grooming and medical care help keep it from worsening."
+  },
+  {
+    "id": "footProblems",
+    "displayName": "Foot Problems",
+    "category": "innate",
+    "description": "Heavy exercise and dirty conditions cause quicker strain.",
+    "treatmentHint": "Balanced exercise, cleaning, and doctor care reduce flare-ups."
+  },
+  {
+    "id": "obesity",
+    "displayName": "Obesity",
+    "category": "acquired",
+    "description": "Overfeeding and low exercise make movement and aging worse.",
+    "treatmentHint": "Improve exercise, hydration, and balanced feeding."
+  },
+  {
+    "id": "malnutrition",
+    "displayName": "Malnutrition",
+    "category": "acquired",
+    "description": "Not eating enough weakens health and speeds biological aging.",
+    "treatmentHint": "Feed consistently and support recovery with care."
+  },
+  {
+    "id": "depression",
+    "displayName": "Depression",
+    "category": "acquired",
+    "description": "Chronic neglect leaves the pet withdrawn and harder to motivate.",
+    "treatmentHint": "Play, affection, comfort, and steady routine help."
+  },
+  {
+    "id": "anxiety",
+    "displayName": "Anxiety",
+    "category": "acquired",
+    "description": "Low affection and comfort create persistent tension.",
+    "treatmentHint": "Frequent affection, rest, and doctor care reduce it."
+  },
+  {
+    "id": "jointPain",
+    "displayName": "Joint Pain",
+    "category": "acquired",
+    "description": "Low fitness or rough care slows the pet down.",
+    "treatmentHint": "Balanced exercise, rest, and doctor care improve it."
+  },
+  {
+    "id": "exhaustion",
+    "displayName": "Exhaustion",
+    "category": "acquired",
+    "description": "Overwork and poor rest drag down recovery and mood.",
+    "treatmentHint": "Rest and comfort should come first."
+  },
+  {
+    "id": "injury",
+    "displayName": "Injury",
+    "category": "acquired",
+    "description": "Too much strain when unhealthy causes a lingering setback.",
+    "treatmentHint": "Rest, medicine, and doctor care help it clear."
+  }
+]

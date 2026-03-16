@@ -1,0 +1,28 @@
+﻿{
+    "captured_at":  "2026-03-11T17:51:41",
+    "output_dir":  "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\flicker\\20260311-175111",
+    "video":  "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\flicker\\20260311-175111\\transition-capture.mp4",
+    "trace_dir":  "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\flicker\\20260311-175111\\trace",
+    "automation_log":  "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\flicker\\20260311-175111\\automation.log",
+    "analysis":  "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\flicker\\20260311-175111\\flicker-summary.json",
+    "regions":  {
+                    "home_panel":  {
+                                       "x":  1532,
+                                       "y":  720,
+                                       "width":  360,
+                                       "height":  300
+                                   },
+                    "roam_band":  {
+                                      "x":  0,
+                                      "y":  922,
+                                      "width":  1920,
+                                      "height":  118
+                                  },
+                    "basket_popup":  {
+                                         "x":  1572,
+                                         "y":  470,
+                                         "width":  320,
+                                         "height":  240
+                                     }
+                }
+}

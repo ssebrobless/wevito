@@ -10,7 +10,8 @@ $ErrorActionPreference = "Stop"
 
 $ProjectRoot = Split-Path -Parent $PSScriptRoot
 $BuildScript = Join-Path $ProjectRoot "tools\build-vnext.ps1"
-$ShellExe = Join-Path $ProjectRoot "vnext\artifacts\shell\Wevito.VNext.Shell.exe"
+$PublishedShellExe = Join-Path $ProjectRoot "vnext\artifacts\shell\Wevito.VNext.Shell.exe"
+$BuildShellExe = Join-Path $ProjectRoot "vnext\src\Wevito.VNext.Shell\bin\$Configuration\net8.0-windows\Wevito.VNext.Shell.exe"
 $Analyzer = Join-Path $ProjectRoot "tools\analyze-vnext-flicker.py"
 $OutputRoot = Join-Path $ProjectRoot "vnext\artifacts\flicker"
 $RunStamp = Get-Date -Format "yyyyMMdd-HHmmss"
@@ -26,9 +27,19 @@ if (-not $SkipBuild) {
     }
 }
 
-if (-not (Test-Path $ShellExe)) {
-    throw "Missing published shell executable: $ShellExe"
+function Resolve-ShellExe {
+    if (Test-Path $BuildShellExe) {
+        return $BuildShellExe
+    }
+
+    if (Test-Path $PublishedShellExe) {
+        return $PublishedShellExe
+    }
+
+    throw "Missing shell executable. Checked: $BuildShellExe and $PublishedShellExe"
 }
+
+$ShellExe = Resolve-ShellExe
 
 New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null
 New-Item -ItemType Directory -Force -Path $DataDir | Out-Null
@@ -246,6 +257,43 @@ function Get-AutomationElementByName {
     return $null
 }
 
+function Get-AutomationElementById {
+    param(
+        [IntPtr]$Handle,
+        [string]$AutomationId,
+        [System.Windows.Automation.ControlType]$ControlType = $null,
+        [int]$TimeoutMs = 2500
+    )
+
+    $deadline = (Get-Date).AddMilliseconds($TimeoutMs)
+    while ((Get-Date) -lt $deadline) {
+        $root = [System.Windows.Automation.AutomationElement]::FromHandle($Handle)
+        if ($null -ne $root) {
+            $conditions = [System.Collections.Generic.List[System.Windows.Automation.Condition]]::new()
+            $conditions.Add([System.Windows.Automation.PropertyCondition]::new([System.Windows.Automation.AutomationElement]::AutomationIdProperty, $AutomationId))
+            if ($null -ne $ControlType) {
+                $conditions.Add([System.Windows.Automation.PropertyCondition]::new([System.Windows.Automation.AutomationElement]::ControlTypeProperty, $ControlType))
+            }
+
+            $condition = if ($conditions.Count -eq 1) {
+                $conditions[0]
+            }
+            else {
+                [System.Windows.Automation.AndCondition]::new($conditions.ToArray())
+            }
+
+            $match = $root.FindFirst([System.Windows.Automation.TreeScope]::Descendants, $condition)
+            if ($null -ne $match) {
+                return $match
+            }
+        }
+
+        Start-Sleep -Milliseconds 150
+    }
+
+    return $null
+}
+
 function Invoke-WindowButton {
     param(
         $WindowInfo,
@@ -262,6 +310,32 @@ function Invoke-WindowButton {
         $invoke.Invoke()
         Start-Sleep -Milliseconds 800
         return $true
+    }
+
+    return $false
+}
+
+function Invoke-WindowButtonById {
+    param(
+        $WindowInfo,
+        [string[]]$AutomationIds,
+        [string[]]$Names = @()
+    )
+
+    foreach ($automationId in $AutomationIds) {
+        $button = Get-AutomationElementById -Handle $WindowInfo.Handle -AutomationId $automationId -ControlType ([System.Windows.Automation.ControlType]::Button)
+        if ($null -eq $button) {
+            continue
+        }
+
+        $invoke = $button.GetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern)
+        $invoke.Invoke()
+        Start-Sleep -Milliseconds 800
+        return $true
+    }
+
+    if ($Names.Count -gt 0) {
+        return Invoke-WindowButton -WindowInfo $WindowInfo -Names $Names
     }
 
     return $false
@@ -322,10 +396,12 @@ function Open-BasketWindow {
     }
     catch {
         Set-WindowForeground -WindowInfo $HomeWindow
-        if (-not (Invoke-WindowButton -WindowInfo $HomeWindow -Names @("BIN", "HIDE"))) {
-            $buttonX = [int]($HomeWindow.Left + $HomeWindow.Width - 246)
-            $buttonY = [int]($HomeWindow.Top + 22)
-            Invoke-LeftClickAt -X $buttonX -Y $buttonY
+        if (-not (Invoke-WindowButtonById -WindowInfo $HomeWindow -AutomationIds @("WebToolsButton") -Names @("TOOLS", "HIDE"))) {
+            throw "Failed to toggle webtools bar."
+        }
+
+        if (-not (Invoke-WindowButtonById -WindowInfo $HomeWindow -AutomationIds @("LinkBinTabButton") -Names @("LINK BIN", "LINK BIN ACTIVE"))) {
+            throw "Failed to open link bin tab."
         }
 
         return Get-ToolWindowInfo -ProcessId $ProcessId -TimeoutMs 4000

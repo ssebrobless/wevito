@@ -11,6 +11,7 @@ internal sealed class HotkeyWindow : NativeWindow, IDisposable
     private const int TogglePinnedId = 1;
     private const int CaptureBasketId = 2;
     private const int OpenBasketId = 3;
+    private const int OpenDevToolsId = 4;
 
     public HotkeyWindow()
     {
@@ -35,6 +36,7 @@ internal sealed class HotkeyWindow : NativeWindow, IDisposable
                 TogglePinnedId => "toggle-pinned",
                 CaptureBasketId => "capture-basket",
                 OpenBasketId => "open-basket",
+                OpenDevToolsId => "open-dev-tools",
                 _ => string.Empty
             };
 
@@ -52,6 +54,7 @@ internal sealed class HotkeyWindow : NativeWindow, IDisposable
         _ = NativeMethods.RegisterHotKey(Handle, TogglePinnedId, ModControl | ModShift, (uint)Keys.P);
         _ = NativeMethods.RegisterHotKey(Handle, CaptureBasketId, ModControl | ModShift, (uint)Keys.B);
         _ = NativeMethods.RegisterHotKey(Handle, OpenBasketId, ModControl | ModShift, (uint)Keys.O);
+        _ = NativeMethods.RegisterHotKey(Handle, OpenDevToolsId, ModControl | ModShift, (uint)Keys.D);
     }
 
     private void Unregister()
@@ -59,6 +62,7 @@ internal sealed class HotkeyWindow : NativeWindow, IDisposable
         _ = NativeMethods.UnregisterHotKey(Handle, TogglePinnedId);
         _ = NativeMethods.UnregisterHotKey(Handle, CaptureBasketId);
         _ = NativeMethods.UnregisterHotKey(Handle, OpenBasketId);
+        _ = NativeMethods.UnregisterHotKey(Handle, OpenDevToolsId);
     }
 
     private static class NativeMethods

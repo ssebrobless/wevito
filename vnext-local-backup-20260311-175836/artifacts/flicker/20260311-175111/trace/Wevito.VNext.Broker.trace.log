@@ -1,0 +1,35 @@
+﻿2026-03-11T21:51:17.7022451+00:00 | broker | pid=44132 | startup pipe=wevito-vnext-149904
+2026-03-11T21:51:17.8181478+00:00 | broker | pid=44132 | startup-complete
+2026-03-11T21:51:17.8624607+00:00 | shell-command | pid=44132 | RequestDesktopContext
+2026-03-11T21:51:17.8664752+00:00 | desktop-context | pid=44132 | foreground=Wevito.VNext.Shell title=Wevito Basket shell=False fullscreen=False
+2026-03-11T21:51:17.8931031+00:00 | shell-command | pid=44132 | RegisterDropTarget
+2026-03-11T21:51:17.9350032+00:00 | shell-command | pid=44132 | SetOverlayRegions
+2026-03-11T21:51:17.9505705+00:00 | shell-command | pid=44132 | RegisterDropTarget
+2026-03-11T21:51:17.9522677+00:00 | shell-command | pid=44132 | SetPinned
+2026-03-11T21:51:17.9596085+00:00 | pinned | pid=44132 | value=False
+2026-03-11T21:51:19.5587887+00:00 | desktop-context | pid=44132 | foreground=notepad title=Untitled - Notepad shell=False fullscreen=False
+2026-03-11T21:51:19.5710552+00:00 | shell-command | pid=44132 | SetOverlayRegions
+2026-03-11T21:51:21.5637938+00:00 | desktop-context | pid=44132 | foreground=Wevito.VNext.Shell title=Wevito Home Panel shell=False fullscreen=False
+2026-03-11T21:51:21.5684732+00:00 | shell-command | pid=44132 | SetOverlayRegions
+2026-03-11T21:51:21.6863361+00:00 | desktop-context | pid=44132 | foreground=Wevito.VNext.Shell title=Wevito Basket shell=False fullscreen=False
+2026-03-11T21:51:24.7850083+00:00 | hotkey | pid=44132 | toggle-pinned
+2026-03-11T21:51:24.7901345+00:00 | shell-command | pid=44132 | SetPinned
+2026-03-11T21:51:24.7905898+00:00 | pinned | pid=44132 | value=True
+2026-03-11T21:51:26.7037212+00:00 | hotkey | pid=44132 | capture-basket
+2026-03-11T21:51:26.7057210+00:00 | shell-command | pid=44132 | CaptureClipboard
+2026-03-11T21:51:26.7112335+00:00 | clipboard | pid=44132 | capture-success url=https://openai.com/
+2026-03-11T21:51:27.9481113+00:00 | desktop-context | pid=44132 | foreground=Wevito.VNext.Shell title=Wevito Home Panel shell=False fullscreen=False
+2026-03-11T21:51:28.4272320+00:00 | hotkey | pid=44132 | open-basket
+2026-03-11T21:51:28.4291675+00:00 | shell-command | pid=44132 | SetPinned
+2026-03-11T21:51:28.4294841+00:00 | pinned | pid=44132 | value=True
+2026-03-11T21:51:28.4311846+00:00 | shell-command | pid=44132 | SetOverlayRegions
+2026-03-11T21:51:31.0053736+00:00 | shell-command | pid=44132 | SetPinned
+2026-03-11T21:51:31.0056914+00:00 | pinned | pid=44132 | value=True
+2026-03-11T21:51:31.0068200+00:00 | shell-command | pid=44132 | SetOverlayRegions
+2026-03-11T21:51:33.2238777+00:00 | hotkey | pid=44132 | toggle-pinned
+2026-03-11T21:51:33.2253384+00:00 | shell-command | pid=44132 | SetPinned
+2026-03-11T21:51:33.2258541+00:00 | pinned | pid=44132 | value=False
+2026-03-11T21:51:33.3282533+00:00 | desktop-context | pid=44132 | foreground=Wevito.VNext.Shell title=Wevito Basket shell=False fullscreen=False
+2026-03-11T21:51:41.5222531+00:00 | broker | pid=44132 | client-disconnected
+2026-03-11T21:51:41.5227572+00:00 | broker | pid=44132 | shutdown-begin
+2026-03-11T21:51:41.5563189+00:00 | broker | pid=44132 | shutdown-complete

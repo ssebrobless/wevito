@@ -1,0 +1,25 @@
+{
+  "species": "squirrel",
+  "ageStage": "adult",
+  "gender": "male",
+  "family": "locomotion_idle",
+  "boardImage": "locomotion_idle-editable-board.png",
+  "runtimeReferenceImage": "locomotion_idle-runtime-reference-blue.png",
+  "frameLayout": [
+    [
+      "idle_00",
+      "idle_01",
+      "idle_02",
+      "idle_03",
+      null
+    ]
+  ],
+  "colors": [
+    "red",
+    "orange",
+    "yellow",
+    "blue",
+    "indigo",
+    "violet"
+  ]
+}

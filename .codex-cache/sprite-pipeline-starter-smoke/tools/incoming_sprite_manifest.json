@@ -1,0 +1,32 @@
+[
+  {
+    "species": "species_a",
+    "age_stage": "adult",
+    "source_file": "species_a_adult.png",
+    "component_order": [
+      "male",
+      "female"
+    ],
+    "notes": "Replace this placeholder entry with the real board metadata."
+  },
+  {
+    "species": "species_b",
+    "age_stage": "adult",
+    "source_file": "species_b_adult.png",
+    "component_order": [
+      "male",
+      "female"
+    ],
+    "notes": "Add all real species/ages used by the project."
+  },
+  {
+    "species": "species_c",
+    "age_stage": "adult",
+    "source_file": "species_c_adult.png",
+    "component_order": [
+      "male",
+      "female"
+    ],
+    "notes": "This starter file is intentionally minimal and should be customized."
+  }
+]

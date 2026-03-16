@@ -1,0 +1,20 @@
+{
+  "projectName": "Sprite Smoke Test",
+  "targetRoot": "C:\\Users\\fishe\\Documents\\projects\\wevito\\.codex-cache\\sprite-pipeline-starter-smoke",
+  "sourceRoot": "incoming_sprites",
+  "runtimeRoot": "sprites_runtime",
+  "authoredRoot": "sprites_authored_verified",
+  "seedSpecies": [
+    "fox",
+    "crow",
+    "snake"
+  ],
+  "files": [
+    "C:\\Users\\fishe\\Documents\\projects\\wevito\\.codex-cache\\sprite-pipeline-starter-smoke\\docs\\SPRITE_SOURCE_OF_TRUTH.md",
+    "C:\\Users\\fishe\\Documents\\projects\\wevito\\.codex-cache\\sprite-pipeline-starter-smoke\\docs\\MOTION_AUTHORING_ROADMAP.md",
+    "C:\\Users\\fishe\\Documents\\projects\\wevito\\.codex-cache\\sprite-pipeline-starter-smoke\\docs\\SPRITE_PIPELINE_CHECKLIST.md",
+    "C:\\Users\\fishe\\Documents\\projects\\wevito\\.codex-cache\\sprite-pipeline-starter-smoke\\docs\\GEMINI_PROMPT_RULES.md",
+    "C:\\Users\\fishe\\Documents\\projects\\wevito\\.codex-cache\\sprite-pipeline-starter-smoke\\docs\\SPRITE_PIPELINE_START_HERE.md",
+    "C:\\Users\\fishe\\Documents\\projects\\wevito\\.codex-cache\\sprite-pipeline-starter-smoke\\tools\\incoming_sprite_manifest.json"
+  ]
+}

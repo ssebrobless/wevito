@@ -1,0 +1,82 @@
+﻿2026-03-11T21:51:17.2535816+00:00 | shell | pid=149904 | startup-begin
+2026-03-11T21:51:17.2973161+00:00 | shell | pid=149904 | content-loaded path=C:\Users\fishe\Documents\projects\wevito\vnext\artifacts\shell\content species=3 environments=1
+2026-03-11T21:51:17.3698893+00:00 | shell | pid=149904 | state-ready pinned=False pets=3 basket=1
+2026-03-11T21:51:17.5727757+00:00 | overlay-style | pid=149904 | window=Wevito Home Panel clickThrough=False noActivate=False handle=304941464
+2026-03-11T21:51:17.6096323+00:00 | overlay-style | pid=149904 | window=Wevito Roam Band clickThrough=True noActivate=True handle=331336
+2026-03-11T21:51:17.6441137+00:00 | overlay-style | pid=149904 | window=Wevito Basket clickThrough=False noActivate=False handle=331346
+2026-03-11T21:51:17.6558227+00:00 | shell | pid=149904 | broker-started pid=44132 pipe=wevito-vnext-149904
+2026-03-11T21:51:17.8305461+00:00 | shell | pid=149904 | broker-connected
+2026-03-11T21:51:17.8928076+00:00 | broker-event | pid=149904 | DesktopContextChanged
+2026-03-11T21:51:17.9061246+00:00 | desktop-context | pid=149904 | foreground=Wevito.VNext.Shell title=Wevito Basket shell=False fullscreen=False
+2026-03-11T21:51:17.9182684+00:00 | mode | pid=149904 | mode=Focused pinned=False
+2026-03-11T21:51:17.9197320+00:00 | layout | pid=149904 | home=1532,720 360x300 tool=1572,470 320x240 roam=0,922 1920x118
+2026-03-11T21:51:17.9340966+00:00 | broker-event | pid=149904 | ForegroundChanged
+2026-03-11T21:51:17.9344527+00:00 | broker-event | pid=149904 | WorkAreaChanged
+2026-03-11T21:51:17.9499907+00:00 | overlay-regions | pid=149904 | HomePanel:1532,720,360,300:True|RoamBand:0,922,1920,118:False|ToolPopup:1572,470,320,240:True
+2026-03-11T21:51:17.9522721+00:00 | layout | pid=149904 | home=1532,720 360x300 tool=1572,470 320x240 roam=0,922 1920x118
+2026-03-11T21:51:17.9530965+00:00 | shell | pid=149904 | startup-complete
+2026-03-11T21:51:19.5597152+00:00 | broker-event | pid=149904 | DesktopContextChanged
+2026-03-11T21:51:19.5599992+00:00 | desktop-context | pid=149904 | foreground=notepad title=Untitled - Notepad shell=False fullscreen=False
+2026-03-11T21:51:19.5602547+00:00 | mode | pid=149904 | mode=Passive pinned=False
+2026-03-11T21:51:19.5670119+00:00 | layout | pid=149904 | home=1532,720 360x300 tool=1572,470 320x240 roam=0,922 1920x118
+2026-03-11T21:51:19.5679597+00:00 | overlay-style | pid=149904 | window=Wevito Home Panel clickThrough=True noActivate=True handle=304941464
+2026-03-11T21:51:19.5684315+00:00 | overlay-style | pid=149904 | window=Wevito Basket clickThrough=True noActivate=True handle=331346
+2026-03-11T21:51:19.5695715+00:00 | visibility | pid=149904 | window=HomeHud visibility=Collapsed
+2026-03-11T21:51:19.5701782+00:00 | visibility | pid=149904 | window=ToolPopup visibility=Hidden
+2026-03-11T21:51:19.5709364+00:00 | broker-event | pid=149904 | ForegroundChanged
+2026-03-11T21:51:19.5723213+00:00 | overlay-regions | pid=149904 | HomePanel:1532,720,360,300:False|RoamBand:0,922,1920,118:False|ToolPopup:1572,470,320,240:False
+2026-03-11T21:51:21.5644849+00:00 | broker-event | pid=149904 | DesktopContextChanged
+2026-03-11T21:51:21.5647704+00:00 | desktop-context | pid=149904 | foreground=Wevito.VNext.Shell title=Wevito Home Panel shell=False fullscreen=False
+2026-03-11T21:51:21.5649813+00:00 | mode | pid=149904 | mode=Focused pinned=False
+2026-03-11T21:51:21.5651602+00:00 | layout | pid=149904 | home=1532,720 360x300 tool=1572,470 320x240 roam=0,922 1920x118
+2026-03-11T21:51:21.5656863+00:00 | overlay-style | pid=149904 | window=Wevito Home Panel clickThrough=False noActivate=False handle=304941464
+2026-03-11T21:51:21.5672570+00:00 | overlay-style | pid=149904 | window=Wevito Basket clickThrough=False noActivate=False handle=331346
+2026-03-11T21:51:21.5675122+00:00 | visibility | pid=149904 | window=HomeHud visibility=Visible
+2026-03-11T21:51:21.5677301+00:00 | visibility | pid=149904 | window=ToolPopup visibility=Visible
+2026-03-11T21:51:21.5682915+00:00 | broker-event | pid=149904 | ForegroundChanged
+2026-03-11T21:51:21.5702403+00:00 | overlay-regions | pid=149904 | HomePanel:1532,720,360,300:True|RoamBand:0,922,1920,118:False|ToolPopup:1572,470,320,240:True
+2026-03-11T21:51:21.6869474+00:00 | broker-event | pid=149904 | DesktopContextChanged
+2026-03-11T21:51:21.6872475+00:00 | desktop-context | pid=149904 | foreground=Wevito.VNext.Shell title=Wevito Basket shell=False fullscreen=False
+2026-03-11T21:51:21.6874823+00:00 | layout | pid=149904 | home=1532,720 360x300 tool=1572,470 320x240 roam=0,922 1920x118
+2026-03-11T21:51:21.6879040+00:00 | broker-event | pid=149904 | ForegroundChanged
+2026-03-11T21:51:24.7876769+00:00 | broker-event | pid=149904 | HotkeyPressed
+2026-03-11T21:51:24.7897964+00:00 | ui-command | pid=149904 | toggle-pinned next=True
+2026-03-11T21:51:24.7902054+00:00 | mode | pid=149904 | mode=Pinned pinned=True
+2026-03-11T21:51:24.7904293+00:00 | layout | pid=149904 | home=1532,720 360x300 tool=1572,470 320x240 roam=0,922 1920x118
+2026-03-11T21:51:24.7909931+00:00 | overlay-style | pid=149904 | window=Wevito Home Panel clickThrough=False noActivate=True handle=304941464
+2026-03-11T21:51:24.7915216+00:00 | overlay-style | pid=149904 | window=Wevito Basket clickThrough=False noActivate=True handle=331346
+2026-03-11T21:51:24.8127610+00:00 | persistence | pid=149904 | saved pets=3 basket=1 pinned=True
+2026-03-11T21:51:26.7045952+00:00 | broker-event | pid=149904 | HotkeyPressed
+2026-03-11T21:51:26.7057846+00:00 | ui-command | pid=149904 | capture-clipboard
+2026-03-11T21:51:26.7131218+00:00 | broker-event | pid=149904 | ClipboardUrlAvailable
+2026-03-11T21:51:26.7168148+00:00 | feedback | pid=149904 | Basket now holds 1 link(s).
+2026-03-11T21:51:26.7183095+00:00 | basket | pid=149904 | source=command count=1
+2026-03-11T21:51:26.7303333+00:00 | persistence | pid=149904 | saved pets=3 basket=1 pinned=True
+2026-03-11T21:51:27.9487679+00:00 | broker-event | pid=149904 | DesktopContextChanged
+2026-03-11T21:51:27.9490375+00:00 | desktop-context | pid=149904 | foreground=Wevito.VNext.Shell title=Wevito Home Panel shell=False fullscreen=False
+2026-03-11T21:51:27.9492475+00:00 | layout | pid=149904 | home=1532,720 360x300 tool=1572,470 320x240 roam=0,922 1920x118
+2026-03-11T21:51:27.9496459+00:00 | broker-event | pid=149904 | ForegroundChanged
+2026-03-11T21:51:28.4279913+00:00 | broker-event | pid=149904 | HotkeyPressed
+2026-03-11T21:51:28.4288204+00:00 | ui-command | pid=149904 | toggle-basket open=False pinned=True
+2026-03-11T21:51:28.4292141+00:00 | layout | pid=149904 | home=1532,720 360x300 tool=1572,470 320x240 roam=0,922 1920x118
+2026-03-11T21:51:28.4298256+00:00 | overlay-style | pid=149904 | window=Wevito Basket clickThrough=True noActivate=True handle=331346
+2026-03-11T21:51:28.4302175+00:00 | visibility | pid=149904 | window=ToolPopup visibility=Hidden
+2026-03-11T21:51:28.4404686+00:00 | persistence | pid=149904 | saved pets=3 basket=1 pinned=True
+2026-03-11T21:51:28.4417618+00:00 | overlay-regions | pid=149904 | HomePanel:1532,720,360,300:True|RoamBand:0,922,1920,118:False|ToolPopup:1572,470,320,240:False
+2026-03-11T21:51:31.0047586+00:00 | ui-command | pid=149904 | toggle-basket open=True pinned=True
+2026-03-11T21:51:31.0054192+00:00 | layout | pid=149904 | home=1532,720 360x300 tool=1572,470 320x240 roam=0,922 1920x118
+2026-03-11T21:51:31.0057719+00:00 | overlay-style | pid=149904 | window=Wevito Basket clickThrough=False noActivate=True handle=331346
+2026-03-11T21:51:31.0060500+00:00 | visibility | pid=149904 | window=ToolPopup visibility=Visible
+2026-03-11T21:51:31.0220070+00:00 | persistence | pid=149904 | saved pets=3 basket=1 pinned=True
+2026-03-11T21:51:31.0223711+00:00 | overlay-regions | pid=149904 | HomePanel:1532,720,360,300:True|RoamBand:0,922,1920,118:False|ToolPopup:1572,470,320,240:True
+2026-03-11T21:51:33.2246674+00:00 | broker-event | pid=149904 | HotkeyPressed
+2026-03-11T21:51:33.2249441+00:00 | ui-command | pid=149904 | toggle-pinned next=False
+2026-03-11T21:51:33.2255023+00:00 | mode | pid=149904 | mode=Focused pinned=False
+2026-03-11T21:51:33.2257565+00:00 | layout | pid=149904 | home=1532,720 360x300 tool=1572,470 320x240 roam=0,922 1920x118
+2026-03-11T21:51:33.2263956+00:00 | overlay-style | pid=149904 | window=Wevito Home Panel clickThrough=False noActivate=False handle=304941464
+2026-03-11T21:51:33.2278836+00:00 | overlay-style | pid=149904 | window=Wevito Basket clickThrough=False noActivate=False handle=331346
+2026-03-11T21:51:33.2432116+00:00 | persistence | pid=149904 | saved pets=3 basket=1 pinned=False
+2026-03-11T21:51:33.3290230+00:00 | broker-event | pid=149904 | DesktopContextChanged
+2026-03-11T21:51:33.3293128+00:00 | desktop-context | pid=149904 | foreground=Wevito.VNext.Shell title=Wevito Basket shell=False fullscreen=False
+2026-03-11T21:51:33.3295052+00:00 | layout | pid=149904 | home=1532,720 360x300 tool=1572,470 320x240 roam=0,922 1920x118
+2026-03-11T21:51:33.3298650+00:00 | broker-event | pid=149904 | ForegroundChanged

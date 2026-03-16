@@ -9,7 +9,18 @@
     "supportedGenders": ["female", "male"],
     "supportedColors": ["red", "orange", "yellow", "blue", "indigo", "violet"],
     "primaryFoodGroupId": "omnivore-scavenger",
-    "secondaryFoodGroupId": "herbivore-grazer"
+    "secondaryFoodGroupId": "herbivore-grazer",
+    "innateConditionId": "respiratoryProblems",
+    "personalitySeed": {
+      "foodLove": 12,
+      "cuddleNeed": 8,
+      "cleanlinessPreference": -4,
+      "activityLevel": 10,
+      "cheerfulness": 6,
+      "socialNeed": 10,
+      "playfulness": 8,
+      "stubbornness": 4
+    }
   },
   {
     "id": "crow",
@@ -21,7 +32,18 @@
     "supportedGenders": ["female", "male"],
     "supportedColors": ["red", "orange", "yellow", "blue", "indigo", "violet"],
     "primaryFoodGroupId": "birds-seed",
-    "secondaryFoodGroupId": "omnivore-scavenger"
+    "secondaryFoodGroupId": "omnivore-scavenger",
+    "innateConditionId": "parasites",
+    "personalitySeed": {
+      "foodLove": 2,
+      "cuddleNeed": -8,
+      "cleanlinessPreference": 6,
+      "activityLevel": 12,
+      "cheerfulness": -2,
+      "socialNeed": 4,
+      "playfulness": 10,
+      "stubbornness": 10
+    }
   },
   {
     "id": "fox",
@@ -33,7 +55,18 @@
     "supportedGenders": ["female", "male"],
     "supportedColors": ["red", "orange", "yellow", "blue", "indigo", "violet"],
     "primaryFoodGroupId": "predator-reptile",
-    "secondaryFoodGroupId": "omnivore-scavenger"
+    "secondaryFoodGroupId": "omnivore-scavenger",
+    "innateConditionId": "dentalProblems",
+    "personalitySeed": {
+      "foodLove": 6,
+      "cuddleNeed": 4,
+      "cleanlinessPreference": 5,
+      "activityLevel": 16,
+      "cheerfulness": 4,
+      "socialNeed": 0,
+      "playfulness": 14,
+      "stubbornness": 8
+    }
   },
   {
     "id": "snake",
@@ -45,7 +78,18 @@
     "supportedGenders": ["female", "male"],
     "supportedColors": ["red", "orange", "yellow", "blue", "indigo", "violet"],
     "primaryFoodGroupId": "predator-reptile",
-    "secondaryFoodGroupId": "birds-seed"
+    "secondaryFoodGroupId": "birds-seed",
+    "innateConditionId": "sheddingIssues",
+    "personalitySeed": {
+      "foodLove": -2,
+      "cuddleNeed": -12,
+      "cleanlinessPreference": 8,
+      "activityLevel": -4,
+      "cheerfulness": -4,
+      "socialNeed": -8,
+      "playfulness": -10,
+      "stubbornness": 12
+    }
   },
   {
     "id": "deer",
@@ -57,7 +101,18 @@
     "supportedGenders": ["female", "male"],
     "supportedColors": ["red", "orange", "yellow", "blue", "indigo", "violet"],
     "primaryFoodGroupId": "herbivore-grazer",
-    "secondaryFoodGroupId": "birds-seed"
+    "secondaryFoodGroupId": "birds-seed",
+    "innateConditionId": "jointStiffness",
+    "personalitySeed": {
+      "foodLove": 0,
+      "cuddleNeed": 10,
+      "cleanlinessPreference": 4,
+      "activityLevel": 4,
+      "cheerfulness": 10,
+      "socialNeed": 12,
+      "playfulness": 2,
+      "stubbornness": -4
+    }
   },
   {
     "id": "frog",
@@ -69,7 +124,18 @@
     "supportedGenders": ["female", "male"],
     "supportedColors": ["red", "orange", "yellow", "blue", "indigo", "violet"],
     "primaryFoodGroupId": "predator-reptile",
-    "secondaryFoodGroupId": "water"
+    "secondaryFoodGroupId": "water",
+    "innateConditionId": "skinInfections",
+    "personalitySeed": {
+      "foodLove": 0,
+      "cuddleNeed": 2,
+      "cleanlinessPreference": 10,
+      "activityLevel": 14,
+      "cheerfulness": 8,
+      "socialNeed": 4,
+      "playfulness": 12,
+      "stubbornness": 0
+    }
   },
   {
     "id": "pigeon",
@@ -81,7 +147,18 @@
     "supportedGenders": ["female", "male"],
     "supportedColors": ["red", "orange", "yellow", "blue", "indigo", "violet"],
     "primaryFoodGroupId": "birds-seed",
-    "secondaryFoodGroupId": "herbivore-grazer"
+    "secondaryFoodGroupId": "herbivore-grazer",
+    "innateConditionId": "viralSusceptibility",
+    "personalitySeed": {
+      "foodLove": 4,
+      "cuddleNeed": -2,
+      "cleanlinessPreference": 6,
+      "activityLevel": 8,
+      "cheerfulness": 2,
+      "socialNeed": 16,
+      "playfulness": 8,
+      "stubbornness": 2
+    }
   },
   {
     "id": "raccoon",
@@ -93,7 +170,18 @@
     "supportedGenders": ["female", "male"],
     "supportedColors": ["red", "orange", "yellow", "blue", "indigo", "violet"],
     "primaryFoodGroupId": "omnivore-scavenger",
-    "secondaryFoodGroupId": "predator-reptile"
+    "secondaryFoodGroupId": "predator-reptile",
+    "innateConditionId": "parasites",
+    "personalitySeed": {
+      "foodLove": 10,
+      "cuddleNeed": 2,
+      "cleanlinessPreference": -6,
+      "activityLevel": 12,
+      "cheerfulness": 4,
+      "socialNeed": 10,
+      "playfulness": 12,
+      "stubbornness": 10
+    }
   },
   {
     "id": "squirrel",
@@ -105,7 +193,18 @@
     "supportedGenders": ["female", "male"],
     "supportedColors": ["red", "orange", "yellow", "blue", "indigo", "violet"],
     "primaryFoodGroupId": "herbivore-grazer",
-    "secondaryFoodGroupId": "omnivore-scavenger"
+    "secondaryFoodGroupId": "omnivore-scavenger",
+    "innateConditionId": "dentalOvergrowth",
+    "personalitySeed": {
+      "foodLove": 8,
+      "cuddleNeed": 4,
+      "cleanlinessPreference": 4,
+      "activityLevel": 18,
+      "cheerfulness": 10,
+      "socialNeed": 6,
+      "playfulness": 18,
+      "stubbornness": 2
+    }
   },
   {
     "id": "goose",
@@ -117,6 +216,17 @@
     "supportedGenders": ["female", "male"],
     "supportedColors": ["red", "orange", "yellow", "blue", "indigo", "violet"],
     "primaryFoodGroupId": "birds-seed",
-    "secondaryFoodGroupId": "herbivore-grazer"
+    "secondaryFoodGroupId": "herbivore-grazer",
+    "innateConditionId": "footProblems",
+    "personalitySeed": {
+      "foodLove": 6,
+      "cuddleNeed": 2,
+      "cleanlinessPreference": 0,
+      "activityLevel": 6,
+      "cheerfulness": 0,
+      "socialNeed": 14,
+      "playfulness": 4,
+      "stubbornness": 14
+    }
   }
 ]

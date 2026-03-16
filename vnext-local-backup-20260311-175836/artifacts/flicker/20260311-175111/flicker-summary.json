@@ -1,0 +1,308 @@
+{
+  "fps": 12.0,
+  "frame_count": 144,
+  "automation_markers": [
+    {
+      "label": "startup",
+      "timestamp_sec": 0.0
+    },
+    {
+      "label": "focused-home",
+      "timestamp_sec": 4.551
+    },
+    {
+      "label": "passive-notepad-foreground",
+      "timestamp_sec": 6.08
+    },
+    {
+      "label": "pinned-hotkey",
+      "timestamp_sec": 7.792
+    },
+    {
+      "label": "basket-capture",
+      "timestamp_sec": 9.827
+    },
+    {
+      "label": "basket-open",
+      "timestamp_sec": 11.044
+    },
+    {
+      "label": "release-pinned",
+      "timestamp_sec": 16.348
+    }
+  ],
+  "top_overall": [
+    {
+      "region": "basket_popup",
+      "frame_index": 11,
+      "timestamp_sec": 0.917,
+      "score": 0.522312,
+      "frame_path": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\flicker\\20260311-175111\\frames\\frame_00012.png",
+      "previous_frame_path": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\flicker\\20260311-175111\\frames\\frame_00011.png",
+      "nearest_marker": "startup",
+      "marker_delta_sec": 0.917,
+      "expected_transition": true
+    },
+    {
+      "region": "basket_popup",
+      "frame_index": 94,
+      "timestamp_sec": 7.833,
+      "score": 0.522298,
+      "frame_path": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\flicker\\20260311-175111\\frames\\frame_00095.png",
+      "previous_frame_path": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\flicker\\20260311-175111\\frames\\frame_00094.png",
+      "nearest_marker": "pinned-hotkey",
+      "marker_delta_sec": 0.041,
+      "expected_transition": true
+    },
+    {
+      "region": "basket_popup",
+      "frame_index": 125,
+      "timestamp_sec": 10.417,
+      "score": 0.522191,
+      "frame_path": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\flicker\\20260311-175111\\frames\\frame_00126.png",
+      "previous_frame_path": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\flicker\\20260311-175111\\frames\\frame_00125.png",
+      "nearest_marker": "basket-capture",
+      "marker_delta_sec": 0.59,
+      "expected_transition": true
+    },
+    {
+      "region": "home_panel",
+      "frame_index": 11,
+      "timestamp_sec": 0.917,
+      "score": 0.056684,
+      "frame_path": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\flicker\\20260311-175111\\frames\\frame_00012.png",
+      "previous_frame_path": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\flicker\\20260311-175111\\frames\\frame_00011.png",
+      "nearest_marker": "startup",
+      "marker_delta_sec": 0.917,
+      "expected_transition": true
+    },
+    {
+      "region": "roam_band",
+      "frame_index": 11,
+      "timestamp_sec": 0.917,
+      "score": 0.027742,
+      "frame_path": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\flicker\\20260311-175111\\frames\\frame_00012.png",
+      "previous_frame_path": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\flicker\\20260311-175111\\frames\\frame_00011.png",
+      "nearest_marker": "startup",
+      "marker_delta_sec": 0.917,
+      "expected_transition": true
+    },
+    {
+      "region": "home_panel",
+      "frame_index": 125,
+      "timestamp_sec": 10.417,
+      "score": 0.009146,
+      "frame_path": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\flicker\\20260311-175111\\frames\\frame_00126.png",
+      "previous_frame_path": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\flicker\\20260311-175111\\frames\\frame_00125.png",
+      "nearest_marker": "basket-capture",
+      "marker_delta_sec": 0.59,
+      "expected_transition": true
+    }
+  ],
+  "top_by_region": {
+    "home_panel": [
+      {
+        "region": "home_panel",
+        "frame_index": 11,
+        "timestamp_sec": 0.917,
+        "score": 0.056684,
+        "frame_path": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\flicker\\20260311-175111\\frames\\frame_00012.png",
+        "previous_frame_path": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\flicker\\20260311-175111\\frames\\frame_00011.png",
+        "nearest_marker": "startup",
+        "marker_delta_sec": 0.917,
+        "expected_transition": true
+      },
+      {
+        "region": "home_panel",
+        "frame_index": 125,
+        "timestamp_sec": 10.417,
+        "score": 0.009146,
+        "frame_path": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\flicker\\20260311-175111\\frames\\frame_00126.png",
+        "previous_frame_path": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\flicker\\20260311-175111\\frames\\frame_00125.png",
+        "nearest_marker": "basket-capture",
+        "marker_delta_sec": 0.59,
+        "expected_transition": true
+      },
+      {
+        "region": "home_panel",
+        "frame_index": 94,
+        "timestamp_sec": 7.833,
+        "score": 0.008921,
+        "frame_path": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\flicker\\20260311-175111\\frames\\frame_00095.png",
+        "previous_frame_path": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\flicker\\20260311-175111\\frames\\frame_00094.png",
+        "nearest_marker": "pinned-hotkey",
+        "marker_delta_sec": 0.041,
+        "expected_transition": true
+      },
+      {
+        "region": "home_panel",
+        "frame_index": 35,
+        "timestamp_sec": 2.917,
+        "score": 0.004453,
+        "frame_path": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\flicker\\20260311-175111\\frames\\frame_00036.png",
+        "previous_frame_path": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\flicker\\20260311-175111\\frames\\frame_00035.png",
+        "nearest_marker": "focused-home",
+        "marker_delta_sec": -1.634,
+        "expected_transition": false
+      },
+      {
+        "region": "home_panel",
+        "frame_index": 50,
+        "timestamp_sec": 4.167,
+        "score": 0.003592,
+        "frame_path": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\flicker\\20260311-175111\\frames\\frame_00051.png",
+        "previous_frame_path": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\flicker\\20260311-175111\\frames\\frame_00050.png",
+        "nearest_marker": "focused-home",
+        "marker_delta_sec": -0.384,
+        "expected_transition": true
+      },
+      {
+        "region": "home_panel",
+        "frame_index": 34,
+        "timestamp_sec": 2.833,
+        "score": 0.003127,
+        "frame_path": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\flicker\\20260311-175111\\frames\\frame_00035.png",
+        "previous_frame_path": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\flicker\\20260311-175111\\frames\\frame_00034.png",
+        "nearest_marker": "focused-home",
+        "marker_delta_sec": -1.718,
+        "expected_transition": false
+      }
+    ],
+    "roam_band": [
+      {
+        "region": "roam_band",
+        "frame_index": 11,
+        "timestamp_sec": 0.917,
+        "score": 0.027742,
+        "frame_path": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\flicker\\20260311-175111\\frames\\frame_00012.png",
+        "previous_frame_path": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\flicker\\20260311-175111\\frames\\frame_00011.png",
+        "nearest_marker": "startup",
+        "marker_delta_sec": 0.917,
+        "expected_transition": true
+      },
+      {
+        "region": "roam_band",
+        "frame_index": 10,
+        "timestamp_sec": 0.833,
+        "score": 0.00252,
+        "frame_path": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\flicker\\20260311-175111\\frames\\frame_00011.png",
+        "previous_frame_path": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\flicker\\20260311-175111\\frames\\frame_00010.png",
+        "nearest_marker": "startup",
+        "marker_delta_sec": 0.833,
+        "expected_transition": true
+      },
+      {
+        "region": "roam_band",
+        "frame_index": 1,
+        "timestamp_sec": 0.083,
+        "score": 0.002502,
+        "frame_path": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\flicker\\20260311-175111\\frames\\frame_00002.png",
+        "previous_frame_path": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\flicker\\20260311-175111\\frames\\frame_00001.png",
+        "nearest_marker": "startup",
+        "marker_delta_sec": 0.083,
+        "expected_transition": true
+      },
+      {
+        "region": "roam_band",
+        "frame_index": 2,
+        "timestamp_sec": 0.167,
+        "score": 0.002211,
+        "frame_path": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\flicker\\20260311-175111\\frames\\frame_00003.png",
+        "previous_frame_path": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\flicker\\20260311-175111\\frames\\frame_00002.png",
+        "nearest_marker": "startup",
+        "marker_delta_sec": 0.167,
+        "expected_transition": true
+      },
+      {
+        "region": "roam_band",
+        "frame_index": 4,
+        "timestamp_sec": 0.333,
+        "score": 0.002208,
+        "frame_path": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\flicker\\20260311-175111\\frames\\frame_00005.png",
+        "previous_frame_path": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\flicker\\20260311-175111\\frames\\frame_00004.png",
+        "nearest_marker": "startup",
+        "marker_delta_sec": 0.333,
+        "expected_transition": true
+      },
+      {
+        "region": "roam_band",
+        "frame_index": 35,
+        "timestamp_sec": 2.917,
+        "score": 0.002123,
+        "frame_path": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\flicker\\20260311-175111\\frames\\frame_00036.png",
+        "previous_frame_path": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\flicker\\20260311-175111\\frames\\frame_00035.png",
+        "nearest_marker": "focused-home",
+        "marker_delta_sec": -1.634,
+        "expected_transition": false
+      }
+    ],
+    "basket_popup": [
+      {
+        "region": "basket_popup",
+        "frame_index": 11,
+        "timestamp_sec": 0.917,
+        "score": 0.522312,
+        "frame_path": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\flicker\\20260311-175111\\frames\\frame_00012.png",
+        "previous_frame_path": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\flicker\\20260311-175111\\frames\\frame_00011.png",
+        "nearest_marker": "startup",
+        "marker_delta_sec": 0.917,
+        "expected_transition": true
+      },
+      {
+        "region": "basket_popup",
+        "frame_index": 94,
+        "timestamp_sec": 7.833,
+        "score": 0.522298,
+        "frame_path": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\flicker\\20260311-175111\\frames\\frame_00095.png",
+        "previous_frame_path": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\flicker\\20260311-175111\\frames\\frame_00094.png",
+        "nearest_marker": "pinned-hotkey",
+        "marker_delta_sec": 0.041,
+        "expected_transition": true
+      },
+      {
+        "region": "basket_popup",
+        "frame_index": 125,
+        "timestamp_sec": 10.417,
+        "score": 0.522191,
+        "frame_path": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\flicker\\20260311-175111\\frames\\frame_00126.png",
+        "previous_frame_path": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\flicker\\20260311-175111\\frames\\frame_00125.png",
+        "nearest_marker": "basket-capture",
+        "marker_delta_sec": 0.59,
+        "expected_transition": true
+      },
+      {
+        "region": "basket_popup",
+        "frame_index": 2,
+        "timestamp_sec": 0.167,
+        "score": 0.001994,
+        "frame_path": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\flicker\\20260311-175111\\frames\\frame_00003.png",
+        "previous_frame_path": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\flicker\\20260311-175111\\frames\\frame_00002.png",
+        "nearest_marker": "startup",
+        "marker_delta_sec": 0.167,
+        "expected_transition": true
+      },
+      {
+        "region": "basket_popup",
+        "frame_index": 4,
+        "timestamp_sec": 0.333,
+        "score": 0.001405,
+        "frame_path": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\flicker\\20260311-175111\\frames\\frame_00005.png",
+        "previous_frame_path": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\flicker\\20260311-175111\\frames\\frame_00004.png",
+        "nearest_marker": "startup",
+        "marker_delta_sec": 0.333,
+        "expected_transition": true
+      },
+      {
+        "region": "basket_popup",
+        "frame_index": 127,
+        "timestamp_sec": 10.583,
+        "score": 0.000789,
+        "frame_path": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\flicker\\20260311-175111\\frames\\frame_00128.png",
+        "previous_frame_path": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\flicker\\20260311-175111\\frames\\frame_00127.png",
+        "nearest_marker": "basket-open",
+        "marker_delta_sec": -0.461,
+        "expected_transition": true
+      }
+    ]
+  }
+}

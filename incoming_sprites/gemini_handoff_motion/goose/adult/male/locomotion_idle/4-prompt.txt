@@ -1,0 +1,61 @@
+Generate an IMAGE ONLY.
+
+Do not answer with text.
+Do not explain anything.
+Do not provide JSON.
+Do not provide a table.
+
+You are editing a focused pixel-art motion board for a desktop virtual pet game.
+
+Use the uploaded adult male goose motion pack as the design anchor.
+The single uploaded image contains:
+- the canonical base pose
+- the current motion reference
+- the editable labeled motion board
+
+Preserve the exact uploaded goose identity, proportions, face, silhouette, outline weight, and shading style.
+Do not redesign the goose.
+
+Treat the editable motion board panel inside the uploaded pack as the board to edit.
+Keep the board layout, frame positions, transparency, and labels intact.
+Do not remove labels.
+Do not add labels.
+Do not add extra frames.
+Do not change the board dimensions.
+
+Only improve these frames:
+- idle_00
+- idle_01
+- idle_02
+- idle_03
+
+Leave all other frames in this board unchanged.
+
+Goals:
+- Only improve idle_00 through idle_03.
+- Idle should preserve the species' neutral silhouette while adding subtle life.
+- Keep the animal on-model, calm, and readable with no unnecessary motion blur or distortion.
+- Walk as a longer-stride bird with visible leg motion, steady body carriage, and occasional subtle wing balance motion.
+
+
+Style goals:
+- pixel art only
+- crisp edges
+- no blur
+- no anti-aliasing
+- preserve the original uploaded goose appearance exactly
+
+Important:
+- male should stay slightly larger and bolder
+- adult motion should feel mature, grounded, and controlled
+- background must be fully transparent anywhere outside the animal and board labels
+- each labeled frame cell must contain a complete readable pose for that frame
+- do not leave checkerboard residue, matte halos, clipped silhouettes, or bright cleanup specks
+- do not change palette relationships
+- do not make it look like a different artist
+
+- Preserve a fully filled chest and body mass in every frame.
+- Do NOT hollow out the torso, chest, wing interior, or belly.
+- Keep the internal shading and solid silhouette volume intact.
+
+Return only the edited image.

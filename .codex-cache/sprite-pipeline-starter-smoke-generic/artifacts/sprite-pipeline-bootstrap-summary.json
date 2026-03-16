@@ -1,0 +1,28 @@
+{
+  "projectName": "Generic Sprite Smoke",
+  "targetRoot": "C:\\Users\\fishe\\Documents\\projects\\wevito\\.codex-cache\\sprite-pipeline-starter-smoke-generic",
+  "sourceRoot": "incoming_sprites",
+  "runtimeRoot": "sprites_runtime",
+  "authoredRoot": "sprites_authored_verified",
+  "entityLabelSingular": "asset",
+  "entityLabelPlural": "assets",
+  "seedEntities": [
+    "hero",
+    "turret",
+    "explosion"
+  ],
+  "variantAxes": [
+    "state",
+    "faction",
+    "palette"
+  ],
+  "files": [
+    "C:\\Users\\fishe\\Documents\\projects\\wevito\\.codex-cache\\sprite-pipeline-starter-smoke-generic\\docs\\SPRITE_SOURCE_OF_TRUTH.md",
+    "C:\\Users\\fishe\\Documents\\projects\\wevito\\.codex-cache\\sprite-pipeline-starter-smoke-generic\\docs\\MOTION_AUTHORING_ROADMAP.md",
+    "C:\\Users\\fishe\\Documents\\projects\\wevito\\.codex-cache\\sprite-pipeline-starter-smoke-generic\\docs\\SPRITE_PIPELINE_CHECKLIST.md",
+    "C:\\Users\\fishe\\Documents\\projects\\wevito\\.codex-cache\\sprite-pipeline-starter-smoke-generic\\docs\\GEMINI_PROMPT_RULES.md",
+    "C:\\Users\\fishe\\Documents\\projects\\wevito\\.codex-cache\\sprite-pipeline-starter-smoke-generic\\docs\\SPRITE_PIPELINE_START_HERE.md",
+    "C:\\Users\\fishe\\Documents\\projects\\wevito\\.codex-cache\\sprite-pipeline-starter-smoke-generic\\tools\\incoming_sprite_manifest.json",
+    "C:\\Users\\fishe\\Documents\\projects\\wevito\\.codex-cache\\sprite-pipeline-starter-smoke-generic\\tools\\motion_families.json"
+  ]
+}

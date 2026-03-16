@@ -1,0 +1,32 @@
+{
+  "species": "rat",
+  "ageStage": "baby",
+  "gender": "female",
+  "family": "locomotion",
+  "boardImage": "locomotion-editable-board.png",
+  "runtimeReferenceImage": "locomotion-runtime-reference-blue.png",
+  "frameLayout": [
+    [
+      "idle_00",
+      "idle_01",
+      "idle_02",
+      "idle_03",
+      "walk_00"
+    ],
+    [
+      "walk_01",
+      "walk_02",
+      "walk_03",
+      "walk_04",
+      "walk_05"
+    ]
+  ],
+  "colors": [
+    "red",
+    "orange",
+    "yellow",
+    "blue",
+    "indigo",
+    "violet"
+  ]
+}

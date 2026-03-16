@@ -1,0 +1,6 @@
+C:\Users\fishe\Documents\projects\wevito\incoming_sprites\gemini_handoff\raccoon\adult\male
+C:\Users\fishe\Documents\projects\wevito\incoming_sprites\gemini_handoff\raccoon\adult\female
+C:\Users\fishe\Documents\projects\wevito\incoming_sprites\gemini_handoff\raccoon\teen\male
+C:\Users\fishe\Documents\projects\wevito\incoming_sprites\gemini_handoff\raccoon\teen\female
+C:\Users\fishe\Documents\projects\wevito\incoming_sprites\gemini_handoff\raccoon\baby\male
+C:\Users\fishe\Documents\projects\wevito\incoming_sprites\gemini_handoff\raccoon\baby\female

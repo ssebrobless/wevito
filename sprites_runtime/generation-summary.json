@@ -1,9 +1,45 @@
 {
   "canvas_size": {
-    "width": 28,
-    "height": 24
+    "width": 72,
+    "height": 64
   },
-  "exported_frames": 10800,
+  "frame_layout_overrides": {
+    "snake": {
+      "walk": {
+        "baby": {
+          "canvas_size": [
+            104,
+            64
+          ],
+          "target_size": [
+            92,
+            26
+          ]
+        },
+        "teen": {
+          "canvas_size": [
+            112,
+            64
+          ],
+          "target_size": [
+            102,
+            30
+          ]
+        },
+        "adult": {
+          "canvas_size": [
+            120,
+            64
+          ],
+          "target_size": [
+            112,
+            34
+          ]
+        }
+      }
+    }
+  },
+  "exported_frames": 1080,
   "species_counts": {
     "crow": 1080,
     "deer": 1080,
@@ -16,721 +52,10 @@
     "snake": 1080,
     "squirrel": 1080
   },
+  "validated_species_counts": {
+    "raccoon": 1080
+  },
   "entries": [
-    {
-      "source": "rat_baby.png",
-      "species": "rat",
-      "age_stage": "baby",
-      "exported_frames": 360,
-      "poses": [
-        {
-          "gender": "male",
-          "bbox": {
-            "left": 140,
-            "top": 328,
-            "right": 1350,
-            "bottom": 1278
-          },
-          "source_size": {
-            "width": 1210,
-            "height": 950
-          }
-        },
-        {
-          "gender": "female",
-          "bbox": {
-            "left": 1549,
-            "top": 410,
-            "right": 2734,
-            "bottom": 1255
-          },
-          "source_size": {
-            "width": 1185,
-            "height": 845
-          }
-        }
-      ]
-    },
-    {
-      "source": "rat-teen.png",
-      "species": "rat",
-      "age_stage": "teen",
-      "exported_frames": 360,
-      "poses": [
-        {
-          "gender": "male",
-          "bbox": {
-            "left": 129,
-            "top": 211,
-            "right": 1408,
-            "bottom": 1455
-          },
-          "source_size": {
-            "width": 1295,
-            "height": 1260
-          }
-        },
-        {
-          "gender": "female",
-          "bbox": {
-            "left": 1489,
-            "top": 293,
-            "right": 2652,
-            "bottom": 1455
-          },
-          "source_size": {
-            "width": 1179,
-            "height": 1178
-          }
-        }
-      ]
-    },
-    {
-      "source": "rat-adult.png",
-      "species": "rat",
-      "age_stage": "adult",
-      "exported_frames": 360,
-      "poses": [
-        {
-          "gender": "male",
-          "bbox": {
-            "left": 70,
-            "top": 317,
-            "right": 1408,
-            "bottom": 1196
-          },
-          "source_size": {
-            "width": 1346,
-            "height": 879
-          }
-        },
-        {
-          "gender": "female",
-          "bbox": {
-            "left": 1408,
-            "top": 469,
-            "right": 2699,
-            "bottom": 1220
-          },
-          "source_size": {
-            "width": 1307,
-            "height": 751
-          }
-        }
-      ]
-    },
-    {
-      "source": "crow_baby.png",
-      "species": "crow",
-      "age_stage": "baby",
-      "exported_frames": 360,
-      "poses": [
-        {
-          "gender": "male",
-          "bbox": {
-            "left": 246,
-            "top": 246,
-            "right": 1291,
-            "bottom": 1326
-          },
-          "source_size": {
-            "width": 1045,
-            "height": 1083
-          }
-        },
-        {
-          "gender": "female",
-          "bbox": {
-            "left": 1619,
-            "top": 351,
-            "right": 2546,
-            "bottom": 1326
-          },
-          "source_size": {
-            "width": 927,
-            "height": 975
-          }
-        }
-      ]
-    },
-    {
-      "source": "crow-teen.png",
-      "species": "crow",
-      "age_stage": "teen",
-      "exported_frames": 360,
-      "poses": [
-        {
-          "gender": "male",
-          "bbox": {
-            "left": 141,
-            "top": 188,
-            "right": 1408,
-            "bottom": 1442
-          },
-          "source_size": {
-            "width": 1283,
-            "height": 1270
-          }
-        },
-        {
-          "gender": "female",
-          "bbox": {
-            "left": 1514,
-            "top": 282,
-            "right": 2629,
-            "bottom": 1442
-          },
-          "source_size": {
-            "width": 1131,
-            "height": 1176
-          }
-        }
-      ]
-    },
-    {
-      "source": "crow-adult.png",
-      "species": "crow",
-      "age_stage": "adult",
-      "exported_frames": 360,
-      "poses": [
-        {
-          "gender": "male",
-          "bbox": {
-            "left": 153,
-            "top": 258,
-            "right": 1408,
-            "bottom": 1314
-          },
-          "source_size": {
-            "width": 1263,
-            "height": 1056
-          }
-        },
-        {
-          "gender": "female",
-          "bbox": {
-            "left": 1478,
-            "top": 411,
-            "right": 2652,
-            "bottom": 1302
-          },
-          "source_size": {
-            "width": 1174,
-            "height": 891
-          }
-        }
-      ]
-    },
-    {
-      "source": "fox_baby.png",
-      "species": "fox",
-      "age_stage": "baby",
-      "exported_frames": 360,
-      "poses": [
-        {
-          "gender": "male",
-          "bbox": {
-            "left": 164,
-            "top": 245,
-            "right": 1362,
-            "bottom": 1279
-          },
-          "source_size": {
-            "width": 1198,
-            "height": 1034
-          }
-        },
-        {
-          "gender": "female",
-          "bbox": {
-            "left": 1477,
-            "top": 339,
-            "right": 2628,
-            "bottom": 1279
-          },
-          "source_size": {
-            "width": 1151,
-            "height": 940
-          }
-        }
-      ]
-    },
-    {
-      "source": "fox-teen.png",
-      "species": "fox",
-      "age_stage": "teen",
-      "exported_frames": 360,
-      "poses": [
-        {
-          "gender": "male",
-          "bbox": {
-            "left": 58,
-            "top": 234,
-            "right": 1408,
-            "bottom": 1382
-          },
-          "source_size": {
-            "width": 1366,
-            "height": 1164
-          }
-        },
-        {
-          "gender": "female",
-          "bbox": {
-            "left": 1455,
-            "top": 328,
-            "right": 2676,
-            "bottom": 1395
-          },
-          "source_size": {
-            "width": 1237,
-            "height": 1083
-          }
-        }
-      ]
-    },
-    {
-      "source": "fox-adult.png",
-      "species": "fox",
-      "age_stage": "adult",
-      "exported_frames": 360,
-      "poses": [
-        {
-          "gender": "male",
-          "bbox": {
-            "left": 105,
-            "top": 235,
-            "right": 1408,
-            "bottom": 1326
-          },
-          "source_size": {
-            "width": 1311,
-            "height": 1091
-          }
-        },
-        {
-          "gender": "female",
-          "bbox": {
-            "left": 1478,
-            "top": 387,
-            "right": 2699,
-            "bottom": 1326
-          },
-          "source_size": {
-            "width": 1229,
-            "height": 939
-          }
-        }
-      ]
-    },
-    {
-      "source": "snake baby.png",
-      "species": "snake",
-      "age_stage": "baby",
-      "exported_frames": 360,
-      "poses": [
-        {
-          "gender": "male",
-          "bbox": {
-            "left": 187,
-            "top": 398,
-            "right": 1385,
-            "bottom": 1185
-          },
-          "source_size": {
-            "width": 1198,
-            "height": 787
-          }
-        },
-        {
-          "gender": "female",
-          "bbox": {
-            "left": 1548,
-            "top": 481,
-            "right": 2628,
-            "bottom": 1185
-          },
-          "source_size": {
-            "width": 1080,
-            "height": 704
-          }
-        }
-      ]
-    },
-    {
-      "source": "snake-teen.png",
-      "species": "snake",
-      "age_stage": "teen",
-      "exported_frames": 360,
-      "poses": [
-        {
-          "gender": "male",
-          "bbox": {
-            "left": 140,
-            "top": 188,
-            "right": 1408,
-            "bottom": 1442
-          },
-          "source_size": {
-            "width": 1284,
-            "height": 1270
-          }
-        },
-        {
-          "gender": "female",
-          "bbox": {
-            "left": 1595,
-            "top": 428,
-            "right": 2722,
-            "bottom": 1442
-          },
-          "source_size": {
-            "width": 1143,
-            "height": 1030
-          }
-        }
-      ]
-    },
-    {
-      "source": "snake-adult.png",
-      "species": "snake",
-      "age_stage": "adult",
-      "exported_frames": 360,
-      "poses": [
-        {
-          "gender": "male",
-          "bbox": {
-            "left": 141,
-            "top": 352,
-            "right": 1361,
-            "bottom": 1232
-          },
-          "source_size": {
-            "width": 1220,
-            "height": 880
-          }
-        },
-        {
-          "gender": "female",
-          "bbox": {
-            "left": 1513,
-            "top": 445,
-            "right": 2676,
-            "bottom": 1232
-          },
-          "source_size": {
-            "width": 1163,
-            "height": 787
-          }
-        }
-      ]
-    },
-    {
-      "source": "deer baby.png",
-      "species": "deer",
-      "age_stage": "baby",
-      "exported_frames": 360,
-      "poses": [
-        {
-          "gender": "male",
-          "bbox": {
-            "left": 293,
-            "top": 199,
-            "right": 1291,
-            "bottom": 1396
-          },
-          "source_size": {
-            "width": 1014,
-            "height": 1213
-          }
-        },
-        {
-          "gender": "female",
-          "bbox": {
-            "left": 1712,
-            "top": 363,
-            "right": 2571,
-            "bottom": 1396
-          },
-          "source_size": {
-            "width": 875,
-            "height": 1043
-          }
-        }
-      ]
-    },
-    {
-      "source": "deer-teen.png",
-      "species": "deer",
-      "age_stage": "teen",
-      "exported_frames": 360,
-      "poses": [
-        {
-          "gender": "male",
-          "bbox": {
-            "left": 235,
-            "top": 140,
-            "right": 1361,
-            "bottom": 1489
-          },
-          "source_size": {
-            "width": 1142,
-            "height": 1365
-          }
-        },
-        {
-          "gender": "female",
-          "bbox": {
-            "left": 1549,
-            "top": 187,
-            "right": 2581,
-            "bottom": 1489
-          },
-          "source_size": {
-            "width": 1048,
-            "height": 1318
-          }
-        }
-      ]
-    },
-    {
-      "source": "deer-adult.png",
-      "species": "deer",
-      "age_stage": "adult",
-      "exported_frames": 360,
-      "poses": [
-        {
-          "gender": "male",
-          "bbox": {
-            "left": 246,
-            "top": 117,
-            "right": 1315,
-            "bottom": 1431
-          },
-          "source_size": {
-            "width": 1072,
-            "height": 1316
-          }
-        },
-        {
-          "gender": "female",
-          "bbox": {
-            "left": 1678,
-            "top": 399,
-            "right": 2570,
-            "bottom": 1443
-          },
-          "source_size": {
-            "width": 892,
-            "height": 1044
-          }
-        }
-      ]
-    },
-    {
-      "source": "frog-baby.png",
-      "species": "frog",
-      "age_stage": "baby",
-      "exported_frames": 360,
-      "poses": [
-        {
-          "gender": "male",
-          "bbox": {
-            "left": 222,
-            "top": 281,
-            "right": 1326,
-            "bottom": 1360
-          },
-          "source_size": {
-            "width": 1117,
-            "height": 1088
-          }
-        },
-        {
-          "gender": "female",
-          "bbox": {
-            "left": 1619,
-            "top": 504,
-            "right": 2582,
-            "bottom": 1349
-          },
-          "source_size": {
-            "width": 975,
-            "height": 853
-          }
-        }
-      ]
-    },
-    {
-      "source": "frog-teen.png",
-      "species": "frog",
-      "age_stage": "teen",
-      "exported_frames": 360,
-      "poses": [
-        {
-          "gender": "male",
-          "bbox": {
-            "left": 235,
-            "top": 236,
-            "right": 1408,
-            "bottom": 1489
-          },
-          "source_size": {
-            "width": 1189,
-            "height": 1269
-          }
-        },
-        {
-          "gender": "female",
-          "bbox": {
-            "left": 1549,
-            "top": 330,
-            "right": 2594,
-            "bottom": 1489
-          },
-          "source_size": {
-            "width": 1061,
-            "height": 1175
-          }
-        }
-      ]
-    },
-    {
-      "source": "frog-adult.png",
-      "species": "frog",
-      "age_stage": "adult",
-      "exported_frames": 360,
-      "poses": [
-        {
-          "gender": "male",
-          "bbox": {
-            "left": 174,
-            "top": 329,
-            "right": 1362,
-            "bottom": 1326
-          },
-          "source_size": {
-            "width": 1204,
-            "height": 1013
-          }
-        },
-        {
-          "gender": "female",
-          "bbox": {
-            "left": 1560,
-            "top": 459,
-            "right": 2653,
-            "bottom": 1314
-          },
-          "source_size": {
-            "width": 1109,
-            "height": 871
-          }
-        }
-      ]
-    },
-    {
-      "source": "pigeon-baby.png",
-      "species": "pigeon",
-      "age_stage": "baby",
-      "exported_frames": 360,
-      "poses": [
-        {
-          "gender": "male",
-          "bbox": {
-            "left": 188,
-            "top": 234,
-            "right": 1315,
-            "bottom": 1384
-          },
-          "source_size": {
-            "width": 1140,
-            "height": 1153
-          }
-        },
-        {
-          "gender": "female",
-          "bbox": {
-            "left": 1525,
-            "top": 387,
-            "right": 2570,
-            "bottom": 1384
-          },
-          "source_size": {
-            "width": 1057,
-            "height": 1004
-          }
-        }
-      ]
-    },
-    {
-      "source": "pigeon-teen.png",
-      "species": "pigeon",
-      "age_stage": "teen",
-      "exported_frames": 360,
-      "poses": [
-        {
-          "gender": "male",
-          "bbox": {
-            "left": 141,
-            "top": 141,
-            "right": 1361,
-            "bottom": 1489
-          },
-          "source_size": {
-            "width": 1236,
-            "height": 1364
-          }
-        },
-        {
-          "gender": "female",
-          "bbox": {
-            "left": 1490,
-            "top": 283,
-            "right": 2816,
-            "bottom": 1489
-          },
-          "source_size": {
-            "width": 1334,
-            "height": 1222
-          }
-        }
-      ]
-    },
-    {
-      "source": "pigeon-adult.png",
-      "species": "pigeon",
-      "age_stage": "adult",
-      "exported_frames": 360,
-      "poses": [
-        {
-          "gender": "male",
-          "bbox": {
-            "left": 141,
-            "top": 200,
-            "right": 1268,
-            "bottom": 1384
-          },
-          "source_size": {
-            "width": 1143,
-            "height": 1200
-          }
-        },
-        {
-          "gender": "female",
-          "bbox": {
-            "left": 1678,
-            "top": 317,
-            "right": 2675,
-            "bottom": 1407
-          },
-          "source_size": {
-            "width": 1013,
-            "height": 1106
-          }
-        }
-      ]
-    },
     {
       "source": "raccoon-baby.png",
       "species": "raccoon",
@@ -775,26 +100,26 @@
           "gender": "male",
           "bbox": {
             "left": 47,
-            "top": 234,
-            "right": 1408,
+            "top": 141,
+            "right": 1385,
             "bottom": 1489
           },
           "source_size": {
-            "width": 1377,
-            "height": 1271
+            "width": 1338,
+            "height": 1348
           }
         },
         {
           "gender": "female",
           "bbox": {
-            "left": 1408,
-            "top": 283,
-            "right": 2675,
+            "left": 1443,
+            "top": 188,
+            "right": 2769,
             "bottom": 1489
           },
           "source_size": {
-            "width": 1283,
-            "height": 1222
+            "width": 1326,
+            "height": 1301
           }
         }
       ]
@@ -808,231 +133,27 @@
         {
           "gender": "male",
           "bbox": {
-            "left": 94,
-            "top": 412,
-            "right": 1408,
-            "bottom": 1290
-          },
-          "source_size": {
-            "width": 1330,
-            "height": 894
-          }
-        },
-        {
-          "gender": "female",
-          "bbox": {
-            "left": 1548,
-            "top": 483,
-            "right": 2699,
-            "bottom": 1314
-          },
-          "source_size": {
-            "width": 1167,
-            "height": 847
-          }
-        }
-      ]
-    },
-    {
-      "source": "squirrel-baby.png",
-      "species": "squirrel",
-      "age_stage": "baby",
-      "exported_frames": 360,
-      "poses": [
-        {
-          "gender": "male",
-          "bbox": {
-            "left": 187,
-            "top": 153,
-            "right": 1339,
-            "bottom": 1361
-          },
-          "source_size": {
-            "width": 1168,
-            "height": 1224
-          }
-        },
-        {
-          "gender": "female",
-          "bbox": {
-            "left": 1572,
-            "top": 304,
-            "right": 2606,
-            "bottom": 1361
-          },
-          "source_size": {
-            "width": 1050,
-            "height": 1073
-          }
-        }
-      ]
-    },
-    {
-      "source": "squirrel-teen.png",
-      "species": "squirrel",
-      "age_stage": "teen",
-      "exported_frames": 360,
-      "poses": [
-        {
-          "gender": "male",
-          "bbox": {
             "left": 105,
-            "top": 210,
-            "right": 1373,
-            "bottom": 1478
+            "top": 423,
+            "right": 1396,
+            "bottom": 1278
           },
           "source_size": {
-            "width": 1268,
-            "height": 1268
+            "width": 1291,
+            "height": 855
           }
         },
         {
           "gender": "female",
           "bbox": {
-            "left": 1537,
-            "top": 328,
-            "right": 2711,
-            "bottom": 1480
+            "left": 1549,
+            "top": 505,
+            "right": 2699,
+            "bottom": 1291
           },
           "source_size": {
-            "width": 1174,
-            "height": 1152
-          }
-        }
-      ]
-    },
-    {
-      "source": "squirrel-adult.png",
-      "species": "squirrel",
-      "age_stage": "adult",
-      "exported_frames": 360,
-      "poses": [
-        {
-          "gender": "male",
-          "bbox": {
-            "left": 117,
-            "top": 164,
-            "right": 1373,
-            "bottom": 1466
-          },
-          "source_size": {
-            "width": 1256,
-            "height": 1302
-          }
-        },
-        {
-          "gender": "female",
-          "bbox": {
-            "left": 1571,
-            "top": 422,
-            "right": 2652,
-            "bottom": 1454
-          },
-          "source_size": {
-            "width": 1081,
-            "height": 1032
-          }
-        }
-      ]
-    },
-    {
-      "source": "goose-baby.png",
-      "species": "goose",
-      "age_stage": "baby",
-      "exported_frames": 360,
-      "poses": [
-        {
-          "gender": "male",
-          "bbox": {
-            "left": 269,
-            "top": 163,
-            "right": 1267,
-            "bottom": 1445
-          },
-          "source_size": {
-            "width": 1014,
-            "height": 1298
-          }
-        },
-        {
-          "gender": "female",
-          "bbox": {
-            "left": 1607,
-            "top": 257,
-            "right": 2581,
-            "bottom": 1443
-          },
-          "source_size": {
-            "width": 990,
-            "height": 1202
-          }
-        }
-      ]
-    },
-    {
-      "source": "goose-teen.png",
-      "species": "goose",
-      "age_stage": "teen",
-      "exported_frames": 360,
-      "poses": [
-        {
-          "gender": "male",
-          "bbox": {
-            "left": 199,
-            "top": 152,
-            "right": 1373,
-            "bottom": 1478
-          },
-          "source_size": {
-            "width": 1190,
-            "height": 1334
-          }
-        },
-        {
-          "gender": "female",
-          "bbox": {
-            "left": 1584,
-            "top": 316,
-            "right": 2606,
-            "bottom": 1478
-          },
-          "source_size": {
-            "width": 1038,
-            "height": 1170
-          }
-        }
-      ]
-    },
-    {
-      "source": "goose-adult.png",
-      "species": "goose",
-      "age_stage": "adult",
-      "exported_frames": 360,
-      "poses": [
-        {
-          "gender": "male",
-          "bbox": {
-            "left": 140,
-            "top": 117,
-            "right": 1362,
-            "bottom": 1478
-          },
-          "source_size": {
-            "width": 1222,
-            "height": 1361
-          }
-        },
-        {
-          "gender": "female",
-          "bbox": {
-            "left": 1525,
-            "top": 270,
-            "right": 2664,
-            "bottom": 1478
-          },
-          "source_size": {
-            "width": 1139,
-            "height": 1211
+            "width": 1150,
+            "height": 786
           }
         }
       ]

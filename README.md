@@ -125,6 +125,102 @@ Artifacts are written under `vnext\artifacts\flicker\<timestamp>\` with:
 - `flicker-summary.json` with nearest automation marker annotations for each spike
 - extracted spike frames under `spikes\`
 
+To verify the canonical sprite source contract against both `incoming_sprites` and `sprites_runtime`, run:
+
+```powershell
+python .\tools\audit_sprite_contract.py
+```
+
+Use `--output <path>` to save a full JSON audit report.
+
+To export an authored-animation pack for a pilot species while preserving the canonical uploaded sprite look:
+
+```powershell
+python .\tools\export_species_authoring_pack.py --species rat
+```
+
+Author improved frames into:
+
+```text
+sprites_authored/<species>/<age>/<gender>/<color>/<animation>_<nn>.png
+```
+
+The shell and sprite preview tools will prefer authored frames when they exist.
+
+For the reusable cross-project version of the workflow that got this pipeline working, start here:
+
+- `C:\Users\fishe\Documents\projects\wevito\SPRITE_PIPELINE_KIT`
+
+Most useful files in that folder:
+
+- `C:\Users\fishe\Documents\projects\wevito\SPRITE_PIPELINE_KIT\README.md`
+- `C:\Users\fishe\Documents\projects\wevito\SPRITE_PIPELINE_KIT\PROCESS_PLAYBOOK.md`
+- `C:\Users\fishe\Documents\projects\wevito\SPRITE_PIPELINE_KIT\PRESET_GUIDE.md`
+- `C:\Users\fishe\Documents\projects\wevito\SPRITE_PIPELINE_KIT\bootstrap_sprite_pipeline.ps1`
+
+To scaffold the same process into a different project root, use:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\SPRITE_PIPELINE_KIT\bootstrap_sprite_pipeline.ps1 -TargetRoot "C:\path\to\new-project" -ProjectName "New Project" -Preset generic -Entities hero enemy turret -EntityLabelSingular entity -EntityLabelPlural entities -VariantAxes state faction palette
+```
+
+That will create a starter kit with:
+
+- source-of-truth doc
+- motion roadmap
+- pipeline checklist
+- Gemini prompt rules
+- starter manifest
+- motion families template
+
+Canonical templates now live under:
+
+- `C:\Users\fishe\Documents\projects\wevito\SPRITE_PIPELINE_KIT\templates`
+
+To clean baked Gemini checkerboard/background remnants from shared non-pet assets into a runtime-ready tree, run:
+
+```powershell
+python .\tools\clean_shared_sprite_assets.py --source .\sprites --output .\sprites_shared_runtime --clean-folders environment items status --copy-folders icons celestial portraits
+```
+
+The vNext shell will prefer `sprites_shared_runtime` for shared assets when present.
+
+## vNext Dev Tools
+
+The debug/testing build now includes development-only pet scenario tools. These are meant for QA and balancing, not the final ship surface.
+
+Use:
+
+```text
+Ctrl+Shift+D
+```
+
+You can:
+- add, remove, or clear pets entirely
+- switch species / age / gender / color on a selected pet
+- spawn a full color set for the chosen species / age / gender combination
+- force any animation state for a chosen duration, then clear it
+- directly add or clear named medical conditions with severity
+- force hunger, thirst, fatigue, dirtiness, loneliness, sickness, healthy recovery, comfort, and recall states
+- force obesity, malnutrition, anxiety, depression, injury, elder-age, and personality archetype states
+- directly adjust vitals, fitness, and biological age for rapid scenario testing
+- inspect live personality, habit, aging, and condition summaries without leaving the running app
+
+The visual harness now captures the dev tools popup as part of the screenshot proof set.
+
+## vNext Webtools
+
+The focused HUD now exposes a single webtools toggle on the main panel. When opened, it reveals a five-slot webtools hotbar:
+
+- `LINK BIN` is live now
+- 4 additional empty slots are reserved for future PC tools
+
+The link bin itself now keeps its actions inside the popup:
+
+- `PASTE` adds the current clipboard link if it is valid
+- `DELETE` removes checked rows
+- clicking a link row opens it directly
+
 ## Features Implemented
 
 ### Pet Behavior
@@ -132,6 +228,9 @@ Artifacts are written under `vnext\artifacts\flicker\<timestamp>\` with:
 - Different movement speeds per animal type
 - Gender-based movement modifiers (males faster)
 - Interaction stops wandering
+- Long-term personality building from care habits
+- Biological aging rate changes with habits, stress, and medical conditions
+- Species-seeded innate conditions plus acquired medical issues
 
 ### Stats System
 - 8 stats: hunger, happiness, energy, health, cleanliness, affection, grooming, fitness
@@ -185,3 +284,6 @@ wevito-godot/
 - Phase 2 run log: `docs/PHASE2_BUGBASH_LOG.md`
 - Phase 2 runbook: `docs/PHASE2_RUNBOOK.md`
 - Monitor roam diagnosis: `docs/MONITOR_ROAM_DIAGNOSIS.md`
+- Gemini handoff helper:
+  - `python .\tools\prepare_gemini_handoff.py --species rat`
+  - `powershell -ExecutionPolicy Bypass -File .\tools\open-gemini-handoff.ps1 -Species rat -Age adult -Gender male -OpenGemini`

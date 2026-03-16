@@ -1,0 +1,12 @@
+C:\Users\fishe\Documents\projects\wevito\vnext\src\Wevito.VNext.Contracts\bin\Debug\net8.0\Wevito.VNext.Contracts.deps.json
+C:\Users\fishe\Documents\projects\wevito\vnext\src\Wevito.VNext.Contracts\bin\Debug\net8.0\Wevito.VNext.Contracts.dll
+C:\Users\fishe\Documents\projects\wevito\vnext\src\Wevito.VNext.Contracts\bin\Debug\net8.0\Wevito.VNext.Contracts.pdb
+C:\Users\fishe\Documents\projects\wevito\vnext\src\Wevito.VNext.Contracts\obj\Debug\net8.0\Wevito.VNext.Contracts.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\fishe\Documents\projects\wevito\vnext\src\Wevito.VNext.Contracts\obj\Debug\net8.0\Wevito.VNext.Contracts.AssemblyInfoInputs.cache
+C:\Users\fishe\Documents\projects\wevito\vnext\src\Wevito.VNext.Contracts\obj\Debug\net8.0\Wevito.VNext.Contracts.AssemblyInfo.cs
+C:\Users\fishe\Documents\projects\wevito\vnext\src\Wevito.VNext.Contracts\obj\Debug\net8.0\Wevito.VNext.Contracts.csproj.CoreCompileInputs.cache
+C:\Users\fishe\Documents\projects\wevito\vnext\src\Wevito.VNext.Contracts\obj\Debug\net8.0\Wevito.VNext.Contracts.sourcelink.json
+C:\Users\fishe\Documents\projects\wevito\vnext\src\Wevito.VNext.Contracts\obj\Debug\net8.0\Wevito.VNext.Contracts.dll
+C:\Users\fishe\Documents\projects\wevito\vnext\src\Wevito.VNext.Contracts\obj\Debug\net8.0\refint\Wevito.VNext.Contracts.dll
+C:\Users\fishe\Documents\projects\wevito\vnext\src\Wevito.VNext.Contracts\obj\Debug\net8.0\Wevito.VNext.Contracts.pdb
+C:\Users\fishe\Documents\projects\wevito\vnext\src\Wevito.VNext.Contracts\obj\Debug\net8.0\ref\Wevito.VNext.Contracts.dll

@@ -1,0 +1,32 @@
+{
+  "species": "squirrel",
+  "ageStage": "adult",
+  "gender": "male",
+  "family": "care",
+  "boardImage": "care-editable-board.png",
+  "runtimeReferenceImage": "care-runtime-reference-blue.png",
+  "frameLayout": [
+    [
+      "eat_00",
+      "eat_01",
+      "eat_02",
+      "eat_03",
+      "sleep_00"
+    ],
+    [
+      "sleep_01",
+      null,
+      null,
+      null,
+      null
+    ]
+  ],
+  "colors": [
+    "red",
+    "orange",
+    "yellow",
+    "blue",
+    "indigo",
+    "violet"
+  ]
+}

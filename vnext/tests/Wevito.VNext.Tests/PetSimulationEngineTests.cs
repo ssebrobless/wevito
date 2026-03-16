@@ -8,6 +8,42 @@ public sealed class PetSimulationEngineTests
     private readonly PetSimulationEngine _engine = new();
 
     [Fact]
+    public void CreatePet_UsesSpeciesAgeGenderAndColorConfiguration()
+    {
+        var species = new SpeciesDefinition("rat", "Rat", "#AAA", 100, DefaultEnvironmentId: "rat-home", InnateConditionId: "respiratoryProblems");
+
+        var pet = _engine.CreatePet(species, PetAgeStage.Teen, PetGender.Male, "violet", "Rat Dev", DateTimeOffset.UtcNow);
+
+        Assert.Equal("rat", pet.SpeciesId);
+        Assert.Equal(PetAgeStage.Teen, pet.AgeStage);
+        Assert.Equal(PetGender.Male, pet.Gender);
+        Assert.Equal("violet", pet.ColorVariant);
+        Assert.Equal("rat-home", pet.SelectedEnvironmentId);
+        Assert.True(pet.Speed > 100);
+        Assert.Contains(pet.ActiveConditions!, condition => condition.Id == "respiratoryProblems" && condition.IsInnate);
+    }
+
+    [Fact]
+    public void ReconfigurePet_ResetsIdentityAndAnimationState()
+    {
+        var fox = new SpeciesDefinition("fox", "Fox", "#F80", 94, DefaultEnvironmentId: "fox-home");
+        var rat = new PetActor(Guid.NewGuid(), "Rat 1", "rat", AgeStage: PetAgeStage.Baby, Gender: PetGender.Female, ColorVariant: "red", CurrentAnimationState: PetAnimationState.Walk, OverrideAnimationState: PetAnimationState.Happy, OverrideAnimationEndsAtUtc: DateTimeOffset.UtcNow.AddSeconds(2), ActiveStatuses: []);
+
+        var updated = _engine.ReconfigurePet(rat, fox, PetAgeStage.Adult, PetGender.Male, "blue", DateTimeOffset.UtcNow);
+
+        Assert.Equal("fox", updated.SpeciesId);
+        Assert.Equal(PetAgeStage.Adult, updated.AgeStage);
+        Assert.Equal(PetGender.Male, updated.Gender);
+        Assert.Equal("blue", updated.ColorVariant);
+        Assert.Equal("fox-home", updated.SelectedEnvironmentId);
+        Assert.Equal(PetAnimationState.Idle, updated.CurrentAnimationState);
+        Assert.Null(updated.OverrideAnimationState);
+        Assert.Null(updated.OverrideAnimationEndsAtUtc);
+        Assert.NotNull(updated.Personality);
+        Assert.NotNull(updated.HabitProfile);
+    }
+
+    [Fact]
     public void ApplyAction_Feed_RaisesHungerAndSetsEatAnimation()
     {
         var pet = new PetActor(
@@ -81,6 +117,7 @@ public sealed class PetSimulationEngineTests
             AgeStage: PetAgeStage.Baby,
             AgeStageStartedAtUtc: start,
             Speed: 80,
+            BiologicalAgeMinutes: 75,
             ActiveStatuses: []);
 
         var updated = _engine.Tick(
@@ -92,5 +129,115 @@ public sealed class PetSimulationEngineTests
 
         Assert.Equal(PetAgeStage.Teen, updated.AgeStage);
         Assert.True(updated.AgeStageStartedAtUtc > start);
+    }
+
+    [Fact]
+    public void Tick_PoorCareAcceleratesBiologicalAgeMoreThanStrongCare()
+    {
+        var poorCare = new PetActor(
+            Guid.NewGuid(),
+            "Crow 1",
+            "crow",
+            AgeStage: PetAgeStage.Teen,
+            BiologicalAgeMinutes: 120,
+            Hunger: 10,
+            Thirst: 12,
+            Energy: 14,
+            Cleanliness: 16,
+            Affection: 18,
+            Comfort: 16,
+            Health: 32,
+            Fitness: 18,
+            HabitProfile: new PetHabitProfile(18, 20, 14, 16, 18, 16, 24, 82),
+            ActiveConditions: [new PetConditionRecord("anxiety", 2, false), new PetConditionRecord("jointPain", 2, false)],
+            ActiveStatuses: []);
+        var strongCare = poorCare with
+        {
+            Id = Guid.NewGuid(),
+            Name = "Crow 2",
+            Hunger = 86,
+            Thirst = 88,
+            Energy = 82,
+            Cleanliness = 84,
+            Affection = 86,
+            Comfort = 84,
+            Health = 92,
+            Fitness = 80,
+            HabitProfile = new PetHabitProfile(84, 84, 80, 82, 84, 82, 86, 14),
+            ActiveConditions = []
+        };
+
+        var poorRate = _engine.CalculateAgingRate(poorCare);
+        var strongRate = _engine.CalculateAgingRate(strongCare);
+
+        Assert.True(poorRate > strongRate);
+    }
+
+    [Fact]
+    public void ApplyAction_PlayBuildsFitnessAndPlayfulPersonality()
+    {
+        var pet = new PetActor(
+            Guid.NewGuid(),
+            "Rat 1",
+            "rat",
+            Fitness: 32,
+            Personality: new PetPersonalityProfile(),
+            HabitProfile: new PetHabitProfile(),
+            ActiveConditions: [],
+            ActiveStatuses: []);
+
+        var updated = _engine.ApplyAction("play", [pet], DateTimeOffset.UtcNow).Single();
+
+        Assert.True(updated.Fitness > pet.Fitness);
+        Assert.True(updated.Personality!.Playfulness > pet.Personality!.Playfulness);
+        Assert.True(updated.HabitProfile!.Exercise > pet.HabitProfile!.Exercise);
+    }
+
+    [Fact]
+    public void Tick_LowFitnessAndNeglectCreateAcquiredConditions()
+    {
+        var pet = new PetActor(
+            Guid.NewGuid(),
+            "Fox 1",
+            "fox",
+            Hunger: 95,
+            Energy: 8,
+            Cleanliness: 12,
+            Affection: 12,
+            Comfort: 12,
+            Health: 42,
+            Fitness: 10,
+            ActiveConditions: [],
+            ActiveStatuses: []);
+
+        var updated = _engine.Tick([pet], CompanionMode.Focused, new RectInt(0, 922, 1920, 118), DateTimeOffset.UtcNow, 2).Single();
+
+        Assert.Contains(updated.ActiveConditions!, condition => condition.Id == "obesity");
+        Assert.Contains(updated.ActiveConditions!, condition => condition.Id == "depression" || condition.Id == "anxiety");
+        Assert.Contains(updated.ActiveConditions!, condition => condition.Id == "jointPain");
+        Assert.Contains(updated.ActiveConditions!, condition => condition.Id == "exhaustion");
+    }
+
+    [Fact]
+    public void MedicineAndDoctorReduceConditionSeverity()
+    {
+        var pet = new PetActor(
+            Guid.NewGuid(),
+            "Goose 1",
+            "goose",
+            Health: 40,
+            ActiveConditions:
+            [
+                new PetConditionRecord("injury", 2, false),
+                new PetConditionRecord("respiratoryProblems", 2, true)
+            ],
+            ActiveStatuses: []);
+
+        var afterMedicine = _engine.ApplyAction("medicine", [pet], DateTimeOffset.UtcNow).Single();
+        var afterDoctor = _engine.ApplyAction("doctor", [afterMedicine], DateTimeOffset.UtcNow).Single();
+
+        Assert.True(afterMedicine.ActiveConditions!.First(condition => condition.Id == "injury").Severity < 2);
+        Assert.True(afterDoctor.Health > afterMedicine.Health);
+        Assert.True(afterDoctor.ActiveConditions!.First(condition => condition.Id == "respiratoryProblems").Severity <= 1);
     }
 }

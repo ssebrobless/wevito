@@ -10,7 +10,9 @@ public sealed record SpeciesDefinition(
     IReadOnlyList<PetGender>? SupportedGenders = null,
     IReadOnlyList<string>? SupportedColors = null,
     string PrimaryFoodGroupId = "",
-    string SecondaryFoodGroupId = "");
+    string SecondaryFoodGroupId = "",
+    string InnateConditionId = "",
+    PetPersonalityProfile? PersonalitySeed = null);
 
 public sealed record ActionDefinition(
     string Id,
@@ -46,6 +48,13 @@ public sealed record StatusDefinition(
     string IconId,
     string Description);
 
+public sealed record ConditionDefinition(
+    string Id,
+    string DisplayName,
+    string Category,
+    string Description,
+    string TreatmentHint = "");
+
 public sealed record ItemDefinition(
     string Id,
     string DisplayName,
@@ -61,4 +70,5 @@ public sealed record GameContent(
     IReadOnlyList<ToolDefinition> Tools,
     IReadOnlyList<NeedDefinition> Needs,
     IReadOnlyList<StatusDefinition> Statuses,
-    IReadOnlyList<ItemDefinition> Items);
+    IReadOnlyList<ItemDefinition> Items,
+    IReadOnlyList<ConditionDefinition> Conditions);

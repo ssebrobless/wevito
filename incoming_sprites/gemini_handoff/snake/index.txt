@@ -1,0 +1,6 @@
+C:\Users\fishe\Documents\projects\wevito\incoming_sprites\gemini_handoff\snake\adult\male
+C:\Users\fishe\Documents\projects\wevito\incoming_sprites\gemini_handoff\snake\adult\female
+C:\Users\fishe\Documents\projects\wevito\incoming_sprites\gemini_handoff\snake\teen\male
+C:\Users\fishe\Documents\projects\wevito\incoming_sprites\gemini_handoff\snake\teen\female
+C:\Users\fishe\Documents\projects\wevito\incoming_sprites\gemini_handoff\snake\baby\male
+C:\Users\fishe\Documents\projects\wevito\incoming_sprites\gemini_handoff\snake\baby\female

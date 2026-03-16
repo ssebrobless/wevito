@@ -1,0 +1,12 @@
+{
+  "name": "wevito-gemini-automation",
+  "private": true,
+  "type": "module",
+  "version": "1.0.0",
+  "scripts": {
+    "automate": "node gemini_automate.mjs"
+  },
+  "dependencies": {
+    "playwright": "^1.55.0"
+  }
+}

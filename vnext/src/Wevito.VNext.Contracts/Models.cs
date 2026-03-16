@@ -64,6 +64,39 @@ public enum PetStatusType
     Comforted
 }
 
+public sealed record PetPersonalityProfile(
+    double FoodLove = 0,
+    double CuddleNeed = 0,
+    double CleanlinessPreference = 0,
+    double ActivityLevel = 0,
+    double Cheerfulness = 0,
+    double SocialNeed = 0,
+    double Playfulness = 0,
+    double Stubbornness = 0);
+
+public sealed record PetHabitProfile(
+    double Nutrition = 72,
+    double Hydration = 72,
+    double Exercise = 66,
+    double Hygiene = 70,
+    double Affection = 70,
+    double Rest = 68,
+    double Medical = 72,
+    double Stress = 18,
+    int FeedCount = 0,
+    int WaterCount = 0,
+    int RestCount = 0,
+    int PlayCount = 0,
+    int GroomCount = 0,
+    int BathCount = 0,
+    int MedicineCount = 0,
+    int DoctorCount = 0);
+
+public sealed record PetConditionRecord(
+    string Id,
+    int Severity = 1,
+    bool IsInnate = false);
+
 public sealed record ForegroundWindowInfo(
     int ProcessId,
     long Hwnd,
@@ -117,6 +150,7 @@ public sealed record PetActor(
     double CurrentY = 0,
     double TargetX = 0,
     double TargetY = 0,
+    double BaseSpeed = 96,
     double Speed = 96,
     PetBehaviorState BehaviorState = PetBehaviorState.Home,
     DateTimeOffset NextDecisionAtUtc = default,
@@ -125,6 +159,8 @@ public sealed record PetActor(
     DateTimeOffset AnimationStartedAtUtc = default,
     PetAnimationState? OverrideAnimationState = null,
     DateTimeOffset? OverrideAnimationEndsAtUtc = null,
+    string LastActionId = "",
+    DateTimeOffset? LastActionAtUtc = null,
     DateTimeOffset AgeStageStartedAtUtc = default,
     double Hunger = 84,
     double Thirst = 82,
@@ -133,6 +169,11 @@ public sealed record PetActor(
     double Affection = 72,
     double Comfort = 74,
     double Health = 88,
+    double Fitness = 68,
+    double BiologicalAgeMinutes = 0,
+    PetPersonalityProfile? Personality = null,
+    PetHabitProfile? HabitProfile = null,
+    IReadOnlyList<PetConditionRecord>? ActiveConditions = null,
     IReadOnlyList<PetStatusType>? ActiveStatuses = null,
     string SelectedEnvironmentId = "");
 

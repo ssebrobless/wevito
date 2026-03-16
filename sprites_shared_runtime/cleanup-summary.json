@@ -1,0 +1,7735 @@
+{
+  "source_root": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites",
+  "output_root": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites_shared_runtime",
+  "clean_folders": [
+    "environment",
+    "items",
+    "status"
+  ],
+  "copy_folders": [
+    "icons",
+    "celestial",
+    "portraits"
+  ],
+  "files_processed": 554,
+  "files_cleaned": 101,
+  "total_removed_pixels": 39259517,
+  "results": [
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\environment\\crow.png",
+      "cleaned": true,
+      "removed_pixels": 679819,
+      "palette": [
+        [
+          112,
+          112,
+          112
+        ],
+        [
+          32,
+          32,
+          32
+        ],
+        [
+          176,
+          176,
+          176
+        ],
+        [
+          184,
+          184,
+          184
+        ],
+        [
+          168,
+          168,
+          168
+        ],
+        [
+          160,
+          160,
+          160
+        ]
+      ],
+      "original_size": [
+        1408,
+        512
+      ],
+      "output_size": [
+        1364,
+        368
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\environment\\deer.png",
+      "cleaned": true,
+      "removed_pixels": 641144,
+      "palette": [
+        [
+          112,
+          112,
+          112
+        ],
+        [
+          32,
+          32,
+          32
+        ],
+        [
+          168,
+          168,
+          168
+        ],
+        [
+          184,
+          184,
+          184
+        ],
+        [
+          176,
+          176,
+          176
+        ],
+        [
+          24,
+          24,
+          24
+        ]
+      ],
+      "original_size": [
+        1408,
+        512
+      ],
+      "output_size": [
+        1289,
+        354
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\environment\\fox.png",
+      "cleaned": true,
+      "removed_pixels": 646395,
+      "palette": [
+        [
+          184,
+          184,
+          184
+        ],
+        [
+          176,
+          176,
+          176
+        ],
+        [
+          168,
+          168,
+          168
+        ],
+        [
+          192,
+          192,
+          192
+        ],
+        [
+          32,
+          32,
+          32
+        ],
+        [
+          112,
+          112,
+          112
+        ]
+      ],
+      "original_size": [
+        1408,
+        512
+      ],
+      "output_size": [
+        1193,
+        374
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\environment\\frog.png",
+      "cleaned": true,
+      "removed_pixels": 600539,
+      "palette": [
+        [
+          112,
+          112,
+          112
+        ],
+        [
+          184,
+          184,
+          184
+        ],
+        [
+          168,
+          168,
+          168
+        ],
+        [
+          32,
+          32,
+          32
+        ],
+        [
+          176,
+          176,
+          176
+        ],
+        [
+          24,
+          24,
+          24
+        ]
+      ],
+      "original_size": [
+        1408,
+        512
+      ],
+      "output_size": [
+        1289,
+        408
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\environment\\goose.png",
+      "cleaned": true,
+      "removed_pixels": 38285,
+      "palette": [
+        [
+          176,
+          176,
+          176
+        ],
+        [
+          176,
+          176,
+          168
+        ],
+        [
+          184,
+          184,
+          176
+        ],
+        [
+          168,
+          168,
+          160
+        ],
+        [
+          184,
+          184,
+          184
+        ],
+        [
+          168,
+          168,
+          168
+        ]
+      ],
+      "original_size": [
+        1408,
+        512
+      ],
+      "output_size": [
+        1405,
+        512
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\environment\\indoor_room.png",
+      "cleaned": true,
+      "removed_pixels": 658649,
+      "palette": [
+        [
+          104,
+          104,
+          96
+        ],
+        [
+          176,
+          176,
+          176
+        ],
+        [
+          32,
+          32,
+          24
+        ],
+        [
+          184,
+          184,
+          184
+        ],
+        [
+          184,
+          184,
+          176
+        ],
+        [
+          176,
+          176,
+          168
+        ]
+      ],
+      "original_size": [
+        1408,
+        512
+      ],
+      "output_size": [
+        1193,
+        302
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\environment\\night_props.png",
+      "cleaned": true,
+      "removed_pixels": 647176,
+      "palette": [
+        [
+          104,
+          104,
+          96
+        ],
+        [
+          32,
+          32,
+          24
+        ],
+        [
+          176,
+          176,
+          176
+        ],
+        [
+          176,
+          176,
+          168
+        ],
+        [
+          184,
+          184,
+          184
+        ],
+        [
+          184,
+          184,
+          176
+        ]
+      ],
+      "original_size": [
+        1408,
+        512
+      ],
+      "output_size": [
+        1154,
+        372
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\environment\\pigeon.png",
+      "cleaned": true,
+      "removed_pixels": 664533,
+      "palette": [
+        [
+          104,
+          104,
+          96
+        ],
+        [
+          160,
+          160,
+          160
+        ],
+        [
+          176,
+          176,
+          176
+        ],
+        [
+          32,
+          32,
+          24
+        ],
+        [
+          176,
+          176,
+          168
+        ],
+        [
+          168,
+          168,
+          160
+        ]
+      ],
+      "original_size": [
+        1408,
+        512
+      ],
+      "output_size": [
+        1278,
+        355
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\environment\\raccoon.png",
+      "cleaned": true,
+      "removed_pixels": 323666,
+      "palette": [
+        [
+          104,
+          104,
+          96
+        ],
+        [
+          160,
+          160,
+          160
+        ],
+        [
+          168,
+          168,
+          168
+        ],
+        [
+          168,
+          168,
+          160
+        ],
+        [
+          176,
+          176,
+          176
+        ],
+        [
+          176,
+          176,
+          168
+        ]
+      ],
+      "original_size": [
+        1408,
+        512
+      ],
+      "output_size": [
+        1408,
+        508
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\environment\\rat.png",
+      "cleaned": true,
+      "removed_pixels": 554698,
+      "palette": [
+        [
+          32,
+          32,
+          32
+        ],
+        [
+          112,
+          112,
+          112
+        ],
+        [
+          176,
+          176,
+          176
+        ],
+        [
+          184,
+          184,
+          184
+        ],
+        [
+          168,
+          168,
+          168
+        ],
+        [
+          160,
+          160,
+          160
+        ]
+      ],
+      "original_size": [
+        1408,
+        512
+      ],
+      "output_size": [
+        1229,
+        356
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\environment\\snake.png",
+      "cleaned": true,
+      "removed_pixels": 645099,
+      "palette": [
+        [
+          184,
+          184,
+          184
+        ],
+        [
+          176,
+          176,
+          176
+        ],
+        [
+          168,
+          168,
+          168
+        ],
+        [
+          192,
+          192,
+          192
+        ],
+        [
+          112,
+          112,
+          112
+        ],
+        [
+          32,
+          32,
+          32
+        ]
+      ],
+      "original_size": [
+        1408,
+        512
+      ],
+      "output_size": [
+        1195,
+        394
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\environment\\squirrel.png",
+      "cleaned": true,
+      "removed_pixels": 43199,
+      "palette": [
+        [
+          176,
+          176,
+          176
+        ],
+        [
+          176,
+          176,
+          168
+        ],
+        [
+          184,
+          184,
+          176
+        ],
+        [
+          168,
+          168,
+          168
+        ],
+        [
+          184,
+          184,
+          184
+        ],
+        [
+          168,
+          168,
+          160
+        ]
+      ],
+      "original_size": [
+        1408,
+        512
+      ],
+      "output_size": [
+        1405,
+        512
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\care\\bandage_roll.png",
+      "cleaned": true,
+      "removed_pixels": 465642,
+      "palette": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          96,
+          96,
+          80
+        ],
+        [
+          104,
+          96,
+          88
+        ],
+        [
+          8,
+          8,
+          0
+        ],
+        [
+          8,
+          8,
+          8
+        ],
+        [
+          96,
+          96,
+          88
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        289,
+        285
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\care\\first_aid_kit.png",
+      "cleaned": true,
+      "removed_pixels": 399727,
+      "palette": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          104,
+          96,
+          88
+        ],
+        [
+          96,
+          96,
+          80
+        ],
+        [
+          8,
+          8,
+          8
+        ],
+        [
+          8,
+          8,
+          0
+        ],
+        [
+          96,
+          96,
+          88
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        460,
+        349
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\care\\grooming_brush.png",
+      "cleaned": true,
+      "removed_pixels": 461068,
+      "palette": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          8,
+          8,
+          8
+        ],
+        [
+          96,
+          96,
+          80
+        ],
+        [
+          104,
+          96,
+          88
+        ],
+        [
+          8,
+          8,
+          0
+        ],
+        [
+          112,
+          104,
+          96
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        312,
+        309
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\care\\medicine_dropper.png",
+      "cleaned": true,
+      "removed_pixels": 434213,
+      "palette": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          96,
+          96,
+          80
+        ],
+        [
+          8,
+          8,
+          8
+        ],
+        [
+          104,
+          96,
+          88
+        ],
+        [
+          8,
+          8,
+          0
+        ],
+        [
+          96,
+          96,
+          88
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        890,
+        297
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\care\\pill_bottle.png",
+      "cleaned": true,
+      "removed_pixels": 447071,
+      "palette": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          96,
+          96,
+          80
+        ],
+        [
+          8,
+          8,
+          8
+        ],
+        [
+          104,
+          96,
+          88
+        ],
+        [
+          8,
+          8,
+          0
+        ],
+        [
+          0,
+          8,
+          0
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        472,
+        301
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\care\\soap_bottle.png",
+      "cleaned": true,
+      "removed_pixels": 448566,
+      "palette": [
+        [
+          8,
+          8,
+          8
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          96,
+          96,
+          80
+        ],
+        [
+          8,
+          8,
+          0
+        ],
+        [
+          96,
+          96,
+          88
+        ],
+        [
+          104,
+          96,
+          88
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        916,
+        332
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\care\\syringe.png",
+      "cleaned": true,
+      "removed_pixels": 432302,
+      "palette": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          96,
+          96,
+          80
+        ],
+        [
+          8,
+          8,
+          8
+        ],
+        [
+          104,
+          96,
+          88
+        ],
+        [
+          8,
+          8,
+          0
+        ],
+        [
+          0,
+          8,
+          0
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        872,
+        320
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\care\\thermometer.png",
+      "cleaned": true,
+      "removed_pixels": 434188,
+      "palette": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          8,
+          8,
+          8
+        ],
+        [
+          104,
+          96,
+          88
+        ],
+        [
+          96,
+          96,
+          80
+        ],
+        [
+          8,
+          8,
+          0
+        ],
+        [
+          0,
+          8,
+          0
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        416,
+        380
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\care\\towel.png",
+      "cleaned": true,
+      "removed_pixels": 398149,
+      "palette": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          8,
+          8,
+          8
+        ],
+        [
+          96,
+          96,
+          80
+        ],
+        [
+          104,
+          96,
+          88
+        ],
+        [
+          8,
+          8,
+          0
+        ],
+        [
+          112,
+          104,
+          96
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        872,
+        350
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\containers\\dish_set.png",
+      "cleaned": true,
+      "removed_pixels": 418747,
+      "palette": [
+        [
+          8,
+          8,
+          0
+        ],
+        [
+          104,
+          96,
+          88
+        ],
+        [
+          8,
+          8,
+          8
+        ],
+        [
+          112,
+          112,
+          104
+        ],
+        [
+          96,
+          96,
+          88
+        ],
+        [
+          104,
+          104,
+          96
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        849,
+        292
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\containers\\feeding_plate.png",
+      "cleaned": true,
+      "removed_pixels": 422153,
+      "palette": [
+        [
+          104,
+          96,
+          88
+        ],
+        [
+          8,
+          8,
+          8
+        ],
+        [
+          8,
+          8,
+          0
+        ],
+        [
+          96,
+          96,
+          88
+        ],
+        [
+          0,
+          8,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        872,
+        344
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\containers\\hanging_feeder.png",
+      "cleaned": true,
+      "removed_pixels": 456191,
+      "palette": [
+        [
+          8,
+          8,
+          0
+        ],
+        [
+          104,
+          96,
+          88
+        ],
+        [
+          8,
+          8,
+          8
+        ],
+        [
+          96,
+          96,
+          88
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          104,
+          104,
+          96
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        228,
+        440
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\containers\\pond_dish.png",
+      "cleaned": true,
+      "removed_pixels": 437070,
+      "palette": [
+        [
+          8,
+          8,
+          0
+        ],
+        [
+          104,
+          96,
+          88
+        ],
+        [
+          8,
+          8,
+          8
+        ],
+        [
+          0,
+          8,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          104,
+          104,
+          96
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        792,
+        332
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\containers\\seed_tray.png",
+      "cleaned": true,
+      "removed_pixels": 415565,
+      "palette": [
+        [
+          8,
+          8,
+          0
+        ],
+        [
+          104,
+          96,
+          88
+        ],
+        [
+          8,
+          8,
+          8
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          8,
+          0
+        ],
+        [
+          112,
+          104,
+          96
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        380,
+        237
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\containers\\shallow_water_dish.png",
+      "cleaned": true,
+      "removed_pixels": 429239,
+      "palette": [
+        [
+          104,
+          96,
+          88
+        ],
+        [
+          8,
+          8,
+          0
+        ],
+        [
+          8,
+          8,
+          8
+        ],
+        [
+          96,
+          96,
+          88
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          8,
+          0
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        821,
+        217
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\containers\\storage_jar.png",
+      "cleaned": true,
+      "removed_pixels": 434710,
+      "palette": [
+        [
+          8,
+          8,
+          0
+        ],
+        [
+          104,
+          96,
+          88
+        ],
+        [
+          112,
+          112,
+          104
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          8,
+          8,
+          8
+        ],
+        [
+          104,
+          104,
+          96
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        589,
+        393
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\containers\\treat_cup.png",
+      "cleaned": true,
+      "removed_pixels": 453521,
+      "palette": [
+        [
+          8,
+          8,
+          0
+        ],
+        [
+          104,
+          104,
+          96
+        ],
+        [
+          104,
+          96,
+          88
+        ],
+        [
+          8,
+          8,
+          8
+        ],
+        [
+          112,
+          112,
+          104
+        ],
+        [
+          16,
+          24,
+          16
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        802,
+        269
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\containers\\water_bowl.png",
+      "cleaned": true,
+      "removed_pixels": 433666,
+      "palette": [
+        [
+          104,
+          96,
+          88
+        ],
+        [
+          8,
+          8,
+          8
+        ],
+        [
+          8,
+          8,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          8,
+          0
+        ],
+        [
+          96,
+          96,
+          88
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        576,
+        261
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\food_birds\\berry_cluster.png",
+      "cleaned": true,
+      "removed_pixels": 442668,
+      "palette": [
+        [
+          16,
+          16,
+          8
+        ],
+        [
+          96,
+          96,
+          88
+        ],
+        [
+          96,
+          96,
+          96
+        ],
+        [
+          8,
+          8,
+          8
+        ],
+        [
+          8,
+          16,
+          8
+        ],
+        [
+          16,
+          16,
+          16
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        284,
+        308
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\food_birds\\bird_bowl.png",
+      "cleaned": true,
+      "removed_pixels": 445703,
+      "palette": [
+        [
+          16,
+          16,
+          8
+        ],
+        [
+          96,
+          96,
+          88
+        ],
+        [
+          96,
+          96,
+          96
+        ],
+        [
+          104,
+          104,
+          96
+        ],
+        [
+          8,
+          8,
+          0
+        ],
+        [
+          8,
+          16,
+          8
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        872,
+        338
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\food_birds\\bug_treat.png",
+      "cleaned": true,
+      "removed_pixels": 462091,
+      "palette": [
+        [
+          16,
+          16,
+          8
+        ],
+        [
+          96,
+          96,
+          88
+        ],
+        [
+          8,
+          8,
+          8
+        ],
+        [
+          96,
+          96,
+          96
+        ],
+        [
+          16,
+          16,
+          16
+        ],
+        [
+          8,
+          8,
+          0
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        932,
+        215
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\food_birds\\fish_morsel.png",
+      "cleaned": true,
+      "removed_pixels": 460540,
+      "palette": [
+        [
+          16,
+          16,
+          8
+        ],
+        [
+          96,
+          96,
+          88
+        ],
+        [
+          96,
+          96,
+          96
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          8,
+          16,
+          8
+        ],
+        [
+          104,
+          96,
+          96
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        559,
+        344
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\food_birds\\hanging_feeder_mix.png",
+      "cleaned": true,
+      "removed_pixels": 447627,
+      "palette": [
+        [
+          16,
+          16,
+          8
+        ],
+        [
+          96,
+          96,
+          88
+        ],
+        [
+          96,
+          96,
+          96
+        ],
+        [
+          16,
+          16,
+          16
+        ],
+        [
+          88,
+          88,
+          80
+        ],
+        [
+          104,
+          104,
+          96
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        862,
+        240
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\food_birds\\mixed_grain.png",
+      "cleaned": true,
+      "removed_pixels": 433506,
+      "palette": [
+        [
+          16,
+          16,
+          8
+        ],
+        [
+          96,
+          96,
+          88
+        ],
+        [
+          104,
+          96,
+          96
+        ],
+        [
+          104,
+          104,
+          96
+        ],
+        [
+          96,
+          96,
+          96
+        ],
+        [
+          104,
+          96,
+          88
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        320,
+        263
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\food_birds\\seed_pile.png",
+      "cleaned": true,
+      "removed_pixels": 450855,
+      "palette": [
+        [
+          16,
+          16,
+          8
+        ],
+        [
+          96,
+          96,
+          88
+        ],
+        [
+          104,
+          96,
+          96
+        ],
+        [
+          8,
+          16,
+          8
+        ],
+        [
+          104,
+          96,
+          88
+        ],
+        [
+          96,
+          96,
+          96
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        270,
+        211
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\food_birds\\shiny_reward.png",
+      "cleaned": true,
+      "removed_pixels": 454430,
+      "palette": [
+        [
+          16,
+          16,
+          8
+        ],
+        [
+          96,
+          96,
+          88
+        ],
+        [
+          96,
+          96,
+          96
+        ],
+        [
+          96,
+          88,
+          88
+        ],
+        [
+          8,
+          8,
+          8
+        ],
+        [
+          8,
+          16,
+          8
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        297,
+        286
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\food_birds\\sunflower_seeds.png",
+      "cleaned": true,
+      "removed_pixels": 464822,
+      "palette": [
+        [
+          16,
+          16,
+          8
+        ],
+        [
+          96,
+          96,
+          88
+        ],
+        [
+          16,
+          16,
+          16
+        ],
+        [
+          104,
+          104,
+          96
+        ],
+        [
+          104,
+          96,
+          96
+        ],
+        [
+          104,
+          96,
+          88
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        796,
+        238
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\food_herbivore\\berry_cluster.png",
+      "cleaned": true,
+      "removed_pixels": 440636,
+      "palette": [
+        [
+          16,
+          16,
+          8
+        ],
+        [
+          96,
+          96,
+          88
+        ],
+        [
+          16,
+          16,
+          16
+        ],
+        [
+          96,
+          96,
+          96
+        ],
+        [
+          24,
+          16,
+          16
+        ],
+        [
+          104,
+          104,
+          96
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        297,
+        309
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\food_herbivore\\clover_bunch.png",
+      "cleaned": true,
+      "removed_pixels": 445873,
+      "palette": [
+        [
+          16,
+          16,
+          8
+        ],
+        [
+          96,
+          96,
+          96
+        ],
+        [
+          96,
+          96,
+          88
+        ],
+        [
+          16,
+          16,
+          16
+        ],
+        [
+          104,
+          104,
+          96
+        ],
+        [
+          8,
+          8,
+          0
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        495,
+        325
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\food_herbivore\\flower_petals.png",
+      "cleaned": true,
+      "removed_pixels": 462228,
+      "palette": [
+        [
+          16,
+          16,
+          8
+        ],
+        [
+          16,
+          16,
+          16
+        ],
+        [
+          24,
+          16,
+          16
+        ],
+        [
+          96,
+          96,
+          96
+        ],
+        [
+          96,
+          96,
+          88
+        ],
+        [
+          104,
+          104,
+          96
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        160,
+        171
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\food_herbivore\\grain_bundle.png",
+      "cleaned": true,
+      "removed_pixels": 434764,
+      "palette": [
+        [
+          32,
+          24,
+          24
+        ],
+        [
+          16,
+          16,
+          16
+        ],
+        [
+          96,
+          96,
+          96
+        ],
+        [
+          24,
+          24,
+          16
+        ],
+        [
+          104,
+          104,
+          96
+        ],
+        [
+          32,
+          16,
+          24
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        671,
+        379
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\food_herbivore\\hay_bundle.png",
+      "cleaned": true,
+      "removed_pixels": 395725,
+      "palette": [
+        [
+          16,
+          16,
+          16
+        ],
+        [
+          96,
+          96,
+          88
+        ],
+        [
+          96,
+          96,
+          96
+        ],
+        [
+          32,
+          24,
+          24
+        ],
+        [
+          16,
+          16,
+          8
+        ],
+        [
+          24,
+          24,
+          16
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        412,
+        337
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\food_herbivore\\herbivore_bowl.png",
+      "cleaned": true,
+      "removed_pixels": 432423,
+      "palette": [
+        [
+          16,
+          16,
+          16
+        ],
+        [
+          16,
+          16,
+          8
+        ],
+        [
+          96,
+          96,
+          96
+        ],
+        [
+          32,
+          24,
+          24
+        ],
+        [
+          104,
+          104,
+          96
+        ],
+        [
+          96,
+          96,
+          88
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        872,
+        365
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\food_herbivore\\leafy_greens.png",
+      "cleaned": true,
+      "removed_pixels": 423292,
+      "palette": [
+        [
+          16,
+          16,
+          8
+        ],
+        [
+          96,
+          96,
+          96
+        ],
+        [
+          96,
+          96,
+          88
+        ],
+        [
+          16,
+          16,
+          16
+        ],
+        [
+          104,
+          104,
+          96
+        ],
+        [
+          24,
+          24,
+          16
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        663,
+        392
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\food_herbivore\\pond_greens.png",
+      "cleaned": true,
+      "removed_pixels": 471401,
+      "palette": [
+        [
+          16,
+          16,
+          8
+        ],
+        [
+          96,
+          96,
+          96
+        ],
+        [
+          96,
+          96,
+          88
+        ],
+        [
+          104,
+          104,
+          96
+        ],
+        [
+          16,
+          16,
+          16
+        ],
+        [
+          8,
+          8,
+          0
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        286,
+        107
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\food_herbivore\\root_slice.png",
+      "cleaned": true,
+      "removed_pixels": 408064,
+      "palette": [
+        [
+          24,
+          16,
+          16
+        ],
+        [
+          16,
+          16,
+          8
+        ],
+        [
+          16,
+          16,
+          16
+        ],
+        [
+          96,
+          96,
+          96
+        ],
+        [
+          96,
+          96,
+          88
+        ],
+        [
+          16,
+          8,
+          8
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        938,
+        494
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\food_omnivore\\berry_cluster.png",
+      "cleaned": true,
+      "removed_pixels": 467682,
+      "palette": [
+        [
+          24,
+          24,
+          16
+        ],
+        [
+          96,
+          96,
+          96
+        ],
+        [
+          104,
+          104,
+          96
+        ],
+        [
+          24,
+          24,
+          24
+        ],
+        [
+          104,
+          96,
+          96
+        ],
+        [
+          96,
+          104,
+          96
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        398,
+        169
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\food_omnivore\\bread_crumbs.png",
+      "cleaned": true,
+      "removed_pixels": 469229,
+      "palette": [
+        [
+          16,
+          8,
+          16
+        ],
+        [
+          24,
+          24,
+          16
+        ],
+        [
+          104,
+          104,
+          96
+        ],
+        [
+          16,
+          8,
+          8
+        ],
+        [
+          24,
+          16,
+          16
+        ],
+        [
+          24,
+          8,
+          16
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        135,
+        122
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\food_omnivore\\egg.png",
+      "cleaned": true,
+      "removed_pixels": 454961,
+      "palette": [
+        [
+          24,
+          16,
+          24
+        ],
+        [
+          32,
+          32,
+          24
+        ],
+        [
+          104,
+          104,
+          96
+        ],
+        [
+          32,
+          16,
+          24
+        ],
+        [
+          24,
+          16,
+          16
+        ],
+        [
+          32,
+          24,
+          24
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        169,
+        204
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\food_omnivore\\fish_scrap.png",
+      "cleaned": true,
+      "removed_pixels": 469896,
+      "palette": [
+        [
+          104,
+          104,
+          96
+        ],
+        [
+          32,
+          32,
+          24
+        ],
+        [
+          24,
+          24,
+          24
+        ],
+        [
+          32,
+          24,
+          24
+        ],
+        [
+          24,
+          16,
+          24
+        ],
+        [
+          104,
+          96,
+          96
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        210,
+        198
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\food_omnivore\\grain_mix.png",
+      "cleaned": true,
+      "removed_pixels": 468901,
+      "palette": [
+        [
+          104,
+          104,
+          96
+        ],
+        [
+          24,
+          24,
+          16
+        ],
+        [
+          24,
+          24,
+          24
+        ],
+        [
+          104,
+          96,
+          96
+        ],
+        [
+          96,
+          96,
+          96
+        ],
+        [
+          32,
+          32,
+          24
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        142,
+        180
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\food_omnivore\\meat_chunk.png",
+      "cleaned": true,
+      "removed_pixels": 467222,
+      "palette": [
+        [
+          104,
+          104,
+          96
+        ],
+        [
+          24,
+          24,
+          16
+        ],
+        [
+          24,
+          24,
+          24
+        ],
+        [
+          104,
+          96,
+          96
+        ],
+        [
+          32,
+          24,
+          24
+        ],
+        [
+          32,
+          32,
+          24
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        131,
+        156
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\food_omnivore\\nut_pile.png",
+      "cleaned": true,
+      "removed_pixels": 464875,
+      "palette": [
+        [
+          24,
+          24,
+          16
+        ],
+        [
+          104,
+          104,
+          96
+        ],
+        [
+          24,
+          24,
+          24
+        ],
+        [
+          96,
+          96,
+          96
+        ],
+        [
+          104,
+          96,
+          96
+        ],
+        [
+          16,
+          16,
+          8
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        110,
+        215
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\food_omnivore\\sliced_apple.png",
+      "cleaned": true,
+      "removed_pixels": 437841,
+      "palette": [
+        [
+          24,
+          24,
+          16
+        ],
+        [
+          104,
+          104,
+          96
+        ],
+        [
+          96,
+          96,
+          96
+        ],
+        [
+          24,
+          24,
+          24
+        ],
+        [
+          104,
+          96,
+          96
+        ],
+        [
+          32,
+          32,
+          32
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        240,
+        228
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\food_omnivore\\snack_bowl.png",
+      "cleaned": true,
+      "removed_pixels": 464964,
+      "palette": [
+        [
+          104,
+          104,
+          96
+        ],
+        [
+          32,
+          32,
+          24
+        ],
+        [
+          24,
+          24,
+          24
+        ],
+        [
+          32,
+          24,
+          24
+        ],
+        [
+          24,
+          24,
+          16
+        ],
+        [
+          96,
+          96,
+          96
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        877,
+        372
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\food_predator\\bug_cup.png",
+      "cleaned": true,
+      "removed_pixels": 449927,
+      "palette": [
+        [
+          104,
+          96,
+          88
+        ],
+        [
+          8,
+          8,
+          0
+        ],
+        [
+          8,
+          8,
+          8
+        ],
+        [
+          96,
+          96,
+          88
+        ],
+        [
+          104,
+          96,
+          96
+        ],
+        [
+          24,
+          24,
+          16
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        251,
+        302
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\food_predator\\egg.png",
+      "cleaned": true,
+      "removed_pixels": 439065,
+      "palette": [
+        [
+          104,
+          96,
+          88
+        ],
+        [
+          8,
+          8,
+          0
+        ],
+        [
+          8,
+          8,
+          8
+        ],
+        [
+          96,
+          96,
+          88
+        ],
+        [
+          112,
+          112,
+          104
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        870,
+        449
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\food_predator\\fish.png",
+      "cleaned": true,
+      "removed_pixels": 459648,
+      "palette": [
+        [
+          8,
+          8,
+          0
+        ],
+        [
+          104,
+          96,
+          88
+        ],
+        [
+          8,
+          8,
+          8
+        ],
+        [
+          96,
+          96,
+          88
+        ],
+        [
+          16,
+          16,
+          8
+        ],
+        [
+          104,
+          104,
+          96
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        755,
+        181
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\food_predator\\fox_plate.png",
+      "cleaned": true,
+      "removed_pixels": 408911,
+      "palette": [
+        [
+          104,
+          96,
+          88
+        ],
+        [
+          8,
+          8,
+          0
+        ],
+        [
+          8,
+          8,
+          8
+        ],
+        [
+          104,
+          104,
+          96
+        ],
+        [
+          8,
+          16,
+          8
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        825,
+        384
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\food_predator\\meat_chunk.png",
+      "cleaned": true,
+      "removed_pixels": 425042,
+      "palette": [
+        [
+          8,
+          8,
+          0
+        ],
+        [
+          104,
+          96,
+          88
+        ],
+        [
+          96,
+          96,
+          88
+        ],
+        [
+          8,
+          8,
+          8
+        ],
+        [
+          104,
+          104,
+          96
+        ],
+        [
+          104,
+          96,
+          96
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        802,
+        337
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\food_predator\\mouse_prey.png",
+      "cleaned": true,
+      "removed_pixels": 447453,
+      "palette": [
+        [
+          104,
+          96,
+          88
+        ],
+        [
+          8,
+          8,
+          0
+        ],
+        [
+          8,
+          8,
+          8
+        ],
+        [
+          96,
+          96,
+          88
+        ],
+        [
+          104,
+          104,
+          96
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        874,
+        239
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\food_predator\\protein_bowl.png",
+      "cleaned": true,
+      "removed_pixels": 446051,
+      "palette": [
+        [
+          104,
+          96,
+          88
+        ],
+        [
+          8,
+          8,
+          0
+        ],
+        [
+          8,
+          8,
+          8
+        ],
+        [
+          96,
+          96,
+          88
+        ],
+        [
+          16,
+          16,
+          8
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        377,
+        284
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\food_predator\\reptile_tray.png",
+      "cleaned": true,
+      "removed_pixels": 430482,
+      "palette": [
+        [
+          104,
+          96,
+          88
+        ],
+        [
+          8,
+          8,
+          8
+        ],
+        [
+          8,
+          8,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          8,
+          16,
+          8
+        ],
+        [
+          104,
+          104,
+          96
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        907,
+        432
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\food_predator\\worm_pile.png",
+      "cleaned": true,
+      "removed_pixels": 449643,
+      "palette": [
+        [
+          104,
+          96,
+          88
+        ],
+        [
+          8,
+          8,
+          8
+        ],
+        [
+          8,
+          8,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          96,
+          96,
+          88
+        ],
+        [
+          112,
+          112,
+          104
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        553,
+        497
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\toys_a\\ball.png",
+      "cleaned": true,
+      "removed_pixels": 438359,
+      "palette": [
+        [
+          8,
+          8,
+          8
+        ],
+        [
+          104,
+          96,
+          88
+        ],
+        [
+          8,
+          8,
+          0
+        ],
+        [
+          176,
+          176,
+          168
+        ],
+        [
+          168,
+          168,
+          160
+        ],
+        [
+          160,
+          160,
+          152
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        574,
+        231
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\toys_a\\bell_toy.png",
+      "cleaned": true,
+      "removed_pixels": 432282,
+      "palette": [
+        [
+          168,
+          168,
+          160
+        ],
+        [
+          160,
+          160,
+          152
+        ],
+        [
+          176,
+          176,
+          168
+        ],
+        [
+          152,
+          152,
+          144
+        ],
+        [
+          144,
+          144,
+          144
+        ],
+        [
+          8,
+          8,
+          8
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        356,
+        380
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\toys_a\\branch_perch.png",
+      "cleaned": true,
+      "removed_pixels": 15857,
+      "palette": [
+        [
+          168,
+          168,
+          160
+        ],
+        [
+          160,
+          160,
+          152
+        ],
+        [
+          176,
+          176,
+          168
+        ],
+        [
+          160,
+          160,
+          160
+        ],
+        [
+          152,
+          152,
+          144
+        ],
+        [
+          168,
+          168,
+          168
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        928,
+        509
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\toys_a\\chew_toy.png",
+      "cleaned": true,
+      "removed_pixels": 424251,
+      "palette": [
+        [
+          168,
+          168,
+          160
+        ],
+        [
+          176,
+          176,
+          168
+        ],
+        [
+          104,
+          96,
+          88
+        ],
+        [
+          8,
+          8,
+          8
+        ],
+        [
+          160,
+          160,
+          152
+        ],
+        [
+          160,
+          160,
+          160
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        908,
+        204
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\toys_a\\digging_tray.png",
+      "cleaned": true,
+      "removed_pixels": 463657,
+      "palette": [
+        [
+          8,
+          8,
+          8
+        ],
+        [
+          16,
+          16,
+          8
+        ],
+        [
+          104,
+          96,
+          88
+        ],
+        [
+          96,
+          96,
+          88
+        ],
+        [
+          96,
+          96,
+          80
+        ],
+        [
+          152,
+          152,
+          144
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        449,
+        184
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\toys_a\\leaf_pile.png",
+      "cleaned": true,
+      "removed_pixels": 366596,
+      "palette": [
+        [
+          152,
+          152,
+          144
+        ],
+        [
+          160,
+          160,
+          152
+        ],
+        [
+          104,
+          96,
+          88
+        ],
+        [
+          16,
+          16,
+          8
+        ],
+        [
+          8,
+          8,
+          8
+        ],
+        [
+          160,
+          160,
+          160
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        675,
+        307
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\toys_a\\mirror_trinket.png",
+      "cleaned": true,
+      "removed_pixels": 427146,
+      "palette": [
+        [
+          160,
+          160,
+          152
+        ],
+        [
+          160,
+          160,
+          160
+        ],
+        [
+          16,
+          16,
+          8
+        ],
+        [
+          168,
+          168,
+          160
+        ],
+        [
+          152,
+          152,
+          144
+        ],
+        [
+          104,
+          96,
+          88
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        732,
+        366
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\toys_a\\rope_toy.png",
+      "cleaned": true,
+      "removed_pixels": 439509,
+      "palette": [
+        [
+          8,
+          8,
+          8
+        ],
+        [
+          104,
+          96,
+          88
+        ],
+        [
+          160,
+          160,
+          152
+        ],
+        [
+          168,
+          168,
+          160
+        ],
+        [
+          160,
+          160,
+          160
+        ],
+        [
+          8,
+          8,
+          0
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        918,
+        323
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\toys_a\\tunnel_hide.png",
+      "cleaned": true,
+      "removed_pixels": 358705,
+      "palette": [
+        [
+          160,
+          160,
+          152
+        ],
+        [
+          168,
+          168,
+          160
+        ],
+        [
+          152,
+          152,
+          144
+        ],
+        [
+          160,
+          160,
+          160
+        ],
+        [
+          176,
+          176,
+          168
+        ],
+        [
+          8,
+          8,
+          8
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        709,
+        509
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\toys_b\\blanket_mat.png",
+      "cleaned": true,
+      "removed_pixels": 461375,
+      "palette": [
+        [
+          8,
+          8,
+          8
+        ],
+        [
+          144,
+          144,
+          144
+        ],
+        [
+          168,
+          168,
+          160
+        ],
+        [
+          152,
+          152,
+          144
+        ],
+        [
+          112,
+          104,
+          96
+        ],
+        [
+          104,
+          96,
+          88
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        639,
+        405
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\toys_b\\crate_hideout.png",
+      "cleaned": true,
+      "removed_pixels": 8455,
+      "palette": [
+        [
+          168,
+          168,
+          160
+        ],
+        [
+          160,
+          160,
+          152
+        ],
+        [
+          144,
+          144,
+          144
+        ],
+        [
+          176,
+          176,
+          168
+        ],
+        [
+          144,
+          144,
+          136
+        ],
+        [
+          152,
+          152,
+          144
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        938,
+        512
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\toys_b\\hay_bed.png",
+      "cleaned": true,
+      "removed_pixels": 470885,
+      "palette": [
+        [
+          160,
+          160,
+          160
+        ],
+        [
+          160,
+          160,
+          152
+        ],
+        [
+          8,
+          8,
+          8
+        ],
+        [
+          96,
+          96,
+          80
+        ],
+        [
+          104,
+          96,
+          80
+        ],
+        [
+          152,
+          152,
+          152
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        917,
+        393
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\toys_b\\log_shelter.png",
+      "cleaned": true,
+      "removed_pixels": 18323,
+      "palette": [
+        [
+          168,
+          168,
+          160
+        ],
+        [
+          144,
+          144,
+          144
+        ],
+        [
+          160,
+          160,
+          160
+        ],
+        [
+          152,
+          152,
+          144
+        ],
+        [
+          160,
+          160,
+          152
+        ],
+        [
+          144,
+          144,
+          136
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        937,
+        510
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\toys_b\\memorial_object.png",
+      "cleaned": true,
+      "removed_pixels": 236284,
+      "palette": [
+        [
+          168,
+          168,
+          160
+        ],
+        [
+          160,
+          160,
+          160
+        ],
+        [
+          144,
+          144,
+          144
+        ],
+        [
+          8,
+          8,
+          8
+        ],
+        [
+          176,
+          176,
+          168
+        ],
+        [
+          168,
+          168,
+          168
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        928,
+        509
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\toys_b\\moss_bed.png",
+      "cleaned": true,
+      "removed_pixels": 397184,
+      "palette": [
+        [
+          160,
+          160,
+          160
+        ],
+        [
+          160,
+          160,
+          152
+        ],
+        [
+          8,
+          8,
+          8
+        ],
+        [
+          168,
+          168,
+          160
+        ],
+        [
+          104,
+          96,
+          80
+        ],
+        [
+          152,
+          152,
+          152
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        904,
+        417
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\toys_b\\nest_bed.png",
+      "cleaned": true,
+      "removed_pixels": 417580,
+      "palette": [
+        [
+          8,
+          8,
+          8
+        ],
+        [
+          96,
+          96,
+          80
+        ],
+        [
+          160,
+          160,
+          152
+        ],
+        [
+          160,
+          160,
+          160
+        ],
+        [
+          168,
+          168,
+          160
+        ],
+        [
+          104,
+          96,
+          80
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        521,
+        344
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\toys_b\\rock_basking_spot.png",
+      "cleaned": true,
+      "removed_pixels": 337990,
+      "palette": [
+        [
+          168,
+          168,
+          160
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          8,
+          8,
+          8
+        ],
+        [
+          96,
+          96,
+          80
+        ],
+        [
+          144,
+          144,
+          144
+        ],
+        [
+          16,
+          16,
+          8
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        580,
+        353
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\toys_b\\stump_perch.png",
+      "cleaned": true,
+      "removed_pixels": 15618,
+      "palette": [
+        [
+          168,
+          168,
+          160
+        ],
+        [
+          160,
+          160,
+          152
+        ],
+        [
+          176,
+          176,
+          168
+        ],
+        [
+          160,
+          160,
+          160
+        ],
+        [
+          144,
+          144,
+          144
+        ],
+        [
+          152,
+          152,
+          144
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        928,
+        509
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\utility\\cloth_mat.png",
+      "cleaned": true,
+      "removed_pixels": 460937,
+      "palette": [
+        [
+          8,
+          8,
+          8
+        ],
+        [
+          144,
+          144,
+          144
+        ],
+        [
+          144,
+          144,
+          136
+        ],
+        [
+          168,
+          168,
+          160
+        ],
+        [
+          168,
+          168,
+          168
+        ],
+        [
+          112,
+          104,
+          96
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        685,
+        355
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\utility\\food_crate.png",
+      "cleaned": true,
+      "removed_pixels": 21459,
+      "palette": [
+        [
+          160,
+          160,
+          152
+        ],
+        [
+          160,
+          160,
+          160
+        ],
+        [
+          168,
+          168,
+          160
+        ],
+        [
+          144,
+          144,
+          136
+        ],
+        [
+          176,
+          176,
+          168
+        ],
+        [
+          136,
+          136,
+          128
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        938,
+        512
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\utility\\lantern.png",
+      "cleaned": true,
+      "removed_pixels": 19227,
+      "palette": [
+        [
+          160,
+          160,
+          152
+        ],
+        [
+          160,
+          160,
+          160
+        ],
+        [
+          168,
+          168,
+          160
+        ],
+        [
+          176,
+          176,
+          168
+        ],
+        [
+          144,
+          144,
+          136
+        ],
+        [
+          168,
+          168,
+          168
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        928,
+        508
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\utility\\moss_patch.png",
+      "cleaned": true,
+      "removed_pixels": 13682,
+      "palette": [
+        [
+          160,
+          160,
+          160
+        ],
+        [
+          168,
+          168,
+          160
+        ],
+        [
+          160,
+          160,
+          152
+        ],
+        [
+          144,
+          144,
+          136
+        ],
+        [
+          144,
+          144,
+          144
+        ],
+        [
+          152,
+          152,
+          144
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        938,
+        510
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\utility\\pebble_cluster.png",
+      "cleaned": true,
+      "removed_pixels": 459481,
+      "palette": [
+        [
+          8,
+          8,
+          8
+        ],
+        [
+          168,
+          168,
+          160
+        ],
+        [
+          96,
+          96,
+          80
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          144,
+          144,
+          144
+        ],
+        [
+          104,
+          96,
+          88
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        298,
+        344
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\utility\\seed_sack.png",
+      "cleaned": true,
+      "removed_pixels": 465793,
+      "palette": [
+        [
+          8,
+          8,
+          8
+        ],
+        [
+          160,
+          160,
+          160
+        ],
+        [
+          160,
+          160,
+          152
+        ],
+        [
+          104,
+          96,
+          88
+        ],
+        [
+          96,
+          96,
+          80
+        ],
+        [
+          168,
+          168,
+          160
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        918,
+        370
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\utility\\stick_bundle.png",
+      "cleaned": true,
+      "removed_pixels": 358922,
+      "palette": [
+        [
+          168,
+          168,
+          160
+        ],
+        [
+          8,
+          8,
+          8
+        ],
+        [
+          184,
+          184,
+          176
+        ],
+        [
+          160,
+          160,
+          160
+        ],
+        [
+          160,
+          160,
+          152
+        ],
+        [
+          104,
+          96,
+          88
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        815,
+        362
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\utility\\storage_basket.png",
+      "cleaned": true,
+      "removed_pixels": 261909,
+      "palette": [
+        [
+          160,
+          160,
+          160
+        ],
+        [
+          160,
+          160,
+          152
+        ],
+        [
+          168,
+          168,
+          160
+        ],
+        [
+          8,
+          8,
+          8
+        ],
+        [
+          152,
+          152,
+          152
+        ],
+        [
+          176,
+          176,
+          168
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        928,
+        472
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\items\\utility\\wooden_sign.png",
+      "cleaned": true,
+      "removed_pixels": 458456,
+      "palette": [
+        [
+          8,
+          8,
+          8
+        ],
+        [
+          96,
+          96,
+          80
+        ],
+        [
+          168,
+          168,
+          160
+        ],
+        [
+          144,
+          144,
+          144
+        ],
+        [
+          160,
+          160,
+          160
+        ],
+        [
+          160,
+          160,
+          152
+        ]
+      ],
+      "original_size": [
+        938,
+        512
+      ],
+      "output_size": [
+        321,
+        355
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\status\\comforted.png",
+      "cleaned": true,
+      "removed_pixels": 121600,
+      "palette": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          144,
+          144,
+          136
+        ],
+        [
+          136,
+          136,
+          128
+        ],
+        [
+          112,
+          112,
+          96
+        ],
+        [
+          144,
+          144,
+          144
+        ],
+        [
+          8,
+          8,
+          8
+        ]
+      ],
+      "original_size": [
+        352,
+        384
+      ],
+      "output_size": [
+        312,
+        380
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\status\\dirty.png",
+      "cleaned": true,
+      "removed_pixels": 126259,
+      "palette": [
+        [
+          144,
+          144,
+          136
+        ],
+        [
+          144,
+          144,
+          144
+        ],
+        [
+          136,
+          136,
+          128
+        ],
+        [
+          152,
+          152,
+          144
+        ],
+        [
+          112,
+          112,
+          96
+        ],
+        [
+          8,
+          8,
+          8
+        ]
+      ],
+      "original_size": [
+        352,
+        384
+      ],
+      "output_size": [
+        350,
+        383
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\status\\happy.png",
+      "cleaned": true,
+      "removed_pixels": 130723,
+      "palette": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          144,
+          144,
+          136
+        ],
+        [
+          136,
+          136,
+          128
+        ],
+        [
+          144,
+          144,
+          144
+        ],
+        [
+          8,
+          8,
+          8
+        ],
+        [
+          112,
+          112,
+          96
+        ]
+      ],
+      "original_size": [
+        352,
+        384
+      ],
+      "output_size": [
+        342,
+        368
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\status\\hungry.png",
+      "cleaned": true,
+      "removed_pixels": 128004,
+      "palette": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          144,
+          144,
+          136
+        ],
+        [
+          96,
+          96,
+          80
+        ],
+        [
+          136,
+          136,
+          128
+        ],
+        [
+          152,
+          152,
+          144
+        ],
+        [
+          144,
+          144,
+          144
+        ]
+      ],
+      "original_size": [
+        352,
+        384
+      ],
+      "output_size": [
+        342,
+        369
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\status\\lonely.png",
+      "cleaned": true,
+      "removed_pixels": 66095,
+      "palette": [
+        [
+          144,
+          144,
+          136
+        ],
+        [
+          144,
+          144,
+          144
+        ],
+        [
+          136,
+          136,
+          128
+        ],
+        [
+          152,
+          152,
+          144
+        ],
+        [
+          8,
+          8,
+          8
+        ],
+        [
+          136,
+          136,
+          136
+        ]
+      ],
+      "original_size": [
+        352,
+        384
+      ],
+      "output_size": [
+        351,
+        384
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\status\\sick.png",
+      "cleaned": true,
+      "removed_pixels": 124037,
+      "palette": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          144,
+          144,
+          136
+        ],
+        [
+          136,
+          136,
+          128
+        ],
+        [
+          144,
+          144,
+          144
+        ],
+        [
+          96,
+          96,
+          80
+        ],
+        [
+          152,
+          152,
+          144
+        ]
+      ],
+      "original_size": [
+        352,
+        384
+      ],
+      "output_size": [
+        309,
+        374
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\status\\sleepy.png",
+      "cleaned": true,
+      "removed_pixels": 121914,
+      "palette": [
+        [
+          144,
+          144,
+          136
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          144,
+          144,
+          144
+        ],
+        [
+          136,
+          136,
+          128
+        ],
+        [
+          96,
+          96,
+          80
+        ],
+        [
+          152,
+          152,
+          144
+        ]
+      ],
+      "original_size": [
+        352,
+        384
+      ],
+      "output_size": [
+        342,
+        376
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\status\\thirsty.png",
+      "cleaned": true,
+      "removed_pixels": 127532,
+      "palette": [
+        [
+          144,
+          144,
+          136
+        ],
+        [
+          136,
+          136,
+          128
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          144,
+          144,
+          144
+        ],
+        [
+          152,
+          152,
+          144
+        ],
+        [
+          96,
+          96,
+          80
+        ]
+      ],
+      "original_size": [
+        352,
+        384
+      ],
+      "output_size": [
+        341,
+        374
+      ]
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\icons\\add.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\icons\\bathe.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\icons\\callback.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\icons\\doctor.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\icons\\exercise.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\icons\\feed.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\icons\\food_meat.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\icons\\food_plant.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\icons\\food_salty.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\icons\\food_sweet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\icons\\ghost.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\icons\\groom.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\icons\\medicine.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\icons\\memoriam.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\icons\\minimize.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\icons\\pet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\icons\\rest.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\icons\\save.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\icons\\settings.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\icons\\water.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\icons\\water_bowl.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\celestial\\moon_00.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\celestial\\moon_01.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\celestial\\moon_02.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\celestial\\moon_03.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\celestial\\moon_04.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\celestial\\moon_05.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\celestial\\moon_06.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\celestial\\moon_07.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\celestial\\sun_00.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\celestial\\sun_01.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\celestial\\sun_02.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\celestial\\sun_03.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\crow\\adult_female.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\crow\\adult_female_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\crow\\adult_female_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\crow\\adult_female_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\crow\\adult_female_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\crow\\adult_female_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\crow\\adult_female_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\crow\\adult_male.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\crow\\adult_male_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\crow\\adult_male_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\crow\\adult_male_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\crow\\adult_male_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\crow\\adult_male_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\crow\\adult_male_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\crow\\baby_female.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\crow\\baby_female_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\crow\\baby_female_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\crow\\baby_female_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\crow\\baby_female_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\crow\\baby_female_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\crow\\baby_female_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\crow\\baby_male.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\crow\\baby_male_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\crow\\baby_male_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\crow\\baby_male_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\crow\\baby_male_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\crow\\baby_male_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\crow\\baby_male_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\crow\\teen_female.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\crow\\teen_female_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\crow\\teen_female_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\crow\\teen_female_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\crow\\teen_female_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\crow\\teen_female_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\crow\\teen_female_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\crow\\teen_male.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\crow\\teen_male_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\crow\\teen_male_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\crow\\teen_male_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\crow\\teen_male_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\crow\\teen_male_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\crow\\teen_male_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\deer\\adult_female.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\deer\\adult_female_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\deer\\adult_female_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\deer\\adult_female_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\deer\\adult_female_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\deer\\adult_female_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\deer\\adult_female_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\deer\\adult_male.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\deer\\adult_male_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\deer\\adult_male_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\deer\\adult_male_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\deer\\adult_male_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\deer\\adult_male_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\deer\\adult_male_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\deer\\baby_female.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\deer\\baby_female_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\deer\\baby_female_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\deer\\baby_female_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\deer\\baby_female_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\deer\\baby_female_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\deer\\baby_female_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\deer\\baby_male.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\deer\\baby_male_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\deer\\baby_male_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\deer\\baby_male_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\deer\\baby_male_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\deer\\baby_male_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\deer\\baby_male_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\deer\\teen_female.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\deer\\teen_female_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\deer\\teen_female_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\deer\\teen_female_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\deer\\teen_female_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\deer\\teen_female_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\deer\\teen_female_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\deer\\teen_male.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\deer\\teen_male_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\deer\\teen_male_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\deer\\teen_male_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\deer\\teen_male_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\deer\\teen_male_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\deer\\teen_male_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\fox\\adult_female.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\fox\\adult_female_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\fox\\adult_female_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\fox\\adult_female_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\fox\\adult_female_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\fox\\adult_female_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\fox\\adult_female_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\fox\\adult_male.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\fox\\adult_male_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\fox\\adult_male_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\fox\\adult_male_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\fox\\adult_male_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\fox\\adult_male_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\fox\\adult_male_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\fox\\baby_female.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\fox\\baby_female_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\fox\\baby_female_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\fox\\baby_female_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\fox\\baby_female_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\fox\\baby_female_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\fox\\baby_female_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\fox\\baby_male.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\fox\\baby_male_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\fox\\baby_male_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\fox\\baby_male_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\fox\\baby_male_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\fox\\baby_male_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\fox\\baby_male_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\fox\\teen_female.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\fox\\teen_female_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\fox\\teen_female_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\fox\\teen_female_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\fox\\teen_female_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\fox\\teen_female_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\fox\\teen_female_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\fox\\teen_male.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\fox\\teen_male_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\fox\\teen_male_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\fox\\teen_male_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\fox\\teen_male_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\fox\\teen_male_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\fox\\teen_male_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\frog\\adult_female.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\frog\\adult_female_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\frog\\adult_female_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\frog\\adult_female_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\frog\\adult_female_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\frog\\adult_female_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\frog\\adult_female_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\frog\\adult_male.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\frog\\adult_male_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\frog\\adult_male_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\frog\\adult_male_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\frog\\adult_male_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\frog\\adult_male_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\frog\\adult_male_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\frog\\baby_female.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\frog\\baby_female_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\frog\\baby_female_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\frog\\baby_female_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\frog\\baby_female_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\frog\\baby_female_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\frog\\baby_female_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\frog\\baby_male.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\frog\\baby_male_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\frog\\baby_male_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\frog\\baby_male_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\frog\\baby_male_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\frog\\baby_male_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\frog\\baby_male_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\frog\\teen_female.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\frog\\teen_female_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\frog\\teen_female_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\frog\\teen_female_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\frog\\teen_female_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\frog\\teen_female_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\frog\\teen_female_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\frog\\teen_male.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\frog\\teen_male_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\frog\\teen_male_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\frog\\teen_male_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\frog\\teen_male_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\frog\\teen_male_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\frog\\teen_male_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\goose\\adult_female.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\goose\\adult_female_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\goose\\adult_female_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\goose\\adult_female_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\goose\\adult_female_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\goose\\adult_female_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\goose\\adult_female_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\goose\\adult_male.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\goose\\adult_male_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\goose\\adult_male_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\goose\\adult_male_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\goose\\adult_male_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\goose\\adult_male_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\goose\\adult_male_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\goose\\baby_female.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\goose\\baby_female_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\goose\\baby_female_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\goose\\baby_female_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\goose\\baby_female_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\goose\\baby_female_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\goose\\baby_female_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\goose\\baby_male.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\goose\\baby_male_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\goose\\baby_male_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\goose\\baby_male_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\goose\\baby_male_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\goose\\baby_male_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\goose\\baby_male_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\goose\\teen_female.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\goose\\teen_female_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\goose\\teen_female_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\goose\\teen_female_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\goose\\teen_female_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\goose\\teen_female_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\goose\\teen_female_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\goose\\teen_male.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\goose\\teen_male_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\goose\\teen_male_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\goose\\teen_male_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\goose\\teen_male_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\goose\\teen_male_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\goose\\teen_male_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\pigeon\\adult_female.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\pigeon\\adult_female_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\pigeon\\adult_female_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\pigeon\\adult_female_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\pigeon\\adult_female_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\pigeon\\adult_female_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\pigeon\\adult_female_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\pigeon\\adult_male.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\pigeon\\adult_male_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\pigeon\\adult_male_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\pigeon\\adult_male_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\pigeon\\adult_male_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\pigeon\\adult_male_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\pigeon\\adult_male_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\pigeon\\baby_female.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\pigeon\\baby_female_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\pigeon\\baby_female_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\pigeon\\baby_female_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\pigeon\\baby_female_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\pigeon\\baby_female_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\pigeon\\baby_female_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\pigeon\\baby_male.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\pigeon\\baby_male_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\pigeon\\baby_male_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\pigeon\\baby_male_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\pigeon\\baby_male_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\pigeon\\baby_male_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\pigeon\\baby_male_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\pigeon\\teen_female.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\pigeon\\teen_female_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\pigeon\\teen_female_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\pigeon\\teen_female_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\pigeon\\teen_female_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\pigeon\\teen_female_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\pigeon\\teen_female_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\pigeon\\teen_male.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\pigeon\\teen_male_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\pigeon\\teen_male_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\pigeon\\teen_male_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\pigeon\\teen_male_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\pigeon\\teen_male_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\pigeon\\teen_male_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\raccoon\\adult_female.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\raccoon\\adult_female_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\raccoon\\adult_female_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\raccoon\\adult_female_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\raccoon\\adult_female_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\raccoon\\adult_female_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\raccoon\\adult_female_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\raccoon\\adult_male.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\raccoon\\adult_male_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\raccoon\\adult_male_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\raccoon\\adult_male_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\raccoon\\adult_male_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\raccoon\\adult_male_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\raccoon\\adult_male_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\raccoon\\baby_female.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\raccoon\\baby_female_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\raccoon\\baby_female_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\raccoon\\baby_female_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\raccoon\\baby_female_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\raccoon\\baby_female_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\raccoon\\baby_female_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\raccoon\\baby_male.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\raccoon\\baby_male_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\raccoon\\baby_male_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\raccoon\\baby_male_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\raccoon\\baby_male_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\raccoon\\baby_male_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\raccoon\\baby_male_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\raccoon\\teen_female.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\raccoon\\teen_female_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\raccoon\\teen_female_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\raccoon\\teen_female_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\raccoon\\teen_female_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\raccoon\\teen_female_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\raccoon\\teen_female_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\raccoon\\teen_male.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\raccoon\\teen_male_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\raccoon\\teen_male_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\raccoon\\teen_male_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\raccoon\\teen_male_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\raccoon\\teen_male_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\raccoon\\teen_male_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\rat\\adult_female.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\rat\\adult_female_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\rat\\adult_female_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\rat\\adult_female_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\rat\\adult_female_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\rat\\adult_female_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\rat\\adult_female_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\rat\\adult_male.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\rat\\adult_male_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\rat\\adult_male_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\rat\\adult_male_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\rat\\adult_male_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\rat\\adult_male_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\rat\\adult_male_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\rat\\baby_female.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\rat\\baby_female_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\rat\\baby_female_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\rat\\baby_female_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\rat\\baby_female_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\rat\\baby_female_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\rat\\baby_female_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\rat\\baby_male.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\rat\\baby_male_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\rat\\baby_male_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\rat\\baby_male_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\rat\\baby_male_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\rat\\baby_male_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\rat\\baby_male_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\rat\\teen_female.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\rat\\teen_female_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\rat\\teen_female_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\rat\\teen_female_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\rat\\teen_female_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\rat\\teen_female_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\rat\\teen_female_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\rat\\teen_male.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\rat\\teen_male_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\rat\\teen_male_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\rat\\teen_male_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\rat\\teen_male_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\rat\\teen_male_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\rat\\teen_male_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\snake\\adult_female.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\snake\\adult_female_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\snake\\adult_female_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\snake\\adult_female_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\snake\\adult_female_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\snake\\adult_female_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\snake\\adult_female_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\snake\\adult_male.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\snake\\adult_male_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\snake\\adult_male_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\snake\\adult_male_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\snake\\adult_male_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\snake\\adult_male_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\snake\\adult_male_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\snake\\baby_female.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\snake\\baby_female_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\snake\\baby_female_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\snake\\baby_female_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\snake\\baby_female_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\snake\\baby_female_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\snake\\baby_female_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\snake\\baby_male.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\snake\\baby_male_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\snake\\baby_male_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\snake\\baby_male_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\snake\\baby_male_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\snake\\baby_male_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\snake\\baby_male_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\snake\\teen_female.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\snake\\teen_female_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\snake\\teen_female_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\snake\\teen_female_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\snake\\teen_female_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\snake\\teen_female_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\snake\\teen_female_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\snake\\teen_male.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\snake\\teen_male_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\snake\\teen_male_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\snake\\teen_male_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\snake\\teen_male_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\snake\\teen_male_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\snake\\teen_male_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\squirrel\\adult_female.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\squirrel\\adult_female_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\squirrel\\adult_female_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\squirrel\\adult_female_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\squirrel\\adult_female_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\squirrel\\adult_female_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\squirrel\\adult_female_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\squirrel\\adult_male.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\squirrel\\adult_male_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\squirrel\\adult_male_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\squirrel\\adult_male_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\squirrel\\adult_male_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\squirrel\\adult_male_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\squirrel\\adult_male_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\squirrel\\baby_female.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\squirrel\\baby_female_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\squirrel\\baby_female_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\squirrel\\baby_female_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\squirrel\\baby_female_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\squirrel\\baby_female_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\squirrel\\baby_female_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\squirrel\\baby_male.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\squirrel\\baby_male_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\squirrel\\baby_male_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\squirrel\\baby_male_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\squirrel\\baby_male_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\squirrel\\baby_male_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\squirrel\\baby_male_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\squirrel\\teen_female.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\squirrel\\teen_female_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\squirrel\\teen_female_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\squirrel\\teen_female_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\squirrel\\teen_female_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\squirrel\\teen_female_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\squirrel\\teen_female_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\squirrel\\teen_male.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\squirrel\\teen_male_blue.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\squirrel\\teen_male_indigo.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\squirrel\\teen_male_orange.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\squirrel\\teen_male_red.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\squirrel\\teen_male_violet.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    },
+    {
+      "file": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites\\portraits\\squirrel\\teen_male_yellow.png",
+      "cleaned": false,
+      "removed_pixels": 0,
+      "palette": [],
+      "mode": "copied"
+    }
+  ]
+}

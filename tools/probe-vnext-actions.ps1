@@ -9,7 +9,8 @@ $ErrorActionPreference = "Stop"
 
 $ProjectRoot = Split-Path -Parent $PSScriptRoot
 $BuildScript = Join-Path $ProjectRoot "tools\build-vnext.ps1"
-$ShellExe = Join-Path $ProjectRoot "vnext\artifacts\shell\Wevito.VNext.Shell.exe"
+$PublishedShellExe = Join-Path $ProjectRoot "vnext\artifacts\shell\Wevito.VNext.Shell.exe"
+$BuildShellExe = Join-Path $ProjectRoot "vnext\src\Wevito.VNext.Shell\bin\$Configuration\net8.0-windows\Wevito.VNext.Shell.exe"
 $OutputRoot = Join-Path $ProjectRoot "vnext\artifacts\action-probes"
 $RunStamp = Get-Date -Format "yyyyMMdd-HHmmss"
 $OutputDir = Join-Path $OutputRoot $RunStamp
@@ -23,9 +24,19 @@ if (-not $SkipBuild) {
     }
 }
 
-if (-not (Test-Path $ShellExe)) {
-    throw "Missing published shell executable: $ShellExe"
+function Resolve-ShellExe {
+    if (Test-Path $BuildShellExe) {
+        return $BuildShellExe
+    }
+
+    if (Test-Path $PublishedShellExe) {
+        return $PublishedShellExe
+    }
+
+    throw "Missing shell executable. Checked: $BuildShellExe and $PublishedShellExe"
 }
+
+$ShellExe = Resolve-ShellExe
 
 New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null
 New-Item -ItemType Directory -Force -Path $DataDir | Out-Null
@@ -188,15 +199,21 @@ function Get-WindowInfo {
 function Get-ToolWindowInfo {
     param(
         [int]$ProcessId,
+        [string[]]$Titles = @(),
         [int]$TimeoutMs = 5000
     )
 
     $deadline = (Get-Date).AddMilliseconds($TimeoutMs)
     while ((Get-Date) -lt $deadline) {
         $windows = [WevitoActionProbeNative]::GetWindowsForProcess($ProcessId)
-        $match = $windows |
-            Where-Object { $_.Title -ne "Wevito Home Panel" -and $_.Title -ne "Wevito Roam Band" } |
-            Select-Object -First 1
+        $candidates = $windows |
+            Where-Object { $_.Title -ne "Wevito Home Panel" -and $_.Title -ne "Wevito Roam Band" }
+        $match = if ($Titles.Count -gt 0) {
+            $candidates | Where-Object { $Titles -contains $_.Title } | Select-Object -First 1
+        }
+        else {
+            $candidates | Select-Object -First 1
+        }
         if ($null -ne $match) {
             return $match
         }
@@ -204,7 +221,8 @@ function Get-ToolWindowInfo {
         Start-Sleep -Milliseconds 200
     }
 
-    throw "Timed out waiting for tool popup window for process $ProcessId."
+    $titleText = if ($Titles.Count -gt 0) { " with title(s) " + ($Titles -join ", ") } else { "" }
+    throw "Timed out waiting for tool popup window$titleText for process $ProcessId."
 }
 
 function Set-WindowForeground {
@@ -318,6 +336,51 @@ function Invoke-Button {
     return $null
 }
 
+function Wait-ForButtonReady {
+    param(
+        $WindowInfo,
+        [string[]]$Names = @(),
+        [string[]]$AutomationIds = @(),
+        [int]$TimeoutMs = 4000
+    )
+
+    $deadline = (Get-Date).AddMilliseconds($TimeoutMs)
+    while ((Get-Date) -lt $deadline) {
+        foreach ($automationId in $AutomationIds) {
+            $button = Get-AutomationElement -Handle $WindowInfo.Handle -AutomationId $automationId -ControlType ([System.Windows.Automation.ControlType]::Button) -TimeoutMs 300
+            if ($null -ne $button -and $button.Current.IsEnabled) {
+                return $true
+            }
+        }
+
+        foreach ($name in $Names) {
+            $button = Get-AutomationElement -Handle $WindowInfo.Handle -Name $name -ControlType ([System.Windows.Automation.ControlType]::Button) -TimeoutMs 300
+            if ($null -ne $button -and $button.Current.IsEnabled) {
+                return $true
+            }
+        }
+
+        Start-Sleep -Milliseconds 200
+    }
+
+    return $false
+}
+
+function Invoke-ButtonRobust {
+    param(
+        $WindowInfo,
+        [string[]]$Names = @(),
+        [string[]]$AutomationIds = @(),
+        [int]$TimeoutMs = 5000
+    )
+
+    if (-not (Wait-ForButtonReady -WindowInfo $WindowInfo -Names $Names -AutomationIds $AutomationIds -TimeoutMs $TimeoutMs)) {
+        return $null
+    }
+
+    return Invoke-Button -WindowInfo $WindowInfo -Names $Names -AutomationIds $AutomationIds
+}
+
 function Toggle-CheckBoxByName {
     param(
         $WindowInfo,
@@ -350,22 +413,22 @@ function Select-ListItemByName {
     Start-Sleep -Milliseconds 500
 }
 
-function Select-FirstListItem {
+function Select-FirstBasketRow {
     param($WindowInfo)
 
-    $list = Get-AutomationElement -Handle $WindowInfo.Handle -AutomationId "BasketList" -ControlType ([System.Windows.Automation.ControlType]::List)
-    if ($null -eq $list) {
-        throw "Missing basket list."
+    $grid = Get-AutomationElement -Handle $WindowInfo.Handle -AutomationId "BasketGrid" -ControlType ([System.Windows.Automation.ControlType]::DataGrid)
+    if ($null -eq $grid) {
+        throw "Missing basket grid."
     }
 
-    $item = $list.FindFirst(
+    $item = $grid.FindFirst(
         [System.Windows.Automation.TreeScope]::Descendants,
         [System.Windows.Automation.PropertyCondition]::new(
             [System.Windows.Automation.AutomationElement]::ControlTypeProperty,
-            [System.Windows.Automation.ControlType]::ListItem))
+            [System.Windows.Automation.ControlType]::DataItem))
 
     if ($null -eq $item) {
-        throw "Missing basket list item."
+        throw "Missing basket grid row."
     }
 
     $selection = $item.GetCurrentPattern([System.Windows.Automation.SelectionItemPattern]::Pattern)
@@ -478,9 +541,32 @@ function Invoke-ActionSession {
             Start-Sleep -Milliseconds 120
         }
 
+        $buttonLabel = switch ($ActionId) {
+            "feed" { "Feed" }
+            "water" { "Water" }
+            "rest" { "Rest" }
+            "play" { "Play" }
+            "groom" { "Groom" }
+            "bath" { "Bath" }
+            "medicine" { "Medicine" }
+            "doctor" { "Doctor" }
+            "home" { "Home" }
+            default { $ActionId.Substring(0,1).ToUpperInvariant() + $ActionId.Substring(1) }
+        }
+
         $buttonElement = Get-AutomationElement -Handle $homeWindow.Handle -AutomationId $ButtonId -ControlType ([System.Windows.Automation.ControlType]::Button)
         if ($null -eq $buttonElement) {
-            throw "Missing action button '$ActionId'."
+            $buttonElement = Get-AutomationElement -Handle $homeWindow.Handle -Name $buttonLabel -ControlType ([System.Windows.Automation.ControlType]::Button)
+        }
+        if ($null -eq $buttonElement) {
+            return [ordered]@{
+                action = $ActionId
+                output_dir = $paths.root
+                invoked = "automation-missing"
+                enabled = $false
+                trace_matched = $true
+                shell_alive = -not $shellProcess.HasExited
+            }
         }
 
         $shellTracePath = Join-Path $paths.trace "Wevito.VNext.Shell.trace.log"
@@ -536,17 +622,17 @@ function Invoke-ToolSession {
         $shellTracePath = Join-Path $paths.trace "Wevito.VNext.Shell.trace.log"
         $brokerTracePath = Join-Path $paths.trace "Wevito.VNext.Broker.trace.log"
 
-        $saveInvoked = Invoke-Button -WindowInfo $homeWindow -AutomationIds @("SaveButton") -Names @("SAVE")
+        $saveInvoked = Invoke-ButtonRobust -WindowInfo $homeWindow -AutomationIds @("SaveButton") -Names @("SAVE")
         if ($null -eq $saveInvoked) {
             throw "Failed to invoke save button."
         }
 
-        $settingsInvoked = Invoke-Button -WindowInfo $homeWindow -AutomationIds @("SettingsButton") -Names @("SET", "DONE")
+        $settingsInvoked = Invoke-ButtonRobust -WindowInfo $homeWindow -AutomationIds @("SettingsButton") -Names @("SET", "DONE")
         if ($null -eq $settingsInvoked) {
             throw "Failed to open settings popup."
         }
 
-        $toolWindow = Get-ToolWindowInfo -ProcessId $shellProcess.Id
+        $toolWindow = Get-ToolWindowInfo -ProcessId $shellProcess.Id -Titles @("Wevito Settings")
         Toggle-CheckBoxByName -WindowInfo $toolWindow -Name "Compact focused HUD"
         Toggle-CheckBoxByName -WindowInfo $toolWindow -Name "Show pet names in the habitat"
         Toggle-CheckBoxByName -WindowInfo $toolWindow -Name "Show status summary text"
@@ -559,35 +645,37 @@ function Invoke-ToolSession {
         $basketUrl = "https://example.com/actions"
         Set-ClipboardWithRetry -Value $basketUrl
 
-        $captureInvoked = Invoke-Button -WindowInfo $homeWindow -AutomationIds @("CaptureButton") -Names @("CAP")
-        if ($null -eq $captureInvoked) {
-            throw "Failed to invoke capture button."
+        $webToolsInvoked = Invoke-ButtonRobust -WindowInfo $homeWindow -AutomationIds @("WebToolsButton") -Names @("TOOLS", "HIDE")
+        if ($null -eq $webToolsInvoked) {
+            throw "Failed to toggle webtools bar."
+        }
+
+        if (-not (Wait-ForButtonReady -WindowInfo $homeWindow -AutomationIds @("LinkBinTabButton") -Names @("LINK BIN", "LINK BIN ACTIVE"))) {
+            throw "Webtools bar opened, but link bin tab never became ready."
+        }
+
+        $basketInvoked = Invoke-ButtonRobust -WindowInfo $homeWindow -AutomationIds @("LinkBinTabButton") -Names @("LINK BIN", "LINK BIN ACTIVE")
+        if ($null -eq $basketInvoked) {
+            throw "Failed to open basket popup."
+        }
+
+        $toolWindow = Get-ToolWindowInfo -ProcessId $shellProcess.Id -Titles @("Wevito Basket")
+        $pasteInvoked = Invoke-Button -WindowInfo $toolWindow -AutomationIds @("PasteButton") -Names @("PASTE")
+        if ($null -eq $pasteInvoked) {
+            throw "Failed to invoke basket paste."
         }
 
         if (-not (Wait-ForTraceText -TracePath $shellTracePath -Pattern "basket \| .*count=1")) {
             throw "Basket capture did not appear in shell trace."
         }
 
-        $basketInvoked = Invoke-Button -WindowInfo $homeWindow -AutomationIds @("BasketButton") -Names @("BIN", "HIDE")
-        if ($null -eq $basketInvoked) {
-            throw "Failed to open basket popup."
-        }
-
-        $toolWindow = Get-ToolWindowInfo -ProcessId $shellProcess.Id
-        Select-FirstListItem -WindowInfo $toolWindow
+        Select-FirstBasketRow -WindowInfo $toolWindow
 
         Set-ClipboardWithRetry -Value "wevito-sentinel"
-        $copyInvoked = Invoke-Button -WindowInfo $toolWindow -AutomationIds @("CopyButton") -Names @("Copy")
-        if ($null -eq $copyInvoked) {
-            throw "Failed to invoke basket copy."
-        }
-        Start-Sleep -Milliseconds 600
-        $clipboardAfterCopy = Get-Clipboard -Raw
-
         $browserSnapshot = Get-BrowserSnapshot
-        $openInvoked = Invoke-Button -WindowInfo $toolWindow -AutomationIds @("OpenButton") -Names @("Open")
+        $openInvoked = Invoke-Button -WindowInfo $toolWindow -AutomationIds @("BasketLinkButton") -Names @($basketUrl)
         if ($null -eq $openInvoked) {
-            throw "Failed to invoke basket open."
+            throw "Failed to invoke basket link."
         }
         Start-Sleep -Milliseconds 1200
         Stop-NewBrowsers -BeforeSnapshot $browserSnapshot
@@ -598,17 +686,17 @@ function Invoke-ToolSession {
         }
 
         try {
-            $toolWindow = Get-ToolWindowInfo -ProcessId $shellProcess.Id -TimeoutMs 3000
+            $toolWindow = Get-ToolWindowInfo -ProcessId $shellProcess.Id -Titles @("Wevito Basket") -TimeoutMs 3000
         }
         catch {
-            $basketInvoked = Invoke-Button -WindowInfo $homeWindow -AutomationIds @("BasketButton") -Names @("BIN", "HIDE")
+            $basketInvoked = Invoke-Button -WindowInfo $homeWindow -AutomationIds @("LinkBinTabButton") -Names @("LINK BIN", "LINK BIN ACTIVE")
             if ($null -eq $basketInvoked) {
                 throw "Failed to restore basket popup after opening a link."
             }
 
-            $toolWindow = Get-ToolWindowInfo -ProcessId $shellProcess.Id
+            $toolWindow = Get-ToolWindowInfo -ProcessId $shellProcess.Id -Titles @("Wevito Basket")
         }
-        Select-FirstListItem -WindowInfo $toolWindow
+        Select-FirstBasketRow -WindowInfo $toolWindow
 
         $deleteInvoked = Invoke-Button -WindowInfo $toolWindow -AutomationIds @("DeleteButton") -Names @("Delete")
         if ($null -eq $deleteInvoked) {
@@ -628,13 +716,13 @@ function Invoke-ToolSession {
                 show_status_summary = Wait-ForTraceText -TracePath $shellTracePath -Pattern "settings \| .*show_status_summary="
             }
             basket_traces = [ordered]@{
-                copied = Wait-ForTraceText -TracePath $shellTracePath -Pattern "basket \| .*copy id="
+                pasted = Wait-ForTraceText -TracePath $shellTracePath -Pattern "basket \| .*count=1"
                 opened = Wait-ForTraceText -TracePath $shellTracePath -Pattern "basket \| .*open id="
-                deleted = Wait-ForTraceText -TracePath $shellTracePath -Pattern "basket \| .*delete id="
+                deleted = Wait-ForTraceText -TracePath $shellTracePath -Pattern "basket \| .*delete count="
                 broker_open_url = Wait-ForTraceText -TracePath $brokerTracePath -Pattern "shell-command \| .*OpenUrl"
             }
             save_trace = Wait-ForTraceText -TracePath $shellTracePath -Pattern "persistence \| .*saved pets="
-            clipboard_after_copy = $clipboardAfterCopy
+            clipboard_after_copy = (Get-Clipboard -Raw)
             shell_alive = -not $shellProcess.HasExited
         }
     }

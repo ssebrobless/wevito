@@ -2,6 +2,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interop;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using Wevito.VNext.Contracts;
 
 namespace Wevito.VNext.Shell;
@@ -35,24 +36,28 @@ public partial class RoamBandWindow : Window
             }
 
             var scale = assetService.GetPetScale(pet);
-            var width = 28 * scale;
-            var height = 24 * scale;
+            var bitmap = source as BitmapSource;
+            var width = (bitmap?.PixelWidth ?? 28) * scale;
+            var height = (bitmap?.PixelHeight ?? 24) * scale;
             var image = new Image
             {
                 Source = source,
                 Width = width,
                 Height = height,
                 Stretch = Stretch.Fill,
-                RenderTransformOrigin = new Point(0.5, 0.5)
+                RenderTransformOrigin = new Point(0.5, 0.5),
+                SnapsToDevicePixels = true,
+                UseLayoutRounding = true
             };
             RenderOptions.SetBitmapScalingMode(image, BitmapScalingMode.NearestNeighbor);
+            RenderOptions.SetEdgeMode(image, EdgeMode.Aliased);
             if (pet.FacingDirection == PetFacingDirection.Left)
             {
                 image.RenderTransform = new ScaleTransform(-1, 1);
             }
 
-            Canvas.SetLeft(image, pet.CurrentX - Left - width / 2);
-            Canvas.SetTop(image, ActualHeight - height - 8);
+            Canvas.SetLeft(image, Math.Round(pet.CurrentX - Left - width / 2));
+            Canvas.SetTop(image, Math.Round(ActualHeight - height - 8));
             RoamCanvas.Children.Add(image);
         }
     }

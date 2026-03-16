@@ -9,7 +9,8 @@ $ErrorActionPreference = "Stop"
 
 $ProjectRoot = Split-Path -Parent $PSScriptRoot
 $BuildScript = Join-Path $ProjectRoot "tools\build-vnext.ps1"
-$ShellExe = Join-Path $ProjectRoot "vnext\artifacts\shell\Wevito.VNext.Shell.exe"
+$PublishedShellExe = Join-Path $ProjectRoot "vnext\artifacts\shell\Wevito.VNext.Shell.exe"
+$BuildShellExe = Join-Path $ProjectRoot "vnext\src\Wevito.VNext.Shell\bin\$Configuration\net8.0-windows\Wevito.VNext.Shell.exe"
 $OutputRoot = Join-Path $ProjectRoot "vnext\artifacts\probes"
 $RunStamp = Get-Date -Format "yyyyMMdd-HHmmss"
 $OutputDir = Join-Path $OutputRoot $RunStamp
@@ -23,9 +24,19 @@ if (-not $SkipBuild) {
     }
 }
 
-if (-not (Test-Path $ShellExe)) {
-    throw "Missing published shell executable: $ShellExe"
+function Resolve-ShellExe {
+    if (Test-Path $BuildShellExe) {
+        return $BuildShellExe
+    }
+
+    if (Test-Path $PublishedShellExe) {
+        return $PublishedShellExe
+    }
+
+    throw "Missing shell executable. Checked: $BuildShellExe and $PublishedShellExe"
 }
+
+$ShellExe = Resolve-ShellExe
 
 New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null
 New-Item -ItemType Directory -Force -Path $DataDir | Out-Null
@@ -149,6 +160,8 @@ public static class WevitoProbeNative
 }
 "@
 
+Add-Type -AssemblyName UIAutomationClient, UIAutomationTypes
+
 function Start-ShellProcess {
     param([string]$ExePath)
 
@@ -266,6 +279,130 @@ function Get-ForegroundProcessId {
     return [int]$windowPid
 }
 
+function Get-AutomationElementCenter {
+    param(
+        [IntPtr]$WindowHandle = [IntPtr]::Zero,
+        [int]$ProcessId,
+        [string]$AutomationId,
+        [string]$Name = "",
+        [int]$TimeoutMs = 8000
+    )
+
+    $deadline = (Get-Date).AddMilliseconds($TimeoutMs)
+    while ((Get-Date) -lt $deadline) {
+        $conditions = [System.Collections.Generic.List[System.Windows.Automation.Condition]]::new()
+        if (-not [string]::IsNullOrWhiteSpace($AutomationId)) {
+            $conditions.Add((New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::AutomationIdProperty, $AutomationId)))
+        }
+        if (-not [string]::IsNullOrWhiteSpace($Name)) {
+            $conditions.Add((New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::NameProperty, $Name)))
+        }
+
+        $condition = if ($conditions.Count -eq 1) {
+            $conditions[0]
+        }
+        else {
+            New-Object System.Windows.Automation.AndCondition($conditions.ToArray())
+        }
+
+        $element = $null
+        if ($WindowHandle -ne [IntPtr]::Zero) {
+            $root = [System.Windows.Automation.AutomationElement]::FromHandle($WindowHandle)
+            if ($null -ne $root) {
+                $element = $root.FindFirst([System.Windows.Automation.TreeScope]::Descendants, $condition)
+            }
+        }
+
+        if ($null -eq $element) {
+            $rootCondition = New-Object System.Windows.Automation.AndCondition(
+                (New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ProcessIdProperty, $ProcessId)),
+                $condition
+            )
+
+            $element = [System.Windows.Automation.AutomationElement]::RootElement.FindFirst(
+                [System.Windows.Automation.TreeScope]::Descendants,
+                $rootCondition)
+        }
+
+        if ($null -ne $element) {
+            $bounds = $element.Current.BoundingRectangle
+            if ($bounds.Width -gt 0 -and $bounds.Height -gt 0) {
+                return @{
+                    X = [int]($bounds.Left + ($bounds.Width / 2))
+                    Y = [int]($bounds.Top + ($bounds.Height / 2))
+                }
+            }
+        }
+
+        Start-Sleep -Milliseconds 200
+    }
+
+    $label = if (-not [string]::IsNullOrWhiteSpace($AutomationId)) { $AutomationId } else { $Name }
+    throw "Timed out waiting for automation element '$label' for process $ProcessId."
+}
+
+function Get-AutomationElementById {
+    param(
+        [IntPtr]$Handle,
+        [string]$AutomationId,
+        [System.Windows.Automation.ControlType]$ControlType = $null,
+        [int]$TimeoutMs = 2500
+    )
+
+    $deadline = (Get-Date).AddMilliseconds($TimeoutMs)
+    while ((Get-Date) -lt $deadline) {
+        $root = [System.Windows.Automation.AutomationElement]::FromHandle($Handle)
+        if ($null -ne $root) {
+            $conditions = [System.Collections.Generic.List[System.Windows.Automation.Condition]]::new()
+            $conditions.Add([System.Windows.Automation.PropertyCondition]::new([System.Windows.Automation.AutomationElement]::AutomationIdProperty, $AutomationId))
+            if ($null -ne $ControlType) {
+                $conditions.Add([System.Windows.Automation.PropertyCondition]::new([System.Windows.Automation.AutomationElement]::ControlTypeProperty, $ControlType))
+            }
+
+            $condition = if ($conditions.Count -eq 1) {
+                $conditions[0]
+            }
+            else {
+                [System.Windows.Automation.AndCondition]::new($conditions.ToArray())
+            }
+
+            $match = $root.FindFirst([System.Windows.Automation.TreeScope]::Descendants, $condition)
+            if ($null -ne $match) {
+                return $match
+            }
+        }
+
+        Start-Sleep -Milliseconds 150
+    }
+
+    return $null
+}
+
+function Invoke-WindowButtonById {
+    param(
+        $WindowInfo,
+        [string[]]$AutomationIds
+    )
+
+    foreach ($automationId in $AutomationIds) {
+        $button = Get-AutomationElementById -Handle $WindowInfo.Handle -AutomationId $automationId -ControlType ([System.Windows.Automation.ControlType]::Button)
+        if ($null -eq $button) {
+            continue
+        }
+
+        $bounds = $button.Current.BoundingRectangle
+        if ($bounds.Width -le 1 -or $bounds.Height -le 1) {
+            continue
+        }
+
+        Invoke-LeftClickAt -X ([int]($bounds.Left + ($bounds.Width / 2))) -Y ([int]($bounds.Top + ($bounds.Height / 2)))
+        Start-Sleep -Milliseconds 500
+        return $true
+    }
+
+    return $false
+}
+
 function Wait-ForTraceText {
     param(
         [string]$TracePath,
@@ -314,9 +451,11 @@ try {
     $homeWindow = Get-WindowInfo -ProcessId $shellProcess.Id -Title "Wevito Home Panel"
 
     Set-ClipboardWithRetry -Value "https://openai.com/pinned-probe"
-    $overlayActionX = [int]($homeWindow.Left + $homeWindow.Width - 194)
-    $overlayActionY = [int]($homeWindow.Top + 22)
-    Invoke-LeftClickAt -X $overlayActionX -Y $overlayActionY
+
+    Invoke-GlobalHotkey -Keys "^+o"
+    $toolWindow = Get-WindowInfo -ProcessId $shellProcess.Id -Title "Wevito Basket"
+    $pasteCenter = Get-AutomationElementCenter -WindowHandle $toolWindow.Handle -ProcessId $shellProcess.Id -AutomationId "PasteButton" -Name "PASTE"
+    Invoke-LeftClickAt -X $pasteCenter.X -Y $pasteCenter.Y
     $foregroundAfterClick = Get-ForegroundProcessId
     $shellTracePath = Join-Path $TraceDir "Wevito.VNext.Shell.trace.log"
     $captureTriggered = Wait-ForTraceText -TracePath $shellTracePath -Pattern "ui-command \| .*capture-clipboard"

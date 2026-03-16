@@ -1,0 +1,39 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "Wevito.VNext.Broker/1.0.0": {
+        "dependencies": {
+          "Wevito.VNext.Contracts": "1.0.0"
+        },
+        "runtime": {
+          "Wevito.VNext.Broker.dll": {}
+        }
+      },
+      "Wevito.VNext.Contracts/1.0.0": {
+        "runtime": {
+          "Wevito.VNext.Contracts.dll": {
+            "assemblyVersion": "1.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Wevito.VNext.Broker/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Wevito.VNext.Contracts/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
