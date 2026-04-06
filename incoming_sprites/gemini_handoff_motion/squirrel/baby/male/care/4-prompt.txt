@@ -39,6 +39,7 @@ Goals:
 - The sleep frames should become clear static resting poses that feel species-appropriate and calm.
 - Head-down interaction should read like quick nibbling or bowl drinking. Sleep should curl with the tail helping frame the body.
 
+
 Style goals:
 - pixel art only
 - crisp edges
@@ -54,5 +55,6 @@ Important:
 - do not leave checkerboard residue, matte halos, clipped silhouettes, or bright cleanup specks
 - do not change palette relationships
 - do not make it look like a different artist
+
 
 Return only the edited image.

@@ -60,4 +60,7 @@ Important:
 - do not change palette relationships
 - do not make it look like a different artist
 
+
+
+
 Return only the edited image.

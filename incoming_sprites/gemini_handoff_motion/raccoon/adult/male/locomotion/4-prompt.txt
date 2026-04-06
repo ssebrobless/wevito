@@ -43,6 +43,7 @@ Goals:
 - Walk should show realistic species-specific locomotion, stable ground contact, and clear readable weight transfer.
 - Idle should read upright on two legs. Walk should drop to all fours with clear stepping paws and a ringed-tail balance shift.
 
+
 Style goals:
 - pixel art only
 - crisp edges
@@ -58,5 +59,6 @@ Important:
 - do not leave checkerboard residue, matte halos, clipped silhouettes, or bright cleanup specks
 - do not change palette relationships
 - do not make it look like a different artist
+
 
 Return only the edited image.

@@ -15,6 +15,7 @@ This folder is the easiest place to find the reusable sprite and animation workf
 
 ## Open These First
 
+- [FUTURE_SPRITE_ANIMATION_GUIDELINE.md](C:/Users/fishe/Documents/projects/wevito/SPRITE_PIPELINE_KIT/FUTURE_SPRITE_ANIMATION_GUIDELINE.md)
 - [PROCESS_PLAYBOOK.md](C:/Users/fishe/Documents/projects/wevito/SPRITE_PIPELINE_KIT/PROCESS_PLAYBOOK.md)
 - [PRESET_GUIDE.md](C:/Users/fishe/Documents/projects/wevito/SPRITE_PIPELINE_KIT/PRESET_GUIDE.md)
 - [bootstrap_sprite_pipeline.ps1](C:/Users/fishe/Documents/projects/wevito/SPRITE_PIPELINE_KIT/bootstrap_sprite_pipeline.ps1)
@@ -73,6 +74,7 @@ SPRITE_PIPELINE_KIT/
 
 ## Notes
 
+- [FUTURE_SPRITE_ANIMATION_GUIDELINE.md](C:/Users/fishe/Documents/projects/wevito/SPRITE_PIPELINE_KIT/FUTURE_SPRITE_ANIMATION_GUIDELINE.md) is the compiled future-facing guide that merges the reusable docs into one reference.
 - The PowerShell wrapper calls the real bootstrap logic in [bootstrap_sprite_pipeline.py](C:/Users/fishe/Documents/projects/wevito/tools/bootstrap_sprite_pipeline.py).
 - The canonical long-form version of the method still lives at [REUSABLE_SPRITE_PIPELINE_PLAYBOOK.md](C:/Users/fishe/Documents/projects/wevito/docs/REUSABLE_SPRITE_PIPELINE_PLAYBOOK.md).
 - This folder exists so you do not have to remember which docs, tools, and templates were involved.
