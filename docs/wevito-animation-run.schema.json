@@ -1,0 +1,389 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wevito.local/schemas/wevito-animation-run.schema.json",
+  "title": "Wevito Animation Run Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "run_id",
+    "created_at",
+    "target",
+    "references",
+    "jobs",
+    "import",
+    "proofs"
+  ],
+  "properties": {
+    "run_id": {
+      "type": "string",
+      "minLength": 8,
+      "description": "Stable run identifier used in artifact paths and reports."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO-8601 timestamp for manifest creation."
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "species",
+        "age",
+        "gender",
+        "source_color",
+        "family",
+        "frame_count",
+        "runtime_paths"
+      ],
+      "properties": {
+        "species": {
+          "type": "string",
+          "enum": [
+            "rat",
+            "crow",
+            "fox",
+            "snake",
+            "deer",
+            "frog",
+            "pigeon",
+            "raccoon",
+            "squirrel",
+            "goose"
+          ]
+        },
+        "age": {
+          "type": "string",
+          "enum": [
+            "baby",
+            "teen",
+            "adult"
+          ]
+        },
+        "gender": {
+          "type": "string",
+          "enum": [
+            "female",
+            "male"
+          ]
+        },
+        "source_color": {
+          "type": "string",
+          "enum": [
+            "blue",
+            "red",
+            "orange",
+            "yellow",
+            "indigo",
+            "violet"
+          ]
+        },
+        "family": {
+          "type": "string",
+          "enum": [
+            "idle",
+            "walk",
+            "eat",
+            "happy",
+            "sad",
+            "sleep",
+            "sick",
+            "bathe",
+            "drink",
+            "play_ball",
+            "hold_ball",
+            "pickup_ball",
+            "drop_ball",
+            "carry_ball_walk",
+            "carry_ball_run"
+          ]
+        },
+        "frame_count": {
+          "type": "integer",
+          "enum": [
+            2,
+            4,
+            6
+          ]
+        },
+        "runtime_paths": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "pattern": "\\.png$"
+          }
+        }
+      }
+    },
+    "references": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "canonical_source_board",
+        "verified_runtime_strips",
+        "prop_anchor_metadata",
+        "layout_guide"
+      ],
+      "properties": {
+        "canonical_source_board": {
+          "type": "string",
+          "description": "Best available source image or board for the target identity."
+        },
+        "verified_runtime_strips": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "prop_anchor_metadata": {
+          "type": "string"
+        },
+        "runtime_overlay_art": {
+          "type": "string",
+          "description": "Optional runtime prop art path used for proof overlays. This art is not baked into candidate pet frames."
+        },
+        "layout_guide": {
+          "type": "string"
+        }
+      }
+    },
+    "jobs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "job_id",
+          "provider",
+          "prompt_path",
+          "input_image_paths",
+          "expected_geometry",
+          "status",
+          "source",
+          "provenance_note"
+        ],
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "provider": {
+            "$comment": "Allowed providers: [\"gemini-web\",\"openai-imagegen\",\"manual\",\"local-synth\"]",
+            "type": "string",
+            "enum": [
+              "gemini-web",
+              "openai-imagegen",
+              "manual",
+              "local-synth"
+            ]
+          },
+          "prompt_path": {
+            "type": "string"
+          },
+          "input_image_paths": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string"
+            }
+          },
+          "expected_geometry": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "cells",
+              "cell_w",
+              "cell_h",
+              "columns",
+              "rows"
+            ],
+            "properties": {
+              "cells": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "cell_w": {
+                "type": "integer",
+                "const": 28
+              },
+              "cell_h": {
+                "type": "integer",
+                "const": 24
+              },
+              "columns": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "rows": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "role": {
+                "type": "string",
+                "enum": [
+                  "source_layout_reference_not_runtime_png",
+                  "candidate_runtime_png"
+                ],
+                "description": "Clarifies whether this geometry describes a source/layout guide or the actual candidate runtime PNG frames."
+              }
+            }
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ready",
+              "blocked",
+              "sent",
+              "recorded",
+              "rejected",
+              "applied"
+            ]
+          },
+          "source": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "path",
+              "sha256",
+              "captured_at"
+            ],
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[A-Fa-f0-9]{64}$"
+              },
+              "captured_at": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          },
+          "provenance_note": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "import": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "candidate_frame_paths",
+        "cleanup_ops",
+        "validation_report_path",
+        "apply_backup_dir"
+      ],
+      "properties": {
+        "candidate_frame_paths": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "pattern": "\\.png$"
+          }
+        },
+        "cleanup_ops": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "chroma_strip",
+              "edge_trim",
+              "guard_dilate",
+              "matte_cleanup",
+              "detached_component_removal",
+              "hole_fill",
+              "source_aware_clearance",
+              "palette_transfer",
+              "color_propagation",
+              "prop_anchor_overlay",
+              "local_synth",
+              "manual_pixel_edit",
+              "none"
+            ]
+          }
+        },
+        "validation_report_path": {
+          "type": "string",
+          "pattern": "\\.json$"
+        },
+        "apply_backup_dir": {
+          "type": "string"
+        },
+        "candidate_frame_geometry": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "width",
+            "height",
+            "mode",
+            "frame_count",
+            "ball_baked_into_candidate",
+            "runtime_overlay_separate"
+          ],
+          "properties": {
+            "width": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "height": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "mode": {
+              "type": "string",
+              "enum": [
+                "RGBA"
+              ]
+            },
+            "frame_count": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "ball_baked_into_candidate": {
+              "type": "boolean"
+            },
+            "runtime_overlay_separate": {
+              "type": "boolean"
+            },
+            "notes": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "proofs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contact_sheet_path",
+        "preview_video_path",
+        "packaged_screenshot_proof_path",
+        "markdown_summary_path"
+      ],
+      "properties": {
+        "contact_sheet_path": {
+          "type": "string"
+        },
+        "preview_video_path": {
+          "type": "string"
+        },
+        "packaged_screenshot_proof_path": {
+          "type": "string"
+        },
+        "markdown_summary_path": {
+          "type": "string",
+          "pattern": "\\.md$"
+        }
+      }
+    }
+  }
+}
