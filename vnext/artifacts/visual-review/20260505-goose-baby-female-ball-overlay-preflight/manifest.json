@@ -1,0 +1,4901 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-05-05",
+  "status": "non_mutating_offline_overlay_preflight",
+  "target": "goose/baby/female/all-colors/ball-families",
+  "colors": [
+    "red",
+    "orange",
+    "yellow",
+    "blue",
+    "indigo",
+    "violet"
+  ],
+  "families": [
+    "pickup_ball",
+    "drop_ball",
+    "hold_ball",
+    "carry_ball_walk",
+    "carry_ball_run"
+  ],
+  "source_runtime_root": "sprites_runtime/goose/baby/female",
+  "metadata_source": "sprites_runtime/_metadata/prop_anchors.json",
+  "ball_source": "sprites_shared_runtime/items/toys_a/ball.png",
+  "overlay_model": "offline approximation of scripts/pet.gd alpha-used-rect anchor math; not packaged Godot proof",
+  "qa": {
+    "family_sheets": [
+      "vnext/artifacts/visual-review/20260505-goose-baby-female-ball-overlay-preflight/qa/goose-baby-female-six-color-pickup_ball-offline-ball-overlay.png",
+      "vnext/artifacts/visual-review/20260505-goose-baby-female-ball-overlay-preflight/qa/goose-baby-female-six-color-drop_ball-offline-ball-overlay.png",
+      "vnext/artifacts/visual-review/20260505-goose-baby-female-ball-overlay-preflight/qa/goose-baby-female-six-color-hold_ball-offline-ball-overlay.png",
+      "vnext/artifacts/visual-review/20260505-goose-baby-female-ball-overlay-preflight/qa/goose-baby-female-six-color-carry_ball_walk-offline-ball-overlay.png",
+      "vnext/artifacts/visual-review/20260505-goose-baby-female-ball-overlay-preflight/qa/goose-baby-female-six-color-carry_ball_run-offline-ball-overlay.png"
+    ],
+    "blue_drop_current_vs_candidate": "vnext/artifacts/visual-review/20260505-goose-baby-female-ball-overlay-preflight/qa/blue-drop-ball-current-vs-pending-candidate-offline-ball-overlay.png"
+  },
+  "records": [
+    {
+      "color": "red",
+      "family": "pickup_ball",
+      "frame_index": 0,
+      "source": "sprites_runtime/goose/baby/female/red/pickup_ball_00.png",
+      "sha256": "04327cff0c1d2c06089922d60706e51d48788ba13a331ff33ebddb1c3099ebf1",
+      "source_size": [
+        101,
+        125
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          58.4,
+          97.6
+        ]
+      }
+    },
+    {
+      "color": "red",
+      "family": "pickup_ball",
+      "frame_index": 1,
+      "source": "sprites_runtime/goose/baby/female/red/pickup_ball_01.png",
+      "sha256": "98b0506dc85cbf0f549aa817669ec60df80caa2e6f44732ade15bef8519606e8",
+      "source_size": [
+        100,
+        120
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          57.82,
+          93.6
+        ]
+      }
+    },
+    {
+      "color": "red",
+      "family": "pickup_ball",
+      "frame_index": 2,
+      "source": "sprites_runtime/goose/baby/female/red/pickup_ball_02.png",
+      "sha256": "8c49e925f7acf0eb41e2787d5f236955e959a1d8a77ca2aa75d696d4b53e0c48",
+      "source_size": [
+        101,
+        123
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          58.4,
+          96.0
+        ]
+      }
+    },
+    {
+      "color": "red",
+      "family": "pickup_ball",
+      "frame_index": 3,
+      "source": "sprites_runtime/goose/baby/female/red/pickup_ball_03.png",
+      "sha256": "d02790a5e69fdcf6ff9c6ce7d9268a0e561f3f599f7b8a6ef53cf963013b491c",
+      "source_size": [
+        102,
+        125
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          58.99,
+          97.6
+        ]
+      }
+    },
+    {
+      "color": "orange",
+      "family": "pickup_ball",
+      "frame_index": 0,
+      "source": "sprites_runtime/goose/baby/female/orange/pickup_ball_00.png",
+      "sha256": "146831b2c3e13940e9bd45126614d3c226a5150e5596cbadcc579eae86dcaa93",
+      "source_size": [
+        101,
+        125
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          58.4,
+          97.6
+        ]
+      }
+    },
+    {
+      "color": "orange",
+      "family": "pickup_ball",
+      "frame_index": 1,
+      "source": "sprites_runtime/goose/baby/female/orange/pickup_ball_01.png",
+      "sha256": "8ba447c1978179dc4d151cb3701603f85949cee7cb31f29f31d3e4c65716b714",
+      "source_size": [
+        100,
+        120
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          57.82,
+          93.6
+        ]
+      }
+    },
+    {
+      "color": "orange",
+      "family": "pickup_ball",
+      "frame_index": 2,
+      "source": "sprites_runtime/goose/baby/female/orange/pickup_ball_02.png",
+      "sha256": "0a7443a3e7e0ecc5193ed071398f34e97e081fd304facfacf0f24ad3e9a6257a",
+      "source_size": [
+        101,
+        123
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          58.4,
+          96.0
+        ]
+      }
+    },
+    {
+      "color": "orange",
+      "family": "pickup_ball",
+      "frame_index": 3,
+      "source": "sprites_runtime/goose/baby/female/orange/pickup_ball_03.png",
+      "sha256": "7a0d0805736ad0e9306eef415af4f721be289419da2dd333931c30353661fe1f",
+      "source_size": [
+        102,
+        125
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          58.99,
+          97.6
+        ]
+      }
+    },
+    {
+      "color": "yellow",
+      "family": "pickup_ball",
+      "frame_index": 0,
+      "source": "sprites_runtime/goose/baby/female/yellow/pickup_ball_00.png",
+      "sha256": "248817cef6e122c7f9a1a804e4ca7e115559cc0a890d49c2cd80198ffaf91fa6",
+      "source_size": [
+        101,
+        125
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          58.4,
+          97.6
+        ]
+      }
+    },
+    {
+      "color": "yellow",
+      "family": "pickup_ball",
+      "frame_index": 1,
+      "source": "sprites_runtime/goose/baby/female/yellow/pickup_ball_01.png",
+      "sha256": "08704a23cc0d54ec77faa78e9c6ce350cacb597db9bcee328dfc41a8fd6c26f9",
+      "source_size": [
+        100,
+        120
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          57.82,
+          93.6
+        ]
+      }
+    },
+    {
+      "color": "yellow",
+      "family": "pickup_ball",
+      "frame_index": 2,
+      "source": "sprites_runtime/goose/baby/female/yellow/pickup_ball_02.png",
+      "sha256": "c5670ea3236ed03ed85e5f7d693a77153b7645c428fdc9d8e1cfbeba6056c912",
+      "source_size": [
+        101,
+        123
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          58.4,
+          96.0
+        ]
+      }
+    },
+    {
+      "color": "yellow",
+      "family": "pickup_ball",
+      "frame_index": 3,
+      "source": "sprites_runtime/goose/baby/female/yellow/pickup_ball_03.png",
+      "sha256": "2a48446647aa9acf91ce7b6f3f2f078807a8195ad107f0237e4b3c017f58a17d",
+      "source_size": [
+        102,
+        125
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          58.99,
+          97.6
+        ]
+      }
+    },
+    {
+      "color": "blue",
+      "family": "pickup_ball",
+      "frame_index": 0,
+      "source": "sprites_runtime/goose/baby/female/blue/pickup_ball_00.png",
+      "sha256": "bfff0487cb5a219c84e74cd10b5f702b140434ba3b7b3fdf158e655f1912aa18",
+      "source_size": [
+        101,
+        125
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          58.4,
+          97.6
+        ]
+      }
+    },
+    {
+      "color": "blue",
+      "family": "pickup_ball",
+      "frame_index": 1,
+      "source": "sprites_runtime/goose/baby/female/blue/pickup_ball_01.png",
+      "sha256": "717396e4afef73cbd6e825c387f7b4aeccd3b32387ffa15ccaf74d33fa0f3269",
+      "source_size": [
+        100,
+        120
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          57.82,
+          93.6
+        ]
+      }
+    },
+    {
+      "color": "blue",
+      "family": "pickup_ball",
+      "frame_index": 2,
+      "source": "sprites_runtime/goose/baby/female/blue/pickup_ball_02.png",
+      "sha256": "3876b02396cbd34d2ff8f9ba36c8804dd3551fe7c71a326da404a037d54828a6",
+      "source_size": [
+        101,
+        123
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          58.4,
+          96.0
+        ]
+      }
+    },
+    {
+      "color": "blue",
+      "family": "pickup_ball",
+      "frame_index": 3,
+      "source": "sprites_runtime/goose/baby/female/blue/pickup_ball_03.png",
+      "sha256": "b5e59670bb5326177c07238720f49fc8d6059a1cac008dcee4b96bb5b996e7a2",
+      "source_size": [
+        102,
+        125
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          58.99,
+          97.6
+        ]
+      }
+    },
+    {
+      "color": "indigo",
+      "family": "pickup_ball",
+      "frame_index": 0,
+      "source": "sprites_runtime/goose/baby/female/indigo/pickup_ball_00.png",
+      "sha256": "5e9cda5651f018bcd07072d4e0cecf1202e8179dc05d161dd55a39766092abd4",
+      "source_size": [
+        101,
+        125
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          58.4,
+          97.6
+        ]
+      }
+    },
+    {
+      "color": "indigo",
+      "family": "pickup_ball",
+      "frame_index": 1,
+      "source": "sprites_runtime/goose/baby/female/indigo/pickup_ball_01.png",
+      "sha256": "e386e7465d1a415050c3fc015058ac074ef51e1c0e2cafec0d8857317d0ef887",
+      "source_size": [
+        100,
+        120
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          57.82,
+          93.6
+        ]
+      }
+    },
+    {
+      "color": "indigo",
+      "family": "pickup_ball",
+      "frame_index": 2,
+      "source": "sprites_runtime/goose/baby/female/indigo/pickup_ball_02.png",
+      "sha256": "8e6482708b1b6bc3541640376a15f50e042ad2773d929f5669f3bdf713ba8640",
+      "source_size": [
+        101,
+        123
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          58.4,
+          96.0
+        ]
+      }
+    },
+    {
+      "color": "indigo",
+      "family": "pickup_ball",
+      "frame_index": 3,
+      "source": "sprites_runtime/goose/baby/female/indigo/pickup_ball_03.png",
+      "sha256": "7580d2e357e53ebdb203344e61b4d73ca4f56056720537a6393d511be8af775a",
+      "source_size": [
+        102,
+        125
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          58.99,
+          97.6
+        ]
+      }
+    },
+    {
+      "color": "violet",
+      "family": "pickup_ball",
+      "frame_index": 0,
+      "source": "sprites_runtime/goose/baby/female/violet/pickup_ball_00.png",
+      "sha256": "03d695a01a62d2d8da1d08d5438d59224949aafd6ad4c3efd47f980f849fbe62",
+      "source_size": [
+        101,
+        125
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          58.4,
+          97.6
+        ]
+      }
+    },
+    {
+      "color": "violet",
+      "family": "pickup_ball",
+      "frame_index": 1,
+      "source": "sprites_runtime/goose/baby/female/violet/pickup_ball_01.png",
+      "sha256": "b3840ee960b165d97cfa0f2f866f6e863ba160b7d751d58bd2af41aa6e87ee82",
+      "source_size": [
+        100,
+        120
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          57.82,
+          93.6
+        ]
+      }
+    },
+    {
+      "color": "violet",
+      "family": "pickup_ball",
+      "frame_index": 2,
+      "source": "sprites_runtime/goose/baby/female/violet/pickup_ball_02.png",
+      "sha256": "d42cd25cfbd6c118739197dad50952425a9c184e4d21dda54ff76e3265968f2d",
+      "source_size": [
+        101,
+        123
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          58.4,
+          96.0
+        ]
+      }
+    },
+    {
+      "color": "violet",
+      "family": "pickup_ball",
+      "frame_index": 3,
+      "source": "sprites_runtime/goose/baby/female/violet/pickup_ball_03.png",
+      "sha256": "6ad8016b7eb7dfc57a37636d46efd9846fd5c1680e4a4720b555156ed63d240d",
+      "source_size": [
+        102,
+        125
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          58.99,
+          97.6
+        ]
+      }
+    },
+    {
+      "color": "red",
+      "family": "drop_ball",
+      "frame_index": 0,
+      "source": "sprites_runtime/goose/baby/female/red/drop_ball_00.png",
+      "sha256": "d481ae70e72ce42e915d55d85a510b27e3121c67185483b4e86bcfae899ed920",
+      "source_size": [
+        119,
+        112
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          68.94,
+          87.2
+        ]
+      }
+    },
+    {
+      "color": "red",
+      "family": "drop_ball",
+      "frame_index": 1,
+      "source": "sprites_runtime/goose/baby/female/red/drop_ball_01.png",
+      "sha256": "ebcaa0d0962922727e73a81dc899045dbf55af2ee740bb0f8513395a5473e17c",
+      "source_size": [
+        83,
+        113
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          47.88,
+          88.0
+        ]
+      }
+    },
+    {
+      "color": "red",
+      "family": "drop_ball",
+      "frame_index": 2,
+      "source": "sprites_runtime/goose/baby/female/red/drop_ball_02.png",
+      "sha256": "47aec56efea68abf70b6fef6db31b2b9a103f74c0116a507aa6995e2c16bc8b1",
+      "source_size": [
+        45,
+        87
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          25.64,
+          67.2
+        ]
+      }
+    },
+    {
+      "color": "red",
+      "family": "drop_ball",
+      "frame_index": 3,
+      "source": "sprites_runtime/goose/baby/female/red/drop_ball_03.png",
+      "sha256": "d7f15f77adea70ab297b9d9d8beab48e623adb01d25f3d0ad023a0c37d353e62",
+      "source_size": [
+        78,
+        114
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          44.95,
+          88.8
+        ]
+      }
+    },
+    {
+      "color": "orange",
+      "family": "drop_ball",
+      "frame_index": 0,
+      "source": "sprites_runtime/goose/baby/female/orange/drop_ball_00.png",
+      "sha256": "966b3d3551be23de6ad6ced0c4614f1ce2d1ddcf2e844ac0f149b955d73fd759",
+      "source_size": [
+        119,
+        112
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          68.94,
+          87.2
+        ]
+      }
+    },
+    {
+      "color": "orange",
+      "family": "drop_ball",
+      "frame_index": 1,
+      "source": "sprites_runtime/goose/baby/female/orange/drop_ball_01.png",
+      "sha256": "5c933314b9d2162c20a1551826d41a15ef7f687904f41e802bb5683659cc78bb",
+      "source_size": [
+        83,
+        113
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          47.88,
+          88.0
+        ]
+      }
+    },
+    {
+      "color": "orange",
+      "family": "drop_ball",
+      "frame_index": 2,
+      "source": "sprites_runtime/goose/baby/female/orange/drop_ball_02.png",
+      "sha256": "58a5b0ffe2677bf3ad7df44bdb7730b92f4f0964a9b770663bda12104bb2c3a8",
+      "source_size": [
+        45,
+        87
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          25.64,
+          67.2
+        ]
+      }
+    },
+    {
+      "color": "orange",
+      "family": "drop_ball",
+      "frame_index": 3,
+      "source": "sprites_runtime/goose/baby/female/orange/drop_ball_03.png",
+      "sha256": "13485211d24e3c63e3a93d97bbdac29924a4599d4aa9643fefe03b31531227f7",
+      "source_size": [
+        78,
+        114
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          44.95,
+          88.8
+        ]
+      }
+    },
+    {
+      "color": "yellow",
+      "family": "drop_ball",
+      "frame_index": 0,
+      "source": "sprites_runtime/goose/baby/female/yellow/drop_ball_00.png",
+      "sha256": "4633d350f4625a80d21417d60fdb994c5258d5baaa6c1beec43a23c47f78c1c8",
+      "source_size": [
+        119,
+        112
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          68.94,
+          87.2
+        ]
+      }
+    },
+    {
+      "color": "yellow",
+      "family": "drop_ball",
+      "frame_index": 1,
+      "source": "sprites_runtime/goose/baby/female/yellow/drop_ball_01.png",
+      "sha256": "f920b0cea7834ccc54d60342af1e03b5fdf3971271e373ddf8b34add8d62952e",
+      "source_size": [
+        83,
+        113
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          47.88,
+          88.0
+        ]
+      }
+    },
+    {
+      "color": "yellow",
+      "family": "drop_ball",
+      "frame_index": 2,
+      "source": "sprites_runtime/goose/baby/female/yellow/drop_ball_02.png",
+      "sha256": "1a24c07724fc3f0e1b0b9ddc5331392a67b2d48d402ef5b50fcf112dac56757c",
+      "source_size": [
+        45,
+        87
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          25.64,
+          67.2
+        ]
+      }
+    },
+    {
+      "color": "yellow",
+      "family": "drop_ball",
+      "frame_index": 3,
+      "source": "sprites_runtime/goose/baby/female/yellow/drop_ball_03.png",
+      "sha256": "c6736cb6759e52df99b33f903f6d34506984d3216b1249d5f5922b059ad8c2da",
+      "source_size": [
+        78,
+        114
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          44.95,
+          88.8
+        ]
+      }
+    },
+    {
+      "color": "blue",
+      "family": "drop_ball",
+      "frame_index": 0,
+      "source": "sprites_runtime/goose/baby/female/blue/drop_ball_00.png",
+      "sha256": "1141da61a8b91ae60c2f31fc91e9e5903308e71805037f401cbade8d52a64381",
+      "source_size": [
+        119,
+        112
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          68.94,
+          87.2
+        ]
+      }
+    },
+    {
+      "color": "blue",
+      "family": "drop_ball",
+      "frame_index": 1,
+      "source": "sprites_runtime/goose/baby/female/blue/drop_ball_01.png",
+      "sha256": "20e9044d7a38200092bf4522c889ccbf51bd07c5300724896483235d57d6ace3",
+      "source_size": [
+        83,
+        113
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          47.88,
+          88.0
+        ]
+      }
+    },
+    {
+      "color": "blue",
+      "family": "drop_ball",
+      "frame_index": 2,
+      "source": "sprites_runtime/goose/baby/female/blue/drop_ball_02.png",
+      "sha256": "de50c4aa25716b36bc553cf26f38662d79f72179ce5cc74be292e293f5795029",
+      "source_size": [
+        45,
+        87
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          25.64,
+          67.2
+        ]
+      }
+    },
+    {
+      "color": "blue",
+      "family": "drop_ball",
+      "frame_index": 3,
+      "source": "sprites_runtime/goose/baby/female/blue/drop_ball_03.png",
+      "sha256": "509cd3b9a9d1ef7deccd6c75df96c9c59f0374b2cce2cc1ca0921874df1d288a",
+      "source_size": [
+        78,
+        114
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          44.95,
+          88.8
+        ]
+      }
+    },
+    {
+      "color": "indigo",
+      "family": "drop_ball",
+      "frame_index": 0,
+      "source": "sprites_runtime/goose/baby/female/indigo/drop_ball_00.png",
+      "sha256": "b1dd5077365ec7b39d619a611f291a0e69b1251229750d2a5bef03efc75a4712",
+      "source_size": [
+        119,
+        112
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          68.94,
+          87.2
+        ]
+      }
+    },
+    {
+      "color": "indigo",
+      "family": "drop_ball",
+      "frame_index": 1,
+      "source": "sprites_runtime/goose/baby/female/indigo/drop_ball_01.png",
+      "sha256": "598f41f327b3be0f1058fefe804b52f4557e27164960a297f0ac25d5db3aa162",
+      "source_size": [
+        83,
+        113
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          47.88,
+          88.0
+        ]
+      }
+    },
+    {
+      "color": "indigo",
+      "family": "drop_ball",
+      "frame_index": 2,
+      "source": "sprites_runtime/goose/baby/female/indigo/drop_ball_02.png",
+      "sha256": "4b76249b6e421ff34beb6e06988403df48c07593f3a56ab56b228032c01716a9",
+      "source_size": [
+        45,
+        87
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          25.64,
+          67.2
+        ]
+      }
+    },
+    {
+      "color": "indigo",
+      "family": "drop_ball",
+      "frame_index": 3,
+      "source": "sprites_runtime/goose/baby/female/indigo/drop_ball_03.png",
+      "sha256": "97af0eae9d7798104f413874933965813b5addda42b73d0dd787bd09e4dfd339",
+      "source_size": [
+        78,
+        114
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          44.95,
+          88.8
+        ]
+      }
+    },
+    {
+      "color": "violet",
+      "family": "drop_ball",
+      "frame_index": 0,
+      "source": "sprites_runtime/goose/baby/female/violet/drop_ball_00.png",
+      "sha256": "cfd47aa8f4e8707c3892f93b9f3332953c6db9f698542f4e036de2a9c6e30271",
+      "source_size": [
+        119,
+        112
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          68.94,
+          87.2
+        ]
+      }
+    },
+    {
+      "color": "violet",
+      "family": "drop_ball",
+      "frame_index": 1,
+      "source": "sprites_runtime/goose/baby/female/violet/drop_ball_01.png",
+      "sha256": "f4ae1809d27b930a7ffbcce28a0590797ba78760eac433cfae7fa0aa75f5ca17",
+      "source_size": [
+        83,
+        113
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          47.88,
+          88.0
+        ]
+      }
+    },
+    {
+      "color": "violet",
+      "family": "drop_ball",
+      "frame_index": 2,
+      "source": "sprites_runtime/goose/baby/female/violet/drop_ball_02.png",
+      "sha256": "2eeafe497b79762ba7814ebd697dfc338cb2f5d6019708f0dccaebc44b1aa893",
+      "source_size": [
+        45,
+        87
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          25.64,
+          67.2
+        ]
+      }
+    },
+    {
+      "color": "violet",
+      "family": "drop_ball",
+      "frame_index": 3,
+      "source": "sprites_runtime/goose/baby/female/violet/drop_ball_03.png",
+      "sha256": "45e558902b99f95007005ae95fd957fa69643d14f2e225ce834ab82013baff28",
+      "source_size": [
+        78,
+        114
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          44.95,
+          88.8
+        ]
+      }
+    },
+    {
+      "color": "red",
+      "family": "hold_ball",
+      "frame_index": 0,
+      "source": "sprites_runtime/goose/baby/female/red/hold_ball_00.png",
+      "sha256": "0a975a4377bbaa33c84cca779dc667b5e4a526e2bda685caa08c7664c91cdda8",
+      "source_size": [
+        60,
+        59
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          45.2,
+          24.4
+        ]
+      }
+    },
+    {
+      "color": "red",
+      "family": "hold_ball",
+      "frame_index": 1,
+      "source": "sprites_runtime/goose/baby/female/red/hold_ball_01.png",
+      "sha256": "07888ec26d3576a1082ef4b3627c2b309ff6942c43a67863f8d0b1d1cb9e5ebb",
+      "source_size": [
+        60,
+        59
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          45.2,
+          24.4
+        ]
+      }
+    },
+    {
+      "color": "red",
+      "family": "hold_ball",
+      "frame_index": 2,
+      "source": "sprites_runtime/goose/baby/female/red/hold_ball_02.png",
+      "sha256": "4188a30420aa34764db7966f62340e3ddcab11c77054dcb0c6c5bb19eb6cb050",
+      "source_size": [
+        60,
+        59
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          45.2,
+          25.6
+        ]
+      }
+    },
+    {
+      "color": "red",
+      "family": "hold_ball",
+      "frame_index": 3,
+      "source": "sprites_runtime/goose/baby/female/red/hold_ball_03.png",
+      "sha256": "93cf3097505b3f25c33a0d7fb92e4412cc15953b786da4f5b3da98668d6fdcda",
+      "source_size": [
+        60,
+        59
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          45.2,
+          25.6
+        ]
+      }
+    },
+    {
+      "color": "orange",
+      "family": "hold_ball",
+      "frame_index": 0,
+      "source": "sprites_runtime/goose/baby/female/orange/hold_ball_00.png",
+      "sha256": "85f30d86c5c7533c5436041f6fccddc49a15e3948ba66656c77846691203f63a",
+      "source_size": [
+        60,
+        59
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          45.2,
+          24.4
+        ]
+      }
+    },
+    {
+      "color": "orange",
+      "family": "hold_ball",
+      "frame_index": 1,
+      "source": "sprites_runtime/goose/baby/female/orange/hold_ball_01.png",
+      "sha256": "8ae3848ec91972c305a8e9fc132a8c147bbd5c647af525d59efccd1d7d36d7e4",
+      "source_size": [
+        60,
+        59
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          45.2,
+          24.4
+        ]
+      }
+    },
+    {
+      "color": "orange",
+      "family": "hold_ball",
+      "frame_index": 2,
+      "source": "sprites_runtime/goose/baby/female/orange/hold_ball_02.png",
+      "sha256": "7a8e68fc236af2c0cbb10d44064877a6be26384fa0e0ed186a18f0198a8b9b71",
+      "source_size": [
+        60,
+        59
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          45.2,
+          25.6
+        ]
+      }
+    },
+    {
+      "color": "orange",
+      "family": "hold_ball",
+      "frame_index": 3,
+      "source": "sprites_runtime/goose/baby/female/orange/hold_ball_03.png",
+      "sha256": "086a84c39a99356654ce68001a7ff26472a85188d23f0b15050e85e2e2d75fe5",
+      "source_size": [
+        60,
+        59
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          45.2,
+          25.6
+        ]
+      }
+    },
+    {
+      "color": "yellow",
+      "family": "hold_ball",
+      "frame_index": 0,
+      "source": "sprites_runtime/goose/baby/female/yellow/hold_ball_00.png",
+      "sha256": "8c80e99965536daa598bff6b4725111f2173e98e65d77372850f71ded0769217",
+      "source_size": [
+        60,
+        59
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          45.2,
+          24.4
+        ]
+      }
+    },
+    {
+      "color": "yellow",
+      "family": "hold_ball",
+      "frame_index": 1,
+      "source": "sprites_runtime/goose/baby/female/yellow/hold_ball_01.png",
+      "sha256": "04846f582148e2dbf1e78b60311f0ac60b14ec61044eab0021893c6c1fea823f",
+      "source_size": [
+        60,
+        59
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          45.2,
+          24.4
+        ]
+      }
+    },
+    {
+      "color": "yellow",
+      "family": "hold_ball",
+      "frame_index": 2,
+      "source": "sprites_runtime/goose/baby/female/yellow/hold_ball_02.png",
+      "sha256": "7114460ee0e623524e35ecebc53b6917725aeac2bfb73cd2ced10eeadfc398d2",
+      "source_size": [
+        60,
+        59
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          45.2,
+          25.6
+        ]
+      }
+    },
+    {
+      "color": "yellow",
+      "family": "hold_ball",
+      "frame_index": 3,
+      "source": "sprites_runtime/goose/baby/female/yellow/hold_ball_03.png",
+      "sha256": "771f2cc783a833857e2969f104a87532e4ab57cc0933b89e73dfd227459d8821",
+      "source_size": [
+        60,
+        59
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          45.2,
+          25.6
+        ]
+      }
+    },
+    {
+      "color": "blue",
+      "family": "hold_ball",
+      "frame_index": 0,
+      "source": "sprites_runtime/goose/baby/female/blue/hold_ball_00.png",
+      "sha256": "e2cac548eb4652ef77fe872af927e2e0e07d0cc42837bebaa5b595366ad1333a",
+      "source_size": [
+        60,
+        59
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          46.06,
+          24.4
+        ]
+      }
+    },
+    {
+      "color": "blue",
+      "family": "hold_ball",
+      "frame_index": 1,
+      "source": "sprites_runtime/goose/baby/female/blue/hold_ball_01.png",
+      "sha256": "1e847d80d35fd0cf6e5bf7a0a1aa8218c8db223957af08856019d7418d2779d2",
+      "source_size": [
+        60,
+        59
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          46.06,
+          24.4
+        ]
+      }
+    },
+    {
+      "color": "blue",
+      "family": "hold_ball",
+      "frame_index": 2,
+      "source": "sprites_runtime/goose/baby/female/blue/hold_ball_02.png",
+      "sha256": "8b6fb4322a6ee10a19e6e48e31a58a292d66f43e6bc7481ecc1cf4d89b4789dd",
+      "source_size": [
+        60,
+        59
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          46.92,
+          25.6
+        ]
+      }
+    },
+    {
+      "color": "blue",
+      "family": "hold_ball",
+      "frame_index": 3,
+      "source": "sprites_runtime/goose/baby/female/blue/hold_ball_03.png",
+      "sha256": "859ea85f5a36325f7cc0e15a1e945bc040feef8d1a7eb5178ee46ddf55b6760a",
+      "source_size": [
+        60,
+        59
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          46.06,
+          25.6
+        ]
+      }
+    },
+    {
+      "color": "indigo",
+      "family": "hold_ball",
+      "frame_index": 0,
+      "source": "sprites_runtime/goose/baby/female/indigo/hold_ball_00.png",
+      "sha256": "f6b00b0669a20b61b8c2384c708ac0d01fdec59e5775fb1b8c2d82110f97d527",
+      "source_size": [
+        60,
+        59
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          45.2,
+          24.4
+        ]
+      }
+    },
+    {
+      "color": "indigo",
+      "family": "hold_ball",
+      "frame_index": 1,
+      "source": "sprites_runtime/goose/baby/female/indigo/hold_ball_01.png",
+      "sha256": "a6c4da602801c0aa6546015ef9310912010a91e96acbc802b673a04914cb8cd4",
+      "source_size": [
+        60,
+        59
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          45.2,
+          24.4
+        ]
+      }
+    },
+    {
+      "color": "indigo",
+      "family": "hold_ball",
+      "frame_index": 2,
+      "source": "sprites_runtime/goose/baby/female/indigo/hold_ball_02.png",
+      "sha256": "1901d6bd402c2aff06412c1e75be0dc7a582263a146bedda39e0d3d068b8f844",
+      "source_size": [
+        60,
+        59
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          45.2,
+          25.6
+        ]
+      }
+    },
+    {
+      "color": "indigo",
+      "family": "hold_ball",
+      "frame_index": 3,
+      "source": "sprites_runtime/goose/baby/female/indigo/hold_ball_03.png",
+      "sha256": "1cfd400052776f276f1944ceee0999d71799727efcdd647a61fcdefa75c6168a",
+      "source_size": [
+        60,
+        59
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          45.2,
+          25.6
+        ]
+      }
+    },
+    {
+      "color": "violet",
+      "family": "hold_ball",
+      "frame_index": 0,
+      "source": "sprites_runtime/goose/baby/female/violet/hold_ball_00.png",
+      "sha256": "32827827de41b34af78be4ceecea58e90a82b5c4ef4ce1fc8ff2343dd3f3a59d",
+      "source_size": [
+        60,
+        59
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          45.2,
+          24.4
+        ]
+      }
+    },
+    {
+      "color": "violet",
+      "family": "hold_ball",
+      "frame_index": 1,
+      "source": "sprites_runtime/goose/baby/female/violet/hold_ball_01.png",
+      "sha256": "d988b928d6c9b80268a11b24154173178b95f07c35dec807a1fd2c2484d5ab54",
+      "source_size": [
+        60,
+        59
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          45.2,
+          24.4
+        ]
+      }
+    },
+    {
+      "color": "violet",
+      "family": "hold_ball",
+      "frame_index": 2,
+      "source": "sprites_runtime/goose/baby/female/violet/hold_ball_02.png",
+      "sha256": "42a6756ed9107097968a926d1de7a256b645c82aaf402fe27ec37ee4d8aa8a66",
+      "source_size": [
+        60,
+        59
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          45.2,
+          25.6
+        ]
+      }
+    },
+    {
+      "color": "violet",
+      "family": "hold_ball",
+      "frame_index": 3,
+      "source": "sprites_runtime/goose/baby/female/violet/hold_ball_03.png",
+      "sha256": "11d3efa441f14e00285e120f0bc523d416d4c18b70cf35e8101e4609f150e406",
+      "source_size": [
+        60,
+        59
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          45.2,
+          25.6
+        ]
+      }
+    },
+    {
+      "color": "red",
+      "family": "carry_ball_walk",
+      "frame_index": 0,
+      "source": "sprites_runtime/goose/baby/female/red/carry_ball_walk_00.png",
+      "sha256": "336ddb388284fafafd06b8dcf3726de1a07cbe07fec54f9eef9760586bcded8d",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 2.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          55.06,
+          39.4
+        ]
+      }
+    },
+    {
+      "color": "red",
+      "family": "carry_ball_walk",
+      "frame_index": 1,
+      "source": "sprites_runtime/goose/baby/female/red/carry_ball_walk_01.png",
+      "sha256": "ec5e087d83f0ae187cde2240aeeb498528af926f06396afd45c5b152b3d12da6",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 2.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          55.2,
+          39.6
+        ]
+      }
+    },
+    {
+      "color": "red",
+      "family": "carry_ball_walk",
+      "frame_index": 2,
+      "source": "sprites_runtime/goose/baby/female/red/carry_ball_walk_02.png",
+      "sha256": "8a509b84065bac6390378fcb1f894f0696b263a1b65731bb8f0400fb6dff0759",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 2.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          57.06,
+          40.0
+        ]
+      }
+    },
+    {
+      "color": "red",
+      "family": "carry_ball_walk",
+      "frame_index": 3,
+      "source": "sprites_runtime/goose/baby/female/red/carry_ball_walk_03.png",
+      "sha256": "846386bcf150eda570de60b4b5c9c804813947b2644d0650e2441083115eabc7",
+      "source_size": [
+        80,
+        73
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 2.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          56.06,
+          40.4
+        ]
+      }
+    },
+    {
+      "color": "red",
+      "family": "carry_ball_walk",
+      "frame_index": 4,
+      "source": "sprites_runtime/goose/baby/female/red/carry_ball_walk_04.png",
+      "sha256": "270faed557238a4126c9070d954879b843c40a120288a4c3d488c8e99fdbf196",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 2.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          55.06,
+          40.0
+        ]
+      }
+    },
+    {
+      "color": "red",
+      "family": "carry_ball_walk",
+      "frame_index": 5,
+      "source": "sprites_runtime/goose/baby/female/red/carry_ball_walk_05.png",
+      "sha256": "7ae74a87389399ae8f7f9be2daa4ffee491f0a4ad168d7743f6ddc29d6781882",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 2.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          56.06,
+          39.0
+        ]
+      }
+    },
+    {
+      "color": "orange",
+      "family": "carry_ball_walk",
+      "frame_index": 0,
+      "source": "sprites_runtime/goose/baby/female/orange/carry_ball_walk_00.png",
+      "sha256": "ee64397c6a7a13a0d0bb71094bb5559ac1751f8cce87f63df7c00d175dea89af",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 2.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          55.06,
+          39.4
+        ]
+      }
+    },
+    {
+      "color": "orange",
+      "family": "carry_ball_walk",
+      "frame_index": 1,
+      "source": "sprites_runtime/goose/baby/female/orange/carry_ball_walk_01.png",
+      "sha256": "35bb4b5ce84eb07b1d590c93ea2d2a25c1814e1e289d1436d0b41ceb7940d177",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 2.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          55.2,
+          39.6
+        ]
+      }
+    },
+    {
+      "color": "orange",
+      "family": "carry_ball_walk",
+      "frame_index": 2,
+      "source": "sprites_runtime/goose/baby/female/orange/carry_ball_walk_02.png",
+      "sha256": "94c23a8d7f2b368d0da4fa3164007d6915dbc956776eda47eb18daf02aa0020a",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 2.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          57.06,
+          40.0
+        ]
+      }
+    },
+    {
+      "color": "orange",
+      "family": "carry_ball_walk",
+      "frame_index": 3,
+      "source": "sprites_runtime/goose/baby/female/orange/carry_ball_walk_03.png",
+      "sha256": "637d4820e7c74caa02992a642b34f6c2419b144742595ece8f799478e5b322e5",
+      "source_size": [
+        80,
+        73
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 2.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          56.06,
+          40.4
+        ]
+      }
+    },
+    {
+      "color": "orange",
+      "family": "carry_ball_walk",
+      "frame_index": 4,
+      "source": "sprites_runtime/goose/baby/female/orange/carry_ball_walk_04.png",
+      "sha256": "fa14cbaffd5784ab898051372f348f3a14e0e187939fbb2bac3203b0a4fa1360",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 2.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          55.06,
+          40.0
+        ]
+      }
+    },
+    {
+      "color": "orange",
+      "family": "carry_ball_walk",
+      "frame_index": 5,
+      "source": "sprites_runtime/goose/baby/female/orange/carry_ball_walk_05.png",
+      "sha256": "79f6d20c2a59e9e1360674ee4321824f2af226a69bd6dd4656504a971d4cf11f",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 2.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          56.06,
+          39.0
+        ]
+      }
+    },
+    {
+      "color": "yellow",
+      "family": "carry_ball_walk",
+      "frame_index": 0,
+      "source": "sprites_runtime/goose/baby/female/yellow/carry_ball_walk_00.png",
+      "sha256": "50c21af1027de378c21fda71aef903b83936dde8b6ea687070e2eb736ab0d1ef",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 2.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          55.06,
+          39.4
+        ]
+      }
+    },
+    {
+      "color": "yellow",
+      "family": "carry_ball_walk",
+      "frame_index": 1,
+      "source": "sprites_runtime/goose/baby/female/yellow/carry_ball_walk_01.png",
+      "sha256": "72fba31a6130b5a4111c4ac7554c8684570c25142bf3c840538b52825e08b7b0",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 2.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          55.2,
+          39.6
+        ]
+      }
+    },
+    {
+      "color": "yellow",
+      "family": "carry_ball_walk",
+      "frame_index": 2,
+      "source": "sprites_runtime/goose/baby/female/yellow/carry_ball_walk_02.png",
+      "sha256": "a77b7f9c93dc54a70adaee460221aae55f1f722505a09e12fa7fb278ea23bb32",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 2.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          57.06,
+          40.0
+        ]
+      }
+    },
+    {
+      "color": "yellow",
+      "family": "carry_ball_walk",
+      "frame_index": 3,
+      "source": "sprites_runtime/goose/baby/female/yellow/carry_ball_walk_03.png",
+      "sha256": "e5d54d3f0bbfbab174bd4a80887900c288bf5c292a94a910d267e96a245f82bd",
+      "source_size": [
+        80,
+        73
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 2.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          56.06,
+          40.4
+        ]
+      }
+    },
+    {
+      "color": "yellow",
+      "family": "carry_ball_walk",
+      "frame_index": 4,
+      "source": "sprites_runtime/goose/baby/female/yellow/carry_ball_walk_04.png",
+      "sha256": "9e553e24b282c0ca00a07eb3ccdba5d7c6accff6eab6a6ea26f8d0fa022e0cb0",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 2.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          55.06,
+          40.0
+        ]
+      }
+    },
+    {
+      "color": "yellow",
+      "family": "carry_ball_walk",
+      "frame_index": 5,
+      "source": "sprites_runtime/goose/baby/female/yellow/carry_ball_walk_05.png",
+      "sha256": "507b42c7d2f53861c6f40af205464b8952113f03d48f3d42fe1314ebf0fbc84a",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 2.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          56.06,
+          39.0
+        ]
+      }
+    },
+    {
+      "color": "blue",
+      "family": "carry_ball_walk",
+      "frame_index": 0,
+      "source": "sprites_runtime/goose/baby/female/blue/carry_ball_walk_00.png",
+      "sha256": "4b6c113c55d14592a2e29bbd8e5ce339c084daf9d1e98ff389ef03248ee6ba18",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 2.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          55.06,
+          39.4
+        ]
+      }
+    },
+    {
+      "color": "blue",
+      "family": "carry_ball_walk",
+      "frame_index": 1,
+      "source": "sprites_runtime/goose/baby/female/blue/carry_ball_walk_01.png",
+      "sha256": "0866fd671462ca006eb7a34a2321a609a7fade17ecf8f42f7910d2d2aaa93be5",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 2.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          55.2,
+          39.6
+        ]
+      }
+    },
+    {
+      "color": "blue",
+      "family": "carry_ball_walk",
+      "frame_index": 2,
+      "source": "sprites_runtime/goose/baby/female/blue/carry_ball_walk_02.png",
+      "sha256": "0ce8d962a97db0d7651318d59cadb2e47ead178044007324b53db00741f586e9",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 2.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          57.06,
+          40.0
+        ]
+      }
+    },
+    {
+      "color": "blue",
+      "family": "carry_ball_walk",
+      "frame_index": 3,
+      "source": "sprites_runtime/goose/baby/female/blue/carry_ball_walk_03.png",
+      "sha256": "db239085270b394ff4fd918c8f029fbe1a595d1c2a592fb66dbc9b038f41dd22",
+      "source_size": [
+        80,
+        73
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 2.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          56.06,
+          40.4
+        ]
+      }
+    },
+    {
+      "color": "blue",
+      "family": "carry_ball_walk",
+      "frame_index": 4,
+      "source": "sprites_runtime/goose/baby/female/blue/carry_ball_walk_04.png",
+      "sha256": "bf6b9db7e473c95154ea87dfad18d653b4ce3ac49e268b1c320066bbe004788d",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 2.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          55.06,
+          40.0
+        ]
+      }
+    },
+    {
+      "color": "blue",
+      "family": "carry_ball_walk",
+      "frame_index": 5,
+      "source": "sprites_runtime/goose/baby/female/blue/carry_ball_walk_05.png",
+      "sha256": "878208e8e2f7b53b27c7004633e3894ebc7ed50b568934ac71c0f026d27d0a32",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 2.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          56.06,
+          39.0
+        ]
+      }
+    },
+    {
+      "color": "indigo",
+      "family": "carry_ball_walk",
+      "frame_index": 0,
+      "source": "sprites_runtime/goose/baby/female/indigo/carry_ball_walk_00.png",
+      "sha256": "07558360879d018765175c0af5f0cc290c61b5a519f013c724a8069d820a53bb",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 2.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          55.06,
+          39.4
+        ]
+      }
+    },
+    {
+      "color": "indigo",
+      "family": "carry_ball_walk",
+      "frame_index": 1,
+      "source": "sprites_runtime/goose/baby/female/indigo/carry_ball_walk_01.png",
+      "sha256": "9432f9e2e6d9236dadd95dbd0b28a8cf525243617975b996df6032755f7b065e",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 2.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          55.2,
+          39.6
+        ]
+      }
+    },
+    {
+      "color": "indigo",
+      "family": "carry_ball_walk",
+      "frame_index": 2,
+      "source": "sprites_runtime/goose/baby/female/indigo/carry_ball_walk_02.png",
+      "sha256": "c5d704be447783d25bdba12c06d597052ea63d2d84da6548e9c5da765e655dcd",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 2.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          57.06,
+          40.0
+        ]
+      }
+    },
+    {
+      "color": "indigo",
+      "family": "carry_ball_walk",
+      "frame_index": 3,
+      "source": "sprites_runtime/goose/baby/female/indigo/carry_ball_walk_03.png",
+      "sha256": "188420bcbf81af8e4ffacde73daf9c7c64dd6ced5fbf4a5a9a12e7aa7f490103",
+      "source_size": [
+        80,
+        73
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 2.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          56.06,
+          40.4
+        ]
+      }
+    },
+    {
+      "color": "indigo",
+      "family": "carry_ball_walk",
+      "frame_index": 4,
+      "source": "sprites_runtime/goose/baby/female/indigo/carry_ball_walk_04.png",
+      "sha256": "024b053cae47c12827314f45c266557d684da6e3269335cce011e1c13a33e0fd",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 2.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          55.06,
+          40.0
+        ]
+      }
+    },
+    {
+      "color": "indigo",
+      "family": "carry_ball_walk",
+      "frame_index": 5,
+      "source": "sprites_runtime/goose/baby/female/indigo/carry_ball_walk_05.png",
+      "sha256": "0d4c78c086e26431df4304ba30d11b49d3c999a9565d847e95f933c1ca38f20c",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 2.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          56.06,
+          39.0
+        ]
+      }
+    },
+    {
+      "color": "violet",
+      "family": "carry_ball_walk",
+      "frame_index": 0,
+      "source": "sprites_runtime/goose/baby/female/violet/carry_ball_walk_00.png",
+      "sha256": "639d863468ffe0fa060a28cce8b935b810d74b31af27db3ab720fe0c55e93d15",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 2.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          55.06,
+          39.4
+        ]
+      }
+    },
+    {
+      "color": "violet",
+      "family": "carry_ball_walk",
+      "frame_index": 1,
+      "source": "sprites_runtime/goose/baby/female/violet/carry_ball_walk_01.png",
+      "sha256": "c4d695ecd0df5371c011fc3cc47ab865352fb9c408c1cdbda06b1d7b00bc2f69",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 2.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          55.2,
+          39.6
+        ]
+      }
+    },
+    {
+      "color": "violet",
+      "family": "carry_ball_walk",
+      "frame_index": 2,
+      "source": "sprites_runtime/goose/baby/female/violet/carry_ball_walk_02.png",
+      "sha256": "2ff7cab09cc78b3517e047d022a7cc52174beaa7bc962e89f715dcde04b5e111",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 2.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          57.06,
+          40.0
+        ]
+      }
+    },
+    {
+      "color": "violet",
+      "family": "carry_ball_walk",
+      "frame_index": 3,
+      "source": "sprites_runtime/goose/baby/female/violet/carry_ball_walk_03.png",
+      "sha256": "1406a64a173b1507647b4be92865ca549208053569af88e2ee58d0f4de6158ce",
+      "source_size": [
+        80,
+        73
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 2.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          56.06,
+          40.4
+        ]
+      }
+    },
+    {
+      "color": "violet",
+      "family": "carry_ball_walk",
+      "frame_index": 4,
+      "source": "sprites_runtime/goose/baby/female/violet/carry_ball_walk_04.png",
+      "sha256": "dc3056f4a77db51b157711d71861a987572a76357fc084e8e8f5b5611f957eb8",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 2.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          55.06,
+          40.0
+        ]
+      }
+    },
+    {
+      "color": "violet",
+      "family": "carry_ball_walk",
+      "frame_index": 5,
+      "source": "sprites_runtime/goose/baby/female/violet/carry_ball_walk_05.png",
+      "sha256": "56003e9447ad3c6143586e8ff85972aaad8850e187af047821df5049c869a2ea",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 2.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          56.06,
+          39.0
+        ]
+      }
+    },
+    {
+      "color": "red",
+      "family": "carry_ball_run",
+      "frame_index": 0,
+      "source": "sprites_runtime/goose/baby/female/red/carry_ball_run_00.png",
+      "sha256": "a8b4fbf25baf8e6d2922aac590d6054326cf12307587e0a4d2e8ea774b7b8378",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 2.0,
+          "y": 1.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          56.79,
+          36.8
+        ]
+      }
+    },
+    {
+      "color": "red",
+      "family": "carry_ball_run",
+      "frame_index": 1,
+      "source": "sprites_runtime/goose/baby/female/red/carry_ball_run_01.png",
+      "sha256": "c8ee4edb0766ae8b1b7896f1bdcc8669c4c32b1cf905c48f0ac12bfce606cb38",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 2.0,
+          "y": 1.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          58.06,
+          37.0
+        ]
+      }
+    },
+    {
+      "color": "red",
+      "family": "carry_ball_run",
+      "frame_index": 2,
+      "source": "sprites_runtime/goose/baby/female/red/carry_ball_run_02.png",
+      "sha256": "37eb539a8bffbb323c7016fa1e4ee701febd73853ffb737746ca892c33c49725",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 2.0,
+          "y": 1.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          60.06,
+          36.2
+        ]
+      }
+    },
+    {
+      "color": "red",
+      "family": "carry_ball_run",
+      "frame_index": 3,
+      "source": "sprites_runtime/goose/baby/female/red/carry_ball_run_03.png",
+      "sha256": "490943a0955b3c94e13785b0d5934a584d6788f7e2656861b258fe1476edbe43",
+      "source_size": [
+        80,
+        73
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 2.0,
+          "y": 1.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          59.06,
+          39.4
+        ]
+      }
+    },
+    {
+      "color": "red",
+      "family": "carry_ball_run",
+      "frame_index": 4,
+      "source": "sprites_runtime/goose/baby/female/red/carry_ball_run_04.png",
+      "sha256": "eb087b7ab283bb0c4499bf38a66093b839b79edeaf32cb5d6382c7ec4120324b",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 2.0,
+          "y": 1.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          56.06,
+          39.0
+        ]
+      }
+    },
+    {
+      "color": "red",
+      "family": "carry_ball_run",
+      "frame_index": 5,
+      "source": "sprites_runtime/goose/baby/female/red/carry_ball_run_05.png",
+      "sha256": "33723a81a497996b457feb133fb509ae7a98e7713ab0d42c8442421aefc5bbe2",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 2.0,
+          "y": 1.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          57.92,
+          36.4
+        ]
+      }
+    },
+    {
+      "color": "orange",
+      "family": "carry_ball_run",
+      "frame_index": 0,
+      "source": "sprites_runtime/goose/baby/female/orange/carry_ball_run_00.png",
+      "sha256": "19ff7feb3142997e8be86c134ff35cb2784705c1b23069f640161094f7f4f321",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 2.0,
+          "y": 1.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          56.79,
+          36.8
+        ]
+      }
+    },
+    {
+      "color": "orange",
+      "family": "carry_ball_run",
+      "frame_index": 1,
+      "source": "sprites_runtime/goose/baby/female/orange/carry_ball_run_01.png",
+      "sha256": "65ec1d3948a6632a0f2cf9e1716c96c085f758815b5c472776faa3bbdb00e823",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 2.0,
+          "y": 1.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          58.06,
+          37.0
+        ]
+      }
+    },
+    {
+      "color": "orange",
+      "family": "carry_ball_run",
+      "frame_index": 2,
+      "source": "sprites_runtime/goose/baby/female/orange/carry_ball_run_02.png",
+      "sha256": "0dccfefda4fdc7f5ca760f384e6dc0366a02a440886c9eb2b7f3e6b0b4503ce7",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 2.0,
+          "y": 1.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          60.06,
+          36.2
+        ]
+      }
+    },
+    {
+      "color": "orange",
+      "family": "carry_ball_run",
+      "frame_index": 3,
+      "source": "sprites_runtime/goose/baby/female/orange/carry_ball_run_03.png",
+      "sha256": "a0251668046c04594548a8603d9468488c1adb8fd3e8a9f6bf9d91377feb40c0",
+      "source_size": [
+        80,
+        73
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 2.0,
+          "y": 1.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          59.06,
+          39.4
+        ]
+      }
+    },
+    {
+      "color": "orange",
+      "family": "carry_ball_run",
+      "frame_index": 4,
+      "source": "sprites_runtime/goose/baby/female/orange/carry_ball_run_04.png",
+      "sha256": "b5a0608e07e7443d081fa53727b249b0457a61f179778f4a904b54021e08c8ae",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 2.0,
+          "y": 1.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          56.06,
+          39.0
+        ]
+      }
+    },
+    {
+      "color": "orange",
+      "family": "carry_ball_run",
+      "frame_index": 5,
+      "source": "sprites_runtime/goose/baby/female/orange/carry_ball_run_05.png",
+      "sha256": "29d875dc63bad6c5c1ba4e5d5e704c978e8c581f5b0d6b70ec6b9a51b47c540b",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 2.0,
+          "y": 1.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          57.92,
+          36.4
+        ]
+      }
+    },
+    {
+      "color": "yellow",
+      "family": "carry_ball_run",
+      "frame_index": 0,
+      "source": "sprites_runtime/goose/baby/female/yellow/carry_ball_run_00.png",
+      "sha256": "cf465c06ac614df9727eca6af8cd068d4b3d5c4f093ec6efdbfb5e5653284e52",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 2.0,
+          "y": 1.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          56.79,
+          36.8
+        ]
+      }
+    },
+    {
+      "color": "yellow",
+      "family": "carry_ball_run",
+      "frame_index": 1,
+      "source": "sprites_runtime/goose/baby/female/yellow/carry_ball_run_01.png",
+      "sha256": "c024f5bf1a3f15e12e3d748eeb0a3814fff55c4dcfae292e102952b6f3a730d6",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 2.0,
+          "y": 1.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          58.06,
+          37.0
+        ]
+      }
+    },
+    {
+      "color": "yellow",
+      "family": "carry_ball_run",
+      "frame_index": 2,
+      "source": "sprites_runtime/goose/baby/female/yellow/carry_ball_run_02.png",
+      "sha256": "f54b0aa5e2d63fa9293a2a34d716f177c12b2cc9c4a242f0f91a769b67ea1c84",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 2.0,
+          "y": 1.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          60.06,
+          36.2
+        ]
+      }
+    },
+    {
+      "color": "yellow",
+      "family": "carry_ball_run",
+      "frame_index": 3,
+      "source": "sprites_runtime/goose/baby/female/yellow/carry_ball_run_03.png",
+      "sha256": "51005ed846886e2a17b51efd8d4bd66dd3753d3c4f701d40f7b9effea6c7d9eb",
+      "source_size": [
+        80,
+        73
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 2.0,
+          "y": 1.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          59.06,
+          39.4
+        ]
+      }
+    },
+    {
+      "color": "yellow",
+      "family": "carry_ball_run",
+      "frame_index": 4,
+      "source": "sprites_runtime/goose/baby/female/yellow/carry_ball_run_04.png",
+      "sha256": "715c562ca60f18dc26e800a8b83d8f03253111871e12e2866b0523657061a0f1",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 2.0,
+          "y": 1.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          56.06,
+          39.0
+        ]
+      }
+    },
+    {
+      "color": "yellow",
+      "family": "carry_ball_run",
+      "frame_index": 5,
+      "source": "sprites_runtime/goose/baby/female/yellow/carry_ball_run_05.png",
+      "sha256": "35f1bc37bf6f14a0820424a1dd170b89042697c97c8a2cb2bd0e75859afe9f24",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 2.0,
+          "y": 1.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          57.92,
+          36.4
+        ]
+      }
+    },
+    {
+      "color": "blue",
+      "family": "carry_ball_run",
+      "frame_index": 0,
+      "source": "sprites_runtime/goose/baby/female/blue/carry_ball_run_00.png",
+      "sha256": "2683a8dbbbf36dd862528326d675f447821b8e7259ec2cd110a322237583a659",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 2.0,
+          "y": 1.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          56.79,
+          36.8
+        ]
+      }
+    },
+    {
+      "color": "blue",
+      "family": "carry_ball_run",
+      "frame_index": 1,
+      "source": "sprites_runtime/goose/baby/female/blue/carry_ball_run_01.png",
+      "sha256": "2db44c1fde69211e9e1efbdb57ce3fca2fc652d1273f14c4b3049d9f6c636bbb",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 2.0,
+          "y": 1.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          58.06,
+          37.0
+        ]
+      }
+    },
+    {
+      "color": "blue",
+      "family": "carry_ball_run",
+      "frame_index": 2,
+      "source": "sprites_runtime/goose/baby/female/blue/carry_ball_run_02.png",
+      "sha256": "74d71aaabb1bac8bbf9d39da9be51d2eea9a754a4631ae36f55e2a5ec4022469",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 2.0,
+          "y": 1.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          60.06,
+          36.2
+        ]
+      }
+    },
+    {
+      "color": "blue",
+      "family": "carry_ball_run",
+      "frame_index": 3,
+      "source": "sprites_runtime/goose/baby/female/blue/carry_ball_run_03.png",
+      "sha256": "8e308c230c2cb9d8bbf5d97a8dbabc3f8061ae45c5f6e73fcc85ba63922320b8",
+      "source_size": [
+        80,
+        73
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 2.0,
+          "y": 1.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          59.06,
+          39.4
+        ]
+      }
+    },
+    {
+      "color": "blue",
+      "family": "carry_ball_run",
+      "frame_index": 4,
+      "source": "sprites_runtime/goose/baby/female/blue/carry_ball_run_04.png",
+      "sha256": "1086c1bbac9f3efe92a42d737f4fe0ad802548c1b1fb57ae54b89383daa02ddf",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 2.0,
+          "y": 1.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          56.06,
+          39.0
+        ]
+      }
+    },
+    {
+      "color": "blue",
+      "family": "carry_ball_run",
+      "frame_index": 5,
+      "source": "sprites_runtime/goose/baby/female/blue/carry_ball_run_05.png",
+      "sha256": "5a0c4af9a23e2eae3def9fc30523dbb819bd89b0ea1141b828a70fa01d2bbeee",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 2.0,
+          "y": 1.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          57.92,
+          36.4
+        ]
+      }
+    },
+    {
+      "color": "indigo",
+      "family": "carry_ball_run",
+      "frame_index": 0,
+      "source": "sprites_runtime/goose/baby/female/indigo/carry_ball_run_00.png",
+      "sha256": "6edf34d5aa5d9282cdf549447bba48212dcc62839cb7b3e58c6d9f3623d9f207",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 2.0,
+          "y": 1.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          56.79,
+          36.8
+        ]
+      }
+    },
+    {
+      "color": "indigo",
+      "family": "carry_ball_run",
+      "frame_index": 1,
+      "source": "sprites_runtime/goose/baby/female/indigo/carry_ball_run_01.png",
+      "sha256": "e5255c1033cb38d291a48c00ba4fe284b8a9d30791aeda58f3353bb0b2c5f8e4",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 2.0,
+          "y": 1.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          58.06,
+          37.0
+        ]
+      }
+    },
+    {
+      "color": "indigo",
+      "family": "carry_ball_run",
+      "frame_index": 2,
+      "source": "sprites_runtime/goose/baby/female/indigo/carry_ball_run_02.png",
+      "sha256": "2525d496d9b0b572d22e0fa88faee623a2391b11881269d94b6c882cd9cf0376",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 2.0,
+          "y": 1.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          60.06,
+          36.2
+        ]
+      }
+    },
+    {
+      "color": "indigo",
+      "family": "carry_ball_run",
+      "frame_index": 3,
+      "source": "sprites_runtime/goose/baby/female/indigo/carry_ball_run_03.png",
+      "sha256": "1690fb2e8cb9370fd18d62cb0778515817b747b02e46e1b28da8c93f77c866de",
+      "source_size": [
+        80,
+        73
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 2.0,
+          "y": 1.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          59.06,
+          39.4
+        ]
+      }
+    },
+    {
+      "color": "indigo",
+      "family": "carry_ball_run",
+      "frame_index": 4,
+      "source": "sprites_runtime/goose/baby/female/indigo/carry_ball_run_04.png",
+      "sha256": "6fed03b0c41e74d1cd38e426a094078ae9f44ac0d6935f1bb120957d771c82f2",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 2.0,
+          "y": 1.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          56.06,
+          39.0
+        ]
+      }
+    },
+    {
+      "color": "indigo",
+      "family": "carry_ball_run",
+      "frame_index": 5,
+      "source": "sprites_runtime/goose/baby/female/indigo/carry_ball_run_05.png",
+      "sha256": "457fb6e44d738aeb099172e1f6be63efa78eb1ed81cbc0496efd49566ec212c5",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 2.0,
+          "y": 1.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          57.92,
+          36.4
+        ]
+      }
+    },
+    {
+      "color": "violet",
+      "family": "carry_ball_run",
+      "frame_index": 0,
+      "source": "sprites_runtime/goose/baby/female/violet/carry_ball_run_00.png",
+      "sha256": "0f103c0cfff6bf9f740149445f199a9fb35424da11a432c76c82117909918a2c",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 2.0,
+          "y": 1.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          56.79,
+          36.8
+        ]
+      }
+    },
+    {
+      "color": "violet",
+      "family": "carry_ball_run",
+      "frame_index": 1,
+      "source": "sprites_runtime/goose/baby/female/violet/carry_ball_run_01.png",
+      "sha256": "4258821377d0a1dade8282b29940614a3915caf1ecaaa00a4303d03d11eee7bb",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 2.0,
+          "y": 1.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          58.06,
+          37.0
+        ]
+      }
+    },
+    {
+      "color": "violet",
+      "family": "carry_ball_run",
+      "frame_index": 2,
+      "source": "sprites_runtime/goose/baby/female/violet/carry_ball_run_02.png",
+      "sha256": "8fa35e990b985795c825d3ffac036794e7d2d05eb6967301f54296ea67c7b9af",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 2.0,
+          "y": 1.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          60.06,
+          36.2
+        ]
+      }
+    },
+    {
+      "color": "violet",
+      "family": "carry_ball_run",
+      "frame_index": 3,
+      "source": "sprites_runtime/goose/baby/female/violet/carry_ball_run_03.png",
+      "sha256": "1a334a2a67409e503c95ac6bac0e87a2648a6005551778c1b8c2e2a3b446b072",
+      "source_size": [
+        80,
+        73
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 2.0,
+          "y": 1.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          59.06,
+          39.4
+        ]
+      }
+    },
+    {
+      "color": "violet",
+      "family": "carry_ball_run",
+      "frame_index": 4,
+      "source": "sprites_runtime/goose/baby/female/violet/carry_ball_run_04.png",
+      "sha256": "a211c306818bb96421df5595b4f9aa7f66746221b760c1c69f531125b7eb5488",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 2.0,
+          "y": 1.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          56.06,
+          39.0
+        ]
+      }
+    },
+    {
+      "color": "violet",
+      "family": "carry_ball_run",
+      "frame_index": 5,
+      "source": "sprites_runtime/goose/baby/female/violet/carry_ball_run_05.png",
+      "sha256": "33b51485ef983c9987c57e708ddc6bb19a6b834e556635a1947d45b55bfffca8",
+      "source_size": [
+        80,
+        72
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.865,
+          "y": 0.4
+        },
+        "offset_px": {
+          "x": 2.0,
+          "y": 1.0
+        },
+        "source_scale": 0.426,
+        "offline_render_scale": 0.45,
+        "z_index": 12,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          57.92,
+          36.4
+        ]
+      }
+    }
+  ],
+  "blue_drop_compare": [
+    {
+      "status": "runtime_current",
+      "frame_index": 0,
+      "source": "sprites_runtime/goose/baby/female/blue/drop_ball_00.png",
+      "sha256": "1141da61a8b91ae60c2f31fc91e9e5903308e71805037f401cbade8d52a64381",
+      "source_size": [
+        119,
+        112
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          68.94,
+          87.2
+        ]
+      }
+    },
+    {
+      "status": "runtime_current",
+      "frame_index": 1,
+      "source": "sprites_runtime/goose/baby/female/blue/drop_ball_01.png",
+      "sha256": "20e9044d7a38200092bf4522c889ccbf51bd07c5300724896483235d57d6ace3",
+      "source_size": [
+        83,
+        113
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          47.88,
+          88.0
+        ]
+      }
+    },
+    {
+      "status": "runtime_current",
+      "frame_index": 2,
+      "source": "sprites_runtime/goose/baby/female/blue/drop_ball_02.png",
+      "sha256": "de50c4aa25716b36bc553cf26f38662d79f72179ce5cc74be292e293f5795029",
+      "source_size": [
+        45,
+        87
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          25.64,
+          67.2
+        ]
+      }
+    },
+    {
+      "status": "runtime_current",
+      "frame_index": 3,
+      "source": "sprites_runtime/goose/baby/female/blue/drop_ball_03.png",
+      "sha256": "509cd3b9a9d1ef7deccd6c75df96c9c59f0374b2cce2cc1ca0921874df1d288a",
+      "source_size": [
+        78,
+        114
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          44.95,
+          88.8
+        ]
+      }
+    },
+    {
+      "status": "pending_candidate",
+      "frame_index": 0,
+      "source": "vnext/artifacts/animation-runs/20260505-goose-baby-female-blue-drop-ball-candidate/candidate-frames/drop_ball_00.png",
+      "sha256": "859ea85f5a36325f7cc0e15a1e945bc040feef8d1a7eb5178ee46ddf55b6760a",
+      "source_size": [
+        60,
+        59
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          33.74,
+          45.2
+        ]
+      }
+    },
+    {
+      "status": "pending_candidate",
+      "frame_index": 1,
+      "source": "vnext/artifacts/animation-runs/20260505-goose-baby-female-blue-drop-ball-candidate/candidate-frames/drop_ball_01.png",
+      "sha256": "bfff0487cb5a219c84e74cd10b5f702b140434ba3b7b3fdf158e655f1912aa18",
+      "source_size": [
+        101,
+        125
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          58.4,
+          97.6
+        ]
+      }
+    },
+    {
+      "status": "pending_candidate",
+      "frame_index": 2,
+      "source": "vnext/artifacts/animation-runs/20260505-goose-baby-female-blue-drop-ball-candidate/candidate-frames/drop_ball_02.png",
+      "sha256": "3876b02396cbd34d2ff8f9ba36c8804dd3551fe7c71a326da404a037d54828a6",
+      "source_size": [
+        101,
+        123
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          58.4,
+          96.0
+        ]
+      }
+    },
+    {
+      "status": "pending_candidate",
+      "frame_index": 3,
+      "source": "vnext/artifacts/animation-runs/20260505-goose-baby-female-blue-drop-ball-candidate/candidate-frames/drop_ball_03.png",
+      "sha256": "b5e59670bb5326177c07238720f49fc8d6059a1cac008dcee4b96bb5b996e7a2",
+      "source_size": [
+        102,
+        125
+      ],
+      "overlay": {
+        "anchor_norm": {
+          "x": 0.585,
+          "y": 0.8
+        },
+        "offset_px": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "source_scale": 0.392,
+        "offline_render_scale": 0.45,
+        "z_index": 11,
+        "ball_size_px": [
+          16,
+          17
+        ],
+        "anchor_center_px": [
+          58.99,
+          97.6
+        ]
+      }
+    }
+  ],
+  "notes": [
+    "This packet writes review artifacts only and does not mutate runtime/source PNGs.",
+    "Ball is composited only into QA sheets; no PNG frame contains baked ball edits.",
+    "Code-side owns actual Godot packaged apply/proof/rollback for blue drop_ball.",
+    "All six goose baby female colors use the same ball anchor metadata values for this target row."
+  ]
+}

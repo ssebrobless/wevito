@@ -1,0 +1,257 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-05-05T00:00:00",
+  "status": "review_only_not_applied",
+  "target": "goose/baby/female/blue",
+  "families": [
+    "pickup_ball",
+    "drop_ball",
+    "carry_ball_walk",
+    "carry_ball_run"
+  ],
+  "ball_policy": "runtime_overlay_only_not_baked",
+  "accepted_endpoint_reference": "sprites_runtime/goose/baby/female/blue/hold_ball_00..03",
+  "family_decisions": {
+    "pickup_ball": "use_current_runtime_row_for_first_proof; visually coherent with ground overlay",
+    "drop_ball": "use_new_candidate; current runtime row has partial sliced frames",
+    "carry_ball_walk": "use_current_runtime_row_for_first proof; visually coherent with hold overlay",
+    "carry_ball_run": "use_current_runtime_row_for_first proof; visually coherent with hold overlay"
+  },
+  "records": [
+    {
+      "family": "pickup_ball",
+      "frame_index": 0,
+      "source": "sprites_runtime/goose/baby/female/blue/pickup_ball_00.png",
+      "candidate_copy": "vnext/artifacts/animation-runs/20260505-goose-baby-female-blue-optional-expansion-review/candidate-frames/pickup_ball/pickup_ball_00.png",
+      "sha256": "bfff0487cb5a219c84e74cd10b5f702b140434ba3b7b3fdf158e655f1912aa18",
+      "size": [
+        101,
+        125
+      ]
+    },
+    {
+      "family": "pickup_ball",
+      "frame_index": 1,
+      "source": "sprites_runtime/goose/baby/female/blue/pickup_ball_01.png",
+      "candidate_copy": "vnext/artifacts/animation-runs/20260505-goose-baby-female-blue-optional-expansion-review/candidate-frames/pickup_ball/pickup_ball_01.png",
+      "sha256": "717396e4afef73cbd6e825c387f7b4aeccd3b32387ffa15ccaf74d33fa0f3269",
+      "size": [
+        100,
+        120
+      ]
+    },
+    {
+      "family": "pickup_ball",
+      "frame_index": 2,
+      "source": "sprites_runtime/goose/baby/female/blue/pickup_ball_02.png",
+      "candidate_copy": "vnext/artifacts/animation-runs/20260505-goose-baby-female-blue-optional-expansion-review/candidate-frames/pickup_ball/pickup_ball_02.png",
+      "sha256": "3876b02396cbd34d2ff8f9ba36c8804dd3551fe7c71a326da404a037d54828a6",
+      "size": [
+        101,
+        123
+      ]
+    },
+    {
+      "family": "pickup_ball",
+      "frame_index": 3,
+      "source": "sprites_runtime/goose/baby/female/blue/pickup_ball_03.png",
+      "candidate_copy": "vnext/artifacts/animation-runs/20260505-goose-baby-female-blue-optional-expansion-review/candidate-frames/pickup_ball/pickup_ball_03.png",
+      "sha256": "b5e59670bb5326177c07238720f49fc8d6059a1cac008dcee4b96bb5b996e7a2",
+      "size": [
+        102,
+        125
+      ]
+    },
+    {
+      "family": "drop_ball",
+      "frame_index": 0,
+      "source": "vnext/artifacts/animation-runs/20260505-goose-baby-female-blue-drop-ball-candidate/candidate-frames/drop_ball_00.png",
+      "candidate_copy": "vnext/artifacts/animation-runs/20260505-goose-baby-female-blue-optional-expansion-review/candidate-frames/drop_ball/drop_ball_00.png",
+      "sha256": "859ea85f5a36325f7cc0e15a1e945bc040feef8d1a7eb5178ee46ddf55b6760a",
+      "size": [
+        60,
+        59
+      ]
+    },
+    {
+      "family": "drop_ball",
+      "frame_index": 1,
+      "source": "vnext/artifacts/animation-runs/20260505-goose-baby-female-blue-drop-ball-candidate/candidate-frames/drop_ball_01.png",
+      "candidate_copy": "vnext/artifacts/animation-runs/20260505-goose-baby-female-blue-optional-expansion-review/candidate-frames/drop_ball/drop_ball_01.png",
+      "sha256": "bfff0487cb5a219c84e74cd10b5f702b140434ba3b7b3fdf158e655f1912aa18",
+      "size": [
+        101,
+        125
+      ]
+    },
+    {
+      "family": "drop_ball",
+      "frame_index": 2,
+      "source": "vnext/artifacts/animation-runs/20260505-goose-baby-female-blue-drop-ball-candidate/candidate-frames/drop_ball_02.png",
+      "candidate_copy": "vnext/artifacts/animation-runs/20260505-goose-baby-female-blue-optional-expansion-review/candidate-frames/drop_ball/drop_ball_02.png",
+      "sha256": "3876b02396cbd34d2ff8f9ba36c8804dd3551fe7c71a326da404a037d54828a6",
+      "size": [
+        101,
+        123
+      ]
+    },
+    {
+      "family": "drop_ball",
+      "frame_index": 3,
+      "source": "vnext/artifacts/animation-runs/20260505-goose-baby-female-blue-drop-ball-candidate/candidate-frames/drop_ball_03.png",
+      "candidate_copy": "vnext/artifacts/animation-runs/20260505-goose-baby-female-blue-optional-expansion-review/candidate-frames/drop_ball/drop_ball_03.png",
+      "sha256": "b5e59670bb5326177c07238720f49fc8d6059a1cac008dcee4b96bb5b996e7a2",
+      "size": [
+        102,
+        125
+      ]
+    },
+    {
+      "family": "carry_ball_walk",
+      "frame_index": 0,
+      "source": "sprites_runtime/goose/baby/female/blue/carry_ball_walk_00.png",
+      "candidate_copy": "vnext/artifacts/animation-runs/20260505-goose-baby-female-blue-optional-expansion-review/candidate-frames/carry_ball_walk/carry_ball_walk_00.png",
+      "sha256": "4b6c113c55d14592a2e29bbd8e5ce339c084daf9d1e98ff389ef03248ee6ba18",
+      "size": [
+        80,
+        72
+      ]
+    },
+    {
+      "family": "carry_ball_walk",
+      "frame_index": 1,
+      "source": "sprites_runtime/goose/baby/female/blue/carry_ball_walk_01.png",
+      "candidate_copy": "vnext/artifacts/animation-runs/20260505-goose-baby-female-blue-optional-expansion-review/candidate-frames/carry_ball_walk/carry_ball_walk_01.png",
+      "sha256": "0866fd671462ca006eb7a34a2321a609a7fade17ecf8f42f7910d2d2aaa93be5",
+      "size": [
+        80,
+        72
+      ]
+    },
+    {
+      "family": "carry_ball_walk",
+      "frame_index": 2,
+      "source": "sprites_runtime/goose/baby/female/blue/carry_ball_walk_02.png",
+      "candidate_copy": "vnext/artifacts/animation-runs/20260505-goose-baby-female-blue-optional-expansion-review/candidate-frames/carry_ball_walk/carry_ball_walk_02.png",
+      "sha256": "0ce8d962a97db0d7651318d59cadb2e47ead178044007324b53db00741f586e9",
+      "size": [
+        80,
+        72
+      ]
+    },
+    {
+      "family": "carry_ball_walk",
+      "frame_index": 3,
+      "source": "sprites_runtime/goose/baby/female/blue/carry_ball_walk_03.png",
+      "candidate_copy": "vnext/artifacts/animation-runs/20260505-goose-baby-female-blue-optional-expansion-review/candidate-frames/carry_ball_walk/carry_ball_walk_03.png",
+      "sha256": "db239085270b394ff4fd918c8f029fbe1a595d1c2a592fb66dbc9b038f41dd22",
+      "size": [
+        80,
+        73
+      ]
+    },
+    {
+      "family": "carry_ball_walk",
+      "frame_index": 4,
+      "source": "sprites_runtime/goose/baby/female/blue/carry_ball_walk_04.png",
+      "candidate_copy": "vnext/artifacts/animation-runs/20260505-goose-baby-female-blue-optional-expansion-review/candidate-frames/carry_ball_walk/carry_ball_walk_04.png",
+      "sha256": "bf6b9db7e473c95154ea87dfad18d653b4ce3ac49e268b1c320066bbe004788d",
+      "size": [
+        80,
+        72
+      ]
+    },
+    {
+      "family": "carry_ball_walk",
+      "frame_index": 5,
+      "source": "sprites_runtime/goose/baby/female/blue/carry_ball_walk_05.png",
+      "candidate_copy": "vnext/artifacts/animation-runs/20260505-goose-baby-female-blue-optional-expansion-review/candidate-frames/carry_ball_walk/carry_ball_walk_05.png",
+      "sha256": "878208e8e2f7b53b27c7004633e3894ebc7ed50b568934ac71c0f026d27d0a32",
+      "size": [
+        80,
+        72
+      ]
+    },
+    {
+      "family": "carry_ball_run",
+      "frame_index": 0,
+      "source": "sprites_runtime/goose/baby/female/blue/carry_ball_run_00.png",
+      "candidate_copy": "vnext/artifacts/animation-runs/20260505-goose-baby-female-blue-optional-expansion-review/candidate-frames/carry_ball_run/carry_ball_run_00.png",
+      "sha256": "2683a8dbbbf36dd862528326d675f447821b8e7259ec2cd110a322237583a659",
+      "size": [
+        80,
+        72
+      ]
+    },
+    {
+      "family": "carry_ball_run",
+      "frame_index": 1,
+      "source": "sprites_runtime/goose/baby/female/blue/carry_ball_run_01.png",
+      "candidate_copy": "vnext/artifacts/animation-runs/20260505-goose-baby-female-blue-optional-expansion-review/candidate-frames/carry_ball_run/carry_ball_run_01.png",
+      "sha256": "2db44c1fde69211e9e1efbdb57ce3fca2fc652d1273f14c4b3049d9f6c636bbb",
+      "size": [
+        80,
+        72
+      ]
+    },
+    {
+      "family": "carry_ball_run",
+      "frame_index": 2,
+      "source": "sprites_runtime/goose/baby/female/blue/carry_ball_run_02.png",
+      "candidate_copy": "vnext/artifacts/animation-runs/20260505-goose-baby-female-blue-optional-expansion-review/candidate-frames/carry_ball_run/carry_ball_run_02.png",
+      "sha256": "74d71aaabb1bac8bbf9d39da9be51d2eea9a754a4631ae36f55e2a5ec4022469",
+      "size": [
+        80,
+        72
+      ]
+    },
+    {
+      "family": "carry_ball_run",
+      "frame_index": 3,
+      "source": "sprites_runtime/goose/baby/female/blue/carry_ball_run_03.png",
+      "candidate_copy": "vnext/artifacts/animation-runs/20260505-goose-baby-female-blue-optional-expansion-review/candidate-frames/carry_ball_run/carry_ball_run_03.png",
+      "sha256": "8e308c230c2cb9d8bbf5d97a8dbabc3f8061ae45c5f6e73fcc85ba63922320b8",
+      "size": [
+        80,
+        73
+      ]
+    },
+    {
+      "family": "carry_ball_run",
+      "frame_index": 4,
+      "source": "sprites_runtime/goose/baby/female/blue/carry_ball_run_04.png",
+      "candidate_copy": "vnext/artifacts/animation-runs/20260505-goose-baby-female-blue-optional-expansion-review/candidate-frames/carry_ball_run/carry_ball_run_04.png",
+      "sha256": "1086c1bbac9f3efe92a42d737f4fe0ad802548c1b1fb57ae54b89383daa02ddf",
+      "size": [
+        80,
+        72
+      ]
+    },
+    {
+      "family": "carry_ball_run",
+      "frame_index": 5,
+      "source": "sprites_runtime/goose/baby/female/blue/carry_ball_run_05.png",
+      "candidate_copy": "vnext/artifacts/animation-runs/20260505-goose-baby-female-blue-optional-expansion-review/candidate-frames/carry_ball_run/carry_ball_run_05.png",
+      "sha256": "5a0c4af9a23e2eae3def9fc30523dbb819bd89b0ea1141b828a70fa01d2bbeee",
+      "size": [
+        80,
+        72
+      ]
+    }
+  ],
+  "qa": {
+    "review_sheet": "vnext/artifacts/animation-runs/20260505-goose-baby-female-blue-optional-expansion-review/qa/optional-expansion-candidate-review-sheet.png",
+    "previews": {
+      "pickup_ball": "vnext/artifacts/animation-runs/20260505-goose-baby-female-blue-optional-expansion-review/qa/pickup_ball-candidate-preview.gif",
+      "drop_ball": "vnext/artifacts/animation-runs/20260505-goose-baby-female-blue-optional-expansion-review/qa/drop_ball-candidate-preview.gif",
+      "carry_ball_walk": "vnext/artifacts/animation-runs/20260505-goose-baby-female-blue-optional-expansion-review/qa/carry_ball_walk-candidate-preview.gif",
+      "carry_ball_run": "vnext/artifacts/animation-runs/20260505-goose-baby-female-blue-optional-expansion-review/qa/carry_ball_run-candidate-preview.gif"
+    }
+  },
+  "notes": [
+    "No runtime PNGs were modified by this review packet.",
+    "Drop candidate is sourced from existing full-body goose frames and fixes the current broken partial-slice drop row.",
+    "Pickup/carry rows are copied from current runtime for review/proof because they already read coherently with runtime overlay.",
+    "Ball remains a runtime overlay only."
+  ]
+}

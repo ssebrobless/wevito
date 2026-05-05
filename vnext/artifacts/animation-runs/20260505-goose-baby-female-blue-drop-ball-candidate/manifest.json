@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-05-05T00:00:00",
+  "status": "review_only_not_applied",
+  "target": {
+    "species": "goose",
+    "age": "baby",
+    "gender": "female",
+    "color": "blue",
+    "family": "drop_ball"
+  },
+  "candidate_frame_count": 4,
+  "ball_policy": "runtime_overlay_only_not_baked",
+  "runtime_overlay_anchor": {
+    "anchor_norm": {
+      "x": 0.585,
+      "y": 0.8
+    },
+    "scale": 0.392,
+    "z_index": 11
+  },
+  "accepted_endpoint_reference": "sprites_runtime/goose/baby/female/blue/hold_ball_00..03",
+  "records": [
+    {
+      "target_frame": "vnext/artifacts/animation-runs/20260505-goose-baby-female-blue-drop-ball-candidate/candidate-frames/drop_ball_00.png",
+      "source_frame": "sprites_runtime/goose/baby/female/blue/hold_ball_03.png",
+      "note": "release pose from accepted hold endpoint",
+      "sha256": "859ea85f5a36325f7cc0e15a1e945bc040feef8d1a7eb5178ee46ddf55b6760a",
+      "size": [
+        60,
+        59
+      ]
+    },
+    {
+      "target_frame": "vnext/artifacts/animation-runs/20260505-goose-baby-female-blue-drop-ball-candidate/candidate-frames/drop_ball_01.png",
+      "source_frame": "sprites_runtime/goose/baby/female/blue/play_ball_00.png",
+      "note": "turn toward ground ball",
+      "sha256": "bfff0487cb5a219c84e74cd10b5f702b140434ba3b7b3fdf158e655f1912aa18",
+      "size": [
+        101,
+        125
+      ]
+    },
+    {
+      "target_frame": "vnext/artifacts/animation-runs/20260505-goose-baby-female-blue-drop-ball-candidate/candidate-frames/drop_ball_02.png",
+      "source_frame": "sprites_runtime/goose/baby/female/blue/play_ball_02.png",
+      "note": "ground/attention frame replacing broken slice",
+      "sha256": "3876b02396cbd34d2ff8f9ba36c8804dd3551fe7c71a326da404a037d54828a6",
+      "size": [
+        101,
+        123
+      ]
+    },
+    {
+      "target_frame": "vnext/artifacts/animation-runs/20260505-goose-baby-female-blue-drop-ball-candidate/candidate-frames/drop_ball_03.png",
+      "source_frame": "sprites_runtime/goose/baby/female/blue/pickup_ball_03.png",
+      "note": "settle from drop transition",
+      "sha256": "b5e59670bb5326177c07238720f49fc8d6059a1cac008dcee4b96bb5b996e7a2",
+      "size": [
+        102,
+        125
+      ]
+    }
+  ],
+  "qa": {
+    "contact_sheet": "vnext/artifacts/animation-runs/20260505-goose-baby-female-blue-drop-ball-candidate/qa/drop-ball-current-vs-candidate-contact-sheet.png",
+    "preview_gif": "vnext/artifacts/animation-runs/20260505-goose-baby-female-blue-drop-ball-candidate/qa/drop-ball-candidate-preview.gif"
+  },
+  "notes": [
+    "Candidate replaces visibly broken current drop_ball partial-slice frames with full-body existing goose frames.",
+    "No runtime PNGs were modified.",
+    "Candidate uses existing accepted/runtime frames as sources; no new generation was used.",
+    "Ball remains runtime overlay only."
+  ]
+}
