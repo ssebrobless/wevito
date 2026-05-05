@@ -1,0 +1,49 @@
+{
+  "run": "20260505-claude-design-screenshot-index",
+  "created": "2026-05-05T19:05:03",
+  "source_folder": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\design\\phase1b-claude-design\\observed-render-20260505",
+  "outputs": [
+    {
+      "number": "01",
+      "title": "Sprite Workflow V2",
+      "source": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\design\\phase1b-claude-design\\observed-render-20260505\\01-sprite-workflow-v2-console-visible.png",
+      "target_surface": "Separate workbench / workflow app",
+      "native_size": [
+        1920,
+        1080
+      ]
+    },
+    {
+      "number": "02",
+      "title": "Pet Command Bar",
+      "source": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\design\\phase1b-claude-design\\observed-render-20260505\\02-pet-command-bar-and-learning-lab-start.png",
+      "target_surface": "PET TASKS popup / helper strip",
+      "native_size": [
+        1920,
+        1080
+      ]
+    },
+    {
+      "number": "03",
+      "title": "Creative Learning Lab",
+      "source": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\design\\phase1b-claude-design\\observed-render-20260505\\03-creative-learning-lab-and-handoff-start.png",
+      "target_surface": "Future read-only review dashboard",
+      "native_size": [
+        1920,
+        1080
+      ]
+    },
+    {
+      "number": "04",
+      "title": "Implementation Handoff Notes",
+      "source": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\design\\phase1b-claude-design\\observed-render-20260505\\04-implementation-handoff-notes-visible.png",
+      "target_surface": "Cross-thread ownership docs",
+      "native_size": [
+        1920,
+        1080
+      ]
+    }
+  ],
+  "mutation": "none",
+  "contact_sheet": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\design\\phase1b-claude-design\\screenshot-index-20260505\\claude-design-phase1b-screenshot-index.png"
+}

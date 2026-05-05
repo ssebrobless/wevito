@@ -25,6 +25,8 @@ cleanup campaign
   |     +-- tight-cropped moon sprites
   |     +-- pet runtime tiny-speck cleanup
   |     +-- pet runtime raccoon drink bar cleanup
+  |     +-- source shared asset durability sync
+  |     +-- all-animal color variant coverage atlas
   |
   +-- classified, do not scrub automatically
   |     +-- rat drink_01 examples
@@ -58,6 +60,7 @@ cleanup campaign
 | `sprites_runtime/**/*.png` safe tiny-noise set | Removed tiny detached specks from 258 pet runtime frames. | Zero safe tiny-noise candidates remain across 23,040 runtime frames. |
 | `sprites_runtime/raccoon/*/male/*/drink_00..03.png` bar set | Removed thin detached top bars from 48 raccoon male drink frames. | Zero thin top-bar candidates remain. |
 | `sprites_runtime/**/*.png` substantial component flags | Reviewed and classified the remaining 642 substantial detached-component frames. | Resolved as intentional body/action/prop silhouette exceptions; no additional automatic cleanup recommended. |
+| `sprites/celestial`, `sprites/environment`, `sprites/icons`, `sprites/items`, `sprites/status` flagged source shared assets | Backed up dirty source-side shared assets and synced 94 matching files from already-cleaned `sprites_shared_runtime` counterparts. | Priority source shared flags dropped from 96 to 4 reviewed tight-but-clean source shapes; runtime files unchanged. |
 
 ## Habitat Prop Classification
 
@@ -191,6 +194,22 @@ vnext/artifacts/visual-review/20260505-pet-runtime-source-aware-cleanup/
   +-- pet-runtime-final-audit.json
   +-- qa/pet-runtime-final-substantial-detached-review-sheet.png
   +-- substantial-flag-classification/
+
+vnext/artifacts/visual-review/20260505-source-shared-cleanup-audit/
+  +-- source-shared-cleanup-audit.md
+  +-- source-shared-cleanup-audit.json
+  +-- qa/source-shared-all-flags.png
+  +-- qa/source-shared-priority-flags.png
+
+vnext/artifacts/visual-review/20260505-source-shared-runtime-sync-cleanup/
+  +-- backup-before-sync/
+  +-- runtime-source-copies/
+  +-- qa/source-shared-sync-before-after.png
+  +-- manifest.json
+  +-- run-summary.md
+  +-- post-sync-audit.md
+  +-- post-sync-audit.json
+  +-- qa/source-shared-sync-post-remaining-flags.png
 ```
 
 ## Deferred / Not Applied
@@ -481,6 +500,122 @@ proof type: offline visual approximation, not packaged Godot proof
 
 The overlay packet is for visual planning only. Code-side still owns the real
 Godot apply/proof/rollback for blue `drop_ball`.
+
+## Source Shared Asset Durability Sync
+
+Source cleanup doc:
+
+```text
+docs/WEVITO_SOURCE_SHARED_ASSET_CLEANUP_2026-05-05.md
+```
+
+Result:
+
+```text
+source shared PNGs audited: 559
+priority non-portrait source flags before sync: 96
+source shared files synced from cleaned runtime counterparts: 94
+remaining post-sync flags: 4
+runtime files changed: 0
+protected goose hold/drop rows changed: 0
+```
+
+Remaining post-sync flags are tight-but-clean source shapes:
+
+```text
+sprites/icons/exercise.png
+sprites/icons/memoriam.png
+sprites/icons/water.png
+sprites/egg/egg_04.png
+```
+
+They are not confirmed dirt and should not be redrawn without a specific UI
+problem.
+
+## All-Animal Color Variant Coverage
+
+Coverage doc:
+
+```text
+docs/WEVITO_ALL_ANIMAL_COLOR_VARIANT_COVERAGE_2026-05-05.md
+```
+
+Artifact packet:
+
+```text
+vnext/artifacts/visual-review/20260505-all-animal-color-variant-coverage/
+  +-- color-variant-coverage.json
+  +-- color-variant-coverage.md
+  +-- qa/
+```
+
+Result:
+
+```text
+runtime/source mutation: no
+expected runtime color folders: 360
+actual runtime color folders: 360
+missing runtime color folders: 0
+frame count errors: 0
+portrait variants in sprites_shared_runtime: 420 / 420
+portrait variants in sprites: 420 / 420
+QA sheets generated: 130
+```
+
+Conclusion: the six color variants already exist structurally for all animals.
+The next color-variant task is visual quality review, not creating missing
+folders.
+
+Follow-up legacy folder fill:
+
+```text
+vnext/artifacts/visual-review/20260505-legacy-sprites-rat-orange-male-fill/
+  +-- manifest.json
+  +-- run-summary.md
+```
+
+Result:
+
+```text
+sprites_runtime:            360 / 360 color folders
+sprites_authored:           360 / 360 color folders
+sprites_authored_verified:  360 / 360 color folders
+sprites:                    360 / 360 color folders
+```
+
+The only missing legacy folders were:
+
+```text
+sprites/rat/baby/male/orange
+sprites/rat/teen/male/orange
+sprites/rat/adult/male/orange
+```
+
+They were filled from the matching `sprites_authored` rows. Runtime files were
+not touched.
+
+## Code-Side Readiness Reconciliation
+
+Latest reconciliation doc:
+
+```text
+docs/VISUAL_SIDE_CODE_READINESS_RECONCILIATION_2026-05-05.md
+```
+
+Current code-side status from the handoff:
+
+```text
+PET TASKS: live report-only helper surface
+spriteAudit: non-mutating markdown/JSON report mode
+PET TASKS contact sheets: deferred
+vNext tests: 79 / 79 pass in code-side worktree
+action/tool probe: passed in code-side worktree
+safe build rule: use -SkipAssetPrep
+```
+
+Do not use PET TASKS for mutation/import/generation/proof/apply work. The
+manual `goose / baby / female / blue / drop_ball` apply/proof remains
+code-side-owned and outside PET TASKS.
 
 ## Next Cleanup Queue
 

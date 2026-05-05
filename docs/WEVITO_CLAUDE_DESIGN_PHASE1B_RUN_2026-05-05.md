@@ -2,7 +2,7 @@
 
 Date: 2026-05-05
 
-Status: blocked by Claude Design weekly usage limit before a verified render could be produced.
+Status: preview recovered after usage reset; all four Phase 1B examples were observed rendering in the Claude Design canvas.
 
 ## Shape
 
@@ -78,6 +78,32 @@ You've hit your Claude Design weekly limit.
 
 The UI said the limit resets at `12:00 PM`.
 
+After the usage reset, the same Claude Design project rendered the prototype canvas successfully. The observed canvas includes:
+
+- `01 - Sprite Workflow V2 - One-Screen Console`
+- `02 - Pet Command Bar + Three Helpers`
+- `03 - Creative Learning Lab`
+- `04 - Implementation Handoff Notes`
+
+Observed screenshots were saved under:
+
+```text
+C:\Users\fishe\Documents\projects\wevito\vnext\artifacts\design\phase1b-claude-design\observed-render-20260505\
+```
+
+A compact screenshot index and approval map are recorded in:
+
+```text
+C:\Users\fishe\Documents\projects\wevito\docs\WEVITO_CLAUDE_DESIGN_SCREENSHOT_INDEX_2026-05-05.md
+C:\Users\fishe\Documents\projects\wevito\vnext\artifacts\design\phase1b-claude-design\screenshot-index-20260505\
+```
+
+Integration planning based on the rendered examples is recorded in:
+
+```text
+C:\Users\fishe\Documents\projects\wevito\docs\WEVITO_CLAUDE_DESIGN_OVERLAY_INTEGRATION_PLAN_2026-05-05.md
+```
+
 ## Artifact
 
 Captured blocker screenshot:
@@ -98,12 +124,19 @@ Captured blocker screenshot:
 - Claude Design spent usage repairing the preview rather than reaching a verified artifact.
 - The final repair pass was interrupted by the Claude Design weekly limit.
 
-## Next Step After Limit Reset
+## What Changed After Reset
 
-Resume inside the same Claude Design project and ask:
+- The prototype rendered after the reset.
+- The four requested artboards are present.
+- The result is useful as a visual/design reference.
+- The implementation decision is to preserve the current living desktop-pet overlay and treat Claude's larger panels as summoned tool surfaces or workbenches.
+
+## Optional Next Step If Reopened
+
+The preview is now usable as reference material. If the Claude Design project is reopened later, the next useful request is cleaner export material, not more architecture:
 
 ```text
-Continue repairing the Wevito Phase 1B prototype from the latest state. The previous preview failed with "unconditional drop overload", and the repair was interrupted by the Claude Design weekly limit. Please produce the simplest working preview first, even if that means reducing decorative complexity. Keep the four required artboards: Sprite Workflow V2 console, Pet Command Bar with Bean/Pip/Nix, Creative Learning Lab, and Implementation Handoff Notes. Verify that the preview renders before adding more detail.
+Please export or present cleaner full-artboard views for the four rendered Wevito Phase 1B examples: Sprite Workflow V2 console, Pet Command Bar with three helpers, Creative Learning Lab, and Implementation Handoff Notes. Preserve the current visual direction, but do not add new architecture or mutation workflows.
 ```
 
 ## Code-Side Recommendation
@@ -114,5 +147,4 @@ Near-term safe code-side work remains:
 
 - Implement the contract/schema surfaces from `WEVITO_PHASE1_CONTRACT_OWNERSHIP_PLAN_2026-05-05.md`.
 - Keep asset/runtime mutation paused unless explicitly approved.
-- Use the Claude Design output later as UI inspiration only after the preview renders successfully.
-
+- Use the Claude Design output as UI inspiration only. The rendered prototype is visual reference, not implementation truth.

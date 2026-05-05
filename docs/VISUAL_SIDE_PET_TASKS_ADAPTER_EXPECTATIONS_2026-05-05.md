@@ -271,3 +271,21 @@ localDocs preview adapter: visually safe
 spriteAudit preview adapter: visually safe
 next dry-run dispatcher: visually safe if it remains preview/report-only
 ```
+
+## Phase 17/18 Readiness Reconciliation
+
+Latest visual-side reconciliation:
+
+```text
+docs\VISUAL_SIDE_CODE_READINESS_RECONCILIATION_2026-05-05.md
+```
+
+Updated result:
+
+```text
+PET TASKS live UI probe: passed in code-side worktree
+spriteAudit report mode: live and non-mutating
+contact sheets from PET TASKS: still deferred
+build safety rule: use build-vnext.ps1 with -SkipAssetPrep
+goose drop_ball apply/proof: still manual and outside PET TASKS
+```

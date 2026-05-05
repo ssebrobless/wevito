@@ -1,0 +1,342 @@
+{
+  "generated": "2026-05-05",
+  "scope": "review-only habitat loadout mockups",
+  "records": [
+    {
+      "species": "goose",
+      "path": "vnext/artifacts/visual-review/20260505-habitat-loadout-mockups/qa/goose-habitat-loadout-mockup.png",
+      "environment": "sprites_shared_runtime/environment/goose.png",
+      "pet": "sprites_runtime/goose/adult/female/blue/idle_00.png",
+      "assets": [
+        {
+          "asset": "nest_bed",
+          "path": "sprites_shared_runtime/items/toys_b/nest_bed.png",
+          "display_size": [
+            100,
+            66
+          ]
+        },
+        {
+          "asset": "moss_patch",
+          "path": "sprites_shared_runtime/items/utility/moss_patch.png",
+          "display_size": [
+            77,
+            56
+          ]
+        },
+        {
+          "asset": "pond_dish",
+          "path": "sprites_shared_runtime/items/containers/pond_dish.png",
+          "display_size": [
+            111,
+            47
+          ]
+        },
+        {
+          "asset": "shallow_water_dish",
+          "path": "sprites_shared_runtime/items/containers/shallow_water_dish.png",
+          "display_size": [
+            41,
+            14
+          ]
+        },
+        {
+          "asset": "ball",
+          "path": "sprites_shared_runtime/items/toys_a/ball.png",
+          "display_size": [
+            31,
+            33
+          ]
+        },
+        {
+          "asset": "leaf_pile",
+          "path": "sprites_shared_runtime/items/toys_a/leaf_pile.png",
+          "display_size": [
+            77,
+            56
+          ]
+        },
+        {
+          "asset": "pebble_cluster",
+          "path": "sprites_shared_runtime/items/utility/pebble_cluster.png",
+          "display_size": [
+            83,
+            61
+          ]
+        }
+      ]
+    },
+    {
+      "species": "rat",
+      "path": "vnext/artifacts/visual-review/20260505-habitat-loadout-mockups/qa/rat-habitat-loadout-mockup.png",
+      "environment": "sprites_shared_runtime/environment/rat.png",
+      "pet": "sprites_runtime/rat/adult/female/blue/idle_00.png",
+      "assets": [
+        {
+          "asset": "cloth_mat",
+          "path": "sprites_shared_runtime/items/utility/cloth_mat.png",
+          "display_size": [
+            107,
+            49
+          ]
+        },
+        {
+          "asset": "crate_hideout",
+          "path": "sprites_shared_runtime/items/toys_b/crate_hideout.png",
+          "display_size": [
+            110,
+            96
+          ]
+        },
+        {
+          "asset": "snack_bowl",
+          "path": "sprites_shared_runtime/items/food_omnivore/snack_bowl.png",
+          "display_size": [
+            73,
+            47
+          ]
+        },
+        {
+          "asset": "water_bowl",
+          "path": "sprites_shared_runtime/items/containers/water_bowl.png",
+          "display_size": [
+            119,
+            47
+          ]
+        },
+        {
+          "asset": "chew_toy",
+          "path": "sprites_shared_runtime/items/toys_a/chew_toy.png",
+          "display_size": [
+            85,
+            32
+          ]
+        },
+        {
+          "asset": "tunnel_hide",
+          "path": "sprites_shared_runtime/items/toys_a/tunnel_hide.png",
+          "display_size": [
+            130,
+            87
+          ]
+        },
+        {
+          "asset": "food_crate",
+          "path": "sprites_shared_runtime/items/utility/food_crate.png",
+          "display_size": [
+            99,
+            78
+          ]
+        },
+        {
+          "asset": "storage_basket",
+          "path": "sprites_shared_runtime/items/utility/storage_basket.png",
+          "display_size": [
+            97,
+            59
+          ]
+        }
+      ]
+    },
+    {
+      "species": "crow",
+      "path": "vnext/artifacts/visual-review/20260505-habitat-loadout-mockups/qa/crow-habitat-loadout-mockup.png",
+      "environment": "sprites_shared_runtime/environment/crow.png",
+      "pet": "sprites_runtime/crow/adult/female/blue/idle_00.png",
+      "assets": [
+        {
+          "asset": "nest_bed",
+          "path": "sprites_shared_runtime/items/toys_b/nest_bed.png",
+          "display_size": [
+            100,
+            66
+          ]
+        },
+        {
+          "asset": "branch_perch",
+          "path": "sprites_shared_runtime/items/toys_a/branch_perch.png",
+          "display_size": [
+            71,
+            65
+          ]
+        },
+        {
+          "asset": "hanging_feeder",
+          "path": "sprites_shared_runtime/items/containers/hanging_feeder.png",
+          "display_size": [
+            32,
+            78
+          ]
+        },
+        {
+          "asset": "seed_tray",
+          "path": "sprites_shared_runtime/items/containers/seed_tray.png",
+          "display_size": [
+            85,
+            42
+          ]
+        },
+        {
+          "asset": "mirror_trinket",
+          "path": "sprites_shared_runtime/items/toys_a/mirror_trinket.png",
+          "display_size": [
+            66,
+            78
+          ]
+        },
+        {
+          "asset": "bell_toy",
+          "path": "sprites_shared_runtime/items/toys_a/bell_toy.png",
+          "display_size": [
+            74,
+            78
+          ]
+        },
+        {
+          "asset": "shiny_reward",
+          "path": "sprites_shared_runtime/items/food_birds/shiny_reward.png",
+          "display_size": [
+            85,
+            63
+          ]
+        },
+        {
+          "asset": "stick_bundle",
+          "path": "sprites_shared_runtime/items/utility/stick_bundle.png",
+          "display_size": [
+            71,
+            65
+          ]
+        }
+      ]
+    },
+    {
+      "species": "snake",
+      "path": "vnext/artifacts/visual-review/20260505-habitat-loadout-mockups/qa/snake-habitat-loadout-mockup.png",
+      "environment": "sprites_shared_runtime/environment/snake.png",
+      "pet": "sprites_runtime/snake/adult/female/blue/idle_00.png",
+      "assets": [
+        {
+          "asset": "moss_bed",
+          "path": "sprites_shared_runtime/items/toys_b/moss_bed.png",
+          "display_size": [
+            105,
+            54
+          ]
+        },
+        {
+          "asset": "rock_basking_spot",
+          "path": "sprites_shared_runtime/items/toys_b/rock_basking_spot.png",
+          "display_size": [
+            83,
+            38
+          ]
+        },
+        {
+          "asset": "reptile_tray",
+          "path": "sprites_shared_runtime/items/food_predator/reptile_tray.png",
+          "display_size": [
+            85,
+            43
+          ]
+        },
+        {
+          "asset": "shallow_water_dish",
+          "path": "sprites_shared_runtime/items/containers/shallow_water_dish.png",
+          "display_size": [
+            41,
+            14
+          ]
+        },
+        {
+          "asset": "tunnel_hide",
+          "path": "sprites_shared_runtime/items/toys_a/tunnel_hide.png",
+          "display_size": [
+            130,
+            87
+          ]
+        },
+        {
+          "asset": "pebble_cluster",
+          "path": "sprites_shared_runtime/items/utility/pebble_cluster.png",
+          "display_size": [
+            83,
+            61
+          ]
+        },
+        {
+          "asset": "moss_patch",
+          "path": "sprites_shared_runtime/items/utility/moss_patch.png",
+          "display_size": [
+            77,
+            56
+          ]
+        }
+      ]
+    },
+    {
+      "species": "frog",
+      "path": "vnext/artifacts/visual-review/20260505-habitat-loadout-mockups/qa/frog-habitat-loadout-mockup.png",
+      "environment": "sprites_shared_runtime/environment/frog.png",
+      "pet": "sprites_runtime/frog/adult/female/blue/idle_00.png",
+      "assets": [
+        {
+          "asset": "moss_bed",
+          "path": "sprites_shared_runtime/items/toys_b/moss_bed.png",
+          "display_size": [
+            105,
+            54
+          ]
+        },
+        {
+          "asset": "moss_patch",
+          "path": "sprites_shared_runtime/items/utility/moss_patch.png",
+          "display_size": [
+            77,
+            56
+          ]
+        },
+        {
+          "asset": "pond_dish",
+          "path": "sprites_shared_runtime/items/containers/pond_dish.png",
+          "display_size": [
+            111,
+            47
+          ]
+        },
+        {
+          "asset": "shallow_water_dish",
+          "path": "sprites_shared_runtime/items/containers/shallow_water_dish.png",
+          "display_size": [
+            41,
+            14
+          ]
+        },
+        {
+          "asset": "bug_treat",
+          "path": "sprites_shared_runtime/items/food_birds/bug_treat.png",
+          "display_size": [
+            75,
+            49
+          ]
+        },
+        {
+          "asset": "leaf_pile",
+          "path": "sprites_shared_runtime/items/toys_a/leaf_pile.png",
+          "display_size": [
+            77,
+            56
+          ]
+        },
+        {
+          "asset": "pebble_cluster",
+          "path": "sprites_shared_runtime/items/utility/pebble_cluster.png",
+          "display_size": [
+            83,
+            61
+          ]
+        }
+      ]
+    }
+  ]
+}

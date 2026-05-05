@@ -1,0 +1,294 @@
+{
+  "generated": "2026-05-05",
+  "scope": "crow adult color dark background contrast review",
+  "records": [
+    {
+      "gender": "female",
+      "color": "red",
+      "background": "transparent-checker",
+      "source": "sprites_runtime/crow/adult/female/red/walk_00.png"
+    },
+    {
+      "gender": "female",
+      "color": "orange",
+      "background": "transparent-checker",
+      "source": "sprites_runtime/crow/adult/female/orange/walk_00.png"
+    },
+    {
+      "gender": "female",
+      "color": "yellow",
+      "background": "transparent-checker",
+      "source": "sprites_runtime/crow/adult/female/yellow/walk_00.png"
+    },
+    {
+      "gender": "female",
+      "color": "blue",
+      "background": "transparent-checker",
+      "source": "sprites_runtime/crow/adult/female/blue/walk_00.png"
+    },
+    {
+      "gender": "female",
+      "color": "indigo",
+      "background": "transparent-checker",
+      "source": "sprites_runtime/crow/adult/female/indigo/walk_00.png"
+    },
+    {
+      "gender": "female",
+      "color": "violet",
+      "background": "transparent-checker",
+      "source": "sprites_runtime/crow/adult/female/violet/walk_00.png"
+    },
+    {
+      "gender": "female",
+      "color": "red",
+      "background": "dark-overlay",
+      "source": "sprites_runtime/crow/adult/female/red/walk_00.png"
+    },
+    {
+      "gender": "female",
+      "color": "orange",
+      "background": "dark-overlay",
+      "source": "sprites_runtime/crow/adult/female/orange/walk_00.png"
+    },
+    {
+      "gender": "female",
+      "color": "yellow",
+      "background": "dark-overlay",
+      "source": "sprites_runtime/crow/adult/female/yellow/walk_00.png"
+    },
+    {
+      "gender": "female",
+      "color": "blue",
+      "background": "dark-overlay",
+      "source": "sprites_runtime/crow/adult/female/blue/walk_00.png"
+    },
+    {
+      "gender": "female",
+      "color": "indigo",
+      "background": "dark-overlay",
+      "source": "sprites_runtime/crow/adult/female/indigo/walk_00.png"
+    },
+    {
+      "gender": "female",
+      "color": "violet",
+      "background": "dark-overlay",
+      "source": "sprites_runtime/crow/adult/female/violet/walk_00.png"
+    },
+    {
+      "gender": "female",
+      "color": "red",
+      "background": "night-blue",
+      "source": "sprites_runtime/crow/adult/female/red/walk_00.png"
+    },
+    {
+      "gender": "female",
+      "color": "orange",
+      "background": "night-blue",
+      "source": "sprites_runtime/crow/adult/female/orange/walk_00.png"
+    },
+    {
+      "gender": "female",
+      "color": "yellow",
+      "background": "night-blue",
+      "source": "sprites_runtime/crow/adult/female/yellow/walk_00.png"
+    },
+    {
+      "gender": "female",
+      "color": "blue",
+      "background": "night-blue",
+      "source": "sprites_runtime/crow/adult/female/blue/walk_00.png"
+    },
+    {
+      "gender": "female",
+      "color": "indigo",
+      "background": "night-blue",
+      "source": "sprites_runtime/crow/adult/female/indigo/walk_00.png"
+    },
+    {
+      "gender": "female",
+      "color": "violet",
+      "background": "night-blue",
+      "source": "sprites_runtime/crow/adult/female/violet/walk_00.png"
+    },
+    {
+      "gender": "female",
+      "color": "red",
+      "background": "warm-brown",
+      "source": "sprites_runtime/crow/adult/female/red/walk_00.png"
+    },
+    {
+      "gender": "female",
+      "color": "orange",
+      "background": "warm-brown",
+      "source": "sprites_runtime/crow/adult/female/orange/walk_00.png"
+    },
+    {
+      "gender": "female",
+      "color": "yellow",
+      "background": "warm-brown",
+      "source": "sprites_runtime/crow/adult/female/yellow/walk_00.png"
+    },
+    {
+      "gender": "female",
+      "color": "blue",
+      "background": "warm-brown",
+      "source": "sprites_runtime/crow/adult/female/blue/walk_00.png"
+    },
+    {
+      "gender": "female",
+      "color": "indigo",
+      "background": "warm-brown",
+      "source": "sprites_runtime/crow/adult/female/indigo/walk_00.png"
+    },
+    {
+      "gender": "female",
+      "color": "violet",
+      "background": "warm-brown",
+      "source": "sprites_runtime/crow/adult/female/violet/walk_00.png"
+    },
+    {
+      "gender": "male",
+      "color": "red",
+      "background": "transparent-checker",
+      "source": "sprites_runtime/crow/adult/male/red/walk_00.png"
+    },
+    {
+      "gender": "male",
+      "color": "orange",
+      "background": "transparent-checker",
+      "source": "sprites_runtime/crow/adult/male/orange/walk_00.png"
+    },
+    {
+      "gender": "male",
+      "color": "yellow",
+      "background": "transparent-checker",
+      "source": "sprites_runtime/crow/adult/male/yellow/walk_00.png"
+    },
+    {
+      "gender": "male",
+      "color": "blue",
+      "background": "transparent-checker",
+      "source": "sprites_runtime/crow/adult/male/blue/walk_00.png"
+    },
+    {
+      "gender": "male",
+      "color": "indigo",
+      "background": "transparent-checker",
+      "source": "sprites_runtime/crow/adult/male/indigo/walk_00.png"
+    },
+    {
+      "gender": "male",
+      "color": "violet",
+      "background": "transparent-checker",
+      "source": "sprites_runtime/crow/adult/male/violet/walk_00.png"
+    },
+    {
+      "gender": "male",
+      "color": "red",
+      "background": "dark-overlay",
+      "source": "sprites_runtime/crow/adult/male/red/walk_00.png"
+    },
+    {
+      "gender": "male",
+      "color": "orange",
+      "background": "dark-overlay",
+      "source": "sprites_runtime/crow/adult/male/orange/walk_00.png"
+    },
+    {
+      "gender": "male",
+      "color": "yellow",
+      "background": "dark-overlay",
+      "source": "sprites_runtime/crow/adult/male/yellow/walk_00.png"
+    },
+    {
+      "gender": "male",
+      "color": "blue",
+      "background": "dark-overlay",
+      "source": "sprites_runtime/crow/adult/male/blue/walk_00.png"
+    },
+    {
+      "gender": "male",
+      "color": "indigo",
+      "background": "dark-overlay",
+      "source": "sprites_runtime/crow/adult/male/indigo/walk_00.png"
+    },
+    {
+      "gender": "male",
+      "color": "violet",
+      "background": "dark-overlay",
+      "source": "sprites_runtime/crow/adult/male/violet/walk_00.png"
+    },
+    {
+      "gender": "male",
+      "color": "red",
+      "background": "night-blue",
+      "source": "sprites_runtime/crow/adult/male/red/walk_00.png"
+    },
+    {
+      "gender": "male",
+      "color": "orange",
+      "background": "night-blue",
+      "source": "sprites_runtime/crow/adult/male/orange/walk_00.png"
+    },
+    {
+      "gender": "male",
+      "color": "yellow",
+      "background": "night-blue",
+      "source": "sprites_runtime/crow/adult/male/yellow/walk_00.png"
+    },
+    {
+      "gender": "male",
+      "color": "blue",
+      "background": "night-blue",
+      "source": "sprites_runtime/crow/adult/male/blue/walk_00.png"
+    },
+    {
+      "gender": "male",
+      "color": "indigo",
+      "background": "night-blue",
+      "source": "sprites_runtime/crow/adult/male/indigo/walk_00.png"
+    },
+    {
+      "gender": "male",
+      "color": "violet",
+      "background": "night-blue",
+      "source": "sprites_runtime/crow/adult/male/violet/walk_00.png"
+    },
+    {
+      "gender": "male",
+      "color": "red",
+      "background": "warm-brown",
+      "source": "sprites_runtime/crow/adult/male/red/walk_00.png"
+    },
+    {
+      "gender": "male",
+      "color": "orange",
+      "background": "warm-brown",
+      "source": "sprites_runtime/crow/adult/male/orange/walk_00.png"
+    },
+    {
+      "gender": "male",
+      "color": "yellow",
+      "background": "warm-brown",
+      "source": "sprites_runtime/crow/adult/male/yellow/walk_00.png"
+    },
+    {
+      "gender": "male",
+      "color": "blue",
+      "background": "warm-brown",
+      "source": "sprites_runtime/crow/adult/male/blue/walk_00.png"
+    },
+    {
+      "gender": "male",
+      "color": "indigo",
+      "background": "warm-brown",
+      "source": "sprites_runtime/crow/adult/male/indigo/walk_00.png"
+    },
+    {
+      "gender": "male",
+      "color": "violet",
+      "background": "warm-brown",
+      "source": "sprites_runtime/crow/adult/male/violet/walk_00.png"
+    }
+  ]
+}

@@ -1,0 +1,1302 @@
+{
+  "generated": "2026-05-05",
+  "count": 81,
+  "records": [
+    {
+      "path": "sprites_shared_runtime/items/care/bandage_roll.png",
+      "group": "care",
+      "name": "bandage_roll",
+      "canvas": {
+        "w": 47,
+        "h": 31
+      },
+      "bbox": {
+        "x": 2,
+        "y": 2,
+        "w": 43,
+        "h": 27
+      },
+      "sha256": "f22c747209cb675beb868ab13032d08ac357e45ce337fb0f4d4484594738e30e"
+    },
+    {
+      "path": "sprites_shared_runtime/items/care/first_aid_kit.png",
+      "group": "care",
+      "name": "first_aid_kit",
+      "canvas": {
+        "w": 47,
+        "h": 48
+      },
+      "bbox": {
+        "x": 2,
+        "y": 2,
+        "w": 43,
+        "h": 44
+      },
+      "sha256": "1dc80604da3ea1f6ca3284f5b8a8e2ea22ade2543edb40a9f2f750b9ca8c7189"
+    },
+    {
+      "path": "sprites_shared_runtime/items/care/grooming_brush.png",
+      "group": "care",
+      "name": "grooming_brush",
+      "canvas": {
+        "w": 48,
+        "h": 42
+      },
+      "bbox": {
+        "x": 2,
+        "y": 2,
+        "w": 44,
+        "h": 38
+      },
+      "sha256": "ee48573ff0e0fa332c23038c6e80555128ed90b65dd06d2d2ff25c860c0405fb"
+    },
+    {
+      "path": "sprites_shared_runtime/items/care/medicine_dropper.png",
+      "group": "care",
+      "name": "medicine_dropper",
+      "canvas": {
+        "w": 57,
+        "h": 53
+      },
+      "bbox": {
+        "x": 19,
+        "y": 6,
+        "w": 20,
+        "h": 41
+      },
+      "sha256": "585479dbdac7b3085d858e694fa78fc44061a3b013b8830d4666f4840ced66f7"
+    },
+    {
+      "path": "sprites_shared_runtime/items/care/pill_bottle.png",
+      "group": "care",
+      "name": "pill_bottle",
+      "canvas": {
+        "w": 33,
+        "h": 53
+      },
+      "bbox": {
+        "x": 2,
+        "y": 2,
+        "w": 29,
+        "h": 49
+      },
+      "sha256": "3a029e665ad9ddf343a5a617461223e057e367e2815abc89b6614c16ceca7f48"
+    },
+    {
+      "path": "sprites_shared_runtime/items/care/soap_bottle.png",
+      "group": "care",
+      "name": "soap_bottle",
+      "canvas": {
+        "w": 34,
+        "h": 50
+      },
+      "bbox": {
+        "x": 2,
+        "y": 2,
+        "w": 30,
+        "h": 46
+      },
+      "sha256": "2819e597f7033d052f1ae5b3eabda4fb92a8e494e888cb6df9b197ec2ccbfd86"
+    },
+    {
+      "path": "sprites_shared_runtime/items/care/syringe.png",
+      "group": "care",
+      "name": "syringe",
+      "canvas": {
+        "w": 54,
+        "h": 50
+      },
+      "bbox": {
+        "x": 2,
+        "y": 2,
+        "w": 50,
+        "h": 46
+      },
+      "sha256": "b50c4fafb444a766252cfaab3ad0f65264b7aeb0eba5e06fe9fdbd6772f4b8bf"
+    },
+    {
+      "path": "sprites_shared_runtime/items/care/thermometer.png",
+      "group": "care",
+      "name": "thermometer",
+      "canvas": {
+        "w": 55,
+        "h": 60
+      },
+      "bbox": {
+        "x": 16,
+        "y": 6,
+        "w": 24,
+        "h": 48
+      },
+      "sha256": "c16b649731287f14f2ffcc2d23ae4896572cd98da5a1c84090f81f3f735daa66"
+    },
+    {
+      "path": "sprites_shared_runtime/items/care/towel.png",
+      "group": "care",
+      "name": "towel",
+      "canvas": {
+        "w": 46,
+        "h": 37
+      },
+      "bbox": {
+        "x": 2,
+        "y": 2,
+        "w": 42,
+        "h": 33
+      },
+      "sha256": "a77c8c66d81498a0f961da7b3416949cbb3614f5084ab8cacedba2069cf5c0af"
+    },
+    {
+      "path": "sprites_shared_runtime/items/containers/dish_set.png",
+      "group": "containers",
+      "name": "dish_set",
+      "canvas": {
+        "w": 160,
+        "h": 98
+      },
+      "bbox": {
+        "x": 33,
+        "y": 27,
+        "w": 95,
+        "h": 55
+      },
+      "sha256": "40a1a3bea49b2e5f436b80a4efd7fd5c2637a9fee0d7fce022f233d21b846c76"
+    },
+    {
+      "path": "sprites_shared_runtime/items/containers/feeding_plate.png",
+      "group": "containers",
+      "name": "feeding_plate",
+      "canvas": {
+        "w": 144,
+        "h": 68
+      },
+      "bbox": {
+        "x": 41,
+        "y": 19,
+        "w": 63,
+        "h": 32
+      },
+      "sha256": "dc1befab41b76db2524fb17aa6c4e2d1f7e2cb54e02779a5cefa0316a14e0537"
+    },
+    {
+      "path": "sprites_shared_runtime/items/containers/hanging_feeder.png",
+      "group": "containers",
+      "name": "hanging_feeder",
+      "canvas": {
+        "w": 82,
+        "h": 172
+      },
+      "bbox": {
+        "x": 19,
+        "y": 29,
+        "w": 45,
+        "h": 107
+      },
+      "sha256": "3338d342bdb775dd26cfa37d2dc75dfd81849a4579d8f571201c31c4bddd1c90"
+    },
+    {
+      "path": "sprites_shared_runtime/items/containers/pond_dish.png",
+      "group": "containers",
+      "name": "pond_dish",
+      "canvas": {
+        "w": 126,
+        "h": 72
+      },
+      "bbox": {
+        "x": 8,
+        "y": 16,
+        "w": 111,
+        "h": 47
+      },
+      "sha256": "17f7e8116eb49661400d42a18603bb271c7becafa6b92dad9a40696a4c52eee1"
+    },
+    {
+      "path": "sprites_shared_runtime/items/containers/seed_tray.png",
+      "group": "containers",
+      "name": "seed_tray",
+      "canvas": {
+        "w": 144,
+        "h": 84
+      },
+      "bbox": {
+        "x": 30,
+        "y": 25,
+        "w": 85,
+        "h": 42
+      },
+      "sha256": "a52172d0bed801ea8e42077c2e99e2dda3a85e714a8fbd5cd7d4da617a74b243"
+    },
+    {
+      "path": "sprites_shared_runtime/items/containers/shallow_water_dish.png",
+      "group": "containers",
+      "name": "shallow_water_dish",
+      "canvas": {
+        "w": 144,
+        "h": 46
+      },
+      "bbox": {
+        "x": 52,
+        "y": 17,
+        "w": 41,
+        "h": 14
+      },
+      "sha256": "8249145dd434700e25f2ea38686d2600b42cf348575794cfbfced12aefe2ae76"
+    },
+    {
+      "path": "sprites_shared_runtime/items/containers/storage_jar.png",
+      "group": "containers",
+      "name": "storage_jar",
+      "canvas": {
+        "w": 96,
+        "h": 130
+      },
+      "bbox": {
+        "x": 21,
+        "y": 13,
+        "w": 55,
+        "h": 97
+      },
+      "sha256": "700efdbecdedb0d4fb0de99fa4bc6ca72dbe5446db92d8a811445075ad626d0f"
+    },
+    {
+      "path": "sprites_shared_runtime/items/containers/treat_cup.png",
+      "group": "containers",
+      "name": "treat_cup",
+      "canvas": {
+        "w": 82,
+        "h": 98
+      },
+      "bbox": {
+        "x": 14,
+        "y": 15,
+        "w": 55,
+        "h": 70
+      },
+      "sha256": "ae4a71ba75f188649d66e2c84fa10dd4dc9436ae7ac145c1e32434bd3ce6e68b"
+    },
+    {
+      "path": "sprites_shared_runtime/items/containers/water_bowl.png",
+      "group": "containers",
+      "name": "water_bowl",
+      "canvas": {
+        "w": 123,
+        "h": 51
+      },
+      "bbox": {
+        "x": 2,
+        "y": 2,
+        "w": 119,
+        "h": 47
+      },
+      "sha256": "4c596cad035145b6f5fe9aefa717e7412e4cfa69f553c567be82140f15e8f8fb"
+    },
+    {
+      "path": "sprites_shared_runtime/items/food_birds/berry_cluster.png",
+      "group": "food_birds",
+      "name": "berry_cluster",
+      "canvas": {
+        "w": 116,
+        "h": 88
+      },
+      "bbox": {
+        "x": 18,
+        "y": 6,
+        "w": 81,
+        "h": 73
+      },
+      "sha256": "b6b0745739e0a63055356d24f926efcb61a738f81d99073b057c6ed1828f5c0f"
+    },
+    {
+      "path": "sprites_shared_runtime/items/food_birds/bird_bowl.png",
+      "group": "food_birds",
+      "name": "bird_bowl",
+      "canvas": {
+        "w": 140,
+        "h": 88
+      },
+      "bbox": {
+        "x": 34,
+        "y": 26,
+        "w": 73,
+        "h": 47
+      },
+      "sha256": "5a6109c75422ed9b29af3eccd44b2cc7da89f26a5b69087f463bcccd941a7f11"
+    },
+    {
+      "path": "sprites_shared_runtime/items/food_birds/bug_treat.png",
+      "group": "food_birds",
+      "name": "bug_treat",
+      "canvas": {
+        "w": 120,
+        "h": 90
+      },
+      "bbox": {
+        "x": 23,
+        "y": 26,
+        "w": 75,
+        "h": 49
+      },
+      "sha256": "0da1c96a9f53cb373191753a697f27b43e0f8043c5d8ff204c3c9b1a588c5f2c"
+    },
+    {
+      "path": "sprites_shared_runtime/items/food_birds/fish_morsel.png",
+      "group": "food_birds",
+      "name": "fish_morsel",
+      "canvas": {
+        "w": 132,
+        "h": 70
+      },
+      "bbox": {
+        "x": 38,
+        "y": 21,
+        "w": 72,
+        "h": 29
+      },
+      "sha256": "d23a0bad2b1f83e7cfc25dd5b19f5660e80bd7015f83f8288f28e7f54b2511a2"
+    },
+    {
+      "path": "sprites_shared_runtime/items/food_birds/hanging_feeder_mix.png",
+      "group": "food_birds",
+      "name": "hanging_feeder_mix",
+      "canvas": {
+        "w": 120,
+        "h": 90
+      },
+      "bbox": {
+        "x": 18,
+        "y": 16,
+        "w": 85,
+        "h": 63
+      },
+      "sha256": "67e3494fb3127204793eb72ad5fc02fa1a4782ae832da3b4c91588e0da7d2826"
+    },
+    {
+      "path": "sprites_shared_runtime/items/food_birds/mixed_grain.png",
+      "group": "food_birds",
+      "name": "mixed_grain",
+      "canvas": {
+        "w": 116,
+        "h": 88
+      },
+      "bbox": {
+        "x": 17,
+        "y": 16,
+        "w": 83,
+        "h": 61
+      },
+      "sha256": "d5689eb67f37bd7ec52a35b4ebe83ba823d21e1a4b7d85b80c4f619afdf2f415"
+    },
+    {
+      "path": "sprites_shared_runtime/items/food_birds/seed_pile.png",
+      "group": "food_birds",
+      "name": "seed_pile",
+      "canvas": {
+        "w": 73,
+        "h": 94
+      },
+      "bbox": {
+        "x": 2,
+        "y": 2,
+        "w": 69,
+        "h": 90
+      },
+      "sha256": "35bffe25de1932adea3d494a76d3c819e1ff1e2f416670db4485e0d6dd2e5d04"
+    },
+    {
+      "path": "sprites_shared_runtime/items/food_birds/shiny_reward.png",
+      "group": "food_birds",
+      "name": "shiny_reward",
+      "canvas": {
+        "w": 120,
+        "h": 90
+      },
+      "bbox": {
+        "x": 18,
+        "y": 16,
+        "w": 85,
+        "h": 63
+      },
+      "sha256": "67e3494fb3127204793eb72ad5fc02fa1a4782ae832da3b4c91588e0da7d2826"
+    },
+    {
+      "path": "sprites_shared_runtime/items/food_birds/sunflower_seeds.png",
+      "group": "food_birds",
+      "name": "sunflower_seeds",
+      "canvas": {
+        "w": 116,
+        "h": 88
+      },
+      "bbox": {
+        "x": 17,
+        "y": 16,
+        "w": 83,
+        "h": 61
+      },
+      "sha256": "d5689eb67f37bd7ec52a35b4ebe83ba823d21e1a4b7d85b80c4f619afdf2f415"
+    },
+    {
+      "path": "sprites_shared_runtime/items/food_herbivore/berry_cluster.png",
+      "group": "food_herbivore",
+      "name": "berry_cluster",
+      "canvas": {
+        "w": 116,
+        "h": 88
+      },
+      "bbox": {
+        "x": 18,
+        "y": 6,
+        "w": 81,
+        "h": 73
+      },
+      "sha256": "b6b0745739e0a63055356d24f926efcb61a738f81d99073b057c6ed1828f5c0f"
+    },
+    {
+      "path": "sprites_shared_runtime/items/food_herbivore/clover_bunch.png",
+      "group": "food_herbivore",
+      "name": "clover_bunch",
+      "canvas": {
+        "w": 130,
+        "h": 98
+      },
+      "bbox": {
+        "x": 12,
+        "y": 6,
+        "w": 104,
+        "h": 78
+      },
+      "sha256": "674530ab084aef090f80c23edae123997357aa79055557a368dee448474fe41f"
+    },
+    {
+      "path": "sprites_shared_runtime/items/food_herbivore/flower_petals.png",
+      "group": "food_herbivore",
+      "name": "flower_petals",
+      "canvas": {
+        "w": 160,
+        "h": 171
+      },
+      "bbox": {
+        "x": 2,
+        "y": 2,
+        "w": 156,
+        "h": 167
+      },
+      "sha256": "8f580b341c02b031abd972ff5522d2f1b5d20d9de0b49e76736d50896c7f0366"
+    },
+    {
+      "path": "sprites_shared_runtime/items/food_herbivore/grain_bundle.png",
+      "group": "food_herbivore",
+      "name": "grain_bundle",
+      "canvas": {
+        "w": 130,
+        "h": 98
+      },
+      "bbox": {
+        "x": 24,
+        "y": 10,
+        "w": 83,
+        "h": 79
+      },
+      "sha256": "613b09e1dcf27e7887612ecaff677ea2e02819bd88585a357f52c6759b9d6820"
+    },
+    {
+      "path": "sprites_shared_runtime/items/food_herbivore/hay_bundle.png",
+      "group": "food_herbivore",
+      "name": "hay_bundle",
+      "canvas": {
+        "w": 357,
+        "h": 253
+      },
+      "bbox": {
+        "x": 2,
+        "y": 2,
+        "w": 353,
+        "h": 249
+      },
+      "sha256": "e0e199b5cc5bf0deaf39a1f22dc48450dc47969bcbc0d21beeceec7a99d8af6c"
+    },
+    {
+      "path": "sprites_shared_runtime/items/food_herbivore/herbivore_bowl.png",
+      "group": "food_herbivore",
+      "name": "herbivore_bowl",
+      "canvas": {
+        "w": 140,
+        "h": 88
+      },
+      "bbox": {
+        "x": 34,
+        "y": 26,
+        "w": 73,
+        "h": 47
+      },
+      "sha256": "ef564652fc01154d9d9efc49fb74a3d7bf2ba3ae7cf58da85effb5cca08d8804"
+    },
+    {
+      "path": "sprites_shared_runtime/items/food_herbivore/leafy_greens.png",
+      "group": "food_herbivore",
+      "name": "leafy_greens",
+      "canvas": {
+        "w": 130,
+        "h": 98
+      },
+      "bbox": {
+        "x": 12,
+        "y": 6,
+        "w": 104,
+        "h": 78
+      },
+      "sha256": "b2aec6644ea44bb0044f6cdb34ad7c5a64c9509a8834c4515de40cc984d8b4c5"
+    },
+    {
+      "path": "sprites_shared_runtime/items/food_herbivore/pond_greens.png",
+      "group": "food_herbivore",
+      "name": "pond_greens",
+      "canvas": {
+        "w": 286,
+        "h": 107
+      },
+      "bbox": {
+        "x": 2,
+        "y": 2,
+        "w": 282,
+        "h": 103
+      },
+      "sha256": "aa738868bf705990f798c8a090ed9c54a692a874272f94e1017253c831e59518"
+    },
+    {
+      "path": "sprites_shared_runtime/items/food_herbivore/root_slice.png",
+      "group": "food_herbivore",
+      "name": "root_slice",
+      "canvas": {
+        "w": 120,
+        "h": 90
+      },
+      "bbox": {
+        "x": 23,
+        "y": 23,
+        "w": 75,
+        "h": 45
+      },
+      "sha256": "a44df1f4617531506c82197d219aecf1d4cd2e3ad37efae2e867dfe097ad14f3"
+    },
+    {
+      "path": "sprites_shared_runtime/items/food_omnivore/berry_cluster.png",
+      "group": "food_omnivore",
+      "name": "berry_cluster",
+      "canvas": {
+        "w": 116,
+        "h": 88
+      },
+      "bbox": {
+        "x": 18,
+        "y": 6,
+        "w": 81,
+        "h": 73
+      },
+      "sha256": "b6b0745739e0a63055356d24f926efcb61a738f81d99073b057c6ed1828f5c0f"
+    },
+    {
+      "path": "sprites_shared_runtime/items/food_omnivore/bread_crumbs.png",
+      "group": "food_omnivore",
+      "name": "bread_crumbs",
+      "canvas": {
+        "w": 116,
+        "h": 88
+      },
+      "bbox": {
+        "x": 17,
+        "y": 16,
+        "w": 83,
+        "h": 61
+      },
+      "sha256": "632453858dc1a4fdf0122377058f08603546ca83b7baaaaee491afa596535375"
+    },
+    {
+      "path": "sprites_shared_runtime/items/food_omnivore/egg.png",
+      "group": "food_omnivore",
+      "name": "egg",
+      "canvas": {
+        "w": 80,
+        "h": 98
+      },
+      "bbox": {
+        "x": 17,
+        "y": 16,
+        "w": 47,
+        "h": 68
+      },
+      "sha256": "939f629a8616a6a98e6234e55cf797a0cee1642d1c7eea85b05ede45747bec56"
+    },
+    {
+      "path": "sprites_shared_runtime/items/food_omnivore/fish_scrap.png",
+      "group": "food_omnivore",
+      "name": "fish_scrap",
+      "canvas": {
+        "w": 132,
+        "h": 70
+      },
+      "bbox": {
+        "x": 38,
+        "y": 21,
+        "w": 72,
+        "h": 29
+      },
+      "sha256": "d23a0bad2b1f83e7cfc25dd5b19f5660e80bd7015f83f8288f28e7f54b2511a2"
+    },
+    {
+      "path": "sprites_shared_runtime/items/food_omnivore/grain_mix.png",
+      "group": "food_omnivore",
+      "name": "grain_mix",
+      "canvas": {
+        "w": 116,
+        "h": 88
+      },
+      "bbox": {
+        "x": 17,
+        "y": 16,
+        "w": 83,
+        "h": 61
+      },
+      "sha256": "d5689eb67f37bd7ec52a35b4ebe83ba823d21e1a4b7d85b80c4f619afdf2f415"
+    },
+    {
+      "path": "sprites_shared_runtime/items/food_omnivore/meat_chunk.png",
+      "group": "food_omnivore",
+      "name": "meat_chunk",
+      "canvas": {
+        "w": 120,
+        "h": 90
+      },
+      "bbox": {
+        "x": 25,
+        "y": 23,
+        "w": 78,
+        "h": 50
+      },
+      "sha256": "f0e70df4538e49b9fd0c1668418f6aca0429dba3409cf47b10bf0dd0b1034e32"
+    },
+    {
+      "path": "sprites_shared_runtime/items/food_omnivore/nut_pile.png",
+      "group": "food_omnivore",
+      "name": "nut_pile",
+      "canvas": {
+        "w": 116,
+        "h": 88
+      },
+      "bbox": {
+        "x": 17,
+        "y": 16,
+        "w": 83,
+        "h": 61
+      },
+      "sha256": "3315f656b35cf9ec751deb1c6f71a5245c6dfe12415222e95643178ddb1b2edc"
+    },
+    {
+      "path": "sprites_shared_runtime/items/food_omnivore/sliced_apple.png",
+      "group": "food_omnivore",
+      "name": "sliced_apple",
+      "canvas": {
+        "w": 120,
+        "h": 90
+      },
+      "bbox": {
+        "x": 18,
+        "y": 16,
+        "w": 85,
+        "h": 63
+      },
+      "sha256": "67e3494fb3127204793eb72ad5fc02fa1a4782ae832da3b4c91588e0da7d2826"
+    },
+    {
+      "path": "sprites_shared_runtime/items/food_omnivore/snack_bowl.png",
+      "group": "food_omnivore",
+      "name": "snack_bowl",
+      "canvas": {
+        "w": 140,
+        "h": 88
+      },
+      "bbox": {
+        "x": 34,
+        "y": 26,
+        "w": 73,
+        "h": 47
+      },
+      "sha256": "5a6109c75422ed9b29af3eccd44b2cc7da89f26a5b69087f463bcccd941a7f11"
+    },
+    {
+      "path": "sprites_shared_runtime/items/food_predator/bug_cup.png",
+      "group": "food_predator",
+      "name": "bug_cup",
+      "canvas": {
+        "w": 90,
+        "h": 108
+      },
+      "bbox": {
+        "x": 8,
+        "y": 34,
+        "w": 75,
+        "h": 50
+      },
+      "sha256": "f47ec936ab76ceddcf65a5495408bc8ce0722d28522202673139f16005d13f0c"
+    },
+    {
+      "path": "sprites_shared_runtime/items/food_predator/egg.png",
+      "group": "food_predator",
+      "name": "egg",
+      "canvas": {
+        "w": 80,
+        "h": 98
+      },
+      "bbox": {
+        "x": 17,
+        "y": 16,
+        "w": 47,
+        "h": 68
+      },
+      "sha256": "939f629a8616a6a98e6234e55cf797a0cee1642d1c7eea85b05ede45747bec56"
+    },
+    {
+      "path": "sprites_shared_runtime/items/food_predator/fish.png",
+      "group": "food_predator",
+      "name": "fish",
+      "canvas": {
+        "w": 132,
+        "h": 70
+      },
+      "bbox": {
+        "x": 38,
+        "y": 21,
+        "w": 72,
+        "h": 29
+      },
+      "sha256": "d23a0bad2b1f83e7cfc25dd5b19f5660e80bd7015f83f8288f28e7f54b2511a2"
+    },
+    {
+      "path": "sprites_shared_runtime/items/food_predator/fox_plate.png",
+      "group": "food_predator",
+      "name": "fox_plate",
+      "canvas": {
+        "w": 140,
+        "h": 88
+      },
+      "bbox": {
+        "x": 28,
+        "y": 23,
+        "w": 85,
+        "h": 43
+      },
+      "sha256": "194ce1b14b3b9588f678bc781e553c9cb3a36c2f6aff9fc6f6b66326d21c6f0a"
+    },
+    {
+      "path": "sprites_shared_runtime/items/food_predator/meat_chunk.png",
+      "group": "food_predator",
+      "name": "meat_chunk",
+      "canvas": {
+        "w": 120,
+        "h": 90
+      },
+      "bbox": {
+        "x": 25,
+        "y": 23,
+        "w": 78,
+        "h": 50
+      },
+      "sha256": "f0e70df4538e49b9fd0c1668418f6aca0429dba3409cf47b10bf0dd0b1034e32"
+    },
+    {
+      "path": "sprites_shared_runtime/items/food_predator/mouse_prey.png",
+      "group": "food_predator",
+      "name": "mouse_prey",
+      "canvas": {
+        "w": 120,
+        "h": 90
+      },
+      "bbox": {
+        "x": 6,
+        "y": 18,
+        "w": 100,
+        "h": 50
+      },
+      "sha256": "6ab03f5645440e1e882364a275c843d7d11fdbd9d4c8f32088532c5c5f5d8ead"
+    },
+    {
+      "path": "sprites_shared_runtime/items/food_predator/protein_bowl.png",
+      "group": "food_predator",
+      "name": "protein_bowl",
+      "canvas": {
+        "w": 140,
+        "h": 88
+      },
+      "bbox": {
+        "x": 34,
+        "y": 26,
+        "w": 73,
+        "h": 47
+      },
+      "sha256": "17c064d97dd86d839893daa1f9d84830e140b0454e66b8145f0b0f7948a57dde"
+    },
+    {
+      "path": "sprites_shared_runtime/items/food_predator/reptile_tray.png",
+      "group": "food_predator",
+      "name": "reptile_tray",
+      "canvas": {
+        "w": 140,
+        "h": 88
+      },
+      "bbox": {
+        "x": 28,
+        "y": 23,
+        "w": 85,
+        "h": 43
+      },
+      "sha256": "194ce1b14b3b9588f678bc781e553c9cb3a36c2f6aff9fc6f6b66326d21c6f0a"
+    },
+    {
+      "path": "sprites_shared_runtime/items/food_predator/worm_pile.png",
+      "group": "food_predator",
+      "name": "worm_pile",
+      "canvas": {
+        "w": 116,
+        "h": 88
+      },
+      "bbox": {
+        "x": 17,
+        "y": 16,
+        "w": 83,
+        "h": 61
+      },
+      "sha256": "3e7fc58a39af14721305957457bfdf5736e1330c0a483479f1c85ba33e42f763"
+    },
+    {
+      "path": "sprites_shared_runtime/items/toys_a/ball.png",
+      "group": "toys_a",
+      "name": "ball",
+      "canvas": {
+        "w": 35,
+        "h": 37
+      },
+      "bbox": {
+        "x": 2,
+        "y": 2,
+        "w": 31,
+        "h": 33
+      },
+      "sha256": "7e103b734507c2e9a4f05f19814f206776fa17cc563000fc02ddc1741725e2c1"
+    },
+    {
+      "path": "sprites_shared_runtime/items/toys_a/bell_toy.png",
+      "group": "toys_a",
+      "name": "bell_toy",
+      "canvas": {
+        "w": 92,
+        "h": 112
+      },
+      "bbox": {
+        "x": 9,
+        "y": 18,
+        "w": 75,
+        "h": 79
+      },
+      "sha256": "6b1f168bf96dbc47d0491b3732a94fbd8e2ace7ac9ed940251b9e94c232e8b0a"
+    },
+    {
+      "path": "sprites_shared_runtime/items/toys_a/branch_perch.png",
+      "group": "toys_a",
+      "name": "branch_perch",
+      "canvas": {
+        "w": 144,
+        "h": 84
+      },
+      "bbox": {
+        "x": 37,
+        "y": 10,
+        "w": 71,
+        "h": 65
+      },
+      "sha256": "87ca8d9c99881af6c70d1f05d6765ed380cf8713dc0715eca3019b997ba6761c"
+    },
+    {
+      "path": "sprites_shared_runtime/items/toys_a/chew_toy.png",
+      "group": "toys_a",
+      "name": "chew_toy",
+      "canvas": {
+        "w": 138,
+        "h": 70
+      },
+      "bbox": {
+        "x": 27,
+        "y": 21,
+        "w": 85,
+        "h": 32
+      },
+      "sha256": "12afccf4e22d77633e90c258ba2ba6283e7e80333562c0d7dd35f456649c777d"
+    },
+    {
+      "path": "sprites_shared_runtime/items/toys_a/digging_tray.png",
+      "group": "toys_a",
+      "name": "digging_tray",
+      "canvas": {
+        "w": 144,
+        "h": 84
+      },
+      "bbox": {
+        "x": 30,
+        "y": 25,
+        "w": 85,
+        "h": 42
+      },
+      "sha256": "a52172d0bed801ea8e42077c2e99e2dda3a85e714a8fbd5cd7d4da617a74b243"
+    },
+    {
+      "path": "sprites_shared_runtime/items/toys_a/leaf_pile.png",
+      "group": "toys_a",
+      "name": "leaf_pile",
+      "canvas": {
+        "w": 132,
+        "h": 82
+      },
+      "bbox": {
+        "x": 28,
+        "y": 15,
+        "w": 77,
+        "h": 56
+      },
+      "sha256": "c2b70cab4f60a02bb89008bca56a8a5e66395514669e88f49fbf84c6f8975076"
+    },
+    {
+      "path": "sprites_shared_runtime/items/toys_a/mirror_trinket.png",
+      "group": "toys_a",
+      "name": "mirror_trinket",
+      "canvas": {
+        "w": 98,
+        "h": 130
+      },
+      "bbox": {
+        "x": 8,
+        "y": 15,
+        "w": 83,
+        "h": 97
+      },
+      "sha256": "f3dff82606de770e0fcd23c48b02d45330b939315e6848d43d1e2b9a28611d61"
+    },
+    {
+      "path": "sprites_shared_runtime/items/toys_a/rope_toy.png",
+      "group": "toys_a",
+      "name": "rope_toy",
+      "canvas": {
+        "w": 136,
+        "h": 84
+      },
+      "bbox": {
+        "x": 20,
+        "y": 13,
+        "w": 99,
+        "h": 62
+      },
+      "sha256": "703b8d0a6752a94b96e08245e6defa8a13a6b90a9d07797fdf2160fd1de773b2"
+    },
+    {
+      "path": "sprites_shared_runtime/items/toys_a/tunnel_hide.png",
+      "group": "toys_a",
+      "name": "tunnel_hide",
+      "canvas": {
+        "w": 152,
+        "h": 104
+      },
+      "bbox": {
+        "x": 10,
+        "y": 8,
+        "w": 133,
+        "h": 90
+      },
+      "sha256": "05c5aab822ebec0f98943934363ee6e66b611e888c76573d9d99218f746157de"
+    },
+    {
+      "path": "sprites_shared_runtime/items/toys_b/blanket_mat.png",
+      "group": "toys_b",
+      "name": "blanket_mat",
+      "canvas": {
+        "w": 96,
+        "h": 54
+      },
+      "bbox": {
+        "x": 3,
+        "y": 4,
+        "w": 91,
+        "h": 47
+      },
+      "sha256": "ce59000748f97d23d8d6f541b4acb7bcf96bf2519b8ff29619e500c7a65eec76"
+    },
+    {
+      "path": "sprites_shared_runtime/items/toys_b/crate_hideout.png",
+      "group": "toys_b",
+      "name": "crate_hideout",
+      "canvas": {
+        "w": 136,
+        "h": 120
+      },
+      "bbox": {
+        "x": 6,
+        "y": 6,
+        "w": 124,
+        "h": 108
+      },
+      "sha256": "347a980c979f8ef4819601325612c548668ecf56384ac8d87ce4b75ec0621871"
+    },
+    {
+      "path": "sprites_shared_runtime/items/toys_b/hay_bed.png",
+      "group": "toys_b",
+      "name": "hay_bed",
+      "canvas": {
+        "w": 132,
+        "h": 76
+      },
+      "bbox": {
+        "x": 14,
+        "y": 10,
+        "w": 107,
+        "h": 59
+      },
+      "sha256": "db9bb573b8da66350abecd9631a2483dd14b6730d12aca1d4145465fd033a805"
+    },
+    {
+      "path": "sprites_shared_runtime/items/toys_b/log_shelter.png",
+      "group": "toys_b",
+      "name": "log_shelter",
+      "canvas": {
+        "w": 132,
+        "h": 86
+      },
+      "bbox": {
+        "x": 6,
+        "y": 5,
+        "w": 113,
+        "h": 72
+      },
+      "sha256": "21c34050fe55e6962ecced493b6b56ab2654d198a9231fc489de7d59029690e9"
+    },
+    {
+      "path": "sprites_shared_runtime/items/toys_b/memorial_object.png",
+      "group": "toys_b",
+      "name": "memorial_object",
+      "canvas": {
+        "w": 104,
+        "h": 138
+      },
+      "bbox": {
+        "x": 6,
+        "y": 6,
+        "w": 92,
+        "h": 125
+      },
+      "sha256": "d464f9cc49e718e7ba62078184ec32358ddae00128c5d0fa47e34cbf3f933d7a"
+    },
+    {
+      "path": "sprites_shared_runtime/items/toys_b/moss_bed.png",
+      "group": "toys_b",
+      "name": "moss_bed",
+      "canvas": {
+        "w": 124,
+        "h": 72
+      },
+      "bbox": {
+        "x": 12,
+        "y": 13,
+        "w": 105,
+        "h": 54
+      },
+      "sha256": "aca1bedbc88f79e7555585ed65b190ef57514cdae09a57232ddd8f51a0a2e237"
+    },
+    {
+      "path": "sprites_shared_runtime/items/toys_b/nest_bed.png",
+      "group": "toys_b",
+      "name": "nest_bed",
+      "canvas": {
+        "w": 124,
+        "h": 82
+      },
+      "bbox": {
+        "x": 13,
+        "y": 11,
+        "w": 100,
+        "h": 66
+      },
+      "sha256": "a12bceaaaf32ec8617cb131392219332e9acca3adf91414b2d0886599de5d587"
+    },
+    {
+      "path": "sprites_shared_runtime/items/toys_b/rock_basking_spot.png",
+      "group": "toys_b",
+      "name": "rock_basking_spot",
+      "canvas": {
+        "w": 104,
+        "h": 58
+      },
+      "bbox": {
+        "x": 12,
+        "y": 15,
+        "w": 83,
+        "h": 38
+      },
+      "sha256": "82adcbb59c613212332abce5fe83befedcdf85d6533ff5cd3d8210b4a2b15b7c"
+    },
+    {
+      "path": "sprites_shared_runtime/items/toys_b/stump_perch.png",
+      "group": "toys_b",
+      "name": "stump_perch",
+      "canvas": {
+        "w": 116,
+        "h": 112
+      },
+      "bbox": {
+        "x": 8,
+        "y": 6,
+        "w": 101,
+        "h": 100
+      },
+      "sha256": "e37c7a8a717e1b6fe38be35458ad28aa0da02a68130a12dd9a49dccf0aba352e"
+    },
+    {
+      "path": "sprites_shared_runtime/items/utility/cloth_mat.png",
+      "group": "utility",
+      "name": "cloth_mat",
+      "canvas": {
+        "w": 138,
+        "h": 84
+      },
+      "bbox": {
+        "x": 16,
+        "y": 18,
+        "w": 107,
+        "h": 49
+      },
+      "sha256": "fe393cf03bb97492a80fee565283877ef4b485f6097786b167df5f7f2b3a820a"
+    },
+    {
+      "path": "sprites_shared_runtime/items/utility/food_crate.png",
+      "group": "utility",
+      "name": "food_crate",
+      "canvas": {
+        "w": 134,
+        "h": 108
+      },
+      "bbox": {
+        "x": 6,
+        "y": 6,
+        "w": 122,
+        "h": 96
+      },
+      "sha256": "fa04fadfe8910f093d9d4c7e0032a9ab98365f8fd5ab3aa2a47444cfbd91b700"
+    },
+    {
+      "path": "sprites_shared_runtime/items/utility/lantern.png",
+      "group": "utility",
+      "name": "lantern",
+      "canvas": {
+        "w": 92,
+        "h": 128
+      },
+      "bbox": {
+        "x": 22,
+        "y": 15,
+        "w": 49,
+        "h": 98
+      },
+      "sha256": "2864c260e00b242467df2a69f1f2cd912a4c51af9ca829672415eb0d11cd8ea4"
+    },
+    {
+      "path": "sprites_shared_runtime/items/utility/moss_patch.png",
+      "group": "utility",
+      "name": "moss_patch",
+      "canvas": {
+        "w": 128,
+        "h": 82
+      },
+      "bbox": {
+        "x": 26,
+        "y": 15,
+        "w": 77,
+        "h": 56
+      },
+      "sha256": "3fba41b5e71ced8f2de079da08a7c58bec8787de4cbf4bcefeb9d606ad94b3e8"
+    },
+    {
+      "path": "sprites_shared_runtime/items/utility/pebble_cluster.png",
+      "group": "utility",
+      "name": "pebble_cluster",
+      "canvas": {
+        "w": 116,
+        "h": 88
+      },
+      "bbox": {
+        "x": 17,
+        "y": 16,
+        "w": 83,
+        "h": 61
+      },
+      "sha256": "5c76b3d23265fb5596e4727c2dd146e1c69a91c073d9c98731682b50604d66e4"
+    },
+    {
+      "path": "sprites_shared_runtime/items/utility/seed_sack.png",
+      "group": "utility",
+      "name": "seed_sack",
+      "canvas": {
+        "w": 104,
+        "h": 128
+      },
+      "bbox": {
+        "x": 13,
+        "y": 11,
+        "w": 79,
+        "h": 107
+      },
+      "sha256": "8779f4f2cd8292ce4a0ef90f1a97e8211366c3cd7c043e209a43e12f67fe37de"
+    },
+    {
+      "path": "sprites_shared_runtime/items/utility/stick_bundle.png",
+      "group": "utility",
+      "name": "stick_bundle",
+      "canvas": {
+        "w": 138,
+        "h": 84
+      },
+      "bbox": {
+        "x": 34,
+        "y": 10,
+        "w": 71,
+        "h": 65
+      },
+      "sha256": "a1a2ad0c812242cd5dc1ddee4a518d77d56fd3e1f98d2e3d12167d1271b0b164"
+    },
+    {
+      "path": "sprites_shared_runtime/items/utility/storage_basket.png",
+      "group": "utility",
+      "name": "storage_basket",
+      "canvas": {
+        "w": 136,
+        "h": 98
+      },
+      "bbox": {
+        "x": 20,
+        "y": 32,
+        "w": 97,
+        "h": 59
+      },
+      "sha256": "c556ed1cd72d724fc619af3e23560ab9e0532f7b3ae1876921cb7c26d1803c5a"
+    },
+    {
+      "path": "sprites_shared_runtime/items/utility/wooden_sign.png",
+      "group": "utility",
+      "name": "wooden_sign",
+      "canvas": {
+        "w": 124,
+        "h": 104
+      },
+      "bbox": {
+        "x": 23,
+        "y": 12,
+        "w": 79,
+        "h": 86
+      },
+      "sha256": "e36ef3e47371f13daaebdca2fdf1dbdc127b93fa6e02c4805b79471f59bc857f"
+    }
+  ]
+}

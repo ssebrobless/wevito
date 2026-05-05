@@ -1,0 +1,361 @@
+{
+  "generated": "2026-05-05",
+  "scope": "review-only habitat anchor/depth planning",
+  "records": [
+    {
+      "species": "goose",
+      "path": "vnext/artifacts/visual-review/20260505-habitat-anchor-depth-planning/qa/goose-anchor-depth-draft.png",
+      "objects": [
+        {
+          "asset": "pond_dish",
+          "path": "sprites_shared_runtime/items/containers/pond_dish.png",
+          "display": [
+            112,
+            378,
+            111,
+            47
+          ],
+          "role": "primary"
+        },
+        {
+          "asset": "ball",
+          "path": "sprites_shared_runtime/items/toys_a/ball.png",
+          "display": [
+            454,
+            407,
+            31,
+            33
+          ],
+          "role": "interaction"
+        },
+        {
+          "asset": "pebble_cluster",
+          "path": "sprites_shared_runtime/items/utility/pebble_cluster.png",
+          "display": [
+            728,
+            374,
+            83,
+            61
+          ],
+          "role": "decor"
+        }
+      ],
+      "anchors": {
+        "primary_anchor": [
+          78,
+          335,
+          180,
+          90
+        ],
+        "interaction_zone": [
+          390,
+          350,
+          160,
+          90
+        ],
+        "decor_zone": [
+          705,
+          360,
+          130,
+          75
+        ],
+        "pet_roam_band": [
+          250,
+          300,
+          430,
+          150
+        ],
+        "near_occluder": [
+          70,
+          360,
+          190,
+          65
+        ]
+      }
+    },
+    {
+      "species": "rat",
+      "path": "vnext/artifacts/visual-review/20260505-habitat-anchor-depth-planning/qa/rat-anchor-depth-draft.png",
+      "objects": [
+        {
+          "asset": "crate_hideout",
+          "path": "sprites_shared_runtime/items/toys_b/crate_hideout.png",
+          "display": [
+            125,
+            337,
+            124,
+            108
+          ],
+          "role": "primary"
+        },
+        {
+          "asset": "snack_bowl",
+          "path": "sprites_shared_runtime/items/food_omnivore/snack_bowl.png",
+          "display": [
+            413,
+            388,
+            73,
+            47
+          ],
+          "role": "interaction"
+        },
+        {
+          "asset": "storage_basket",
+          "path": "sprites_shared_runtime/items/utility/storage_basket.png",
+          "display": [
+            726,
+            366,
+            97,
+            59
+          ],
+          "role": "decor"
+        }
+      ],
+      "anchors": {
+        "primary_anchor": [
+          95,
+          315,
+          185,
+          130
+        ],
+        "interaction_zone": [
+          365,
+          350,
+          170,
+          85
+        ],
+        "decor_zone": [
+          700,
+          315,
+          150,
+          110
+        ],
+        "pet_roam_band": [
+          280,
+          315,
+          360,
+          135
+        ],
+        "near_occluder": [
+          92,
+          350,
+          190,
+          90
+        ]
+      }
+    },
+    {
+      "species": "crow",
+      "path": "vnext/artifacts/visual-review/20260505-habitat-anchor-depth-planning/qa/crow-anchor-depth-draft.png",
+      "objects": [
+        {
+          "asset": "branch_perch",
+          "path": "sprites_shared_runtime/items/toys_a/branch_perch.png",
+          "display": [
+            234,
+            350,
+            71,
+            65
+          ],
+          "role": "primary"
+        },
+        {
+          "asset": "seed_tray",
+          "path": "sprites_shared_runtime/items/containers/seed_tray.png",
+          "display": [
+            507,
+            383,
+            85,
+            42
+          ],
+          "role": "interaction"
+        },
+        {
+          "asset": "shiny_reward",
+          "path": "sprites_shared_runtime/items/food_birds/shiny_reward.png",
+          "display": [
+            735,
+            372,
+            85,
+            63
+          ],
+          "role": "decor"
+        }
+      ],
+      "anchors": {
+        "primary_anchor": [
+          175,
+          285,
+          190,
+          130
+        ],
+        "interaction_zone": [
+          475,
+          355,
+          150,
+          70
+        ],
+        "decor_zone": [
+          710,
+          365,
+          135,
+          70
+        ],
+        "pet_roam_band": [
+          235,
+          285,
+          280,
+          120
+        ],
+        "near_occluder": [
+          175,
+          340,
+          210,
+          65
+        ]
+      }
+    },
+    {
+      "species": "snake",
+      "path": "vnext/artifacts/visual-review/20260505-habitat-anchor-depth-planning/qa/snake-anchor-depth-draft.png",
+      "objects": [
+        {
+          "asset": "rock_basking_spot",
+          "path": "sprites_shared_runtime/items/toys_b/rock_basking_spot.png",
+          "display": [
+            183,
+            387,
+            83,
+            38
+          ],
+          "role": "primary"
+        },
+        {
+          "asset": "shallow_water_dish",
+          "path": "sprites_shared_runtime/items/containers/shallow_water_dish.png",
+          "display": [
+            494,
+            406,
+            41,
+            14
+          ],
+          "role": "interaction"
+        },
+        {
+          "asset": "moss_patch",
+          "path": "sprites_shared_runtime/items/utility/moss_patch.png",
+          "display": [
+            739,
+            374,
+            77,
+            56
+          ],
+          "role": "decor"
+        }
+      ],
+      "anchors": {
+        "primary_anchor": [
+          125,
+          350,
+          200,
+          75
+        ],
+        "interaction_zone": [
+          430,
+          350,
+          170,
+          70
+        ],
+        "decor_zone": [
+          710,
+          350,
+          135,
+          80
+        ],
+        "pet_roam_band": [
+          260,
+          315,
+          430,
+          125
+        ],
+        "near_occluder": [
+          120,
+          365,
+          205,
+          55
+        ]
+      }
+    },
+    {
+      "species": "frog",
+      "path": "vnext/artifacts/visual-review/20260505-habitat-anchor-depth-planning/qa/frog-anchor-depth-draft.png",
+      "objects": [
+        {
+          "asset": "pond_dish",
+          "path": "sprites_shared_runtime/items/containers/pond_dish.png",
+          "display": [
+            122,
+            378,
+            111,
+            47
+          ],
+          "role": "primary"
+        },
+        {
+          "asset": "bug_treat",
+          "path": "sprites_shared_runtime/items/food_birds/bug_treat.png",
+          "display": [
+            450,
+            381,
+            75,
+            49
+          ],
+          "role": "interaction"
+        },
+        {
+          "asset": "moss_patch",
+          "path": "sprites_shared_runtime/items/utility/moss_patch.png",
+          "display": [
+            734,
+            374,
+            77,
+            56
+          ],
+          "role": "decor"
+        }
+      ],
+      "anchors": {
+        "primary_anchor": [
+          85,
+          330,
+          185,
+          95
+        ],
+        "interaction_zone": [
+          410,
+          350,
+          155,
+          80
+        ],
+        "decor_zone": [
+          705,
+          350,
+          135,
+          80
+        ],
+        "pet_roam_band": [
+          260,
+          315,
+          410,
+          130
+        ],
+        "near_occluder": [
+          80,
+          360,
+          190,
+          65
+        ]
+      }
+    }
+  ]
+}

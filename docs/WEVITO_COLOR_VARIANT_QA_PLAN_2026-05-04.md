@@ -71,6 +71,48 @@ the color folders and frame volume exist
   -> verify palette quality and consistency instead
 ```
 
+Updated all-animal coverage packet:
+
+```text
+docs/WEVITO_ALL_ANIMAL_COLOR_VARIANT_COVERAGE_2026-05-05.md
+vnext/artifacts/visual-review/20260505-all-animal-color-variant-coverage/
+```
+
+Result:
+
+```text
+expected runtime color folders: 360
+actual runtime color folders: 360
+missing runtime color folders: 0
+frame count errors: 0
+QA sheets generated: 130
+```
+
+Portrait coverage is also complete:
+
+```text
+sprites_shared_runtime/portraits: 420 / 420
+sprites/portraits:                420 / 420
+```
+
+Follow-up folder fill:
+
+```text
+vnext/artifacts/visual-review/20260505-legacy-sprites-rat-orange-male-fill/
+```
+
+Result:
+
+```text
+sprites_runtime:            360 / 360 color folders
+sprites_authored:           360 / 360 color folders
+sprites_authored_verified:  360 / 360 color folders
+sprites:                    360 / 360 color folders
+```
+
+The only missing legacy folders were `rat / male / orange` for baby, teen, and
+adult under `sprites/`; these were filled from `sprites_authored`.
+
 ## First QA Target
 
 | Field | Value |
@@ -290,16 +332,13 @@ Stop palette work if:
 
 ## Current Recommendation
 
-Proceed with no-edit QA only:
+Proceed with no-edit QA review of the generated atlas:
 
 ```text
 next action
-  -> create or request contact sheets for goose/baby/female all six colors
-
-not yet
-  -> no broad recolor
-  -> no source-board repaint
-  -> no generated replacements
+  -> review all-animal QA atlas by species group
+  -> flag specific palette/readability problems
+  -> repair only defects, not whole species sets
 ```
 
 The structural color variant work is on track. The next job is proving that the

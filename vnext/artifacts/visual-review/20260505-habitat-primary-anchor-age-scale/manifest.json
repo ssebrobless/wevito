@@ -1,0 +1,221 @@
+{
+  "generated": "2026-05-05",
+  "scope": "review-only primary anchor age scale checks",
+  "records": [
+    {
+      "species": "goose",
+      "anchor": "pond_dish",
+      "path": "vnext/artifacts/visual-review/20260505-habitat-primary-anchor-age-scale/qa/goose-primary-anchor-age-scale.png",
+      "records": [
+        {
+          "age": "baby",
+          "pet_path": "sprites_runtime/goose/baby/female/blue/idle_00.png",
+          "pet_display": [
+            43,
+            51
+          ],
+          "anchor_display": [
+            111,
+            47
+          ]
+        },
+        {
+          "age": "teen",
+          "pet_path": "sprites_runtime/goose/teen/female/blue/idle_00.png",
+          "pet_display": [
+            54,
+            60
+          ],
+          "anchor_display": [
+            111,
+            47
+          ]
+        },
+        {
+          "age": "adult",
+          "pet_path": "sprites_runtime/goose/adult/female/blue/idle_00.png",
+          "pet_display": [
+            62,
+            67
+          ],
+          "anchor_display": [
+            111,
+            47
+          ]
+        }
+      ]
+    },
+    {
+      "species": "rat",
+      "anchor": "crate_hideout",
+      "path": "vnext/artifacts/visual-review/20260505-habitat-primary-anchor-age-scale/qa/rat-primary-anchor-age-scale.png",
+      "records": [
+        {
+          "age": "baby",
+          "pet_path": "sprites_runtime/rat/baby/female/blue/idle_00.png",
+          "pet_display": [
+            49,
+            35
+          ],
+          "anchor_display": [
+            120,
+            105
+          ]
+        },
+        {
+          "age": "teen",
+          "pet_path": "sprites_runtime/rat/teen/female/blue/idle_00.png",
+          "pet_display": [
+            48,
+            49
+          ],
+          "anchor_display": [
+            120,
+            105
+          ]
+        },
+        {
+          "age": "adult",
+          "pet_path": "sprites_runtime/rat/adult/female/blue/idle_00.png",
+          "pet_display": [
+            69,
+            40
+          ],
+          "anchor_display": [
+            120,
+            105
+          ]
+        }
+      ]
+    },
+    {
+      "species": "crow",
+      "anchor": "branch_perch",
+      "path": "vnext/artifacts/visual-review/20260505-habitat-primary-anchor-age-scale/qa/crow-primary-anchor-age-scale.png",
+      "records": [
+        {
+          "age": "baby",
+          "pet_path": "sprites_runtime/crow/baby/female/blue/idle_00.png",
+          "pet_display": [
+            45,
+            50
+          ],
+          "anchor_display": [
+            71,
+            65
+          ]
+        },
+        {
+          "age": "teen",
+          "pet_path": "sprites_runtime/crow/teen/female/blue/idle_00.png",
+          "pet_display": [
+            55,
+            59
+          ],
+          "anchor_display": [
+            71,
+            65
+          ]
+        },
+        {
+          "age": "adult",
+          "pet_path": "sprites_runtime/crow/adult/female/blue/idle_00.png",
+          "pet_display": [
+            73,
+            58
+          ],
+          "anchor_display": [
+            71,
+            65
+          ]
+        }
+      ]
+    },
+    {
+      "species": "snake",
+      "anchor": "rock_basking_spot",
+      "path": "vnext/artifacts/visual-review/20260505-habitat-primary-anchor-age-scale/qa/snake-primary-anchor-age-scale.png",
+      "records": [
+        {
+          "age": "baby",
+          "pet_path": "sprites_runtime/snake/baby/female/blue/idle_00.png",
+          "pet_display": [
+            52,
+            37
+          ],
+          "anchor_display": [
+            83,
+            38
+          ]
+        },
+        {
+          "age": "teen",
+          "pet_path": "sprites_runtime/snake/teen/female/blue/idle_00.png",
+          "pet_display": [
+            45,
+            45
+          ],
+          "anchor_display": [
+            83,
+            38
+          ]
+        },
+        {
+          "age": "adult",
+          "pet_path": "sprites_runtime/snake/adult/female/blue/idle_00.png",
+          "pet_display": [
+            71,
+            53
+          ],
+          "anchor_display": [
+            83,
+            38
+          ]
+        }
+      ]
+    },
+    {
+      "species": "frog",
+      "anchor": "pond_dish",
+      "path": "vnext/artifacts/visual-review/20260505-habitat-primary-anchor-age-scale/qa/frog-primary-anchor-age-scale.png",
+      "records": [
+        {
+          "age": "baby",
+          "pet_path": "sprites_runtime/frog/baby/female/blue/idle_00.png",
+          "pet_display": [
+            46,
+            40
+          ],
+          "anchor_display": [
+            111,
+            47
+          ]
+        },
+        {
+          "age": "teen",
+          "pet_path": "sprites_runtime/frog/teen/female/blue/idle_00.png",
+          "pet_display": [
+            57,
+            53
+          ],
+          "anchor_display": [
+            111,
+            47
+          ]
+        },
+        {
+          "age": "adult",
+          "pet_path": "sprites_runtime/frog/adult/female/blue/idle_00.png",
+          "pet_display": [
+            76,
+            64
+          ],
+          "anchor_display": [
+            111,
+            47
+          ]
+        }
+      ]
+    }
+  ]
+}

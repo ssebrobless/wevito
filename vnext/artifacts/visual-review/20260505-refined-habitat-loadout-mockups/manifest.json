@@ -1,0 +1,181 @@
+{
+  "generated": "2026-05-05",
+  "scope": "review-only refined three-object habitat mockups",
+  "records": [
+    {
+      "species": "goose",
+      "path": "vnext/artifacts/visual-review/20260505-refined-habitat-loadout-mockups/qa/goose-refined-three-object-loadout.png",
+      "environment": "sprites_shared_runtime/environment/goose.png",
+      "pet": "sprites_runtime/goose/adult/female/blue/idle_00.png",
+      "objects": [
+        {
+          "role": "primary",
+          "asset": "pond_dish",
+          "path": "sprites_shared_runtime/items/containers/pond_dish.png",
+          "display_size": [
+            111,
+            47
+          ]
+        },
+        {
+          "role": "interaction",
+          "asset": "ball",
+          "path": "sprites_shared_runtime/items/toys_a/ball.png",
+          "display_size": [
+            31,
+            33
+          ]
+        },
+        {
+          "role": "decor",
+          "asset": "pebble_cluster",
+          "path": "sprites_shared_runtime/items/utility/pebble_cluster.png",
+          "display_size": [
+            83,
+            61
+          ]
+        }
+      ]
+    },
+    {
+      "species": "rat",
+      "path": "vnext/artifacts/visual-review/20260505-refined-habitat-loadout-mockups/qa/rat-refined-three-object-loadout.png",
+      "environment": "sprites_shared_runtime/environment/rat.png",
+      "pet": "sprites_runtime/rat/adult/female/blue/idle_00.png",
+      "objects": [
+        {
+          "role": "primary",
+          "asset": "crate_hideout",
+          "path": "sprites_shared_runtime/items/toys_b/crate_hideout.png",
+          "display_size": [
+            124,
+            108
+          ]
+        },
+        {
+          "role": "interaction",
+          "asset": "snack_bowl",
+          "path": "sprites_shared_runtime/items/food_omnivore/snack_bowl.png",
+          "display_size": [
+            73,
+            47
+          ]
+        },
+        {
+          "role": "decor",
+          "asset": "storage_basket",
+          "path": "sprites_shared_runtime/items/utility/storage_basket.png",
+          "display_size": [
+            97,
+            59
+          ]
+        }
+      ]
+    },
+    {
+      "species": "crow",
+      "path": "vnext/artifacts/visual-review/20260505-refined-habitat-loadout-mockups/qa/crow-refined-three-object-loadout.png",
+      "environment": "sprites_shared_runtime/environment/crow.png",
+      "pet": "sprites_runtime/crow/adult/female/blue/idle_00.png",
+      "objects": [
+        {
+          "role": "primary",
+          "asset": "branch_perch",
+          "path": "sprites_shared_runtime/items/toys_a/branch_perch.png",
+          "display_size": [
+            71,
+            65
+          ]
+        },
+        {
+          "role": "interaction",
+          "asset": "seed_tray",
+          "path": "sprites_shared_runtime/items/containers/seed_tray.png",
+          "display_size": [
+            85,
+            42
+          ]
+        },
+        {
+          "role": "decor",
+          "asset": "shiny_reward",
+          "path": "sprites_shared_runtime/items/food_birds/shiny_reward.png",
+          "display_size": [
+            85,
+            63
+          ]
+        }
+      ]
+    },
+    {
+      "species": "snake",
+      "path": "vnext/artifacts/visual-review/20260505-refined-habitat-loadout-mockups/qa/snake-refined-three-object-loadout.png",
+      "environment": "sprites_shared_runtime/environment/snake.png",
+      "pet": "sprites_runtime/snake/adult/female/blue/idle_00.png",
+      "objects": [
+        {
+          "role": "primary",
+          "asset": "rock_basking_spot",
+          "path": "sprites_shared_runtime/items/toys_b/rock_basking_spot.png",
+          "display_size": [
+            83,
+            38
+          ]
+        },
+        {
+          "role": "interaction",
+          "asset": "shallow_water_dish",
+          "path": "sprites_shared_runtime/items/containers/shallow_water_dish.png",
+          "display_size": [
+            41,
+            14
+          ]
+        },
+        {
+          "role": "decor",
+          "asset": "moss_patch",
+          "path": "sprites_shared_runtime/items/utility/moss_patch.png",
+          "display_size": [
+            77,
+            56
+          ]
+        }
+      ]
+    },
+    {
+      "species": "frog",
+      "path": "vnext/artifacts/visual-review/20260505-refined-habitat-loadout-mockups/qa/frog-refined-three-object-loadout.png",
+      "environment": "sprites_shared_runtime/environment/frog.png",
+      "pet": "sprites_runtime/frog/adult/female/blue/idle_00.png",
+      "objects": [
+        {
+          "role": "primary",
+          "asset": "pond_dish",
+          "path": "sprites_shared_runtime/items/containers/pond_dish.png",
+          "display_size": [
+            111,
+            47
+          ]
+        },
+        {
+          "role": "interaction",
+          "asset": "bug_treat",
+          "path": "sprites_shared_runtime/items/food_birds/bug_treat.png",
+          "display_size": [
+            75,
+            49
+          ]
+        },
+        {
+          "role": "decor",
+          "asset": "moss_patch",
+          "path": "sprites_shared_runtime/items/utility/moss_patch.png",
+          "display_size": [
+            77,
+            56
+          ]
+        }
+      ]
+    }
+  ]
+}

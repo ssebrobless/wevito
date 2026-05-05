@@ -68,6 +68,23 @@ missing runtime variant folders: 0
 color folders per species: 36
 ```
 
+Updated coverage audit:
+
+```text
+docs/WEVITO_ALL_ANIMAL_COLOR_VARIANT_COVERAGE_2026-05-05.md
+```
+
+Result:
+
+```text
+expected runtime color folders: 360
+actual runtime color folders: 360
+missing runtime color folders: 0
+frame count errors: 0
+sprites_shared_runtime portrait variants: 420 / 420
+sprites portrait variants: 420 / 420
+```
+
 Interpretation:
 
 - The runtime directory shape for color variants is present.
