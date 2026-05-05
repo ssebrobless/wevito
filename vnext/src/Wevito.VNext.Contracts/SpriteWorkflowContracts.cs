@@ -1,0 +1,82 @@
+namespace Wevito.VNext.Contracts;
+
+public enum SpriteProofSurface
+{
+    Godot,
+    VNext,
+    ContactSheet,
+    PreviewGif,
+    StaticReport
+}
+
+public enum AnimationCandidateState
+{
+    Draft,
+    Generated,
+    Validated,
+    AwaitingReview,
+    AcceptedForApplyProbe,
+    Rejected,
+    Paused
+}
+
+public enum ApplyProofState
+{
+    Planned,
+    DryRunPassed,
+    Applied,
+    ProofPassed,
+    RolledBack,
+    Failed
+}
+
+public sealed record SpriteRowKey(
+    string Species,
+    PetAgeStage AgeStage,
+    PetGender Gender,
+    string ColorVariant,
+    string Family);
+
+public sealed record SpriteFrameGeometry(
+    int Width,
+    int Height);
+
+public sealed record SpriteFrameManifest(
+    string FrameId,
+    string RelativePath,
+    string Sha256,
+    SpriteFrameGeometry Geometry);
+
+public sealed record SpriteRowManifest(
+    SpriteRowKey Key,
+    int ExpectedFrameCount,
+    IReadOnlyList<SpriteFrameManifest> Frames,
+    bool IsOptionalFamily = false,
+    string SourceManifestPath = "",
+    string Notes = "");
+
+public sealed record AnimationCandidateManifest(
+    Guid Id,
+    SpriteRowKey Target,
+    AnimationCandidateState State,
+    IReadOnlyList<string> CandidateFramePaths,
+    SpriteFrameGeometry RuntimeFrameGeometry,
+    string Provider = "",
+    string SourceManifestPath = "",
+    string ValidationReportPath = "",
+    string VisualProofPath = "",
+    bool UsesRuntimePropOverlay = false,
+    DateTimeOffset CreatedAtUtc = default);
+
+public sealed record ApplyProofManifest(
+    Guid Id,
+    SpriteRowKey Target,
+    ApplyProofState State,
+    IReadOnlyDictionary<string, string> BackupBeforeApplyHashes,
+    IReadOnlyDictionary<string, string> AfterApplyHashes,
+    IReadOnlyList<SpriteProofSurface> ProofSurfaces,
+    string DryRunReportPath = "",
+    string RollbackProcedurePath = "",
+    string ProofReportPath = "",
+    DateTimeOffset CreatedAtUtc = default,
+    DateTimeOffset UpdatedAtUtc = default);

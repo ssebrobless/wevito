@@ -10,6 +10,7 @@ issue_run-latest.txt
 nul
 __pycache__/
 *.pyc
+artifacts/
 tools/desktop_bridge/bin/
 tools/desktop_bridge/obj/
 tools/desktop_bridge/publish/

@@ -12,6 +12,32 @@ var animation_timer: float = 0.0
 var animation_speed: float = 0.25  # seconds per frame
 const SPRITE_SCALE := Vector2(3, 3)
 const HATCH_DURATION_SEC := 3.0
+const PET_SPRITE_ROOTS := ["res://sprites_runtime", "res://sprites"]
+const SHARED_SPRITE_ROOTS := ["res://sprites_shared_runtime", "res://sprites"]
+const REQUIRED_ANIMATIONS := ["idle", "walk", "eat", "happy", "sad", "sleep", "sick", "bathe"]
+const EXPANDED_OPTIONAL_ANIMATIONS := [
+	"drink",
+	"play_ball",
+	"hold_ball",
+	"carry_ball_walk",
+	"carry_ball_run",
+	"pickup_ball",
+	"drop_ball"
+]
+const ACTION_ANIMATION_FALLBACKS := {
+	"feed": ["eat", "idle"],
+	"drink": ["drink", "eat", "idle"],
+	"pet": ["happy", "idle"],
+	"rest": ["sleep", "idle"],
+	"bathe": ["bathe", "happy", "idle"],
+	"groom": ["happy", "idle"],
+	"exercise": ["walk", "idle"],
+	"play_ball": ["play_ball", "happy", "walk", "idle"],
+	"fetch_ball": ["carry_ball_run", "carry_ball_walk", "play_ball", "walk", "idle"],
+	"hold_ball": ["hold_ball", "happy", "idle"],
+	"pickup_ball": ["pickup_ball", "play_ball", "happy", "idle"],
+	"drop_ball": ["drop_ball", "happy", "idle"]
+}
 const STAGE_SCALE_MULTIPLIERS := {
 	0: 1.0,
 	1: 1.0,
@@ -43,6 +69,7 @@ var _floor_y: float = 280.0
 var _idle_jump_timer: float = 6.0
 var _home_lock_timer: float = 0.0
 var _resume_wandering_after_home_lock: bool = false
+var _current_action_family: String = "home"
 
 # Sprite storage
 var _sprites: Dictionary = {}
@@ -132,8 +159,8 @@ func setup(data: PetData):
 func load_egg_frames():
 	_egg_frames.clear()
 	for frame in range(5):
-		var frame_path = "res://sprites/egg/egg_%02d.png" % frame
-		if ResourceLoader.exists(frame_path):
+		var frame_path = _resolve_shared_sprite_path("egg/egg_%02d.png" % frame)
+		if frame_path != "":
 			var tex = _load_texture(frame_path)
 			if tex:
 				_egg_frames.append(tex)
@@ -164,6 +191,8 @@ func move_to_home(home_x: float, hold_seconds: float = 0.0, resume_wandering_aft
 	current_animation = "walk"
 
 func _load_texture(path: String) -> Texture2D:
+	if path == "":
+		return null
 	var lower_path = path.to_lower()
 	var absolute_path = ProjectSettings.globalize_path(path)
 	if not OS.has_feature("editor"):
@@ -184,6 +213,16 @@ func _load_texture(path: String) -> Texture2D:
 		return null
 	return null
 
+func _resource_or_file_exists(path: String) -> bool:
+	return ResourceLoader.exists(path) or FileAccess.file_exists(ProjectSettings.globalize_path(path))
+
+func _resolve_shared_sprite_path(relative_path: String) -> String:
+	for root in SHARED_SPRITE_ROOTS:
+		var candidate = root + "/" + relative_path
+		if _resource_or_file_exists(candidate):
+			return candidate
+	return ""
+
 func load_sprites():
 	if pet_data == null:
 		return
@@ -193,32 +232,23 @@ func load_sprites():
 	var color = pet_data.egg_color
 	var age = _animation_age_key()
 	
-	# Try primary color, then fallbacks
-	var colors_to_try = [color, "blue", "yellow", "indigo", "green", "purple"]
 	var base_path = ""
 	
-	for try_color in colors_to_try:
-		var age_test_path = "res://sprites/" + animal + "/" + age + "/" + gender + "/" + try_color + "/idle_00.png"
-		var legacy_test_path = "res://sprites/" + animal + "/" + gender + "/" + try_color + "/idle_00.png"
-		if ResourceLoader.exists(age_test_path):
-			base_path = "res://sprites/" + animal + "/" + age + "/" + gender + "/" + try_color + "/"
-			if try_color != color:
-				print("Wevito: Color '" + color + "' not found for " + age + ", using '" + try_color + "'")
-			break
-		elif ResourceLoader.exists(legacy_test_path):
-			base_path = "res://sprites/" + animal + "/" + gender + "/" + try_color + "/"
-			if try_color != color:
-				print("Wevito: Color '" + color + "' not found for " + age + ", using '" + try_color + "'")
+	for root in PET_SPRITE_ROOTS:
+		var age_test_path = root + "/" + animal + "/" + age + "/" + gender + "/" + color + "/idle_00.png"
+		if _resource_or_file_exists(age_test_path):
+			base_path = root + "/" + animal + "/" + age + "/" + gender + "/" + color + "/"
 			break
 	
 	if base_path == "":
-		print("Wevito ERROR: No sprites found for " + animal + "/" + age + "/" + gender)
+		print("Wevito ERROR: No sprites found for " + animal + "/" + age + "/" + gender + "/" + color)
 		# Create a placeholder colored rectangle so pet is visible
 		_create_placeholder_sprite()
 		return
 	
-	# Load all animation frames - detect available frames per animation
-	var animations = ["idle", "walk", "eat", "happy", "sad", "sleep", "sick", "bathe"]
+	var animations := []
+	animations.append_array(REQUIRED_ANIMATIONS)
+	animations.append_array(EXPANDED_OPTIONAL_ANIMATIONS)
 	for anim in animations:
 		_sprites[anim] = []
 		# Try loading frames until we hit one that doesn't exist
@@ -231,7 +261,7 @@ func load_sprites():
 			else:
 				break  # No more frames
 		
-		if _sprites[anim].size() == 0:
+		if anim in REQUIRED_ANIMATIONS and _sprites[anim].size() == 0:
 			print("Wevito WARNING: No frames loaded for animation: " + anim)
 	
 	# Set initial sprite
@@ -289,15 +319,14 @@ func _process(delta):
 		PetState.ACTING:
 			pass  # Animation plays, wait for action to finish
 	
-	# Update animation state
-	update_animation_state()
+	if pet_state != PetState.ACTING:
+		update_animation_state()
 
 func move_to_environment():
 	# Get game_manager from parent (main_scene creates both pet and game_manager as children)
 	var main_scene = get_parent()
 	if main_scene and main_scene.has_method("get_pet_home_position_for_node"):
-		_target_position = main_scene.get_pet_home_position_for_node(self)
-		_target_position.y = _floor_y
+		_target_position = main_scene.get_pet_home_position_for_node(self, _current_action_family)
 		pet_data.target_position = _target_position
 		pet_state = PetState.MOVING_TO_ENV
 		current_animation = "walk"
@@ -308,35 +337,35 @@ func move_to_environment():
 		game_mgr = main_scene.get("game_manager")
 	if game_mgr and game_mgr.has_method("get_environment_position"):
 		_target_position = game_mgr.get_environment_position(pet_data.animal_type)
-		_target_position.y = _floor_y
 		pet_data.target_position = _target_position
 		pet_state = PetState.MOVING_TO_ENV
 		current_animation = "walk"
 
 func _update_movement_to_target(delta: float):
 	var speed = 80.0
-	var dx = _target_position.x - position.x
-	var distance = abs(dx)
+	var delta_to_target = _target_position - position
+	var distance = delta_to_target.length()
 	
 	if distance < 2.0:
 		_complete_move_to_target()
 	else:
-		position.x += sign(dx) * min(distance, speed * delta)
-		position.y = _floor_y
-		if abs(_target_position.x - position.x) < 2.0:
+		position += delta_to_target.normalized() * min(distance, speed * delta)
+		if position.distance_to(_target_position) < 2.0:
 			_complete_move_to_target()
 	
-	_set_horizontal_facing(dx)
+	_set_horizontal_facing(delta_to_target.x)
 
 func _complete_move_to_target():
-	position.x = _target_position.x
-	position.y = _floor_y
+	position = _target_position
+	if pet_data:
+		pet_data.position = position
 	pet_state = PetState.WANDERING
 	_interaction_timer = 0.0
 	if _home_lock_timer <= 0.0 and _resume_wandering_after_home_lock and not _wandering:
 		_resume_wandering_after_home_lock = false
 		_interaction_timer = 999.0
 		start_wandering()
+	_current_action_family = "home"
 
 func update_wandering(delta):
 	if _home_lock_timer > 0.0:
@@ -421,6 +450,7 @@ func update_animation_state():
 	elif pet_data.conditions.size() > 0:
 		new_anim = "sick"
 	
+	new_anim = _first_available_animation([new_anim, "idle"])
 	if new_anim != current_animation:
 		current_animation = new_anim
 		animation_frame = 0
@@ -454,23 +484,15 @@ func get_current_sprite_path() -> String:
 	return ""
 
 func perform_action(action: String):
+	_current_action_family = action
 	_interaction_timer = 0.0
 	pause_wandering()
 	pet_state = PetState.ACTING
 	
-	match action:
-		"feed":
-			current_animation = "eat"
-		"pet":
-			current_animation = "happy"
-		"rest":
-			current_animation = "sleep" if pet_data.is_sleeping else "idle"
-		"bathe":
-			current_animation = "bathe"
-		"groom":
-			current_animation = "happy"
-		"exercise":
-			current_animation = "walk"
+	if action == "rest" and pet_data and not pet_data.is_sleeping:
+		current_animation = _first_available_animation(["idle"])
+	else:
+		current_animation = _first_available_animation(ACTION_ANIMATION_FALLBACKS.get(action, [action, "idle"]))
 	
 	animation_frame = 0
 	_wander_timer = 1.0
@@ -479,3 +501,11 @@ func perform_action(action: String):
 	await get_tree().create_timer(1.5).timeout
 	if pet_state == PetState.ACTING:
 		move_to_environment()
+
+func _first_available_animation(candidates: Array) -> String:
+	for anim in candidates:
+		var anim_name = str(anim)
+		var frames = _sprites.get(anim_name, [])
+		if frames is Array and frames.size() > 0:
+			return anim_name
+	return "idle"

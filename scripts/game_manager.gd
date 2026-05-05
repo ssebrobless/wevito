@@ -49,6 +49,59 @@ const ENVIRONMENT_POSITIONS = {
 	"lake": Vector2(200, 290)
 }
 
+const HABITAT_INTERACTION_DATA = {
+	"rat": {
+		"primary_object": "crate_hideout",
+		"interaction": "enter_hideout",
+		"anchors": {"home": Vector2(0.42, 0.82), "rest": Vector2(0.38, 0.80), "feed": Vector2(0.62, 0.84), "drink": Vector2(0.62, 0.84), "play": Vector2(0.52, 0.80)}
+	},
+	"crow": {
+		"primary_object": "branch_perch",
+		"interaction": "perch",
+		"anchors": {"home": Vector2(0.50, 0.62), "rest": Vector2(0.50, 0.58), "feed": Vector2(0.62, 0.78), "drink": Vector2(0.62, 0.78), "play": Vector2(0.48, 0.76)}
+	},
+	"fox": {
+		"primary_object": "log_shelter",
+		"interaction": "enter_burrow",
+		"anchors": {"home": Vector2(0.46, 0.82), "rest": Vector2(0.42, 0.82), "feed": Vector2(0.62, 0.84), "drink": Vector2(0.62, 0.84), "play": Vector2(0.52, 0.80)}
+	},
+	"snake": {
+		"primary_object": "rock_basking_spot",
+		"interaction": "coil_on_rock",
+		"anchors": {"home": Vector2(0.48, 0.78), "rest": Vector2(0.50, 0.72), "feed": Vector2(0.60, 0.82), "drink": Vector2(0.58, 0.84), "play": Vector2(0.50, 0.80)}
+	},
+	"deer": {
+		"primary_object": "hay_bundle",
+		"interaction": "graze",
+		"anchors": {"home": Vector2(0.48, 0.82), "rest": Vector2(0.44, 0.82), "feed": Vector2(0.64, 0.82), "drink": Vector2(0.62, 0.84), "play": Vector2(0.54, 0.80)}
+	},
+	"frog": {
+		"primary_object": "pond_dish",
+		"interaction": "perch_or_enter_water",
+		"anchors": {"home": Vector2(0.48, 0.80), "rest": Vector2(0.44, 0.76), "feed": Vector2(0.60, 0.82), "drink": Vector2(0.58, 0.84), "play": Vector2(0.50, 0.78)}
+	},
+	"pigeon": {
+		"primary_object": "hanging_feeder",
+		"interaction": "perch_ledge",
+		"anchors": {"home": Vector2(0.50, 0.66), "rest": Vector2(0.50, 0.62), "feed": Vector2(0.62, 0.74), "drink": Vector2(0.62, 0.82), "play": Vector2(0.48, 0.76)}
+	},
+	"raccoon": {
+		"primary_object": "food_crate",
+		"interaction": "rummage",
+		"anchors": {"home": Vector2(0.44, 0.82), "rest": Vector2(0.40, 0.82), "feed": Vector2(0.62, 0.84), "drink": Vector2(0.62, 0.84), "play": Vector2(0.52, 0.80)}
+	},
+	"squirrel": {
+		"primary_object": "stump_perch",
+		"interaction": "perch_or_climb",
+		"anchors": {"home": Vector2(0.50, 0.66), "rest": Vector2(0.50, 0.62), "feed": Vector2(0.62, 0.78), "drink": Vector2(0.62, 0.82), "play": Vector2(0.48, 0.76)}
+	},
+	"goose": {
+		"primary_object": "shallow_water_dish",
+		"interaction": "enter_water",
+		"anchors": {"home": Vector2(0.48, 0.80), "rest": Vector2(0.44, 0.78), "feed": Vector2(0.62, 0.82), "drink": Vector2(0.60, 0.84), "play": Vector2(0.50, 0.78)}
+	}
+}
+
 var pets: Array[Pet] = []
 var pet_datas: Array[PetData] = []
 var active_pet_index: int = 0
@@ -592,7 +645,7 @@ func perform_action(action: String) -> Dictionary:
 			else:
 				pd.hydration = min(100.0, pd.hydration + 22.0)
 				pd.water_bowl_level = max(0.0, pd.water_bowl_level - 10.0)
-				pet.perform_action("feed")
+				pet.perform_action("drink")
 				result.message = "Hydration restored. +Water."
 		"feed_forage":
 			var forage_ticks = randi_range(2, 5)
@@ -620,7 +673,7 @@ func perform_action(action: String) -> Dictionary:
 					pd.conditions.erase("anxiety")
 			pet.perform_action("pet")
 			result.message = "Comfort talk complete. +Love."
-		"pet_play", "exercise_play":
+		"pet_play", "exercise_play", "fetch_ball":
 			var refusal = 0.0
 			if pd.affection < 20:
 				refusal = 0.5
@@ -635,8 +688,8 @@ func perform_action(action: String) -> Dictionary:
 				pd.affection = min(100.0, pd.affection + 7.0)
 				pd.energy = max(0.0, pd.energy - 5.0)
 				pd.hunger = max(0.0, pd.hunger - 3.0)
-				pet.perform_action("exercise")
-				result.message = "Play session complete. +Joy, +Fit, -Energy."
+				pet.perform_action("fetch_ball" if action == "fetch_ball" else "play_ball")
+				result.message = "Fetch complete. +Joy, +Fit, -Energy." if action == "fetch_ball" else "Play session complete. +Joy, +Fit, -Energy."
 		"exercise_workout":
 			pd.fitness = min(100.0, pd.fitness + 18.0)
 			pd.health = min(100.0, pd.health + 3.0)
@@ -698,6 +751,31 @@ func get_environment_position(animal_type: String) -> Vector2:
 	var env = ANIMAL_DATA.get(animal_type, {}).get("environment", "sewers")
 	return ENVIRONMENT_POSITIONS.get(env, ENVIRONMENT_POSITIONS["sewers"])
 
+func get_habitat_interaction_data(animal_type: String) -> Dictionary:
+	return HABITAT_INTERACTION_DATA.get(animal_type, {})
+
+func get_habitat_anchor(animal_type: String, action_family: String = "home") -> Vector2:
+	var habitat = get_habitat_interaction_data(animal_type)
+	var anchors = habitat.get("anchors", {})
+	var normalized = normalize_action_family(action_family)
+	if anchors.has(normalized):
+		return anchors[normalized]
+	return anchors.get("home", Vector2(0.5, 0.82))
+
+func get_habitat_interaction_name(animal_type: String) -> String:
+	return str(get_habitat_interaction_data(animal_type).get("interaction", "stand"))
+
+func normalize_action_family(action_family: String) -> String:
+	if action_family == "drink" or action_family == "feed_hydrate":
+		return "drink"
+	if action_family.begins_with("feed_") or action_family == "feed":
+		return "feed"
+	if action_family == "rest" or action_family == "rest_toggle":
+		return "rest"
+	if action_family == "play_ball" or action_family == "fetch_ball" or action_family.begins_with("pet_") or action_family.begins_with("exercise_"):
+		return "play"
+	return "home"
+
 func get_animal_innate_condition(animal_type: String) -> String:
 	return ANIMAL_DATA.get(animal_type, {}).get("innate_condition", "")
 
@@ -757,7 +835,7 @@ func check_water_acceptance(pet_index: int) -> bool:
 	var pd = pet_datas[pet_index]
 	
 	# Thirsty
-	if pd.energy < 30:
+	if pd.hydration < 80:
 		return true
 	
 	# 50% chance otherwise
@@ -799,6 +877,8 @@ func apply_food(pet_index: int, food_type: String) -> bool:
 	var value = food_data.get("value", 10)
 	
 	pd.set(stat, min(100.0, pd.get(stat) + value))
+	if pet_index < pets.size() and pets[pet_index]:
+		pets[pet_index].perform_action("feed")
 	return true
 
 func apply_water(pet_index: int) -> bool:
@@ -811,6 +891,8 @@ func apply_water(pet_index: int) -> bool:
 	var pd = pet_datas[pet_index]
 	pd.hydration = min(100.0, pd.hydration + 25)
 	pd.water_bowl_level = max(0.0, pd.water_bowl_level - 10)
+	if pet_index < pets.size() and pets[pet_index]:
+		pets[pet_index].perform_action("drink")
 	return true
 
 func refill_water_bowl(pet_index: int) -> bool:

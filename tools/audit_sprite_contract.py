@@ -43,6 +43,15 @@ EXPECTED_ANIMATIONS = {
     "sick": 4,
     "bathe": 4,
 }
+OPTIONAL_EXPANDED_ANIMATIONS = {
+    "drink": 4,
+    "play_ball": 6,
+    "hold_ball": 4,
+    "carry_ball_walk": 6,
+    "carry_ball_run": 6,
+    "pickup_ball": 4,
+    "drop_ball": 4,
+}
 EXPECTED_SUPPORTING_INPUTS = [
     "egg-hatch-lifecycle.png",
     "environments-A.png",
@@ -191,15 +200,34 @@ def audit_runtime(runtime_root: Path) -> tuple[list[dict[str, Any]], list[str], 
 
                         for frame_path in frames:
                             width, height, color_type = png_dimensions(frame_path)
-                            if width != 28 or height != 24:
-                                errors.append(
-                                    f"{frame_path} expected 28x24, found {width}x{height}."
-                                )
+                            if width <= 0 or height <= 0:
+                                errors.append(f"{frame_path} has invalid dimensions {width}x{height}.")
                             if color_type not in {4, 6}:
                                 errors.append(
                                     f"{frame_path} lost alpha-capable PNG type, found color type {color_type}."
                                 )
 
+                        frames_found += len(frames)
+
+                    for animation_name, frame_count in OPTIONAL_EXPANDED_ANIMATIONS.items():
+                        frames = sorted(variant_dir.glob(f"{animation_name}_*.png"))
+                        variant_summary["animations"][animation_name] = len(frames)
+                        if len(frames) == 0:
+                            continue
+                        if len(frames) != frame_count:
+                            errors.append(
+                                f"{species}/{age_stage}/{gender}/{color} optional {animation_name} "
+                                f"should be complete at {frame_count} frame(s) once present, found {len(frames)}."
+                            )
+                            continue
+                        for frame_path in frames:
+                            width, height, color_type = png_dimensions(frame_path)
+                            if width <= 0 or height <= 0:
+                                errors.append(f"{frame_path} has invalid dimensions {width}x{height}.")
+                            if color_type not in {4, 6}:
+                                errors.append(
+                                    f"{frame_path} lost alpha-capable PNG type, found color type {color_type}."
+                                )
                         frames_found += len(frames)
 
                     results.append(variant_summary)

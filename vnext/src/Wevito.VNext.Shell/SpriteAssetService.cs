@@ -16,6 +16,7 @@ internal sealed class SpriteAssetService
     private readonly bool _preferAuthoredAll;
     private readonly ConcurrentDictionary<string, BitmapImage?> _imageCache = new(StringComparer.OrdinalIgnoreCase);
     private readonly ConcurrentDictionary<string, IReadOnlyList<string>> _animationCache = new(StringComparer.OrdinalIgnoreCase);
+    private readonly ConcurrentDictionary<string, byte> _traceOnceCache = new(StringComparer.OrdinalIgnoreCase);
 
     public SpriteAssetService(
         string authoredPetSpriteRoot,
@@ -37,13 +38,31 @@ internal sealed class SpriteAssetService
     {
         var animationId = pet.CurrentAnimationState.ToString().ToLowerInvariant();
         var frames = GetAnimationFrames(pet, animationId);
-        if (frames.Count == 0 && !string.Equals(animationId, "idle", StringComparison.Ordinal))
+        var fallbackAnimationId = GetFallbackAnimationId(pet.CurrentAnimationState);
+        if (frames.Count == 0 && !string.Equals(animationId, fallbackAnimationId, StringComparison.Ordinal))
         {
+            TraceOnce(
+                "sprite-fallback",
+                $"{pet.SpeciesId}|{pet.AgeStage}|{pet.Gender}|{pet.ColorVariant}|{animationId}|{fallbackAnimationId}",
+                $"species={pet.SpeciesId} age={pet.AgeStage} gender={pet.Gender} color={pet.ColorVariant} anim={animationId} fallback={fallbackAnimationId}");
+            frames = GetAnimationFrames(pet, fallbackAnimationId);
+        }
+
+        if (frames.Count == 0 && !string.Equals(fallbackAnimationId, "idle", StringComparison.Ordinal))
+        {
+            TraceOnce(
+                "sprite-fallback",
+                $"{pet.SpeciesId}|{pet.AgeStage}|{pet.Gender}|{pet.ColorVariant}|{animationId}|idle",
+                $"species={pet.SpeciesId} age={pet.AgeStage} gender={pet.Gender} color={pet.ColorVariant} anim={animationId} fallback=idle");
             frames = GetAnimationFrames(pet, "idle");
         }
 
         if (frames.Count == 0)
         {
+            TraceOnce(
+                "sprite-missing",
+                $"{pet.SpeciesId}|{pet.AgeStage}|{pet.Gender}|{pet.ColorVariant}|{animationId}",
+                $"species={pet.SpeciesId} age={pet.AgeStage} gender={pet.Gender} color={pet.ColorVariant} anim={animationId}");
             return null;
         }
 
@@ -111,6 +130,20 @@ internal sealed class SpriteAssetService
             "frog" => 3.0,
             _ => 2.0
         };
+    }
+
+    public void InvalidateCache(string path)
+    {
+        var fullPath = Path.GetFullPath(path);
+        _imageCache.TryRemove(fullPath, out _);
+
+        foreach (var entry in _animationCache)
+        {
+            if (entry.Value.Any(frame => string.Equals(Path.GetFullPath(frame), fullPath, StringComparison.OrdinalIgnoreCase)))
+            {
+                _animationCache.TryRemove(entry.Key, out _);
+            }
+        }
     }
 
     private IReadOnlyList<string> GetAnimationFrames(PetActor pet, string animationId)
@@ -224,6 +257,14 @@ internal sealed class SpriteAssetService
         });
     }
 
+    private void TraceOnce(string category, string key, string message)
+    {
+        if (_traceOnceCache.TryAdd($"{category}|{key}", 0))
+        {
+            TraceLog.Write(category, message);
+        }
+    }
+
     private static double GetFrameDuration(PetAnimationState animationState)
     {
         return animationState switch
@@ -235,7 +276,25 @@ internal sealed class SpriteAssetService
             PetAnimationState.Sick => 220,
             PetAnimationState.Sad => 260,
             PetAnimationState.Sleep => 420,
+            PetAnimationState.Waving => 150,
+            PetAnimationState.Jumping => 120,
+            PetAnimationState.Failed => 220,
+            PetAnimationState.Waiting => 300,
+            PetAnimationState.Review => 180,
             _ => 240
+        };
+    }
+
+    private static string GetFallbackAnimationId(PetAnimationState animationState)
+    {
+        return animationState switch
+        {
+            PetAnimationState.Waving => "happy",
+            PetAnimationState.Jumping => "happy",
+            PetAnimationState.Failed => "sad",
+            PetAnimationState.Waiting => "idle",
+            PetAnimationState.Review => "idle",
+            _ => animationState.ToString().ToLowerInvariant()
         };
     }
 }

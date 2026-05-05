@@ -357,7 +357,7 @@ public sealed class PetSimulationEngine
             > 1.25 => "aging fast",
             _ => "aging steady"
         };
-        return $"{lifePhase} · {pace}";
+        return $"{lifePhase} - {pace}";
     }
 
     private PetActor NormalizePet(PetActor pet)

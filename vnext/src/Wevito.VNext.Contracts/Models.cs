@@ -49,7 +49,12 @@ public enum PetAnimationState
     Sad,
     Sleep,
     Sick,
-    Bathe
+    Bathe,
+    Waving,
+    Jumping,
+    Failed,
+    Waiting,
+    Review
 }
 
 public enum PetStatusType
@@ -62,6 +67,33 @@ public enum PetStatusType
     Dirty,
     Lonely,
     Comforted
+}
+
+public enum PetWellbeingUrgency
+{
+    Stable,
+    Watch,
+    NeedsCare,
+    Critical
+}
+
+public enum PetDriveFamily
+{
+    SelfMaintenance,
+    SafetyAvoidance,
+    SocialConnection,
+    Rest,
+    Exploration
+}
+
+public enum PetEmotionChannel
+{
+    Relief,
+    Attachment,
+    Curiosity,
+    Agitation,
+    Exhaustion,
+    Threat
 }
 
 public sealed record PetPersonalityProfile(
@@ -96,6 +128,53 @@ public sealed record PetConditionRecord(
     string Id,
     int Severity = 1,
     bool IsInnate = false);
+
+public sealed record PetWellbeingSnapshot(
+    Guid PetId,
+    string PetName,
+    string SpeciesId,
+    PetAgeStage AgeStage,
+    PetGender Gender,
+    string ColorVariant,
+    PetWellbeingUrgency Urgency,
+    PetDriveFamily DominantDrive,
+    PetEmotionChannel DominantEmotion,
+    string Summary,
+    IReadOnlyDictionary<string, double> NeedPressures,
+    IReadOnlyList<string> PersonalityDescriptors,
+    IReadOnlyList<string> ActiveConditionIds,
+    IReadOnlyList<PetStatusType> Statuses);
+
+public sealed record PetDebugTruthReport(
+    DateTimeOffset GeneratedAtUtc,
+    CompanionMode Mode,
+    IReadOnlyList<PetDebugTruthPetEntry> Pets,
+    IReadOnlyList<PetDebugTruthActionEntry> Actions,
+    IReadOnlyList<string> Findings);
+
+public sealed record PetDebugTruthPetEntry(
+    Guid PetId,
+    string PetName,
+    string SpeciesId,
+    PetAgeStage AgeStage,
+    PetGender Gender,
+    string ColorVariant,
+    PetBehaviorState BehaviorState,
+    PetAnimationState VisibleAnimation,
+    PetAnimationState ExpectedAnimationHint,
+    PetWellbeingUrgency Urgency,
+    PetDriveFamily DominantDrive,
+    PetEmotionChannel DominantEmotion,
+    string Summary,
+    IReadOnlyList<PetStatusType> Statuses,
+    IReadOnlyList<string> PersonalityDescriptors,
+    IReadOnlyList<string> ActiveConditionIds);
+
+public sealed record PetDebugTruthActionEntry(
+    string ActionId,
+    string DisplayName,
+    bool IsEnabled,
+    string Reason);
 
 public sealed record ForegroundWindowInfo(
     int ProcessId,
@@ -188,4 +267,5 @@ public sealed record CompanionState(
     ToolSession ActiveTool,
     IReadOnlyList<PetActor> ActivePets,
     IReadOnlyList<BasketItem> BasketItems,
-    IReadOnlyDictionary<string, string> SettingsSnapshot);
+    IReadOnlyDictionary<string, string> SettingsSnapshot,
+    IReadOnlyList<TaskCard>? TaskCards = null);

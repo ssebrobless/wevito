@@ -61,6 +61,36 @@ public sealed class PetSimulationEngineTests
         Assert.Equal(PetAnimationState.Eat, updated.OverrideAnimationState);
     }
 
+    [Theory]
+    [InlineData(PetAnimationState.Waving)]
+    [InlineData(PetAnimationState.Jumping)]
+    [InlineData(PetAnimationState.Failed)]
+    [InlineData(PetAnimationState.Waiting)]
+    [InlineData(PetAnimationState.Review)]
+    public void Tick_PreservesActiveWorkCompanionAnimationOverrides(PetAnimationState animationState)
+    {
+        var now = DateTimeOffset.UtcNow;
+        var pet = new PetActor(
+            Guid.NewGuid(),
+            "Crow 1",
+            "crow",
+            CurrentAnimationState: PetAnimationState.Idle,
+            OverrideAnimationState: animationState,
+            OverrideAnimationEndsAtUtc: now.AddSeconds(3),
+            ActiveStatuses: []);
+
+        var updated = _engine.Tick(
+            [pet],
+            CompanionMode.Focused,
+            new RectInt(0, 922, 1920, 118),
+            now,
+            0.2).Single();
+
+        Assert.Equal(animationState, updated.CurrentAnimationState);
+        Assert.Equal(animationState, updated.OverrideAnimationState);
+        Assert.Equal(pet.OverrideAnimationEndsAtUtc, updated.OverrideAnimationEndsAtUtc);
+    }
+
     [Fact]
     public void Tick_WhenNeedsAreLow_AddsExpectedStatuses()
     {
@@ -171,6 +201,23 @@ public sealed class PetSimulationEngineTests
         var strongRate = _engine.CalculateAgingRate(strongCare);
 
         Assert.True(poorRate > strongRate);
+    }
+
+    [Fact]
+    public void DescribeAging_UsesAsciiSeparatorForShellText()
+    {
+        var pet = new PetActor(
+            Guid.NewGuid(),
+            "Crow 1",
+            "crow",
+            AgeStage: PetAgeStage.Teen,
+            BiologicalAgeMinutes: 120,
+            ActiveStatuses: []);
+
+        var description = _engine.DescribeAging(pet);
+
+        Assert.Contains(" - ", description);
+        Assert.DoesNotContain("·", description);
     }
 
     [Fact]

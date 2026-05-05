@@ -27,6 +27,7 @@ public sealed class DefaultStateFactory
             {
                 ["theme"] = "slate",
                 ["roamBandHeight"] = "112"
-            });
+            },
+            []);
     }
 }

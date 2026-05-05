@@ -249,6 +249,7 @@
                               Grid.Row="1"
                               automation:AutomationProperties.AutomationId="BasketGrid"
                               MouseDoubleClick="BasketGrid_OnMouseDoubleClick"
+                              SelectionChanged="BasketGrid_OnSelectionChanged"
                               AutoGenerateColumns="False"
                               HeadersVisibility="Column"
                               CanUserAddRows="False"
@@ -599,6 +600,202 @@
                                 Content="Open dev tools"
                                 Click="SettingsDevButton_OnClick" />
                     </UniformGrid>
+                </StackPanel>
+
+                <StackPanel x:Name="PetCommandPanel"
+                            Visibility="Collapsed">
+                    <TextBlock Text="Ask your pets"
+                               Foreground="#FFF0F4F5"
+                               FontSize="12"
+                               FontWeight="SemiBold" />
+                    <Grid Margin="0,5,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBox x:Name="PetCommandTextBox"
+                                 MinHeight="34"
+                                 Padding="8,6"
+                                 Background="#111A20"
+                                 BorderBrush="#4A6672"
+                                 Foreground="#FFF0F4F5"
+                                 CaretBrush="#FFF0F4F5"
+                                 automation:AutomationProperties.AutomationId="PetCommandTextBox"
+                                 TextWrapping="Wrap"
+                                 ToolTip="Example: @Scout summarize the sprite docs" />
+                        <Button x:Name="PetCommandSubmitButton"
+                                Grid.Column="1"
+                                Margin="8,0,0,0"
+                                Padding="10,5"
+                                Style="{StaticResource PopupButtonStyle}"
+                                automation:AutomationProperties.AutomationId="PetCommandSubmitButton"
+                                Content="PREPARE"
+                                Click="PetCommandSubmitButton_OnClick" />
+                    </Grid>
+                    <TextBlock x:Name="PetTaskCapabilityText"
+                               Margin="0,6,0,0"
+                               automation:AutomationProperties.AutomationId="PetTaskCapabilityText"
+                              Text="Preview-ready: spriteAudit, assetInventory, codeReview, codePatchPlan, buildProof plans, translateText preview, audioAssist status, screenCapture preview, petState, localDocs. Approval-gated: translation provider calls, normal audio volume/mute changes, screenshots. Locked: sprite import, generation, PNG mutation, prop anchors, build/proof execution, browser automation, recording, audio boosters/drivers/APOs."
+                               Foreground="#FF9FB7C4"
+                               FontSize="10"
+                               TextWrapping="Wrap" />
+
+                    <UniformGrid Margin="0,10,0,0"
+                                 Columns="3">
+                        <Border Margin="0,0,6,0"
+                                Background="#182A33"
+                                BorderBrush="#3F5863"
+                                BorderThickness="1"
+                                CornerRadius="10"
+                                Padding="7,5">
+                            <TextBlock x:Name="PetHelperOneText"
+                                       Foreground="#FFF0F4F5"
+                                       FontSize="10"
+                                       TextWrapping="Wrap"
+                                       Text="1. Waiting for pet" />
+                        </Border>
+                        <Border Margin="0,0,6,0"
+                                Background="#182A33"
+                                BorderBrush="#3F5863"
+                                BorderThickness="1"
+                                CornerRadius="10"
+                                Padding="7,5">
+                            <TextBlock x:Name="PetHelperTwoText"
+                                       Foreground="#FFF0F4F5"
+                                       FontSize="10"
+                                       TextWrapping="Wrap"
+                                       Text="2. Waiting for pet" />
+                        </Border>
+                        <Border Background="#182A33"
+                                BorderBrush="#3F5863"
+                                BorderThickness="1"
+                                CornerRadius="10"
+                                Padding="7,5">
+                            <TextBlock x:Name="PetHelperThreeText"
+                                       Foreground="#FFF0F4F5"
+                                       FontSize="10"
+                                       TextWrapping="Wrap"
+                                       Text="3. Waiting for pet" />
+                        </Border>
+                    </UniformGrid>
+
+                    <Border Margin="0,8,0,0"
+                            Background="#111A20"
+                            BorderBrush="#3F5863"
+                            BorderThickness="1"
+                            CornerRadius="10"
+                            Padding="7,5">
+                        <TextBlock x:Name="PetWellbeingSnapshotText"
+                                   automation:AutomationProperties.AutomationId="PetWellbeingSnapshotText"
+                                   Foreground="#FFBFE7FF"
+                                   FontSize="10"
+                                   TextWrapping="Wrap"
+                                   Text="Wellbeing: no pet snapshots available yet." />
+                    </Border>
+
+                    <Border Margin="0,8,0,0"
+                            Background="#14232B"
+                            BorderBrush="#3F5863"
+                            BorderThickness="1"
+                            CornerRadius="12"
+                            Padding="8">
+                        <StackPanel>
+                            <TextBlock Text="Current task"
+                                       Foreground="#FFF0F4F5"
+                                       FontSize="11"
+                                       FontWeight="SemiBold" />
+                            <TextBlock x:Name="PetCommandStatusText"
+                                       Margin="0,4,0,0"
+                                       Foreground="#FFBFE7FF"
+                                       FontSize="11"
+                                       TextWrapping="Wrap"
+                                       Text="Ready for a helper pet task." />
+                            <StackPanel x:Name="PetCommandResultPanel"
+                                        Visibility="Collapsed"
+                                        Margin="0,6,0,0">
+                                <TextBlock x:Name="PetCommandAssignedText"
+                                           Foreground="#FFF0F4F5"
+                                           FontSize="10"
+                                           TextWrapping="Wrap" />
+                                <TextBlock x:Name="PetCommandTaskKindText"
+                                           Margin="0,3,0,0"
+                                           Foreground="#FFD6DCDE"
+                                           FontSize="10"
+                                           TextWrapping="Wrap" />
+                                <TextBlock x:Name="PetCommandPolicyText"
+                                           Margin="0,3,0,0"
+                                           Foreground="#FFD6DCDE"
+                                           FontSize="10"
+                                           TextWrapping="Wrap" />
+                                <TextBlock x:Name="PetCommandTimelineText"
+                                           Margin="0,3,0,0"
+                                           Foreground="#FF9FB7C4"
+                                           FontSize="10"
+                                           TextWrapping="Wrap" />
+                            </StackPanel>
+                            <TextBlock x:Name="PetTaskNextActionText"
+                                       Margin="0,6,0,0"
+                                       automation:AutomationProperties.AutomationId="PetTaskNextActionText"
+                                       Foreground="#FFE1D6A8"
+                                       FontSize="10"
+                                       TextWrapping="Wrap"
+                                       Text="Next: prepare a task, then preview a report before anything can run." />
+                            <TextBlock x:Name="PetCommandQueueText"
+                                       Margin="0,6,0,0"
+                                       Foreground="#FF9FB7C4"
+                                       FontSize="10"
+                                       TextWrapping="Wrap"
+                                       Text="Queue: no saved cards yet." />
+                            <Grid Margin="0,8,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <ComboBox x:Name="PetTaskQueueComboBox"
+                                          MinHeight="28"
+                                          Style="{StaticResource PopupComboBoxStyle}"
+                                          automation:AutomationProperties.AutomationId="PetTaskQueueComboBox"
+                                          DisplayMemberPath="Label"
+                                          SelectedValuePath="Id"
+                                          SelectionChanged="PetTaskQueueComboBox_OnSelectionChanged" />
+                                <Button x:Name="PetTaskApproveButton"
+                                        Grid.Column="1"
+                                        Margin="8,0,0,0"
+                                        Padding="8,4"
+                                        Style="{StaticResource PopupButtonStyle}"
+                                        automation:AutomationProperties.AutomationId="PetTaskApproveButton"
+                                        Content="APPROVE"
+                                        Click="PetTaskApproveButton_OnClick" />
+                                <Button x:Name="PetTaskPreviewButton"
+                                        Grid.Column="2"
+                                        Margin="6,0,0,0"
+                                        Padding="8,4"
+                                        Style="{StaticResource PopupButtonStyle}"
+                                        automation:AutomationProperties.AutomationId="PetTaskPreviewButton"
+                                        Content="PREVIEW"
+                                        Click="PetTaskPreviewButton_OnClick" />
+                                <Button x:Name="PetTaskCancelButton"
+                                        Grid.Column="3"
+                                        Margin="6,0,0,0"
+                                        Padding="8,4"
+                                        Style="{StaticResource PopupDangerButtonStyle}"
+                                        automation:AutomationProperties.AutomationId="PetTaskCancelButton"
+                                        Content="CANCEL"
+                                        Click="PetTaskCancelButton_OnClick" />
+                                <Button x:Name="PetTaskExecuteButton"
+                                        Grid.Column="4"
+                                        Margin="6,0,0,0"
+                                        Padding="8,4"
+                                        Style="{StaticResource PopupButtonStyle}"
+                                        automation:AutomationProperties.AutomationId="PetTaskExecuteButton"
+                                        Content="RUN"
+                                        Click="PetTaskExecuteButton_OnClick" />
+                            </Grid>
+                        </StackPanel>
+                    </Border>
                 </StackPanel>
 
                 <ScrollViewer x:Name="DevPanel"

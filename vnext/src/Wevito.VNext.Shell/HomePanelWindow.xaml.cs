@@ -28,6 +28,8 @@ public partial class HomePanelWindow : Window
 
     public event Func<Task>? ToggleBasketRequested;
 
+    public event Func<Task>? ToggleHelpersRequested;
+
     public event Func<Task>? SaveRequested;
 
     public event Func<Task>? OpenSettingsRequested;
@@ -132,15 +134,18 @@ public partial class HomePanelWindow : Window
         LinkBinTabButton.FontWeight = state.ActiveTool.IsOpen && string.Equals(state.ActiveTool.ToolId, "basket", StringComparison.OrdinalIgnoreCase)
             ? FontWeights.SemiBold
             : FontWeights.Normal;
-        WebToolSlot2Button.Content = "EMPTY";
+        HelperTabButton.Content = state.ActiveTool.IsOpen && string.Equals(state.ActiveTool.ToolId, "helpers", StringComparison.OrdinalIgnoreCase) ? "PET TASKS ACTIVE" : "PET TASKS";
+        HelperTabButton.FontWeight = state.ActiveTool.IsOpen && string.Equals(state.ActiveTool.ToolId, "helpers", StringComparison.OrdinalIgnoreCase)
+            ? FontWeights.SemiBold
+            : FontWeights.Normal;
         WebToolSlot3Button.Content = "EMPTY";
         WebToolSlot4Button.Content = "EMPTY";
         WebToolSlot5Button.Content = "EMPTY";
         WebToolsHintText.Text = state.BasketItems.Count switch
         {
-            0 => "Link Bin is ready. Slots 2-5 are reserved for future tools.",
-            1 => "Link Bin has 1 saved link. Slots 2-5 are reserved.",
-            _ => $"Link Bin has {state.BasketItems.Count} saved links. Slots 2-5 are reserved."
+            0 => "Link Bin and Pet Tasks are ready. Remaining slots are reserved for future tools.",
+            1 => "Link Bin has 1 saved link. Pet Tasks can draft helper assignments.",
+            _ => $"Link Bin has {state.BasketItems.Count} saved links. Pet Tasks can draft helper assignments."
         };
         var focusPet = state.ActivePets.FirstOrDefault();
         StatusText.Text = showStatusSummary
@@ -254,6 +259,11 @@ public partial class HomePanelWindow : Window
         }
 
         if (await TryInvokeButtonAsync(LinkBinTabButton, localPoint, ToggleBasketRequested))
+        {
+            return true;
+        }
+
+        if (await TryInvokeButtonAsync(HelperTabButton, localPoint, ToggleHelpersRequested))
         {
             return true;
         }
@@ -1787,6 +1797,14 @@ public partial class HomePanelWindow : Window
         if (ToggleBasketRequested is not null)
         {
             await ToggleBasketRequested.Invoke();
+        }
+    }
+
+    private async void HelperTabButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (ToggleHelpersRequested is not null)
+        {
+            await ToggleHelpersRequested.Invoke();
         }
     }
 

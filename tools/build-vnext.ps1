@@ -1,6 +1,9 @@
 param(
     [ValidateSet("Debug", "Release")]
-    [string]$Configuration = "Release"
+    [string]$Configuration = "Release",
+    [switch]$SkipAssetPrep,
+    [switch]$SkipTests,
+    [int]$StepTimeoutSeconds = 0
 )
 
 $ErrorActionPreference = "Stop"
@@ -82,6 +85,56 @@ function Reset-Directory {
     New-Item -ItemType Directory -Path $Path -Force | Out-Null
 }
 
+function Invoke-BuildStep {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Name,
+        [Parameter(Mandatory = $true)]
+        [string]$FilePath,
+        [string[]]$Arguments = @()
+    )
+
+    Write-Host "[build-vnext] $Name"
+    $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
+    $processInfo = [System.Diagnostics.ProcessStartInfo]::new()
+    $processInfo.FileName = $FilePath
+    $processInfo.UseShellExecute = $false
+    $processInfo.Arguments = ($Arguments | ForEach-Object {
+            $argument = [string]$_
+            if ($argument -match '[\s"]') {
+                '"' + $argument.Replace('"', '\"') + '"'
+            }
+            else {
+                $argument
+            }
+        }) -join " "
+
+    $process = [System.Diagnostics.Process]::Start($processInfo)
+    if ($StepTimeoutSeconds -gt 0) {
+        $completed = $process.WaitForExit($StepTimeoutSeconds * 1000)
+        if (-not $completed) {
+            try {
+                $process.Kill($true)
+            }
+            catch {
+                $process.Kill()
+            }
+
+            throw "$Name timed out after $StepTimeoutSeconds seconds."
+        }
+    }
+    else {
+        $process.WaitForExit()
+    }
+
+    $stopwatch.Stop()
+    if ($process.ExitCode -ne 0) {
+        throw "$Name failed with exit code $($process.ExitCode)"
+    }
+
+    Write-Host ("[build-vnext] {0} completed in {1:n1}s" -f $Name, $stopwatch.Elapsed.TotalSeconds)
+}
+
 if (-not (Test-Path $Solution)) {
     throw "Missing vNext solution: $Solution"
 }
@@ -92,49 +145,50 @@ New-Item -ItemType Directory -Path $ArtifactsRoot -Force | Out-Null
 Reset-Directory -Path $BrokerOut
 Reset-Directory -Path $ShellOut
 
-python $CleanSharedScript `
-    --source (Join-Path $ProjectRoot "sprites") `
-    --output (Join-Path $ProjectRoot "sprites_shared_runtime") `
-    --clean-folders environment items status `
-    --copy-folders icons celestial portraits
-if ($LASTEXITCODE -ne 0) {
-    throw "Shared sprite cleanup failed with exit code $LASTEXITCODE"
+if ($SkipAssetPrep) {
+    Write-Host "[build-vnext] Skipping sprite asset preparation; using existing runtime assets."
+    if (-not $SkipTests) {
+        Write-Warning "Sprite runtime coverage tests will validate the existing runtime assets. Omit -SkipAssetPrep when you need to regenerate assets before testing."
+    }
+}
+else {
+    Invoke-BuildStep -Name "Clean shared sprite assets" -FilePath "python" -Arguments @(
+        $CleanSharedScript,
+        "--source", (Join-Path $ProjectRoot "sprites"),
+        "--output", (Join-Path $ProjectRoot "sprites_shared_runtime"),
+        "--clean-folders", "environment", "items", "status",
+        "--copy-folders", "icons", "celestial", "portraits"
+    )
+
+    Invoke-BuildStep -Name "Extract stage-safe props" -FilePath "python" -Arguments @(
+        $ExtractStagePropsScript,
+        "--source", (Join-Path $ProjectRoot "incoming_sprites"),
+        "--output", (Join-Path $ProjectRoot "sprites_shared_runtime")
+    )
+
+    Invoke-BuildStep -Name "Generate runtime pet sprites" -FilePath "python" -Arguments @(
+        $GeneratePetRuntimeScript,
+        "--source-root", (Join-Path $ProjectRoot "incoming_sprites"),
+        "--output-root", (Join-Path $ProjectRoot "sprites_runtime")
+    )
+
+    Invoke-BuildStep -Name "Clean runtime pet frames" -FilePath "python" -Arguments @(
+        $CleanPetRuntimeScript,
+        "--root", (Join-Path $ProjectRoot "sprites_runtime")
+    )
 }
 
-python $ExtractStagePropsScript `
-    --source (Join-Path $ProjectRoot "incoming_sprites") `
-    --output (Join-Path $ProjectRoot "sprites_shared_runtime")
-if ($LASTEXITCODE -ne 0) {
-    throw "Stage-safe prop extraction failed with exit code $LASTEXITCODE"
+if ($SkipTests) {
+    Write-Host "[build-vnext] Skipping vNext tests."
+}
+else {
+    Invoke-BuildStep -Name "Run vNext tests" -FilePath "dotnet" -Arguments @("test", $Solution, "-c", $Configuration)
 }
 
-python $GeneratePetRuntimeScript `
-    --source-root (Join-Path $ProjectRoot "incoming_sprites") `
-    --output-root (Join-Path $ProjectRoot "sprites_runtime")
-if ($LASTEXITCODE -ne 0) {
-    throw "Runtime pet sprite generation failed with exit code $LASTEXITCODE"
-}
+Invoke-BuildStep -Name "Publish broker" -FilePath "dotnet" -Arguments @("publish", $BrokerProject, "-c", $Configuration, "-o", $BrokerOut)
+Invoke-BuildStep -Name "Publish shell" -FilePath "dotnet" -Arguments @("publish", $ShellProject, "-c", $Configuration, "-o", $ShellOut)
 
-python $CleanPetRuntimeScript --root (Join-Path $ProjectRoot "sprites_runtime")
-if ($LASTEXITCODE -ne 0) {
-    throw "Runtime pet sprite cleanup failed with exit code $LASTEXITCODE"
-}
-
-dotnet test $Solution -c $Configuration
-if ($LASTEXITCODE -ne 0) {
-    throw "vNext tests failed with exit code $LASTEXITCODE"
-}
-
-dotnet publish $BrokerProject -c $Configuration -o $BrokerOut
-if ($LASTEXITCODE -ne 0) {
-    throw "Broker publish failed with exit code $LASTEXITCODE"
-}
-
-dotnet publish $ShellProject -c $Configuration -o $ShellOut
-if ($LASTEXITCODE -ne 0) {
-    throw "Shell publish failed with exit code $LASTEXITCODE"
-}
-
+Write-Host "[build-vnext] Copying broker output into shell output"
 Copy-Item -Path (Join-Path $BrokerOut "*") -Destination $ShellOut -Force
 
 Write-Host "vNext publish complete:"

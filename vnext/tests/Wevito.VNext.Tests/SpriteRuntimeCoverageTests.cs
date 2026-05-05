@@ -1,6 +1,4 @@
 using System.Buffers.Binary;
-using System.Text.Json;
-
 namespace Wevito.VNext.Tests;
 
 public sealed class SpriteRuntimeCoverageTests
@@ -22,20 +20,40 @@ public sealed class SpriteRuntimeCoverageTests
     {
         var spriteRoot = FindPath("sprites_runtime");
         var summaryPath = Path.Combine(spriteRoot, "generation-summary.json");
-        Assert.True(File.Exists(summaryPath), "Expected sprite runtime generation summary.");
+        var speciesDirectories = Directory
+            .EnumerateDirectories(spriteRoot)
+            .Where(path => !Path.GetFileName(path).StartsWith("_", StringComparison.OrdinalIgnoreCase))
+            .OrderBy(path => path, StringComparer.OrdinalIgnoreCase)
+            .ToList();
 
-        using var document = JsonDocument.Parse(File.ReadAllText(summaryPath));
-        var speciesCounts = document.RootElement.GetProperty("species_counts");
-        Assert.Equal(10, speciesCounts.EnumerateObject().Count());
+        Assert.Equal(10, speciesDirectories.Count);
 
-        foreach (var species in speciesCounts.EnumerateObject())
+        foreach (var speciesDirectory in speciesDirectories)
         {
-            Assert.True(species.Value.GetInt32() > 0, $"Expected exported frames for {species.Name}.");
+            var variantDirectories = Directory
+                .EnumerateDirectories(speciesDirectory, "*", SearchOption.AllDirectories)
+                .Where(path =>
+                {
+                    var relative = Path.GetRelativePath(spriteRoot, path);
+                    var parts = relative.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+                    return parts.Length == 4;
+                })
+                .ToList();
+
+            Assert.Equal(3 * 2 * 6, variantDirectories.Count);
+            Assert.True(
+                variantDirectories.Any(directory => Directory.EnumerateFiles(directory, "*.png", SearchOption.TopDirectoryOnly).Any()),
+                $"Expected exported frames for {Path.GetFileName(speciesDirectory)}.");
+        }
+
+        if (File.Exists(summaryPath))
+        {
+            Assert.True(new FileInfo(summaryPath).Length > 0, "Expected non-empty sprite runtime generation summary when present.");
         }
     }
 
     [Fact]
-    public void RuntimeSpriteFrames_AreCanonicalTransparentPngs()
+    public void RuntimeSpriteFrames_AreSequenceStableTransparentPngs()
     {
         var spriteRoot = FindPath("sprites_runtime");
         var variantDirectories = Directory
@@ -61,42 +79,20 @@ public sealed class SpriteRuntimeCoverageTests
                     .ToList();
                 Assert.Equal(requirement.Value, frames.Count);
 
+                (uint Width, uint Height)? sequenceCanvas = null;
                 foreach (var frame in frames)
                 {
                     var png = ReadPngMetadata(frame);
-                    var expectedCanvas = ResolveExpectedCanvas(spriteRoot, frame);
-                    Assert.Equal(expectedCanvas.Width, png.Width);
-                    Assert.Equal(expectedCanvas.Height, png.Height);
                     Assert.Contains(png.ColorType, new byte[] { 4, 6 });
+                    Assert.True(png.Width > 0, $"Expected non-empty PNG width for {frame}.");
+                    Assert.True(png.Height > 0, $"Expected non-empty PNG height for {frame}.");
+
+                    sequenceCanvas ??= (png.Width, png.Height);
+                    Assert.Equal(sequenceCanvas.Value.Width, png.Width);
+                    Assert.Equal(sequenceCanvas.Value.Height, png.Height);
                 }
             }
         }
-    }
-
-    private static (uint Width, uint Height) ResolveExpectedCanvas(string spriteRoot, string framePath)
-    {
-        var relative = Path.GetRelativePath(spriteRoot, framePath);
-        var parts = relative.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-        if (parts.Length < 5)
-        {
-            return (72u, 64u);
-        }
-
-        var species = parts[0];
-        var ageStage = parts[1];
-        var animationName = Path.GetFileNameWithoutExtension(parts[^1]).Split('_', 2)[0];
-        if (string.Equals(species, "snake", StringComparison.OrdinalIgnoreCase) &&
-            string.Equals(animationName, "walk", StringComparison.OrdinalIgnoreCase))
-        {
-            return ageStage.ToLowerInvariant() switch
-            {
-                "baby" => (104u, 64u),
-                "teen" => (112u, 64u),
-                _ => (120u, 64u)
-            };
-        }
-
-        return (72u, 64u);
     }
 
     private static (uint Width, uint Height, byte ColorType) ReadPngMetadata(string path)

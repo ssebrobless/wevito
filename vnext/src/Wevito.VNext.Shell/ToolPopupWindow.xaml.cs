@@ -17,6 +17,8 @@ public partial class ToolPopupWindow : Window
     private int _lastRenderedSpeciesCount;
     private List<BasketRowItem> _basketRows = [];
     private List<ActionOptionRowItem> _actionRows = [];
+    private List<PetTaskQueueRowItem> _taskQueueRows = [];
+    private bool _suppressTaskQueueSelection;
 
     public ToolPopupWindow()
     {
@@ -57,14 +59,23 @@ public partial class ToolPopupWindow : Window
 
     public event Func<string, Task>? ActionMenuRequested;
 
+    public event Func<string, Task>? PetCommandSubmitted;
+
+    public event Func<Guid, TaskCardStatus, Task>? PetTaskStatusChangeRequested;
+
+    public event Func<Guid, Task>? PetTaskPreviewRequested;
+
+    public event Func<Guid, Task>? PetTaskExecutionRequested;
+
     public long WindowHandle => new WindowInteropHelper(this).Handle.ToInt64();
 
-    internal void Render(CompanionState state, GameContent content, HabitatLoadout habitatLoadout, SpriteAssetService assetService, bool devToolsEnabled)
+    internal void Render(CompanionState state, GameContent content, HabitatLoadout habitatLoadout, SpriteAssetService assetService, bool devToolsEnabled, PetCommandBarState? petCommandState = null)
     {
         var toolId = string.IsNullOrWhiteSpace(state.ActiveTool.ToolId) ? "basket" : state.ActiveTool.ToolId;
         var showingBasket = string.Equals(toolId, "basket", StringComparison.OrdinalIgnoreCase);
         var showingSettings = string.Equals(toolId, "settings", StringComparison.OrdinalIgnoreCase);
         var showingDev = devToolsEnabled && string.Equals(toolId, "dev", StringComparison.OrdinalIgnoreCase);
+        var showingPetCommand = string.Equals(toolId, "helpers", StringComparison.OrdinalIgnoreCase);
         var showingActionMenu = string.Equals(toolId, "actions", StringComparison.OrdinalIgnoreCase);
         var showingAction = toolId.StartsWith("action:", StringComparison.OrdinalIgnoreCase);
         var actionId = showingAction ? toolId["action:".Length..] : string.Empty;
@@ -72,13 +83,14 @@ public partial class ToolPopupWindow : Window
             ? content.Actions.FirstOrDefault(action => string.Equals(action.Id, actionId, StringComparison.OrdinalIgnoreCase))
             : null;
 
-        Title = showingBasket ? "Wevito Basket" : showingDev ? "Wevito Dev Tools" : showingActionMenu ? "Wevito Actions" : showingAction ? $"Wevito {actionDefinition?.DisplayName ?? "Action"}" : "Wevito Settings";
-        PopupTitle.Text = showingBasket ? "Basket" : showingDev ? "Dev Tools" : showingActionMenu ? "Actions" : showingAction ? (actionDefinition?.DisplayName ?? "Action") : "Settings";
+        Title = showingBasket ? "Wevito Basket" : showingDev ? "Wevito Dev Tools" : showingPetCommand ? "Wevito PET TASKS" : showingActionMenu ? "Wevito Actions" : showingAction ? $"Wevito {actionDefinition?.DisplayName ?? "Action"}" : "Wevito Settings";
+        PopupTitle.Text = showingBasket ? "Basket" : showingDev ? "Dev Tools" : showingPetCommand ? "PET TASKS" : showingActionMenu ? "Actions" : showingAction ? (actionDefinition?.DisplayName ?? "Action") : "Settings";
         BasketPanel.Visibility = showingBasket ? Visibility.Visible : Visibility.Collapsed;
         BasketButtons.Visibility = showingBasket ? Visibility.Visible : Visibility.Collapsed;
         ActionMenuPanel.Visibility = showingActionMenu ? Visibility.Visible : Visibility.Collapsed;
         ActionPanel.Visibility = showingAction ? Visibility.Visible : Visibility.Collapsed;
         SettingsPanel.Visibility = showingSettings ? Visibility.Visible : Visibility.Collapsed;
+        PetCommandPanel.Visibility = showingPetCommand ? Visibility.Visible : Visibility.Collapsed;
         DevPanel.Visibility = showingDev ? Visibility.Visible : Visibility.Collapsed;
         SettingsSaveButton.Visibility = showingSettings ? Visibility.Visible : Visibility.Collapsed;
         SettingsDevButton.Visibility = showingSettings && devToolsEnabled ? Visibility.Visible : Visibility.Collapsed;
@@ -120,6 +132,10 @@ public partial class ToolPopupWindow : Window
                 1 => $"Use the prepared {actionDefinition.DisplayName.ToLowerInvariant()} option below.",
                 _ => $"Choose how to {actionDefinition.DisplayName.ToLowerInvariant()} from {_actionRows.Count} prepared options."
             };
+        }
+        else if (showingPetCommand)
+        {
+            RenderPetCommandPanel(petCommandState);
         }
 
         _suppressSettingEvents = true;
@@ -202,7 +218,15 @@ public partial class ToolPopupWindow : Window
             if (await TryInvokeButtonAsync(SettingsSaveButton, localPoint, SaveRequested)) { return true; }
             if (await TryInvokeButtonAsync(SettingsDevButton, localPoint, OpenDevRequested)) { return true; }
         }
-        else
+        else if (PetCommandPanel.Visibility == Visibility.Visible)
+        {
+            if (await TryInvokeButtonAsync(PetCommandSubmitButton, localPoint, () => PetCommandSubmitted?.Invoke(PetCommandTextBox.Text ?? "") ?? Task.CompletedTask)) { return true; }
+            if (await TryInvokeButtonAsync(PetTaskApproveButton, localPoint, () => PublishPetTaskStatusChangeAsync(TaskCardStatus.Approved))) { return true; }
+            if (await TryInvokeButtonAsync(PetTaskPreviewButton, localPoint, PublishPetTaskPreviewAsync)) { return true; }
+            if (await TryInvokeButtonAsync(PetTaskCancelButton, localPoint, () => PublishPetTaskStatusChangeAsync(TaskCardStatus.Cancelled))) { return true; }
+            if (await TryInvokeButtonAsync(PetTaskExecuteButton, localPoint, PublishPetTaskExecutionAsync)) { return true; }
+        }
+        else if (DevPanel.Visibility == Visibility.Visible)
         {
             if (await TryInvokeButtonAsync(AddPetButton, localPoint, () => PublishDevCommandAsync(BuildAppearanceCommand(DevToolCommandKind.AddPet)))) { return true; }
             if (await TryInvokeButtonAsync(RemovePetButton, localPoint, () => PublishDevCommandAsync(new DevToolCommand(DevToolCommandKind.RemovePet, GetSelectedPetId())))) { return true; }
@@ -249,6 +273,170 @@ public partial class ToolPopupWindow : Window
         }
 
         base.OnClosed(e);
+    }
+
+    private void RenderPetCommandPanel(PetCommandBarState? state)
+    {
+        var helpers = state?.ActiveHelpers ?? [];
+        PetHelperOneText.Text = FormatHelper(helpers, 0);
+        PetHelperTwoText.Text = FormatHelper(helpers, 1);
+        PetHelperThreeText.Text = FormatHelper(helpers, 2);
+        PetWellbeingSnapshotText.Text = FormatWellbeingSnapshots(state?.WellbeingSnapshots);
+
+        if (!PetCommandTextBox.IsKeyboardFocusWithin &&
+            state is not null &&
+            !string.IsNullOrWhiteSpace(state.InputText) &&
+            !string.Equals(PetCommandTextBox.Text, state.InputText, StringComparison.Ordinal))
+        {
+            PetCommandTextBox.Text = state.InputText;
+        }
+
+        PetCommandStatusText.Text = string.IsNullOrWhiteSpace(state?.StatusMessage)
+            ? "Ready for a helper pet task."
+            : state.StatusMessage;
+        PetCommandQueueText.Text = FormatTaskQueue(state?.QueuedTaskCards);
+        RenderPetTaskQueue(state?.QueuedTaskCards, state?.LastTaskCard?.Id);
+
+        if (state?.LastTaskCard is not { } card)
+        {
+            PetCommandResultPanel.Visibility = Visibility.Collapsed;
+            PetTaskNextActionText.Text = "Next: prepare a task, then preview a report before anything can run.";
+            return;
+        }
+
+        PetCommandResultPanel.Visibility = Visibility.Visible;
+        PetCommandAssignedText.Text = string.IsNullOrWhiteSpace(card.AssignedPetNameSnapshot)
+            ? $"Assigned: {card.Status}"
+            : $"Assigned: {card.AssignedPetNameSnapshot} ({card.Status})";
+        PetCommandTaskKindText.Text = $"Task: {card.Intent.TaskKind} / tool family: {card.ToolFamily}";
+        PetCommandPolicyText.Text = state.LastPolicyDecision is null
+            ? "Policy: not evaluated"
+            : $"Policy: {state.LastPolicyDecision.Status} ({state.LastPolicyDecision.RiskLevel})";
+        PetCommandTimelineText.Text = $"Latest: {card.Timeline?.LastOrDefault() ?? "draft_created"}";
+        PetTaskNextActionText.Text = FormatNextAction(card);
+    }
+
+    private static string FormatTaskQueue(IReadOnlyList<TaskCard>? cards)
+    {
+        if (cards is null || cards.Count == 0)
+        {
+            return "Queue: no saved cards yet.";
+        }
+
+        var draftCount = cards.Count(card => card.Status == TaskCardStatus.Draft);
+        var approvalCount = cards.Count(card => card.Status == TaskCardStatus.WaitingForApproval);
+        var blockedCount = cards.Count(card => card.Status == TaskCardStatus.Blocked);
+        var latest = cards
+            .Take(3)
+            .Select(card =>
+            {
+                var petName = string.IsNullOrWhiteSpace(card.AssignedPetNameSnapshot) ? "Unassigned" : card.AssignedPetNameSnapshot;
+                return $"{petName}: {card.Intent.TaskKind} ({card.Status})";
+            });
+
+        return $"Queue: {cards.Count} saved | draft {draftCount} | approval {approvalCount} | blocked {blockedCount}\nLatest: {string.Join(" / ", latest)}";
+    }
+
+    private static string FormatWellbeingSnapshots(IReadOnlyList<PetWellbeingSnapshot>? snapshots)
+    {
+        if (snapshots is null || snapshots.Count == 0)
+        {
+            return "Wellbeing: no pet snapshots available yet.";
+        }
+
+        var lines = snapshots
+            .Take(3)
+            .Select(snapshot =>
+            {
+                var traits = snapshot.PersonalityDescriptors is { Count: > 0 }
+                    ? $" | {string.Join(", ", snapshot.PersonalityDescriptors.Take(2))}"
+                    : "";
+                var conditions = snapshot.ActiveConditionIds is { Count: > 0 }
+                    ? $" | conditions: {string.Join(", ", snapshot.ActiveConditionIds.Take(2))}"
+                    : "";
+                return $"{snapshot.PetName}: {snapshot.Urgency} / {snapshot.DominantDrive} / {snapshot.DominantEmotion}{traits}{conditions}";
+            })
+            .ToList();
+
+        if (snapshots.Count > lines.Count)
+        {
+            lines.Add($"+{snapshots.Count - lines.Count} more pet snapshot(s)");
+        }
+
+        return $"Wellbeing:\n{string.Join("\n", lines)}";
+    }
+
+    private void RenderPetTaskQueue(IReadOnlyList<TaskCard>? cards, Guid? selectedCardId)
+    {
+        _taskQueueRows = (cards ?? [])
+            .Select(card => new PetTaskQueueRowItem(
+                card.Id,
+                $"{FormatQueuePetName(card)} - {card.Intent.TaskKind} - {card.Status}",
+                card.ToolFamily,
+                card.Status,
+                card.Intent.RawText,
+                CanRunReviewedTask(card)))
+            .ToList();
+
+        _suppressTaskQueueSelection = true;
+        PetTaskQueueComboBox.ItemsSource = _taskQueueRows;
+        PetTaskQueueComboBox.SelectedValue = selectedCardId is not null && _taskQueueRows.Any(row => row.Id == selectedCardId.Value)
+            ? selectedCardId.Value
+            : _taskQueueRows.FirstOrDefault()?.Id;
+        _suppressTaskQueueSelection = false;
+        UpdatePetTaskButtons();
+    }
+
+    private static string FormatQueuePetName(TaskCard card)
+    {
+        return string.IsNullOrWhiteSpace(card.AssignedPetNameSnapshot)
+            ? "Unassigned"
+            : card.AssignedPetNameSnapshot;
+    }
+
+    private static string FormatHelper(IReadOnlyList<PetHelperProfile> helpers, int index)
+    {
+        if (index >= helpers.Count)
+        {
+            return $"{index + 1}. Waiting for pet";
+        }
+
+        var helper = helpers[index];
+        return $"{index + 1}. {helper.PetNameSnapshot}\n{FormatRole(helper.Role)}";
+    }
+
+    private static string FormatRole(PetHelperRole role)
+    {
+        return role switch
+        {
+            PetHelperRole.SpriteReviewHelper => "Inspector - sprite QA",
+            PetHelperRole.ChecklistHelper => "Builder - plans",
+            PetHelperRole.ResearchHelper => "Scout - research",
+            PetHelperRole.FileOrganizerHelper => "File organizer",
+            PetHelperRole.BuildProofHelper => "Build proof",
+            PetHelperRole.ReminderHelper => "Reminder",
+            _ => role.ToString()
+        };
+    }
+
+    private static string FormatNextAction(TaskCard card)
+    {
+        return card.Status switch
+        {
+            TaskCardStatus.Draft => "Next: preview this task. Preview is report-only and must not mutate files.",
+            TaskCardStatus.WaitingForApproval => "Next: approve only if you want the queued safe action to continue.",
+            TaskCardStatus.Approved => "Next: run the approved safe adapter or wait for its report.",
+            TaskCardStatus.Running => "Next: wait for the adapter to finish and write its artifact report.",
+            TaskCardStatus.Reviewing when string.Equals(card.ToolFamily, "translateText", StringComparison.OrdinalIgnoreCase) => "Next: open the preview report, then RUN only if you approve sending this text to the configured provider.",
+            TaskCardStatus.Reviewing when string.Equals(card.ToolFamily, "audioAssist", StringComparison.OrdinalIgnoreCase) && CanRunReviewedTask(card) => "Next: open the preview report, then RUN only if you approve changing normal Windows volume/mute state.",
+            TaskCardStatus.Reviewing when string.Equals(card.ToolFamily, "audioAssist", StringComparison.OrdinalIgnoreCase) => "Next: open the audio status report. Execution is only for set volume, mute, or unmute requests.",
+            TaskCardStatus.Reviewing => "Next: open the artifact/report, then approve, revise, or cancel.",
+            TaskCardStatus.Blocked => "Next: revise the task or inspect the blocker report.",
+            TaskCardStatus.Cancelled => "Next: prepare a new task if you still want help.",
+            TaskCardStatus.Done => "Next: review the result artifact before starting another task.",
+            TaskCardStatus.Failed => "Next: inspect the failure artifact and revise the task.",
+            _ => $"Next: review status {card.Status} before continuing."
+        };
     }
 
     private void RenderDevTools(CompanionState state, GameContent content)
@@ -397,6 +585,11 @@ public partial class ToolPopupWindow : Window
         }
     }
 
+    private void BasketGrid_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        UpdateBasketDeleteButtonState();
+    }
+
     private async void ActionOptionButton_OnClick(object sender, RoutedEventArgs e)
     {
         if ((sender as FrameworkElement)?.Tag is string key)
@@ -417,6 +610,42 @@ public partial class ToolPopupWindow : Window
         }
     }
 
+    private async void PetCommandSubmitButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (PetCommandSubmitted is not null)
+        {
+            await PetCommandSubmitted.Invoke(PetCommandTextBox.Text ?? "");
+        }
+    }
+
+    private void PetTaskQueueComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (!_suppressTaskQueueSelection)
+        {
+            UpdatePetTaskButtons();
+        }
+    }
+
+    private async void PetTaskApproveButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        await PublishPetTaskStatusChangeAsync(TaskCardStatus.Approved);
+    }
+
+    private async void PetTaskPreviewButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        await PublishPetTaskPreviewAsync();
+    }
+
+    private async void PetTaskCancelButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        await PublishPetTaskStatusChangeAsync(TaskCardStatus.Cancelled);
+    }
+
+    private async void PetTaskExecuteButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        await PublishPetTaskExecutionAsync();
+    }
+
     private async void DeleteButton_OnClick(object sender, RoutedEventArgs e)
     {
         var ids = _basketRows
@@ -426,6 +655,10 @@ public partial class ToolPopupWindow : Window
         if (ids.Count == 0 && BasketGrid.SelectedItem is BasketRowItem selectedRow)
         {
             ids.Add(selectedRow.Id);
+        }
+        if (ids.Count == 0 && _basketRows.Count == 1)
+        {
+            ids.Add(_basketRows[0].Id);
         }
         if (ids.Count > 0 && DeleteRequested is not null)
         {
@@ -763,6 +996,10 @@ public partial class ToolPopupWindow : Window
         {
             ids.Add(selectedRow.Id);
         }
+        if (ids.Count == 0 && _basketRows.Count == 1)
+        {
+            ids.Add(_basketRows[0].Id);
+        }
         if (ids.Count == 0 || DeleteRequested is null)
         {
             return false;
@@ -916,6 +1153,63 @@ public partial class ToolPopupWindow : Window
         }
     }
 
+    private async Task PublishPetTaskStatusChangeAsync(TaskCardStatus nextStatus)
+    {
+        if (PetTaskQueueComboBox.SelectedValue is Guid cardId && PetTaskStatusChangeRequested is not null)
+        {
+            await PetTaskStatusChangeRequested.Invoke(cardId, nextStatus);
+        }
+    }
+
+    private async Task PublishPetTaskPreviewAsync()
+    {
+        if (PetTaskQueueComboBox.SelectedValue is Guid cardId && PetTaskPreviewRequested is not null)
+        {
+            await PetTaskPreviewRequested.Invoke(cardId);
+        }
+    }
+
+    private async Task PublishPetTaskExecutionAsync()
+    {
+        if (PetTaskQueueComboBox.SelectedValue is Guid cardId && PetTaskExecutionRequested is not null)
+        {
+            await PetTaskExecutionRequested.Invoke(cardId);
+        }
+    }
+
+    private void UpdatePetTaskButtons()
+    {
+        var selectedRow = PetTaskQueueComboBox.SelectedItem as PetTaskQueueRowItem;
+        PetTaskApproveButton.IsEnabled = selectedRow?.Status == TaskCardStatus.WaitingForApproval;
+        PetTaskPreviewButton.IsEnabled = selectedRow?.Status is TaskCardStatus.Draft or TaskCardStatus.Approved;
+        PetTaskCancelButton.IsEnabled = selectedRow?.Status is TaskCardStatus.Draft or TaskCardStatus.WaitingForApproval or TaskCardStatus.Approved;
+        PetTaskExecuteButton.IsEnabled = selectedRow is { Status: TaskCardStatus.Reviewing, CanExecute: true };
+    }
+
+    private static bool CanRunReviewedTask(TaskCard card)
+    {
+        if (card.Status != TaskCardStatus.Reviewing)
+        {
+            return false;
+        }
+
+        if (string.Equals(card.ToolFamily, "translateText", StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        return string.Equals(card.ToolFamily, "audioAssist", StringComparison.OrdinalIgnoreCase) &&
+               IsExecutableAudioAssistRequest(card.Intent.RawText);
+    }
+
+    private static bool IsExecutableAudioAssistRequest(string rawText)
+    {
+        return System.Text.RegularExpressions.Regex.IsMatch(
+            rawText,
+            @"\b(unmute|mute|(?:set|change|turn|put|make)\b.*?\bvolume\b.*?\d{1,3}|volume\b.*?\b(?:to|at)\b\s*\d{1,3})",
+            System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+    }
+
     private static string BuildPersonalitySummary(PetActor? pet)
     {
         if (pet?.Personality is null)
@@ -1001,7 +1295,8 @@ public partial class ToolPopupWindow : Window
     private void UpdateBasketDeleteButtonState()
     {
         var markedCount = _basketRows.Count(row => row.IsMarked);
-        DeleteButton.IsEnabled = markedCount > 0;
+        var hasSelectedRow = BasketGrid.SelectedItem is BasketRowItem;
+        DeleteButton.IsEnabled = markedCount > 0 || hasSelectedRow || _basketRows.Count == 1;
         DeleteButton.Content = markedCount > 0 ? $"DELETE ({markedCount})" : "DELETE";
     }
 }
@@ -1091,6 +1386,14 @@ internal sealed record ActionOptionRowItem(
         };
     }
 }
+
+internal sealed record PetTaskQueueRowItem(
+    Guid Id,
+    string Label,
+    string ToolFamily,
+    TaskCardStatus Status,
+    string RawText,
+    bool CanExecute);
 
 internal sealed record DevConditionOption(
     string Id,

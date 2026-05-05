@@ -192,12 +192,12 @@
                                 automation:AutomationProperties.AutomationId="LinkBinTabButton"
                                 Content="LINK BIN"
                                 Click="LinkBinTabButton_OnClick" />
-                        <Button x:Name="WebToolSlot2Button"
+                        <Button x:Name="HelperTabButton"
                                 Style="{StaticResource WebToolTabStyle}"
                                 Margin="0,0,6,0"
-                                IsEnabled="False"
-                                automation:AutomationProperties.AutomationId="WebToolSlot2Button"
-                                Content="EMPTY" />
+                                automation:AutomationProperties.AutomationId="HelperTabButton"
+                                Content="PET TASKS"
+                                Click="HelperTabButton_OnClick" />
                         <Button x:Name="WebToolSlot3Button"
                                 Style="{StaticResource WebToolTabStyle}"
                                 Margin="0,0,6,0"

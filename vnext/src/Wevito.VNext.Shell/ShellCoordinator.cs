@@ -26,7 +26,13 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private readonly Application _application;
     private readonly string _pipeName = $"wevito-vnext-{Environment.ProcessId}";
     private readonly PetSimulationEngine _petSimulationEngine = new();
+    private readonly PetWellbeingInterpreter _petWellbeingInterpreter = new();
     private readonly BasketService _basketService = new(5);
+    private readonly PetCommandBarService _petCommandBarService = new();
+    private readonly PetTaskCardQueueService _petTaskCardQueueService = new();
+    private readonly PetTaskAdapterPreviewDispatcher _petTaskAdapterPreviewDispatcher = new();
+    private readonly TranslationExecutionAdapter _translationExecutionAdapter = new();
+    private readonly AudioAssistExecutionAdapter _audioAssistExecutionAdapter = new();
     private readonly DispatcherTimer _tickTimer;
     private readonly bool _devToolsEnabled = BrokerProcessManager.IsDevelopmentBuild();
 
@@ -46,6 +52,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private string _feedbackText = "";
     private CompanionMode? _lastLoggedMode;
     private string _lastPublishedRegionsKey = "";
+    private PetCommandBarState? _petCommandBarState;
 
     public ShellCoordinator(Application application)
     {
@@ -60,6 +67,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _homeWindow.ToggleActionsRequested += async () => await ToggleActionsAsync();
         _homeWindow.ToggleWebToolsRequested += async () => await ToggleWebToolsAsync();
         _homeWindow.ToggleBasketRequested += async () => await ToggleBasketAsync();
+        _homeWindow.ToggleHelpersRequested += async () => await ToggleHelpersAsync();
         _homeWindow.OpenSettingsRequested += async () => await ToggleSettingsAsync();
         _homeWindow.ToggleCompactRequested += async () => await ToggleCompactHudAsync();
         _homeWindow.SaveRequested += async () => await SaveAsync();
@@ -85,8 +93,16 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _toolPopupWindow.LinksDropped += async urls => await AddLinksAsync(urls, "drop");
         _toolPopupWindow.SettingChanged += OnSettingChanged;
         _toolPopupWindow.DevToolCommandRequested += async command => await HandleDevToolCommandAsync(command);
-        _toolPopupWindow.ActionMenuRequested += async actionId => HandleAction(actionId);
+        _toolPopupWindow.ActionMenuRequested += actionId =>
+        {
+            HandleAction(actionId);
+            return Task.CompletedTask;
+        };
         _toolPopupWindow.ActionOptionRequested += async (actionId, itemId) => await ApplyActionSelectionAsync(actionId, itemId);
+        _toolPopupWindow.PetCommandSubmitted += async input => await HandlePetCommandSubmittedAsync(input);
+        _toolPopupWindow.PetTaskStatusChangeRequested += async (cardId, status) => await HandlePetTaskStatusChangeAsync(cardId, status);
+        _toolPopupWindow.PetTaskPreviewRequested += async cardId => await HandlePetTaskPreviewAsync(cardId);
+        _toolPopupWindow.PetTaskExecutionRequested += async cardId => await HandlePetTaskExecutionAsync(cardId);
     }
 
     public async Task StartAsync()
@@ -189,6 +205,9 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             case "open-basket":
                 await ToggleBasketAsync();
                 break;
+            case "open-helpers":
+                await ToggleHelpersAsync();
+                break;
             case "open-dev-tools":
                 if (_devToolsEnabled)
                 {
@@ -234,6 +253,8 @@ internal sealed class ShellCoordinator : IAsyncDisposable
                 homeStageRect.Width - 48,
                 homeStageRect.Height - 36)
         };
+
+        _state = ApplyAmbientWorkCompanionState(_state, now);
 
         var roamBandRect = _desktopContext?.WorkArea is { } workArea
             ? new RectInt(workArea.X, workArea.Bottom - (int)RoamBandHeight, workArea.Width, (int)RoamBandHeight)
@@ -334,10 +355,115 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             .Where(action => action.IsPrimaryAction)
             .ToDictionary(action => action.Id, action => _petSimulationEngine.IsActionEnabled(action.Id, _state.ActivePets), StringComparer.OrdinalIgnoreCase);
         var habitatLoadout = HabitatLoadoutResolver.Resolve(_state, _content);
+        var petCommandBarState = EnsurePetCommandBarState(_state.ActivePets, _state.TaskCards);
 
         _homeWindow.Render(_state, environment, _feedbackText, _assetService, needSnapshot, aggregateStatuses, actionEnabled, habitatLoadout);
         _roamBandWindow.Render(_state, _assetService);
-        _toolPopupWindow.Render(_state, _content, habitatLoadout, _assetService, _devToolsEnabled);
+        _toolPopupWindow.Render(_state, _content, habitatLoadout, _assetService, _devToolsEnabled, petCommandBarState);
+    }
+
+    private PetCommandBarState EnsurePetCommandBarState(IReadOnlyList<PetActor> pets, IReadOnlyList<TaskCard>? taskCards)
+    {
+        var helpers = BuildHelperProfiles(pets);
+        var snapshots = _petWellbeingInterpreter.BuildSnapshots(pets);
+        if (_petCommandBarState is null || !SameHelperRoster(_petCommandBarState.ActiveHelpers, helpers))
+        {
+            _petCommandBarState = BuildPetCommandBarState(helpers, taskCards, snapshots);
+        }
+
+        return _petCommandBarState with { WellbeingSnapshots = snapshots };
+    }
+
+    private PetCommandBarState BuildPetCommandBarState(IReadOnlyList<PetHelperProfile> helpers, IReadOnlyList<TaskCard>? taskCards, IReadOnlyList<PetWellbeingSnapshot> snapshots)
+    {
+        var cards = (taskCards ?? [])
+            .OrderByDescending(card => card.UpdatedAtUtc == default ? card.CreatedAtUtc : card.UpdatedAtUtc)
+            .ThenByDescending(card => card.CreatedAtUtc)
+            .ToList();
+        if (cards.Count == 0)
+        {
+            return _petCommandBarService.BuildInitialState(helpers, DateTimeOffset.UtcNow) with { WellbeingSnapshots = snapshots };
+        }
+
+        var latest = cards[0];
+        return new PetCommandBarState(
+            helpers,
+            latest.Intent.RawText,
+            latest.Intent,
+            latest,
+            LastPolicyDecision: null,
+            StatusMessage: $"{cards.Count} draft task card(s) saved locally. Tools are still disabled.",
+            UpdatedAtUtc: DateTimeOffset.UtcNow,
+            QueuedTaskCards: cards,
+            WellbeingSnapshots: snapshots);
+    }
+
+    private static bool SameHelperRoster(IReadOnlyList<PetHelperProfile> current, IReadOnlyList<PetHelperProfile> next)
+    {
+        if (current.Count != next.Count)
+        {
+            return false;
+        }
+
+        for (var i = 0; i < current.Count; i++)
+        {
+            if (current[i].PetId != next[i].PetId || !string.Equals(current[i].PetNameSnapshot, next[i].PetNameSnapshot, StringComparison.Ordinal))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static IReadOnlyList<PetHelperProfile> BuildHelperProfiles(IReadOnlyList<PetActor> pets)
+    {
+        var roles = new[]
+        {
+            PetHelperRole.SpriteReviewHelper,
+            PetHelperRole.ChecklistHelper,
+            PetHelperRole.ResearchHelper
+        };
+
+        return pets
+            .Take(PetAgentContractLimits.MaxActiveHelpers)
+            .Select((pet, index) => new PetHelperProfile(
+                pet.Id,
+                pet.Name,
+                roles[Math.Min(index, roles.Length - 1)],
+                AllowedToolFamilies: BuildAllowedToolFamilies(roles[Math.Min(index, roles.Length - 1)])))
+            .ToList();
+    }
+
+    private static IReadOnlyList<string> BuildAllowedToolFamilies(PetHelperRole role)
+    {
+        return role switch
+        {
+            PetHelperRole.SpriteReviewHelper => ["spriteAudit", "assetInventory", "proofCapture", "localDocs", "petState"],
+            PetHelperRole.ChecklistHelper => ["codeReview", "codePatchPlan", "checklist", "localDocs", "basket", "petState"],
+            PetHelperRole.ResearchHelper => ["localDocs", "translateText", "audioAssist", "screenCapture", "assetInventory", "basket", "proofCapture", "petState"],
+            _ => ["localDocs"]
+        };
+    }
+
+    private static IReadOnlyList<ToolPolicy> BuildPetCommandPolicies()
+    {
+        return
+        [
+            new ToolPolicy("local-docs-readonly", "localDocs", ToolAccessMode.ReadOnly, ToolRiskLevel.Low, ApprovalRequirement.None),
+            new ToolPolicy("sprite-audit-readonly", "spriteAudit", ToolAccessMode.ReadOnly, ToolRiskLevel.Low, ApprovalRequirement.None),
+            new ToolPolicy("pet-state-readonly", "petState", ToolAccessMode.ReadOnly, ToolRiskLevel.Low, ApprovalRequirement.None),
+            new ToolPolicy("asset-inventory-readonly", "assetInventory", ToolAccessMode.ReadOnly, ToolRiskLevel.Low, ApprovalRequirement.None),
+            new ToolPolicy("code-review-readonly", "codeReview", ToolAccessMode.ReadOnly, ToolRiskLevel.Low, ApprovalRequirement.None),
+            new ToolPolicy("code-patch-plan-readonly", "codePatchPlan", ToolAccessMode.ReadOnly, ToolRiskLevel.Low, ApprovalRequirement.None),
+            new ToolPolicy("checklist-readonly", "checklist", ToolAccessMode.ReadOnly, ToolRiskLevel.Low, ApprovalRequirement.None),
+            new ToolPolicy("translate-text-readonly", "translateText", ToolAccessMode.ReadOnly, ToolRiskLevel.Low, ApprovalRequirement.None),
+            new ToolPolicy("audio-assist-readonly", "audioAssist", ToolAccessMode.ReadOnly, ToolRiskLevel.Low, ApprovalRequirement.None),
+            new ToolPolicy("screen-capture-readonly", "screenCapture", ToolAccessMode.ReadOnly, ToolRiskLevel.Low, ApprovalRequirement.None),
+            new ToolPolicy("proof-capture-readonly", "proofCapture", ToolAccessMode.ReadOnly, ToolRiskLevel.Low, ApprovalRequirement.None),
+            new ToolPolicy("basket-readonly", "basket", ToolAccessMode.ReadOnly, ToolRiskLevel.Low, ApprovalRequirement.None),
+            new ToolPolicy("build-proof-approval", "buildProof", ToolAccessMode.Write, ToolRiskLevel.Medium, ApprovalRequirement.BeforeExecution)
+        ];
     }
 
     private async Task PublishOverlayRegionsAsync(RectInt workArea)
@@ -416,6 +542,11 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         await ToggleToolAsync("actions");
     }
 
+    private async Task ToggleHelpersAsync()
+    {
+        await ToggleToolAsync("helpers");
+    }
+
     private async Task ToggleSettingsAsync()
     {
         await ToggleToolAsync("settings");
@@ -457,6 +588,388 @@ internal sealed class ShellCoordinator : IAsyncDisposable
 
         await _brokerClient.SendCommandAsync(ShellCommandTypes.CaptureClipboard, new CaptureClipboardCommand());
         TraceLog.Write("ui-command", "capture-clipboard");
+    }
+
+    private async Task HandlePetCommandSubmittedAsync(string inputText)
+    {
+        if (_state is null)
+        {
+            return;
+        }
+
+        var helpers = BuildHelperProfiles(_state.ActivePets);
+        _petCommandBarState = _petCommandBarService.SubmitDraft(
+            inputText,
+            helpers,
+            BuildPetCommandPolicies(),
+            selectedPetId: null,
+            DateTimeOffset.UtcNow);
+        if (_petCommandBarState.LastTaskCard is { } taskCard)
+        {
+            var taskCards = _petTaskCardQueueService.AppendDraft(_state.TaskCards, taskCard);
+            _state = _state with
+            {
+                TaskCards = taskCards
+            };
+            _petCommandBarState = _petCommandBarState with
+            {
+                QueuedTaskCards = taskCards,
+                WellbeingSnapshots = _petWellbeingInterpreter.BuildSnapshots(_state.ActivePets)
+            };
+        }
+
+        SetFeedback(_petCommandBarState.StatusMessage);
+        TraceLog.Write(
+            "pet-command",
+            $"status={_petCommandBarState.LastTaskCard?.Status} kind={_petCommandBarState.LastIntent?.TaskKind} policy={_petCommandBarState.LastPolicyDecision?.Status}");
+        await PersistAndRenderAsync();
+    }
+
+    private async Task HandlePetTaskStatusChangeAsync(Guid cardId, TaskCardStatus nextStatus)
+    {
+        if (_state is null)
+        {
+            return;
+        }
+
+        if (!_petTaskCardQueueService.TryTransitionStatus(
+                _state.TaskCards,
+                cardId,
+                nextStatus,
+                DateTimeOffset.UtcNow,
+                out var taskCards,
+                out var updatedCard,
+                out var reason))
+        {
+            SetFeedback(reason);
+            TraceLog.Write("pet-command", $"status-transition-blocked id={cardId} next={nextStatus} reason={reason}");
+            Render();
+            return;
+        }
+
+        _state = _state with { TaskCards = taskCards };
+        var helpers = BuildHelperProfiles(_state.ActivePets);
+        var snapshots = _petWellbeingInterpreter.BuildSnapshots(_state.ActivePets);
+        _petCommandBarState = new PetCommandBarState(
+            helpers,
+            updatedCard?.Intent.RawText ?? "",
+            updatedCard?.Intent,
+            updatedCard,
+            LastPolicyDecision: null,
+            StatusMessage: nextStatus == TaskCardStatus.Approved
+                ? "Task card approved locally. Execution adapters are still disabled."
+                : "Task card cancelled locally. No execution was started.",
+            UpdatedAtUtc: DateTimeOffset.UtcNow,
+            QueuedTaskCards: taskCards,
+            WellbeingSnapshots: snapshots);
+        SetFeedback(_petCommandBarState.StatusMessage);
+        TraceLog.Write("pet-command", $"status-transition id={cardId} next={nextStatus}");
+        await PersistAndRenderAsync();
+    }
+
+    private async Task HandlePetTaskPreviewAsync(Guid cardId)
+    {
+        if (_state is null)
+        {
+            return;
+        }
+
+        var card = (_state.TaskCards ?? []).FirstOrDefault(candidate => candidate.Id == cardId);
+        if (card is null)
+        {
+            SetFeedback("Task card was not found.");
+            Render();
+            return;
+        }
+
+        if (card.PolicySnapshot is null)
+        {
+            SetFeedback("Task card has no policy snapshot to preview safely.");
+            Render();
+            return;
+        }
+
+        var timestamp = DateTimeOffset.UtcNow;
+        var request = new TaskAdapterRequest(
+            card.Id,
+            card.Intent,
+            BuildPreviewPolicySnapshot(card.PolicySnapshot),
+            TaskAdapterRunMode.DryRunPreview,
+            ResolvePetTaskArtifactRoot(card, timestamp),
+            timestamp);
+        var result = _petTaskAdapterPreviewDispatcher.BuildPreview(request, timestamp, _content, _state.ActivePets, _state.Mode);
+
+        if (!_petTaskCardQueueService.TryApplyAdapterResult(
+                _state.TaskCards,
+                result,
+                timestamp,
+                out var taskCards,
+                out var updatedCard,
+                out var reason))
+        {
+            SetFeedback(reason);
+            TraceLog.Write("pet-command", $"preview-blocked id={cardId} reason={reason}");
+            Render();
+            return;
+        }
+
+        _state = _state with { TaskCards = taskCards };
+        var helpers = BuildHelperProfiles(_state.ActivePets);
+        var snapshots = _petWellbeingInterpreter.BuildSnapshots(_state.ActivePets);
+        _petCommandBarState = new PetCommandBarState(
+            helpers,
+            updatedCard?.Intent.RawText ?? "",
+            updatedCard?.Intent,
+            updatedCard,
+            LastPolicyDecision: null,
+            StatusMessage: BuildPreviewStatusMessage(result),
+            UpdatedAtUtc: timestamp,
+            QueuedTaskCards: taskCards,
+            WellbeingSnapshots: snapshots);
+        SetFeedback(_petCommandBarState.StatusMessage);
+        TraceLog.Write("pet-command", $"preview id={cardId} family={result.ToolFamily} status={result.Status} mutate={result.DidMutate} audit={result.AuditLogPath}");
+        await PersistAndRenderAsync();
+    }
+
+    private async Task HandlePetTaskExecutionAsync(Guid cardId)
+    {
+        if (_state is null)
+        {
+            return;
+        }
+
+        var card = (_state.TaskCards ?? []).FirstOrDefault(candidate => candidate.Id == cardId);
+        if (card is null)
+        {
+            SetFeedback("Task card was not found.");
+            Render();
+            return;
+        }
+
+        if (card.Status != TaskCardStatus.Reviewing)
+        {
+            SetFeedback("Preview the task first, then run only after reviewing the report.");
+            Render();
+            return;
+        }
+
+        if (!CanExecuteReviewedPetTask(card))
+        {
+            SetFeedback("Only reviewed translateText and approved audioAssist action tasks can run right now.");
+            Render();
+            return;
+        }
+
+        var timestamp = DateTimeOffset.UtcNow;
+        var request = new TaskAdapterRequest(
+            card.Id,
+            card.Intent,
+            BuildExecutionPolicySnapshot(card),
+            TaskAdapterRunMode.Execute,
+            ResolvePetTaskArtifactRoot(card, timestamp),
+            timestamp);
+        var result = string.Equals(card.ToolFamily, "translateText", StringComparison.OrdinalIgnoreCase)
+            ? await _translationExecutionAdapter.ExecuteAsync(request, timestamp)
+            : _audioAssistExecutionAdapter.Execute(request, timestamp);
+
+        if (!_petTaskCardQueueService.TryApplyAdapterResult(
+                _state.TaskCards,
+                result,
+                timestamp,
+                out var taskCards,
+                out var updatedCard,
+                out var reason))
+        {
+            SetFeedback(reason);
+            TraceLog.Write("pet-command", $"execution-blocked id={cardId} reason={reason}");
+            Render();
+            return;
+        }
+
+        _state = _state with { TaskCards = taskCards };
+        var helpers = BuildHelperProfiles(_state.ActivePets);
+        var snapshots = _petWellbeingInterpreter.BuildSnapshots(_state.ActivePets);
+        _petCommandBarState = new PetCommandBarState(
+            helpers,
+            updatedCard?.Intent.RawText ?? "",
+            updatedCard?.Intent,
+            updatedCard,
+            LastPolicyDecision: null,
+            StatusMessage: BuildExecutionStatusMessage(result),
+            UpdatedAtUtc: timestamp,
+            QueuedTaskCards: taskCards,
+            WellbeingSnapshots: snapshots);
+        SetFeedback(_petCommandBarState.StatusMessage);
+        TraceLog.Write("pet-command", $"execute id={cardId} family={result.ToolFamily} status={result.Status} mutate={result.DidMutate} audit={result.AuditLogPath}");
+        await PersistAndRenderAsync();
+    }
+
+    private static ToolPolicy BuildPreviewPolicySnapshot(ToolPolicy policy)
+    {
+        var roots = ResolvePreviewApprovedRoots(policy.ToolFamily);
+        return policy with
+        {
+            AccessMode = ToolAccessMode.ReadOnly,
+            RiskLevel = ToolRiskLevel.Low,
+            ApprovedRootPaths = roots
+        };
+    }
+
+    private static ToolPolicy BuildTranslationExecutionPolicySnapshot()
+    {
+        return new ToolPolicy(
+            "translate-text-network-approval",
+            "translateText",
+            ToolAccessMode.Network,
+            ToolRiskLevel.Medium,
+            ApprovalRequirement.BeforeExecution);
+    }
+
+    private static ToolPolicy BuildAudioAssistExecutionPolicySnapshot()
+    {
+        return new ToolPolicy(
+            "audio-assist-write-approval",
+            "audioAssist",
+            ToolAccessMode.Write,
+            ToolRiskLevel.Medium,
+            ApprovalRequirement.BeforeExecution);
+    }
+
+    private static ToolPolicy BuildExecutionPolicySnapshot(TaskCard card)
+    {
+        return string.Equals(card.ToolFamily, "translateText", StringComparison.OrdinalIgnoreCase)
+            ? BuildTranslationExecutionPolicySnapshot()
+            : BuildAudioAssistExecutionPolicySnapshot();
+    }
+
+    private static bool CanExecuteReviewedPetTask(TaskCard card)
+    {
+        if (card.Status != TaskCardStatus.Reviewing)
+        {
+            return false;
+        }
+
+        if (card.Intent.TaskKind == TaskKind.TranslateText &&
+            string.Equals(card.ToolFamily, "translateText", StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        return card.Intent.TaskKind == TaskKind.AudioAssist &&
+               string.Equals(card.ToolFamily, "audioAssist", StringComparison.OrdinalIgnoreCase) &&
+               IsExecutableAudioAssistRequest(card.Intent.RawText);
+    }
+
+    private static bool IsExecutableAudioAssistRequest(string rawText)
+    {
+        return System.Text.RegularExpressions.Regex.IsMatch(
+            rawText,
+            @"\b(unmute|mute|(?:set|change|turn|put|make)\b.*?\bvolume\b.*?\d{1,3}|volume\b.*?\b(?:to|at)\b\s*\d{1,3})",
+            System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+    }
+
+    private static IReadOnlyList<string> ResolvePreviewApprovedRoots(string toolFamily)
+    {
+        if (string.Equals(toolFamily, "spriteAudit", StringComparison.OrdinalIgnoreCase))
+        {
+            return [BrokerProcessManager.ResolveSpriteRuntimeRoot()];
+        }
+
+        var repoRoot = ResolveRepoRootOrBaseDirectory();
+        if (string.Equals(toolFamily, "assetInventory", StringComparison.OrdinalIgnoreCase))
+        {
+            var roots = new[]
+                {
+                    Path.Combine(repoRoot, "sprites_runtime"),
+                    Path.Combine(repoRoot, "sprites_shared_runtime")
+                }
+                .Where(Directory.Exists)
+                .ToList();
+            return roots.Count > 0 ? roots : [repoRoot];
+        }
+
+        if (string.Equals(toolFamily, "localDocs", StringComparison.OrdinalIgnoreCase))
+        {
+            var docsRoot = Path.Combine(repoRoot, "docs");
+            return Directory.Exists(docsRoot)
+                ? [docsRoot]
+                : [repoRoot];
+        }
+
+        if (string.Equals(toolFamily, "codeReview", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(toolFamily, "codePatchPlan", StringComparison.OrdinalIgnoreCase))
+        {
+            var roots = new[]
+                {
+                    Path.Combine(repoRoot, "vnext", "src"),
+                    Path.Combine(repoRoot, "vnext", "tests"),
+                    Path.Combine(repoRoot, "tools"),
+                    Path.Combine(repoRoot, "scripts")
+                }
+                .Where(Directory.Exists)
+                .ToList();
+            return roots.Count > 0 ? roots : [repoRoot];
+        }
+
+        return [repoRoot];
+    }
+
+    private static string ResolvePetTaskArtifactRoot(TaskCard card, DateTimeOffset timestamp)
+    {
+        var repoRoot = ResolveRepoRootOrBaseDirectory();
+        var slug = $"{timestamp:yyyyMMdd-HHmmss}-{SanitizeArtifactSlug(card.ToolFamily)}-{SanitizeArtifactSlug(card.Intent.TaskKind.ToString())}";
+        return Path.Combine(repoRoot, "vnext", "artifacts", "pet-tasks", slug);
+    }
+
+    private static string ResolveRepoRootOrBaseDirectory()
+    {
+        var directory = new DirectoryInfo(AppContext.BaseDirectory);
+        while (directory is not null)
+        {
+            if (Directory.Exists(Path.Combine(directory.FullName, "vnext")))
+            {
+                return directory.FullName;
+            }
+
+            directory = directory.Parent;
+        }
+
+        return AppContext.BaseDirectory;
+    }
+
+    private static string SanitizeArtifactSlug(string value)
+    {
+        var chars = (value ?? string.Empty)
+            .Select(character => char.IsLetterOrDigit(character) ? char.ToLowerInvariant(character) : '-')
+            .ToArray();
+        var slug = new string(chars).Trim('-');
+        return string.IsNullOrWhiteSpace(slug) ? "task" : slug;
+    }
+
+    private static string BuildPreviewStatusMessage(TaskAdapterResult result)
+    {
+        return result.Status switch
+        {
+            TaskAdapterResultStatus.PreviewReady => string.IsNullOrWhiteSpace(result.AuditLogPath)
+                ? result.PreviewSummary
+                : $"Preview report ready: {result.AuditLogPath}",
+            TaskAdapterResultStatus.Blocked => $"Preview blocked: {result.BlockReason}",
+            TaskAdapterResultStatus.Failed => $"Preview failed: {result.BlockReason}",
+            _ => result.ResultSummary
+        };
+    }
+
+    private static string BuildExecutionStatusMessage(TaskAdapterResult result)
+    {
+        return result.Status switch
+        {
+            TaskAdapterResultStatus.Completed => string.IsNullOrWhiteSpace(result.AuditLogPath)
+                ? result.ResultSummary
+                : $"Execution report ready: {result.AuditLogPath}",
+            TaskAdapterResultStatus.Blocked => $"Execution blocked: {result.BlockReason}",
+            TaskAdapterResultStatus.Failed => $"Execution failed: {result.BlockReason}",
+            _ => result.ResultSummary
+        };
     }
 
     private void HandleAction(string actionId)
@@ -565,6 +1078,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         }
 
         var basketItems = _state.BasketItems.ToList();
+        var addedCount = 0;
         foreach (var url in urls)
         {
             if (!BasketService.TryCreate(url, url, source, out var item))
@@ -573,6 +1087,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             }
 
             basketItems = _basketService.Add(item, basketItems).ToList();
+            addedCount++;
         }
 
         _state = _state with
@@ -580,8 +1095,8 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             BasketItems = basketItems,
             SettingsSnapshot = WithSetting(_state.SettingsSnapshot, "webtools_visible", bool.TrueString)
         };
-        SetFeedback(basketItems.Count == 0 ? "No valid links found." : $"Basket now holds {basketItems.Count} link(s).");
-        TraceLog.Write("basket", $"source={source} count={basketItems.Count}");
+        SetFeedback(addedCount == 0 ? "No valid links found." : $"Basket now holds {basketItems.Count} link(s).");
+        TraceLog.Write("basket", $"source={source} added={addedCount} count={basketItems.Count}");
         await PersistAndRenderAsync();
     }
 
@@ -654,6 +1169,11 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _feedbackText = message;
         TraceLog.Write("feedback", message);
         Render();
+    }
+
+    private static CompanionState ApplyAmbientWorkCompanionState(CompanionState state, DateTimeOffset now)
+    {
+        return state;
     }
 
     private async Task PersistAndRenderAsync()
@@ -790,6 +1310,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         {
             ActiveEnvironmentId = environmentId,
             ActivePets = hydratedPets,
+            TaskCards = state.TaskCards ?? [],
             ActiveTool = string.IsNullOrWhiteSpace(state.ActiveTool.ToolId)
                 ? new ToolSession("basket", state.ActiveTool.IsOpen)
                 : state.ActiveTool,

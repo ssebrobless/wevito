@@ -52,6 +52,7 @@ var celestial_sprite: TextureRect
 var sound_manager: SoundManager
 var held_item_sprite: Sprite2D
 var held_item: Dictionary = {"type": "", "name": "", "icon": ""}
+var thrown_ball_sprite: Sprite2D
 var celestial_texture_cache: Dictionary = {}
 var egg_texture_cache: Dictionary = {}
 var basket_entries: Array[Dictionary] = []
@@ -2376,7 +2377,7 @@ func _recall_all_pets_home(hold_seconds: float = 0.0, resume_wandering_after_hol
 			var center_x = slots[i].position.x + (slots[i].size.x * 0.5)
 			pet.move_to_home(center_x, hold_seconds, resume_wandering_after_hold)
 
-func get_pet_home_position_for_node(pet_node: Pet) -> Vector2:
+func get_pet_home_position_for_node(pet_node: Pet, action_family: String = "home") -> Vector2:
 	var floor_y = float(get_window().size.y) - PET_FLOOR_INSET
 	if game_manager == null or pet_node == null:
 		return Vector2(float(get_window().size.x) * 0.5, floor_y)
@@ -2387,7 +2388,13 @@ func get_pet_home_position_for_node(pet_node: Pet) -> Vector2:
 	if pet_index >= slots.size():
 		return Vector2(float(get_window().size.x) * 0.5, floor_y)
 	var slot = slots[pet_index]
-	return Vector2(slot.position.x + (slot.size.x * 0.5), floor_y)
+	var anchor = Vector2(0.5, 0.82)
+	if pet_node.pet_data and game_manager.has_method("get_habitat_anchor"):
+		anchor = game_manager.get_habitat_anchor(pet_node.pet_data.animal_type, action_family)
+	return Vector2(
+		slot.position.x + (slot.size.x * clamp(anchor.x, 0.05, 0.95)),
+		slot.position.y + (slot.size.y * clamp(anchor.y, 0.15, 0.95))
+	)
 
 func _start_monitor_roam_all_pets():
 	if game_manager == null:
@@ -3055,6 +3062,7 @@ func create_stat_bar(label_text, stat_name):
 func _load_texture(path: String) -> Texture2D:
 	if path == "":
 		return null
+	path = _prefer_shared_runtime_asset_path(path)
 	var lower_path = path.to_lower()
 	var absolute_path = ProjectSettings.globalize_path(path)
 	if not OS.has_feature("editor"):
@@ -3074,6 +3082,16 @@ func _load_texture(path: String) -> Texture2D:
 	if not FileAccess.file_exists(absolute_path):
 		return null
 	return null
+
+func _resource_or_file_exists(path: String) -> bool:
+	return ResourceLoader.exists(path) or FileAccess.file_exists(ProjectSettings.globalize_path(path))
+
+func _prefer_shared_runtime_asset_path(path: String) -> String:
+	if path.begins_with("res://sprites/"):
+		var runtime_path = path.replace("res://sprites/", "res://sprites_shared_runtime/")
+		if _resource_or_file_exists(runtime_path):
+			return runtime_path
+	return path
 
 func load_icon_texture(icon_name: String) -> Texture2D:
 	var path = "res://sprites/icons/" + icon_name + ".png"
@@ -3484,6 +3502,8 @@ func _play_action_sound(action_name: String):
 	match action_name:
 		"feed":
 			sound_manager.play_sound(animal, "feed", gender)
+		"drink":
+			sound_manager.play_sound(animal, "drink", gender)
 		"pet":
 			sound_manager.play_sound(animal, "pet", gender)
 		"rest":
@@ -3493,6 +3513,8 @@ func _play_action_sound(action_name: String):
 		"bathe":
 			sound_manager.play_sound(animal, "bathe", gender)
 		"exercise":
+			sound_manager.play_sound(animal, "exercise", gender)
+		"fetch_ball", "play_ball":
 			sound_manager.play_sound(animal, "exercise", gender)
 
 func _on_action_pressed(action_name):
@@ -3791,19 +3813,23 @@ func _create_exercise_tab_content(content: VBoxContainer):
 	var row = HBoxContainer.new()
 	row.add_theme_constant_override("separation", 8)
 	content.add_child(row)
-	for item in [["Play", "exercise_play"], ["Workout", "exercise_workout"]]:
-		var btn = Button.new()
-		btn.text = item[0]
-		btn.custom_minimum_size = Vector2(110, 28)
-		btn.pressed.connect(_do_action_from_tab.bind(item[1]))
-		match item[1]:
-			"exercise_play":
-				_apply_button_icon(btn, "res://sprites/items/toys_a/ball.png")
-			"exercise_workout":
-				_apply_button_icon(btn, "res://sprites/items/toys_a/rope_toy.png")
-		row.add_child(btn)
+
+	var fetch_btn = Button.new()
+	fetch_btn.text = "Fetch Ball"
+	fetch_btn.custom_minimum_size = Vector2(110, 28)
+	fetch_btn.pressed.connect(_on_hold_ball)
+	_apply_button_icon(fetch_btn, "res://sprites/items/toys_a/ball.png")
+	row.add_child(fetch_btn)
+
+	var workout_btn = Button.new()
+	workout_btn.text = "Workout"
+	workout_btn.custom_minimum_size = Vector2(110, 28)
+	workout_btn.pressed.connect(_do_action_from_tab.bind("exercise_workout"))
+	_apply_button_icon(workout_btn, "exercise")
+	row.add_child(workout_btn)
+
 	_fit_row_buttons(row, row_w, 28)
-	_append_tab_hint(content, "Workout builds fitness faster but can cause injury if overused.")
+	_append_tab_hint(content, "Fetch uses the universal ball: pick it up, then click where to throw. Workout builds fitness faster but can injure if overused.")
 
 func _create_pet_tab_content(content: VBoxContainer):
 	var row_w = content.size.x
@@ -3829,7 +3855,7 @@ func _create_pet_tab_content(content: VBoxContainer):
 func _do_action_from_tab(action_name: String):
 	var reopen_tab = _base_action_name(action_name)
 	var result = game_manager.perform_action(action_name)
-	_play_action_sound(reopen_tab)
+	_play_action_sound(_sound_action_name(action_name))
 	if result is Dictionary and result.get("message", "") != "":
 		_show_feedback_message(result.get("message", ""))
 	_on_stats_updated()
@@ -3845,37 +3871,29 @@ func _base_action_name(action_name: String) -> String:
 		return "groom"
 	if action_name.begins_with("exercise_"):
 		return "exercise"
+	if action_name == "fetch_ball" or action_name == "play_ball":
+		return "exercise"
 	if action_name.begins_with("rest_"):
 		return "rest"
 	return action_name
+
+func _sound_action_name(action_name: String) -> String:
+	if action_name == "feed_hydrate":
+		return "drink"
+	if action_name == "fetch_ball" or action_name == "play_ball":
+		return "exercise"
+	return _base_action_name(action_name)
 
 func show_action_menu(action_type: String):
 	# Legacy entry point; route to the unified action-tab UX.
 	_show_action_tab(action_type)
 
 func add_food_options(container: VBoxContainer):
-	var pd = game_manager.get_active_pet_data()
-	var animal = pd.animal_type if pd else "rat"
-	
-	var foods = {
-		"rat": ["Cheese", "Seeds", "Vegetables", "Fruit"],
-		"crow": ["Nuts", "Seeds", "Berries", "Insects"],
-		"fox": ["Meat", "Fish", "Berries", "Eggs"],
-		"snake": ["Mouse", "Fish", "Eggs", "Insects"],
-		"deer": ["Grass", "Leaves", "Berries", "Mushrooms"],
-		"frog": ["Flies", "Worms", "Beetles", "Small Fish"],
-		"pigeon": ["Seeds", "Grain", "Bread", "Fruit"],
-		"raccoon": ["Fish", "Fruit", " Nuts", "Eggs"],
-		"squirrel": ["Nuts", "Seeds", "Fruit", "Vegetables"],
-		"goose": ["Grass", "Grain", "Seeds", "Vegetables"]
-	}
-	
-	var food_list = foods.get(animal, foods["rat"])
-	for food in food_list:
+	for food_key in FOOD_TYPES.keys():
 		var btn = Button.new()
-		btn.text = food
+		btn.text = FOOD_TYPES[food_key]["name"]
 		btn.custom_minimum_size = Vector2(240, 25)
-		btn.pressed.connect(_on_food_selected.bind(food))
+		btn.pressed.connect(_on_food_item_selected.bind(food_key))
 		container.add_child(btn)
 
 func add_pet_options(container: VBoxContainer):
@@ -3915,13 +3933,17 @@ func add_bathe_options(container: VBoxContainer):
 		container.add_child(btn)
 
 func add_exercise_options(container: VBoxContainer):
-	var options = ["Walk Around", "Play Fetch", "Swimming", "Training"]
-	for opt in options:
-		var btn = Button.new()
-		btn.text = opt
-		btn.custom_minimum_size = Vector2(240, 25)
-		btn.pressed.connect(_close_action_menu)
-		container.add_child(btn)
+	var fetch_btn = Button.new()
+	fetch_btn.text = "Fetch Ball"
+	fetch_btn.custom_minimum_size = Vector2(240, 25)
+	fetch_btn.pressed.connect(_on_hold_ball)
+	container.add_child(fetch_btn)
+
+	var workout_btn = Button.new()
+	workout_btn.text = "Workout"
+	workout_btn.custom_minimum_size = Vector2(240, 25)
+	workout_btn.pressed.connect(_do_action_from_tab.bind("exercise_workout"))
+	container.add_child(workout_btn)
 
 func _on_food_selected(_food: String):
 	_close_action_menu()
@@ -5104,6 +5126,12 @@ func _on_water_selected():
 	_close_feeding_panel()
 	_create_held_item_sprite()
 
+func _on_hold_ball():
+	held_item = {"type": "toy", "name": "ball", "icon": "res://sprites/items/toys_a/ball.png"}
+	_close_action_tab()
+	_create_held_item_sprite()
+	_show_feedback_message("Throw the ball anywhere in the habitat stage.")
+
 func _create_held_item_sprite():
 	if held_item_sprite:
 		held_item_sprite.queue_free()
@@ -5123,6 +5151,10 @@ func _handle_held_item_click(click_position: Vector2):
 	
 	if pd == null or pet == null:
 		_clear_held_item()
+		return
+
+	if held_item.type == "toy" and held_item.name == "ball":
+		_handle_ball_throw(click_position)
 		return
 	
 	# Check if click is near the pet (pet area is around y=280)
@@ -5174,6 +5206,48 @@ func _handle_held_item_click(click_position: Vector2):
 	
 	# Update stats
 	_on_stats_updated()
+
+func _handle_ball_throw(click_position: Vector2):
+	var pd = game_manager.get_active_pet_data()
+	var pet = game_manager.get_active_pet()
+	if pd == null or pet == null:
+		_clear_held_item()
+		return
+
+	var result = game_manager.perform_action("fetch_ball")
+	_spawn_ball_throw_marker(click_position, pet.position)
+	if sound_manager:
+		sound_manager.play_sound(pd.animal_type, "exercise", pd.gender)
+	_clear_held_item()
+	if result is Dictionary and result.get("message", "") != "":
+		_show_feedback_message(result.get("message", ""))
+	_on_stats_updated()
+
+func _spawn_ball_throw_marker(target_position: Vector2, pet_position: Vector2):
+	if thrown_ball_sprite and is_instance_valid(thrown_ball_sprite):
+		thrown_ball_sprite.queue_free()
+	var marker = Sprite2D.new()
+	marker.texture = _load_ui_asset_texture("res://sprites/items/toys_a/ball.png")
+	if marker.texture == null:
+		marker.queue_free()
+		thrown_ball_sprite = null
+		return
+	thrown_ball_sprite = marker
+	marker.position = target_position
+	marker.scale = Vector2(2, 2)
+	marker.z_index = 90
+	add_child(marker)
+
+	var return_point = pet_position + Vector2(0, -24)
+	var tween = create_tween()
+	tween.tween_property(marker, "position", return_point, 0.45)
+	tween.tween_property(marker, "modulate:a", 0.0, 0.25)
+	tween.tween_callback(func():
+		if is_instance_valid(marker):
+			marker.queue_free()
+		if thrown_ball_sprite == marker:
+			thrown_ball_sprite = null
+	)
 
 func _clear_held_item():
 	held_item = {"type": "", "name": "", "icon": ""}

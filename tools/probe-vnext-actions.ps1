@@ -157,7 +157,8 @@ function Start-ShellProcess {
     param(
         [string]$ExePath,
         [string]$DataRoot,
-        [string]$TraceRoot
+        [string]$TraceRoot,
+        [string]$ScenarioPath = ""
     )
 
     $psi = New-Object System.Diagnostics.ProcessStartInfo
@@ -166,7 +167,28 @@ function Start-ShellProcess {
     $psi.UseShellExecute = $false
     $psi.Environment["WEVITO_VNEXT_DATA_ROOT"] = $DataRoot
     $psi.Environment["WEVITO_VNEXT_TRACE_DIR"] = $TraceRoot
+    if (-not [string]::IsNullOrWhiteSpace($ScenarioPath)) {
+        $psi.Environment["WEVITO_VNEXT_SCENARIO_PATH"] = $ScenarioPath
+    }
     return [System.Diagnostics.Process]::Start($psi)
+}
+
+function New-ProbeScenario {
+    param([string]$OutputDir)
+
+    $scenarioPath = Join-Path $OutputDir "scenario.json"
+    $scenario = [ordered]@{
+        mode = "Pinned"
+        clearBasket = $true
+        settingsSnapshot = [ordered]@{
+            compact_hud = "False"
+            show_pet_names = "False"
+            show_status_summary = "True"
+            webtools_visible = "False"
+        }
+    }
+    $scenario | ConvertTo-Json -Depth 4 | Set-Content -Path $scenarioPath -Encoding UTF8
+    return $scenarioPath
 }
 
 function Get-WindowInfo {
@@ -381,6 +403,24 @@ function Invoke-ButtonRobust {
     return Invoke-Button -WindowInfo $WindowInfo -Names $Names -AutomationIds $AutomationIds
 }
 
+function Ensure-ShellPinned {
+    param($WindowInfo)
+
+    $pinButton = Get-AutomationElement -Handle $WindowInfo.Handle -AutomationId "PinButton" -ControlType ([System.Windows.Automation.ControlType]::Button) -TimeoutMs 1500
+    if ($null -eq $pinButton) {
+        throw "Missing pin button."
+    }
+
+    if ($pinButton.Current.Name -eq "PIN") {
+        $invoke = $pinButton.GetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern)
+        $invoke.Invoke()
+        Start-Sleep -Milliseconds 900
+        return "PinButton"
+    }
+
+    return "already-pinned"
+}
+
 function Toggle-CheckBoxByName {
     param(
         $WindowInfo,
@@ -434,6 +474,48 @@ function Select-FirstBasketRow {
     $selection = $item.GetCurrentPattern([System.Windows.Automation.SelectionItemPattern]::Pattern)
     $selection.Select()
     Start-Sleep -Milliseconds 500
+}
+
+function Mark-FirstBasketRowForDelete {
+    param($WindowInfo)
+
+    $grid = Get-AutomationElement -Handle $WindowInfo.Handle -AutomationId "BasketGrid" -ControlType ([System.Windows.Automation.ControlType]::DataGrid)
+    if ($null -eq $grid) {
+        throw "Missing basket grid."
+    }
+
+    $checkbox = $grid.FindFirst(
+        [System.Windows.Automation.TreeScope]::Descendants,
+        [System.Windows.Automation.PropertyCondition]::new(
+            [System.Windows.Automation.AutomationElement]::ControlTypeProperty,
+            [System.Windows.Automation.ControlType]::CheckBox))
+    if ($null -eq $checkbox) {
+        throw "Missing basket delete checkbox."
+    }
+
+    $toggle = $checkbox.GetCurrentPattern([System.Windows.Automation.TogglePattern]::Pattern)
+    if ($toggle.Current.ToggleState -ne [System.Windows.Automation.ToggleState]::On) {
+        $toggle.Toggle()
+        Start-Sleep -Milliseconds 600
+    }
+}
+
+function Invoke-FirstActionOption {
+    param($WindowInfo)
+
+    $button = Get-AutomationElement -Handle $WindowInfo.Handle -AutomationId "ActionOptionButton" -ControlType ([System.Windows.Automation.ControlType]::Button) -TimeoutMs 4000
+    if ($null -eq $button) {
+        return $null
+    }
+
+    if (-not $button.Current.IsEnabled) {
+        return "disabled"
+    }
+
+    $invoke = $button.GetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern)
+    $invoke.Invoke()
+    Start-Sleep -Milliseconds 900
+    return "ActionOptionButton"
 }
 
 function Wait-ForTraceText {
@@ -524,7 +606,8 @@ function Invoke-ActionSession {
     $notepadProcess = $null
 
     try {
-        $shellProcess = Start-ShellProcess -ExePath $ShellExe -DataRoot $paths.data -TraceRoot $paths.trace
+        $scenarioPath = New-ProbeScenario -OutputDir $paths.root
+        $shellProcess = Start-ShellProcess -ExePath $ShellExe -DataRoot $paths.data -TraceRoot $paths.trace -ScenarioPath $scenarioPath
         Start-Sleep -Milliseconds $StartupDelayMs
 
         $homeWindow = Get-WindowInfo -ProcessId $shellProcess.Id -Title "Wevito Home Panel"
@@ -554,9 +637,27 @@ function Invoke-ActionSession {
             default { $ActionId.Substring(0,1).ToUpperInvariant() + $ActionId.Substring(1) }
         }
 
-        $buttonElement = Get-AutomationElement -Handle $homeWindow.Handle -AutomationId $ButtonId -ControlType ([System.Windows.Automation.ControlType]::Button)
+        $actionsInvoked = Invoke-ButtonRobust -WindowInfo $homeWindow -AutomationIds @("ActionsButton") -Names @("ACTIONS", "ACTIONS ON")
+        if ($null -eq $actionsInvoked) {
+            Set-WindowForeground -WindowInfo $homeWindow
+            $actionsInvoked = Invoke-ButtonRobust -WindowInfo $homeWindow -AutomationIds @("ActionsButton") -Names @("ACTIONS", "ACTIONS ON")
+        }
+        if ($null -eq $actionsInvoked) {
+            return [ordered]@{
+                action = $ActionId
+                output_dir = $paths.root
+                invoked = "actions-menu-missing"
+                enabled = $false
+                trace_matched = $false
+                shell_alive = -not $shellProcess.HasExited
+            }
+        }
+
+        $toolWindow = Get-ToolWindowInfo -ProcessId $shellProcess.Id -Titles @("Wevito Actions")
+        $menuButtonId = ("ActionMenu{0}Button" -f $buttonLabel)
+        $buttonElement = Get-AutomationElement -Handle $toolWindow.Handle -AutomationId $menuButtonId -ControlType ([System.Windows.Automation.ControlType]::Button)
         if ($null -eq $buttonElement) {
-            $buttonElement = Get-AutomationElement -Handle $homeWindow.Handle -Name $buttonLabel -ControlType ([System.Windows.Automation.ControlType]::Button)
+            $buttonElement = Get-AutomationElement -Handle $toolWindow.Handle -Name $buttonLabel -ControlType ([System.Windows.Automation.ControlType]::Button)
         }
         if ($null -eq $buttonElement) {
             return [ordered]@{
@@ -564,7 +665,7 @@ function Invoke-ActionSession {
                 output_dir = $paths.root
                 invoked = "automation-missing"
                 enabled = $false
-                trace_matched = $true
+                trace_matched = $false
                 shell_alive = -not $shellProcess.HasExited
             }
         }
@@ -587,11 +688,31 @@ function Invoke-ActionSession {
         $invoke.Invoke()
         Start-Sleep -Milliseconds 900
         $traceMatched = Wait-ForTraceText -TracePath $shellTracePath -Pattern $tracePattern
+        $invoked = $menuButtonId
+
+        if (-not $traceMatched) {
+            $openActionPattern = "ui-command \| .*open-action action=" + [regex]::Escape($ActionId)
+            if (Wait-ForTraceText -TracePath $shellTracePath -Pattern $openActionPattern -TimeoutMs 1200) {
+                $optionInvoked = Invoke-FirstActionOption -WindowInfo $toolWindow
+                if ($null -ne $optionInvoked) {
+                    $invoked = "$menuButtonId>$optionInvoked"
+                    $traceMatched = Wait-ForTraceText -TracePath $shellTracePath -Pattern $tracePattern
+                }
+            }
+        }
+
+        if (-not $traceMatched) {
+            $notNeededPattern = "feedback \| .*" + [regex]::Escape($buttonLabel) + " is not needed right now"
+            if (Wait-ForTraceText -TracePath $shellTracePath -Pattern $notNeededPattern -TimeoutMs 1200) {
+                $invoked = "$menuButtonId>not-needed"
+                $traceMatched = $true
+            }
+        }
 
         return [ordered]@{
             action = $ActionId
             output_dir = $paths.root
-            invoked = $ButtonId
+            invoked = $invoked
             enabled = $true
             trace_matched = $traceMatched
             shell_alive = $shellAlive
@@ -613,7 +734,8 @@ function Invoke-ToolSession {
     $shellProcess = $null
 
     try {
-        $shellProcess = Start-ShellProcess -ExePath $ShellExe -DataRoot $paths.data -TraceRoot $paths.trace
+        $scenarioPath = New-ProbeScenario -OutputDir $paths.root
+        $shellProcess = Start-ShellProcess -ExePath $ShellExe -DataRoot $paths.data -TraceRoot $paths.trace -ScenarioPath $scenarioPath
         Start-Sleep -Milliseconds $StartupDelayMs
 
         $homeWindow = Get-WindowInfo -ProcessId $shellProcess.Id -Title "Wevito Home Panel"
@@ -622,12 +744,9 @@ function Invoke-ToolSession {
         $shellTracePath = Join-Path $paths.trace "Wevito.VNext.Shell.trace.log"
         $brokerTracePath = Join-Path $paths.trace "Wevito.VNext.Broker.trace.log"
 
-        $saveInvoked = Invoke-ButtonRobust -WindowInfo $homeWindow -AutomationIds @("SaveButton") -Names @("SAVE")
-        if ($null -eq $saveInvoked) {
-            throw "Failed to invoke save button."
-        }
+        [void](Ensure-ShellPinned -WindowInfo $homeWindow)
 
-        $settingsInvoked = Invoke-ButtonRobust -WindowInfo $homeWindow -AutomationIds @("SettingsButton") -Names @("SET", "DONE")
+        $settingsInvoked = Invoke-ButtonRobust -WindowInfo $homeWindow -AutomationIds @("SettingsButton") -Names @("SETTINGS", "SET", "DONE")
         if ($null -eq $settingsInvoked) {
             throw "Failed to open settings popup."
         }
@@ -637,6 +756,11 @@ function Invoke-ToolSession {
         Toggle-CheckBoxByName -WindowInfo $toolWindow -Name "Show pet names in the habitat"
         Toggle-CheckBoxByName -WindowInfo $toolWindow -Name "Show status summary text"
 
+        $saveInvoked = Invoke-ButtonRobust -WindowInfo $toolWindow -AutomationIds @("SettingsSaveButton") -Names @("Save now")
+        if ($null -eq $saveInvoked) {
+            throw "Failed to invoke settings save button."
+        }
+
         $closeInvoked = Invoke-Button -WindowInfo $toolWindow -AutomationIds @("ToolCloseButton") -Names @("Close")
         if ($null -eq $closeInvoked) {
             throw "Failed to close settings popup."
@@ -645,13 +769,15 @@ function Invoke-ToolSession {
         $basketUrl = "https://example.com/actions"
         Set-ClipboardWithRetry -Value $basketUrl
 
-        $webToolsInvoked = Invoke-ButtonRobust -WindowInfo $homeWindow -AutomationIds @("WebToolsButton") -Names @("TOOLS", "HIDE")
-        if ($null -eq $webToolsInvoked) {
-            throw "Failed to toggle webtools bar."
-        }
-
         if (-not (Wait-ForButtonReady -WindowInfo $homeWindow -AutomationIds @("LinkBinTabButton") -Names @("LINK BIN", "LINK BIN ACTIVE"))) {
-            throw "Webtools bar opened, but link bin tab never became ready."
+            $webToolsInvoked = Invoke-ButtonRobust -WindowInfo $homeWindow -AutomationIds @("WebToolsButton") -Names @("TOOLS", "HIDE")
+            if ($null -eq $webToolsInvoked) {
+                throw "Failed to toggle webtools bar."
+            }
+
+            if (-not (Wait-ForButtonReady -WindowInfo $homeWindow -AutomationIds @("LinkBinTabButton") -Names @("LINK BIN", "LINK BIN ACTIVE"))) {
+                throw "Webtools bar opened, but link bin tab never became ready."
+            }
         }
 
         $basketInvoked = Invoke-ButtonRobust -WindowInfo $homeWindow -AutomationIds @("LinkBinTabButton") -Names @("LINK BIN", "LINK BIN ACTIVE")
@@ -697,6 +823,7 @@ function Invoke-ToolSession {
             $toolWindow = Get-ToolWindowInfo -ProcessId $shellProcess.Id -Titles @("Wevito Basket")
         }
         Select-FirstBasketRow -WindowInfo $toolWindow
+        Mark-FirstBasketRowForDelete -WindowInfo $toolWindow
 
         $deleteInvoked = Invoke-Button -WindowInfo $toolWindow -AutomationIds @("DeleteButton") -Names @("Delete")
         if ($null -eq $deleteInvoked) {
@@ -748,38 +875,54 @@ $actionSpecs = @(
     [ordered]@{ id = "home"; button = "HomeButton"; require_recall = $true }
 )
 
-foreach ($spec in $actionSpecs) {
-    $actionResults += Invoke-ActionSession -ActionId $spec.id -ButtonId $spec.button -RequireRecall:$spec.require_recall
-}
+try {
+    foreach ($spec in $actionSpecs) {
+        $actionResults += Invoke-ActionSession -ActionId $spec.id -ButtonId $spec.button -RequireRecall:$spec.require_recall
+    }
 
-$toolResult = Invoke-ToolSession
+    $toolResult = Invoke-ToolSession
 
-$summary = [ordered]@{
-    captured_at = (Get-Date).ToString("s")
-    output_dir = $OutputDir
-    actions = $actionResults
-    tools = $toolResult
-}
+    $summary = [ordered]@{
+        captured_at = (Get-Date).ToString("s")
+        output_dir = $OutputDir
+        actions = $actionResults
+        tools = $toolResult
+    }
 
-$summaryPath = Join-Path $OutputDir "summary.json"
-$summary | ConvertTo-Json -Depth 6 | Set-Content -Path $summaryPath -Encoding UTF8
-Write-Output "summary=$summaryPath"
+    $summaryPath = Join-Path $OutputDir "summary.json"
+    $summary | ConvertTo-Json -Depth 6 | Set-Content -Path $summaryPath -Encoding UTF8
+    Write-Output "summary=$summaryPath"
 
-if ($actionResults | Where-Object { -not $_.trace_matched -or -not $_.shell_alive }) {
-    throw "One or more action sessions failed validation."
+    if ($actionResults | Where-Object { -not $_.trace_matched -or -not $_.shell_alive }) {
+        throw "One or more action sessions failed validation."
+    }
+    if ($toolResult.settings_traces.Values -contains $false) {
+        throw "One or more settings trace validations failed."
+    }
+    if ($toolResult.basket_traces.Values -contains $false) {
+        throw "One or more basket trace validations failed."
+    }
+    if (-not $toolResult.save_trace) {
+        throw "Save trace validation failed."
+    }
+    if (-not $toolResult.shell_alive) {
+        throw "Shell exited during tool probe."
+    }
+    if ($toolResult.clipboard_after_copy -ne "https://example.com/actions") {
+        throw "Basket copy did not restore the expected URL to the clipboard."
+    }
 }
-if ($toolResult.settings_traces.Values -contains $false) {
-    throw "One or more settings trace validations failed."
-}
-if ($toolResult.basket_traces.Values -contains $false) {
-    throw "One or more basket trace validations failed."
-}
-if (-not $toolResult.save_trace) {
-    throw "Save trace validation failed."
-}
-if (-not $toolResult.shell_alive) {
-    throw "Shell exited during tool probe."
-}
-if ($toolResult.clipboard_after_copy -ne "https://example.com/actions") {
-    throw "Basket copy did not restore the expected URL to the clipboard."
+catch {
+    $failure = [ordered]@{
+        captured_at = (Get-Date).ToString("s")
+        output_dir = $OutputDir
+        error = $_.Exception.Message
+        category = $_.CategoryInfo.ToString()
+        script_stack = $_.ScriptStackTrace
+        actions = $actionResults
+    }
+    $failurePath = Join-Path $OutputDir "failure.json"
+    $failure | ConvertTo-Json -Depth 6 | Set-Content -Path $failurePath -Encoding UTF8
+    Write-Error "vNext action probe failed. failure=$failurePath error=$($_.Exception.Message)"
+    exit 1
 }
