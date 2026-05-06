@@ -242,17 +242,23 @@ Use these documents when updating this dashboard:
 ## Update Workflow
 
 1. Edit this markdown file when a phase completes or a percentage changes.
-2. Regenerate the PDF:
+2. Regenerate the quick PDF snapshot:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\export-project-dashboard-pdf.ps1
 ```
 
-3. Confirm the PDF exists at:
+3. Regenerate the polished PDF packet:
+
+```powershell
+python .\tools\export-project-dashboard-packet-pdf.py
+```
+
+4. Confirm the PDFs exist at:
 
 ```text
 docs/WEVITO_PROJECT_COMPLETION_DASHBOARD_2026-05-05.pdf
+docs/WEVITO_PROJECT_COMPLETION_DASHBOARD_PACKET_2026-05-05.pdf
 ```
 
-4. If the dashboard becomes materially outdated, create a new dated copy instead of overwriting historical context.
-
+5. If the dashboard becomes materially outdated, create a new dated copy instead of overwriting historical context.
