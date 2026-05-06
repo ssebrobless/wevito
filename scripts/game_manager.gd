@@ -765,6 +765,36 @@ func perform_action(action: String) -> Dictionary:
 	stats_updated.emit()
 	return result
 
+func perform_fetch_sequence(ball_position: Vector2) -> Dictionary:
+	var pd = get_active_pet_data()
+	var pet = get_active_pet()
+
+	if pd == null or pet == null:
+		return {"accepted": false, "message": "No active pet."}
+	if pd.is_dead or pd.is_hatching:
+		return {"accepted": false, "message": "Action unavailable."}
+
+	var refusal = 0.0
+	if pd.affection < 20:
+		refusal = 0.5
+	elif pd.affection < 40:
+		refusal = 0.2
+	if randf() < refusal:
+		return {"accepted": false, "message": "Not in the mood to play."}
+
+	pd.fitness = min(100.0, pd.fitness + 8.0)
+	pd.happiness = min(100.0, pd.happiness + 10.0)
+	pd.affection = min(100.0, pd.affection + 7.0)
+	pd.energy = max(0.0, pd.energy - 5.0)
+	pd.hunger = max(0.0, pd.hunger - 3.0)
+	if pet.has_method("start_fetch_sequence"):
+		pet.start_fetch_sequence(ball_position, pet.position)
+	else:
+		pet.perform_action("fetch_ball")
+
+	stats_updated.emit()
+	return {"accepted": true, "message": "Fetch started. Watch the pickup, carry, and drop sequence."}
+
 func get_pet_environment(animal_type: String) -> Dictionary:
 	return ENVIRONMENTS.get(ANIMAL_DATA.get(animal_type, {}).get("environment", "sewers"), ENVIRONMENTS["sewers"])
 

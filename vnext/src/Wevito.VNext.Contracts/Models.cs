@@ -87,6 +87,18 @@ public enum PropOverlayKind
     BathTowel
 }
 
+public enum FetchStage
+{
+    None,
+    MoveToBall,
+    Pickup,
+    Hold,
+    CarryWalk,
+    CarryRun,
+    Drop,
+    ReturnIdle
+}
+
 public enum PetStatusType
 {
     Hungry,
@@ -163,6 +175,11 @@ public sealed record ActionVisualIntent(
     AnimationFamily Family = AnimationFamily.Idle,
     PropOverlayKind Overlay = PropOverlayKind.None,
     bool LoopUntilStopped = false);
+
+public sealed record FetchSequenceState(
+    FetchStage Stage = FetchStage.None,
+    DateTimeOffset StageStartedAtUtc = default,
+    DateTimeOffset SequenceStartedAtUtc = default);
 
 public sealed record PetWellbeingSnapshot(
     Guid PetId,
@@ -290,7 +307,8 @@ public sealed record PetActor(
     IReadOnlyList<PetConditionRecord>? ActiveConditions = null,
     IReadOnlyList<PetStatusType>? ActiveStatuses = null,
     string SelectedEnvironmentId = "",
-    ActionVisualIntent? CurrentActionVisualIntent = null);
+    ActionVisualIntent? CurrentActionVisualIntent = null,
+    FetchSequenceState? ActiveFetchSequence = null);
 
 public sealed record ToolSession(
     string ToolId,
