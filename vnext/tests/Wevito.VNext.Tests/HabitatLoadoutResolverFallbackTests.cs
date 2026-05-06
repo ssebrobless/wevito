@@ -15,13 +15,33 @@ public sealed class HabitatLoadoutResolverFallbackTests
 
         var loadout = HabitatLoadoutResolver.Resolve(state, content);
 
-        Assert.Equal(["pond_dish", "ball", "pebble_cluster"], loadout.DynamicStageProps.Select(prop => prop.AssetId).ToArray());
+        Assert.Equal(["pond_dish", "pebble_cluster"], loadout.DynamicStageProps.Select(prop => prop.AssetId).ToArray());
         Assert.Contains(loadout.DynamicStageProps, prop =>
             prop.AssetId == "pond_dish" &&
             prop.CategoryFolder == "containers" &&
             prop.DepthBand == DepthBand.GroundContact &&
             prop.OcclusionMode == OcclusionMode.BodyOnly &&
             prop.ContactShadowMode == ContactShadowMode.Soft);
+    }
+
+    [Fact]
+    public async Task Resolve_ShowsManifestInteractionSlotWhenNeedOrActionRequiresIt()
+    {
+        var repository = new ContentRepository(FindPath("vnext", "content"));
+        var content = await repository.LoadAsync();
+        var state = CreateState("goose", pet => pet with
+        {
+            LastActionId = "play",
+            LastActionAtUtc = DateTimeOffset.UtcNow
+        });
+
+        var loadout = HabitatLoadoutResolver.Resolve(state, content);
+
+        Assert.Equal(["pond_dish", "ball", "pebble_cluster"], loadout.DynamicStageProps.Select(prop => prop.AssetId).ToArray());
+        Assert.Contains(loadout.DynamicStageProps, prop =>
+            prop.AssetId == "ball" &&
+            prop.DepthBand == DepthBand.HeldOrCarriedProp &&
+            prop.SlotId == "interaction");
     }
 
     [Fact]
@@ -58,7 +78,7 @@ public sealed class HabitatLoadoutResolverFallbackTests
         Assert.NotEqual(["pond_dish", "ball", "pebble_cluster"], loadout.DynamicStageProps.Select(prop => prop.AssetId).ToArray());
     }
 
-    private static CompanionState CreateState(string speciesId)
+    private static CompanionState CreateState(string speciesId, Func<PetActor, PetActor>? configurePet = null)
     {
         var pet = new PetActor(
             Guid.NewGuid(),
@@ -67,6 +87,7 @@ public sealed class HabitatLoadoutResolverFallbackTests
             AgeStage: PetAgeStage.Baby,
             Gender: PetGender.Female,
             ColorVariant: "blue");
+        pet = configurePet?.Invoke(pet) ?? pet;
 
         return new CompanionState(
             CompanionMode.Focused,
