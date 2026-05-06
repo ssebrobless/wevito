@@ -1,0 +1,58 @@
+[
+  {
+    "id": "drink",
+    "displayName": "Drink",
+    "frameCount": 4,
+    "fallbackAnimations": ["eat", "idle"],
+    "propRequirement": "water_or_bowl_anchor",
+    "qualityGate": "head or mouth lowers toward a species-appropriate water source without body-size drift"
+  },
+  {
+    "id": "play_ball",
+    "displayName": "Play Ball",
+    "frameCount": 6,
+    "fallbackAnimations": ["happy", "walk", "idle"],
+    "propRequirement": "ball_visible_near_mouth_or_forelimbs",
+    "qualityGate": "the animal visibly reacts to the ball and keeps anatomy consistent across the loop"
+  },
+  {
+    "id": "hold_ball",
+    "displayName": "Hold Ball",
+    "frameCount": 4,
+    "fallbackAnimations": ["happy", "idle"],
+    "propRequirement": "ball_attached_to_species_specific_hold_anchor",
+    "qualityGate": "ball placement stays stable while the animal remains on-model"
+  },
+  {
+    "id": "carry_ball_walk",
+    "displayName": "Carry Ball Walk",
+    "frameCount": 6,
+    "fallbackAnimations": ["walk", "idle"],
+    "propRequirement": "ball_attached_to_species_specific_hold_anchor",
+    "qualityGate": "walk motion faces travel direction and the carried ball does not slide or detach"
+  },
+  {
+    "id": "carry_ball_run",
+    "displayName": "Carry Ball Run",
+    "frameCount": 6,
+    "fallbackAnimations": ["walk", "idle"],
+    "propRequirement": "ball_attached_to_species_specific_hold_anchor",
+    "qualityGate": "faster carry motion reads as energetic without shrinking the sprite to fit a box"
+  },
+  {
+    "id": "pickup_ball",
+    "displayName": "Pickup Ball",
+    "frameCount": 4,
+    "fallbackAnimations": ["happy", "idle"],
+    "propRequirement": "ball_ground_to_hold_transition",
+    "qualityGate": "the animal visibly reaches or lowers toward the ball before the prop attaches"
+  },
+  {
+    "id": "drop_ball",
+    "displayName": "Drop Ball",
+    "frameCount": 4,
+    "fallbackAnimations": ["happy", "idle"],
+    "propRequirement": "ball_hold_to_ground_transition",
+    "qualityGate": "the animal visibly releases the ball without popping, clipping, or off-model motion"
+  }
+]

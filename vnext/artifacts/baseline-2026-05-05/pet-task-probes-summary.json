@@ -1,0 +1,112 @@
+﻿[
+    {
+        "family":  "localDocs",
+        "task_text":  "summarize the local docs",
+        "flags":  "",
+        "exit_code":  0,
+        "output":  "vnext\\artifacts\\baseline-2026-05-05\\probe-localDocs.txt",
+        "summary_path":  "C:\\Users\\fishe\\.codex\\worktrees\\f0f4\\wevito\\vnext\\artifacts\\pet-task-probes\\20260506-183828-326-342a65a2\\summary.json",
+        "preview_trace":  "2026-05-06T22:38:41.8075588+00:00 | pet-command | pid=14248 | preview id=c4752c9e-5972-4b63-bcd7-ad6f70220363 family=localDocs status=PreviewReady mutate=False audit=C:\\Users\\fishe\\.codex\\worktrees\\f0f4\\wevito\\vnext\\artifacts\\pet-tasks\\20260506-223841-localdocs-summarizedocs\\run-summary.md",
+        "started":  "2026-05-06T18:38:28.1374224-04:00",
+        "ended":  "2026-05-06T18:38:42.9042290-04:00"
+    },
+    {
+        "family":  "spriteAudit",
+        "task_text":  "review goose baby female blue sprites",
+        "flags":  "",
+        "exit_code":  0,
+        "output":  "vnext\\artifacts\\baseline-2026-05-05\\probe-spriteAudit.txt",
+        "summary_path":  "C:\\Users\\fishe\\.codex\\worktrees\\f0f4\\wevito\\vnext\\artifacts\\pet-task-probes\\20260506-183843-129-a3960a21\\summary.json",
+        "preview_trace":  "2026-05-06T22:38:56.5934189+00:00 | pet-command | pid=6188 | preview id=910895a3-ac60-45fc-8c8a-9c1e31333e24 family=spriteAudit status=PreviewReady mutate=False audit=C:\\Users\\fishe\\.codex\\worktrees\\f0f4\\wevito\\vnext\\artifacts\\pet-tasks\\20260506-223856-spriteaudit-reviewsprites\\run-summary.md",
+        "started":  "2026-05-06T18:38:42.9107197-04:00",
+        "ended":  "2026-05-06T18:38:57.6391299-04:00"
+    },
+    {
+        "family":  "assetInventory",
+        "task_text":  "inventory assets in sprites_runtime",
+        "flags":  "",
+        "exit_code":  0,
+        "output":  "vnext\\artifacts\\baseline-2026-05-05\\probe-assetInventory.txt",
+        "summary_path":  "C:\\Users\\fishe\\.codex\\worktrees\\f0f4\\wevito\\vnext\\artifacts\\pet-task-probes\\20260506-183857-856-29dd3433\\summary.json",
+        "preview_trace":  "2026-05-06T22:39:11.7916197+00:00 | pet-command | pid=22224 | preview id=33d79de7-0707-4a93-89e1-414d1d992ca0 family=assetInventory status=PreviewReady mutate=False audit=C:\\Users\\fishe\\.codex\\worktrees\\f0f4\\wevito\\vnext\\artifacts\\pet-tasks\\20260506-223911-assetinventory-inventoryassets\\run-summary.md",
+        "started":  "2026-05-06T18:38:57.6391299-04:00",
+        "ended":  "2026-05-06T18:39:12.4787679-04:00"
+    },
+    {
+        "family":  "petState",
+        "task_text":  "review pet state",
+        "flags":  "",
+        "exit_code":  0,
+        "output":  "vnext\\artifacts\\baseline-2026-05-05\\probe-petState.txt",
+        "summary_path":  "C:\\Users\\fishe\\.codex\\worktrees\\f0f4\\wevito\\vnext\\artifacts\\pet-task-probes\\20260506-183912-683-b24beaf7\\summary.json",
+        "preview_trace":  "2026-05-06T22:39:26.1790238+00:00 | pet-command | pid=22696 | preview id=f4a87e28-79d0-4ba7-ab82-8e530bdd3c4a family=petState status=PreviewReady mutate=False audit=C:\\Users\\fishe\\.codex\\worktrees\\f0f4\\wevito\\vnext\\artifacts\\pet-tasks\\20260506-223926-petstate-reviewpetstate\\run-summary.md",
+        "started":  "2026-05-06T18:39:12.4787679-04:00",
+        "ended":  "2026-05-06T18:39:27.3521032-04:00"
+    },
+    {
+        "family":  "codeReview",
+        "task_text":  "review the code in Wevito.VNext.Core",
+        "flags":  "",
+        "exit_code":  0,
+        "output":  "vnext\\artifacts\\baseline-2026-05-05\\probe-codeReview.txt",
+        "summary_path":  "C:\\Users\\fishe\\.codex\\worktrees\\f0f4\\wevito\\vnext\\artifacts\\pet-task-probes\\20260506-183927-691-61f67264\\summary.json",
+        "preview_trace":  "2026-05-06T22:39:41.5759255+00:00 | pet-command | pid=14200 | preview id=0c2da35d-a6de-4044-8826-279e139649d1 family=codeReview status=PreviewReady mutate=False audit=C:\\Users\\fishe\\.codex\\worktrees\\f0f4\\wevito\\vnext\\artifacts\\pet-tasks\\20260506-223941-codereview-reviewcode\\run-summary.md",
+        "started":  "2026-05-06T18:39:27.3521032-04:00",
+        "ended":  "2026-05-06T18:39:42.3423461-04:00"
+    },
+    {
+        "family":  "codePatchPlan",
+        "task_text":  "plan a code fix in vnext",
+        "flags":  "",
+        "exit_code":  0,
+        "output":  "vnext\\artifacts\\baseline-2026-05-05\\probe-codePatchPlan.txt",
+        "summary_path":  "C:\\Users\\fishe\\.codex\\worktrees\\f0f4\\wevito\\vnext\\artifacts\\pet-task-probes\\20260506-183942-562-e5761dfd\\summary.json",
+        "preview_trace":  "2026-05-06T22:39:56.1031055+00:00 | pet-command | pid=17656 | preview id=97868663-0f68-406b-a083-0102391608d8 family=codePatchPlan status=PreviewReady mutate=False audit=C:\\Users\\fishe\\.codex\\worktrees\\f0f4\\wevito\\vnext\\artifacts\\pet-tasks\\20260506-223956-codepatchplan-plancodepatch\\run-summary.md",
+        "started":  "2026-05-06T18:39:42.3423461-04:00",
+        "ended":  "2026-05-06T18:39:57.0912411-04:00"
+    },
+    {
+        "family":  "buildProof",
+        "task_text":  "run a build proof",
+        "flags":  "-ApproveBeforePreview",
+        "exit_code":  0,
+        "output":  "vnext\\artifacts\\baseline-2026-05-05\\probe-buildProof.txt",
+        "summary_path":  "C:\\Users\\fishe\\.codex\\worktrees\\f0f4\\wevito\\vnext\\artifacts\\pet-task-probes\\20260506-183957-304-54e34579\\summary.json",
+        "preview_trace":  "2026-05-06T22:40:11.7104446+00:00 | pet-command | pid=20212 | preview id=d144d14c-4172-4bc8-8215-72645ed09623 family=buildProof status=PreviewReady mutate=False audit=C:\\Users\\fishe\\.codex\\worktrees\\f0f4\\wevito\\vnext\\artifacts\\pet-tasks\\20260506-224011-buildproof-buildproof\\run-summary.md",
+        "started":  "2026-05-06T18:39:57.0912411-04:00",
+        "ended":  "2026-05-06T18:40:12.7883071-04:00"
+    },
+    {
+        "family":  "translateText",
+        "task_text":  "translate Hello goose to Spanish",
+        "flags":  "-ExpectExecuteEnabledAfterPreview",
+        "exit_code":  0,
+        "output":  "vnext\\artifacts\\baseline-2026-05-05\\probe-translateText.txt",
+        "summary_path":  "C:\\Users\\fishe\\.codex\\worktrees\\f0f4\\wevito\\vnext\\artifacts\\pet-task-probes\\20260506-184013-029-fc3c49ac\\summary.json",
+        "preview_trace":  "2026-05-06T22:40:26.5224230+00:00 | pet-command | pid=24016 | preview id=f17b936f-e66d-43f1-b6f6-9859dddc75d3 family=translateText status=PreviewReady mutate=False audit=C:\\Users\\fishe\\.codex\\worktrees\\f0f4\\wevito\\vnext\\artifacts\\pet-tasks\\20260506-224026-translatetext-translatetext\\run-summary.md",
+        "started":  "2026-05-06T18:40:12.7883071-04:00",
+        "ended":  "2026-05-06T18:40:27.7490021-04:00"
+    },
+    {
+        "family":  "audioAssist",
+        "task_text":  "boost my PC volume",
+        "flags":  "",
+        "exit_code":  0,
+        "output":  "vnext\\artifacts\\baseline-2026-05-05\\probe-audioAssist.txt",
+        "summary_path":  "C:\\Users\\fishe\\.codex\\worktrees\\f0f4\\wevito\\vnext\\artifacts\\pet-task-probes\\20260506-184027-954-ed4eb7e2\\summary.json",
+        "preview_trace":  "2026-05-06T22:40:41.4438577+00:00 | pet-command | pid=23912 | preview id=f83e8820-c6d4-440c-9c0f-d113bf88d56f family=audioAssist status=PreviewReady mutate=False audit=C:\\Users\\fishe\\.codex\\worktrees\\f0f4\\wevito\\vnext\\artifacts\\pet-tasks\\20260506-224041-audioassist-audioassist\\run-summary.md",
+        "started":  "2026-05-06T18:40:27.7490021-04:00",
+        "ended":  "2026-05-06T18:40:42.4885347-04:00"
+    },
+    {
+        "family":  "screenCapture",
+        "task_text":  "screenshot the Wevito window",
+        "flags":  "",
+        "exit_code":  0,
+        "output":  "vnext\\artifacts\\baseline-2026-05-05\\probe-screenCapture.txt",
+        "summary_path":  "C:\\Users\\fishe\\.codex\\worktrees\\f0f4\\wevito\\vnext\\artifacts\\pet-task-probes\\20260506-184042-706-3a8dff7b\\summary.json",
+        "preview_trace":  "2026-05-06T22:40:56.1993236+00:00 | pet-command | pid=20980 | preview id=0c8d9004-d7e5-4cb4-aba6-afc423c9b60c family=screenCapture status=PreviewReady mutate=False audit=C:\\Users\\fishe\\.codex\\worktrees\\f0f4\\wevito\\vnext\\artifacts\\pet-tasks\\20260506-224056-screencapture-screencapture\\run-summary.md",
+        "started":  "2026-05-06T18:40:42.4885347-04:00",
+        "ended":  "2026-05-06T18:40:57.2553410-04:00"
+    }
+]
