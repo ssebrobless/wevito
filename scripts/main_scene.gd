@@ -1564,6 +1564,32 @@ func _run_automation_suite():
 		active_pd.conditions.clear()
 	_on_stats_updated()
 
+	if scenario == "force_low_hydration_drink":
+		var drink_pet = game_manager.get_active_pet()
+		active_pd = game_manager.get_active_pet_data()
+		var auto_drink_ok = false
+		var auto_drink_details = "no active pet"
+		if drink_pet and active_pd:
+			active_pd.animal_type = "goose"
+			active_pd.gender = "female"
+			active_pd.egg_color = "blue"
+			active_pd.stage = 1
+			active_pd.hydration = 8.0
+			active_pd.water_bowl_level = 100.0
+			active_pd.is_sleeping = false
+			drink_pet.setup(active_pd)
+			var hydration_before = active_pd.hydration
+			var triggered = game_manager.force_auto_drink_for_test(game_manager.active_pet_index)
+			await get_tree().process_frame
+			auto_drink_ok = triggered and active_pd.hydration > hydration_before and (drink_pet.current_animation == "drink" or drink_pet.current_animation == "eat")
+			auto_drink_details = "triggered=%s hydration %.1f->%.1f animation=%s" % [
+				str(triggered),
+				hydration_before,
+				active_pd.hydration,
+				drink_pet.current_animation
+			]
+		_automation_assert(checks, "forced_low_hydration_plays_drink_animation", auto_drink_ok, auto_drink_details)
+
 	var slots = _get_environment_slot_rects(float(get_window().size.x), float(get_window().size.y), game_manager.get_pet_count())
 	_show_action_tab("feed")
 	await get_tree().process_frame
