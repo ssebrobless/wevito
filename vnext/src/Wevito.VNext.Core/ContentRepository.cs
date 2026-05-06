@@ -22,7 +22,8 @@ public sealed class ContentRepository
         var statuses = await LoadArrayAsync<StatusDefinition>("statuses.json", cancellationToken);
         var items = await LoadArrayAsync<ItemDefinition>("items.json", cancellationToken);
         var conditions = await LoadArrayAsync<ConditionDefinition>("conditions.json", cancellationToken);
-        return new GameContent(species, actions, environments, tools, needs, statuses, items, conditions);
+        var itemVisualMappings = await LoadArrayAsync<ItemVisualMapping>("item_visual_mapping.json", cancellationToken);
+        return new GameContent(species, actions, environments, tools, needs, statuses, items, conditions, itemVisualMappings);
     }
 
     private async Task<IReadOnlyList<TItem>> LoadArrayAsync<TItem>(string fileName, CancellationToken cancellationToken)
