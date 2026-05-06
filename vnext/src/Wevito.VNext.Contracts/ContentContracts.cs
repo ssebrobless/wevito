@@ -65,6 +65,16 @@ public sealed record ItemDefinition(
     IReadOnlyList<string>? SpeciesIds = null,
     IReadOnlyList<string>? EnvironmentIds = null);
 
+public sealed record ItemVisualMapping(
+    string Id,
+    string DisplayName,
+    string Category,
+    string VisualAssetId,
+    IReadOnlyList<string>? SpeciesIds = null,
+    bool SmallIconSafe = true,
+    bool HabitatObjectSafe = false,
+    string Notes = "");
+
 public sealed record GameContent(
     IReadOnlyList<SpeciesDefinition> Species,
     IReadOnlyList<ActionDefinition> Actions,
@@ -73,4 +83,5 @@ public sealed record GameContent(
     IReadOnlyList<NeedDefinition> Needs,
     IReadOnlyList<StatusDefinition> Statuses,
     IReadOnlyList<ItemDefinition> Items,
-    IReadOnlyList<ConditionDefinition> Conditions);
+    IReadOnlyList<ConditionDefinition> Conditions,
+    IReadOnlyList<ItemVisualMapping>? ItemVisualMappings = null);
