@@ -1,0 +1,92 @@
+[
+  {
+    "speciesId": "goose",
+    "environmentId": "goose",
+    "slots": [
+      {"slotId":"primary","role":"primaryAnchor","assetId":"pond_dish","priorityTier":0,"defaultRect":{"left":170,"top":190,"width":74,"height":26},"depthBand":"groundContact","occlusionMode":"bodyOnly","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Primary wetland identity anchor; keep pond rim available for small lower-body overlap."},
+      {"slotId":"interaction","role":"activeInteraction","assetId":"ball","priorityTier":1,"defaultRect":{"left":112,"top":190,"width":56,"height":34},"depthBand":"heldOrCarriedProp","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal fetch/play object; runtime carried overlay remains separate from habitat placement."},
+      {"slotId":"decor","role":"optionalDecor","assetId":"pebble_cluster","priorityTier":2,"defaultRect":{"left":286,"top":182,"width":70,"height":34},"depthBand":"farProp","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Low-priority shoreline dressing; do not crowd the pet silhouette."}
+    ]
+  },
+  {
+    "speciesId": "rat",
+    "environmentId": "rat",
+    "slots": [
+      {"slotId":"primary","role":"primaryAnchor","assetId":"crate_hideout","priorityTier":0,"defaultRect":{"left":90,"top":132,"width":70,"height":64},"depthBand":"groundContact","occlusionMode":"bodyOnly","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Shelter anchor; pet should sit beside or in front of the opening, not centered over the crate."},
+      {"slotId":"interaction","role":"activeInteraction","assetId":"snack_bowl","priorityTier":1,"defaultRect":{"left":176,"top":192,"width":68,"height":24},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Small feeding interaction object."},
+      {"slotId":"decor","role":"optionalDecor","assetId":"storage_basket","priorityTier":2,"defaultRect":{"left":286,"top":182,"width":88,"height":42},"depthBand":"farProp","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Background storage prop; preserve rat readability."}
+    ]
+  },
+  {
+    "speciesId": "crow",
+    "environmentId": "crow",
+    "slots": [
+      {"slotId":"primary","role":"primaryAnchor","assetId":"branch_perch","priorityTier":0,"defaultRect":{"left":200,"top":54,"width":176,"height":50},"depthBand":"groundContact","occlusionMode":"bodyOnly","contactShadowMode":"hard","ageScalePolicy":"constant","notes":"Explicit perch anchor; crow should contact the branch rather than float in front."},
+      {"slotId":"interaction","role":"activeInteraction","assetId":"seed_tray","priorityTier":1,"defaultRect":{"left":176,"top":192,"width":68,"height":24},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Seed interaction object."},
+      {"slotId":"decor","role":"optionalDecor","assetId":"shiny_reward","priorityTier":2,"defaultRect":{"left":286,"top":176,"width":72,"height":38},"depthBand":"farProp","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Crow-specific enrichment reward; keep subtle."}
+    ]
+  },
+  {
+    "speciesId": "snake",
+    "environmentId": "snake",
+    "slots": [
+      {"slotId":"primary","role":"primaryAnchor","assetId":"rock_basking_spot","priorityTier":0,"defaultRect":{"left":250,"top":176,"width":106,"height":44},"depthBand":"groundContact","occlusionMode":"bodyOnly","contactShadowMode":"hard","ageScalePolicy":"perStage","notes":"Basking anchor; adult snake may need larger placement in later renderer phase."},
+      {"slotId":"interaction","role":"activeInteraction","assetId":"shallow_water_dish","priorityTier":1,"defaultRect":{"left":188,"top":192,"width":70,"height":24},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Low water interaction object."},
+      {"slotId":"decor","role":"optionalDecor","assetId":"moss_patch","priorityTier":2,"defaultRect":{"left":116,"top":188,"width":66,"height":30},"depthBand":"farProp","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Wet shelter dressing without crowding the coil."}
+    ]
+  },
+  {
+    "speciesId": "frog",
+    "environmentId": "frog",
+    "slots": [
+      {"slotId":"primary","role":"primaryAnchor","assetId":"pond_dish","priorityTier":0,"defaultRect":{"left":166,"top":190,"width":74,"height":26},"depthBand":"groundContact","occlusionMode":"bodyOnly","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Pond edge/contact anchor; frog needs shadow/contact so it does not look pasted on."},
+      {"slotId":"interaction","role":"activeInteraction","assetId":"bug_treat","priorityTier":1,"defaultRect":{"left":108,"top":190,"width":56,"height":34},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Bug food interaction object."},
+      {"slotId":"decor","role":"optionalDecor","assetId":"moss_patch","priorityTier":2,"defaultRect":{"left":274,"top":176,"width":90,"height":40},"depthBand":"farProp","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Wetland dressing prop."}
+    ]
+  },
+  {
+    "speciesId": "fox",
+    "environmentId": "fox",
+    "slots": [
+      {"slotId":"primary","role":"primaryAnchor","assetId":"moss_bed","priorityTier":0,"defaultRect":{"left":244,"top":176,"width":112,"height":48},"depthBand":"groundContact","occlusionMode":"bodyOnly","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Placeholder mirroring current hardcoded stage prop."},
+      {"slotId":"interaction","role":"activeInteraction","assetId":"shallow_water_dish","priorityTier":1,"defaultRect":{"left":154,"top":192,"width":70,"height":24},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Placeholder mirroring current hardcoded stage prop."},
+      {"slotId":"decor","role":"optionalDecor","assetId":"leaf_pile","priorityTier":2,"defaultRect":{"left":108,"top":190,"width":56,"height":34},"depthBand":"farProp","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Placeholder mirroring current hardcoded stage prop."}
+    ]
+  },
+  {
+    "speciesId": "deer",
+    "environmentId": "deer",
+    "slots": [
+      {"slotId":"primary","role":"primaryAnchor","assetId":"hay_bed","priorityTier":0,"defaultRect":{"left":282,"top":182,"width":92,"height":42},"depthBand":"groundContact","occlusionMode":"bodyOnly","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Placeholder mirroring current hardcoded stage prop."},
+      {"slotId":"interaction","role":"activeInteraction","assetId":"shallow_water_dish","priorityTier":1,"defaultRect":{"left":174,"top":192,"width":72,"height":26},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Placeholder mirroring current hardcoded stage prop."},
+      {"slotId":"decor","role":"optionalDecor","assetId":"leaf_pile","priorityTier":2,"defaultRect":{"left":108,"top":190,"width":58,"height":36},"depthBand":"farProp","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Placeholder mirroring current hardcoded stage prop."}
+    ]
+  },
+  {
+    "speciesId": "pigeon",
+    "environmentId": "pigeon",
+    "slots": [
+      {"slotId":"primary","role":"primaryAnchor","assetId":"branch_perch","priorityTier":0,"defaultRect":{"left":196,"top":56,"width":174,"height":48},"depthBand":"groundContact","occlusionMode":"bodyOnly","contactShadowMode":"hard","ageScalePolicy":"constant","notes":"Placeholder mirroring current hardcoded stage prop."},
+      {"slotId":"interaction","role":"activeInteraction","assetId":"seed_tray","priorityTier":1,"defaultRect":{"left":144,"top":192,"width":64,"height":24},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Placeholder bird interaction prop for three-slot schema."},
+      {"slotId":"decor","role":"optionalDecor","assetId":"nest_bed","priorityTier":2,"defaultRect":{"left":284,"top":178,"width":70,"height":36},"depthBand":"farProp","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Placeholder mirroring current hardcoded stage prop."}
+    ]
+  },
+  {
+    "speciesId": "raccoon",
+    "environmentId": "raccoon",
+    "slots": [
+      {"slotId":"primary","role":"primaryAnchor","assetId":"stump_perch","priorityTier":0,"defaultRect":{"left":88,"top":158,"width":70,"height":58},"depthBand":"groundContact","occlusionMode":"bodyOnly","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Placeholder mirroring current hardcoded stage prop."},
+      {"slotId":"interaction","role":"activeInteraction","assetId":"shallow_water_dish","priorityTier":1,"defaultRect":{"left":184,"top":192,"width":68,"height":24},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Placeholder mirroring current hardcoded stage prop."},
+      {"slotId":"decor","role":"optionalDecor","assetId":"log_shelter","priorityTier":2,"defaultRect":{"left":272,"top":154,"width":98,"height":60},"depthBand":"farProp","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Placeholder mirroring current hardcoded stage prop."}
+    ]
+  },
+  {
+    "speciesId": "squirrel",
+    "environmentId": "squirrel",
+    "slots": [
+      {"slotId":"primary","role":"primaryAnchor","assetId":"branch_perch","priorityTier":0,"defaultRect":{"left":194,"top":56,"width":184,"height":48},"depthBand":"groundContact","occlusionMode":"bodyOnly","contactShadowMode":"hard","ageScalePolicy":"constant","notes":"Placeholder mirroring current hardcoded stage prop."},
+      {"slotId":"interaction","role":"activeInteraction","assetId":"shallow_water_dish","priorityTier":1,"defaultRect":{"left":144,"top":192,"width":64,"height":24},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Placeholder mirroring current hardcoded stage prop."},
+      {"slotId":"decor","role":"optionalDecor","assetId":"stump_perch","priorityTier":2,"defaultRect":{"left":330,"top":162,"width":62,"height":52},"depthBand":"farProp","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Placeholder mirroring current hardcoded stage prop."}
+    ]
+  }
+]
