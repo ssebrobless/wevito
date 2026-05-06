@@ -7,6 +7,16 @@ public sealed class PetSimulationEngine
     private const double BabyToTeenAgeMinutes = 60;
     private const double TeenToAdultAgeMinutes = 240;
     private const double AgingThresholdMinutes = 480;
+    private static readonly IReadOnlyDictionary<FetchStage, double> FetchStageDurations = new Dictionary<FetchStage, double>
+    {
+        [FetchStage.MoveToBall] = 2.4,
+        [FetchStage.Pickup] = 0.7,
+        [FetchStage.Hold] = 0.45,
+        [FetchStage.CarryWalk] = 0.8,
+        [FetchStage.CarryRun] = 1.4,
+        [FetchStage.Drop] = 0.7,
+        [FetchStage.ReturnIdle] = 0.35
+    };
 
     private readonly Random _random = new(7);
 
@@ -261,6 +271,52 @@ public sealed class PetSimulationEngine
         }
 
         return ApplyAction(BuildWaterActionDefinition(includeOptionalFamily: true), normalized, now);
+    }
+
+    public PetActor StartFetchSequence(PetActor pet, DateTimeOffset now)
+    {
+        return SetFetchStage(NormalizePet(pet), FetchStage.MoveToBall, now, new HashSet<AnimationFamily>());
+    }
+
+    public PetActor AdvanceFetchSequence(
+        PetActor pet,
+        DateTimeOffset now,
+        IReadOnlySet<AnimationFamily>? availableOptionalFamilies = null)
+    {
+        var sequence = pet.ActiveFetchSequence;
+        if (sequence is null || sequence.Stage == FetchStage.None)
+        {
+            return StartFetchSequence(pet, now);
+        }
+
+        var maxDuration = FetchStageDurations.TryGetValue(sequence.Stage, out var duration)
+            ? duration
+            : 0.5;
+        if ((now - sequence.StageStartedAtUtc).TotalSeconds < maxDuration)
+        {
+            return pet;
+        }
+
+        var nextStage = GetNextFetchStage(sequence.Stage);
+        return SetFetchStage(pet, nextStage, now, availableOptionalFamilies ?? new HashSet<AnimationFamily>());
+    }
+
+    public static ActionVisualIntent ResolveFetchStageIntent(
+        FetchStage stage,
+        IReadOnlySet<AnimationFamily>? availableOptionalFamilies = null)
+    {
+        var available = availableOptionalFamilies ?? new HashSet<AnimationFamily>();
+        return stage switch
+        {
+            FetchStage.MoveToBall => new ActionVisualIntent(AnimationFamily.Walk, PropOverlayKind.Ball, true),
+            FetchStage.Pickup => new ActionVisualIntent(ChooseFetchFamily(AnimationFamily.PickupBall, available, AnimationFamily.PlayBall, AnimationFamily.Happy), PropOverlayKind.Ball),
+            FetchStage.Hold => new ActionVisualIntent(ChooseFetchFamily(AnimationFamily.HoldBall, available, AnimationFamily.Happy), PropOverlayKind.Ball, true),
+            FetchStage.CarryWalk => new ActionVisualIntent(ChooseFetchFamily(AnimationFamily.CarryBallWalk, available, AnimationFamily.HoldBall, AnimationFamily.Walk), PropOverlayKind.Ball, true),
+            FetchStage.CarryRun => new ActionVisualIntent(ChooseFetchFamily(AnimationFamily.CarryBallRun, available, AnimationFamily.CarryBallWalk, AnimationFamily.HoldBall, AnimationFamily.Walk), PropOverlayKind.Ball, true),
+            FetchStage.Drop => new ActionVisualIntent(ChooseFetchFamily(AnimationFamily.DropBall, available, AnimationFamily.Happy), PropOverlayKind.Ball),
+            FetchStage.ReturnIdle => new ActionVisualIntent(AnimationFamily.Idle),
+            _ => new ActionVisualIntent(AnimationFamily.Idle)
+        };
     }
 
     public static ActionVisualIntent ResolveActionVisualIntent(ActionDefinition actionDefinition)
@@ -728,6 +784,85 @@ public sealed class PetSimulationEngine
             "Restores thirst.",
             AnimationState: PetAnimationState.Eat,
             OptionalAnimationFamily: includeOptionalFamily ? "drink" : null);
+    }
+
+    private static PetActor SetFetchStage(
+        PetActor pet,
+        FetchStage stage,
+        DateTimeOffset now,
+        IReadOnlySet<AnimationFamily> availableOptionalFamilies)
+    {
+        if (stage == FetchStage.None)
+        {
+            return pet with
+            {
+                ActiveFetchSequence = null,
+                CurrentActionVisualIntent = new ActionVisualIntent(AnimationFamily.Idle),
+                OverrideAnimationState = null,
+                OverrideAnimationEndsAtUtc = null,
+                LastActionId = "fetch_ball",
+                LastActionAtUtc = now,
+                AnimationStartedAtUtc = now
+            };
+        }
+
+        var sequenceStartedAt = pet.ActiveFetchSequence?.SequenceStartedAtUtc ?? now;
+        var intent = ResolveFetchStageIntent(stage, availableOptionalFamilies);
+        return pet with
+        {
+            ActiveFetchSequence = new FetchSequenceState(stage, now, sequenceStartedAt),
+            CurrentActionVisualIntent = intent,
+            OverrideAnimationState = MapAnimationFamilyToState(intent.Family),
+            OverrideAnimationEndsAtUtc = now.AddSeconds(FetchStageDurations.TryGetValue(stage, out var duration) ? duration : 0.5),
+            LastActionId = "fetch_ball",
+            LastActionAtUtc = now,
+            AnimationStartedAtUtc = now
+        };
+    }
+
+    private static FetchStage GetNextFetchStage(FetchStage stage)
+    {
+        return stage switch
+        {
+            FetchStage.MoveToBall => FetchStage.Pickup,
+            FetchStage.Pickup => FetchStage.Hold,
+            FetchStage.Hold => FetchStage.CarryWalk,
+            FetchStage.CarryWalk => FetchStage.CarryRun,
+            FetchStage.CarryRun => FetchStage.Drop,
+            FetchStage.Drop => FetchStage.ReturnIdle,
+            FetchStage.ReturnIdle => FetchStage.None,
+            _ => FetchStage.None
+        };
+    }
+
+    private static AnimationFamily ChooseFetchFamily(
+        AnimationFamily preferred,
+        IReadOnlySet<AnimationFamily> available,
+        params AnimationFamily[] fallbacks)
+    {
+        if (available.Count == 0 || available.Contains(preferred))
+        {
+            return preferred;
+        }
+
+        return fallbacks.FirstOrDefault(available.Contains) is { } fallback && !EqualityComparer<AnimationFamily>.Default.Equals(fallback, default)
+            ? fallback
+            : fallbacks.LastOrDefault(AnimationFamily.Idle);
+    }
+
+    private static PetAnimationState MapAnimationFamilyToState(AnimationFamily family)
+    {
+        return family switch
+        {
+            AnimationFamily.Walk or AnimationFamily.CarryBallWalk or AnimationFamily.CarryBallRun => PetAnimationState.Walk,
+            AnimationFamily.Eat or AnimationFamily.Drink => PetAnimationState.Eat,
+            AnimationFamily.Sad => PetAnimationState.Sad,
+            AnimationFamily.Sleep => PetAnimationState.Sleep,
+            AnimationFamily.Sick => PetAnimationState.Sick,
+            AnimationFamily.Bathe => PetAnimationState.Bathe,
+            AnimationFamily.Happy or AnimationFamily.PlayBall or AnimationFamily.HoldBall or AnimationFamily.PickupBall or AnimationFamily.DropBall => PetAnimationState.Happy,
+            _ => PetAnimationState.Idle
+        };
     }
 
     private static AnimationFamily MapAnimationStateToFamily(PetAnimationState animationState)
