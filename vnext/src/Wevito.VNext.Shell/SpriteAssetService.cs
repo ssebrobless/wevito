@@ -6,7 +6,7 @@ using Wevito.VNext.Contracts;
 
 namespace Wevito.VNext.Shell;
 
-internal sealed class SpriteAssetService
+public sealed class SpriteAssetService
 {
     private readonly string _authoredPetSpriteRoot;
     private readonly string _petSpriteRoot;
