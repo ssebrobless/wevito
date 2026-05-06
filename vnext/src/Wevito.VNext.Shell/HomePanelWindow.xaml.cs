@@ -17,6 +17,10 @@ public partial class HomePanelWindow : Window
     public HomePanelWindow()
     {
         InitializeComponent();
+        Canvas.SetZIndex(StageBackdropCanvas, HabitatDepthOrder.GetZIndex(DepthBand.Backdrop));
+        Canvas.SetZIndex(StagePropCanvas, HabitatDepthOrder.GetZIndex(DepthBand.GroundContact));
+        Canvas.SetZIndex(HomePetCanvas, HabitatDepthOrder.GetZIndex(DepthBand.PetBody));
+        Canvas.SetZIndex(StageDecorationCanvas, HabitatDepthOrder.GetZIndex(DepthBand.NearOccluder));
         SourceInitialized += (_, _) => OverlayWindowStyler.Apply(this, clickThrough: false, noActivate: false);
     }
 
@@ -206,8 +210,15 @@ public partial class HomePanelWindow : Window
                     renderedInteractionCue = true;
                 }
             }
+            var shadow = CreatePetContactShadow(pet, width, height);
+            Canvas.SetLeft(shadow, Math.Round(localX + width * 0.12));
+            Canvas.SetTop(shadow, Math.Round(localY + height - shadow.Height * 0.58));
+            Canvas.SetZIndex(shadow, HabitatDepthOrder.GetShadowZIndex(ContactShadowMode.Soft));
+            HomePetCanvas.Children.Add(shadow);
+
             Canvas.SetLeft(image, localX);
             Canvas.SetTop(image, localY);
+            Canvas.SetZIndex(image, HabitatDepthOrder.GetZIndex(DepthBand.PetBody));
             HomePetCanvas.Children.Add(image);
 
             if (!showPetNames || state.Mode == CompanionMode.Passive)
@@ -223,6 +234,7 @@ public partial class HomePanelWindow : Window
             };
             Canvas.SetLeft(label, Math.Round(localX - 2));
             Canvas.SetTop(label, Math.Round(localY - 14));
+            Canvas.SetZIndex(label, HabitatDepthOrder.GetZIndex(DepthBand.UiOverlay));
             HomePetCanvas.Children.Add(label);
         }
     }
@@ -552,10 +564,28 @@ public partial class HomePanelWindow : Window
                 continue;
             }
 
+            if (string.Equals(scaledSpec.SlotId, "primary", StringComparison.OrdinalIgnoreCase) &&
+                scaledSpec.ContactShadowMode != ContactShadowMode.None)
+            {
+                var shadow = CreateAnchorContactShadow(scaledSpec);
+                Canvas.SetLeft(shadow, Math.Round(scaledSpec.Left + (scaledSpec.Width - shadow.Width) / 2.0));
+                Canvas.SetTop(shadow, Math.Round(scaledSpec.Top + scaledSpec.Height - shadow.Height * 0.62));
+                Canvas.SetZIndex(shadow, HabitatDepthOrder.GetShadowZIndex(scaledSpec.ContactShadowMode));
+                StagePropCanvas.Children.Add(shadow);
+            }
+
             element.Opacity = scaledSpec.Opacity;
             Canvas.SetLeft(element, Math.Round(scaledSpec.Left));
             Canvas.SetTop(element, Math.Round(scaledSpec.Top));
-            StagePropCanvas.Children.Add(element);
+            Canvas.SetZIndex(element, HabitatDepthOrder.GetZIndex(scaledSpec.DepthBand));
+            if (scaledSpec.DepthBand == DepthBand.NearOccluder)
+            {
+                StageDecorationCanvas.Children.Add(element);
+            }
+            else
+            {
+                StagePropCanvas.Children.Add(element);
+            }
         }
 
         return scaledSpecs;
@@ -807,6 +837,7 @@ public partial class HomePanelWindow : Window
         };
         Canvas.SetLeft(ground, 10);
         Canvas.SetTop(ground, 210);
+        Canvas.SetZIndex(ground, HabitatDepthOrder.GetZIndex(DepthBand.FarProp));
         StagePropCanvas.Children.Add(ground);
     }
 
@@ -860,6 +891,46 @@ public partial class HomePanelWindow : Window
         root.Children.Add(outer);
         root.Children.Add(inner);
         return root;
+    }
+
+    private static Ellipse CreateAnchorContactShadow(StagePropSpec spec)
+    {
+        var opacity = spec.ContactShadowMode switch
+        {
+            ContactShadowMode.Hard => 0.34,
+            ContactShadowMode.Soft => 0.22,
+            _ => 0
+        };
+
+        return new Ellipse
+        {
+            Width = Math.Max(18, spec.Width * 0.78),
+            Height = Math.Max(7, spec.Height * 0.16),
+            Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2E111820")),
+            Opacity = opacity,
+            IsHitTestVisible = false
+        };
+    }
+
+    private static Ellipse CreatePetContactShadow(PetActor pet, double width, double height)
+    {
+        var speciesScale = pet.SpeciesId switch
+        {
+            "snake" => (Width: 0.9, Height: 0.11),
+            "frog" => (Width: 0.72, Height: 0.16),
+            "crow" or "pigeon" => (Width: 0.64, Height: 0.12),
+            "goose" => (Width: 0.76, Height: 0.14),
+            _ => (Width: 0.7, Height: 0.14)
+        };
+
+        return new Ellipse
+        {
+            Width = Math.Max(12, width * speciesScale.Width),
+            Height = Math.Max(5, height * speciesScale.Height),
+            Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#3810181D")),
+            Opacity = 0.28,
+            IsHitTestVisible = false
+        };
     }
 
     private static bool TryCreateStageSafePropVisual(StagePropSpec spec, out FrameworkElement? element)
@@ -1634,6 +1705,11 @@ public partial class HomePanelWindow : Window
     {
         _ = environment;
         var speciesId = focusPet?.SpeciesId ?? string.Empty;
+        if (UsesManifestHabitatPilot(speciesId) && dynamicStageProps.Count > 0)
+        {
+            return dynamicStageProps;
+        }
+
         var template = speciesId switch
         {
             "rat" => new[]
@@ -1703,6 +1779,11 @@ public partial class HomePanelWindow : Window
         }
 
         return dynamicStageProps;
+    }
+
+    private static bool UsesManifestHabitatPilot(string speciesId)
+    {
+        return speciesId is "goose" or "rat" or "crow" or "snake" or "frog";
     }
 
     private static string BuildLeadPetSummary(PetActor? pet, int basketCount)
