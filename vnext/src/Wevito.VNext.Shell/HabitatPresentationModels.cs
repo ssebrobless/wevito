@@ -28,4 +28,31 @@ internal sealed record StagePropSpec(
     double Opacity = 1.0,
     DepthBand DepthBand = DepthBand.GroundContact,
     OcclusionMode OcclusionMode = OcclusionMode.None,
-    ContactShadowMode ContactShadowMode = ContactShadowMode.Soft);
+    ContactShadowMode ContactShadowMode = ContactShadowMode.Soft,
+    string SlotId = "");
+
+internal static class HabitatDepthOrder
+{
+    public static int GetZIndex(DepthBand depthBand)
+    {
+        return depthBand switch
+        {
+            DepthBand.Backdrop => 0,
+            DepthBand.FarProp => 10,
+            DepthBand.GroundContact => 20,
+            DepthBand.PetShadow => 30,
+            DepthBand.PetBody => 40,
+            DepthBand.HeldOrCarriedProp => 50,
+            DepthBand.NearOccluder => 60,
+            DepthBand.UiOverlay => 70,
+            _ => 20
+        };
+    }
+
+    public static int GetShadowZIndex(ContactShadowMode contactShadowMode)
+    {
+        return contactShadowMode == ContactShadowMode.None
+            ? GetZIndex(DepthBand.GroundContact)
+            : GetZIndex(DepthBand.PetShadow);
+    }
+}
