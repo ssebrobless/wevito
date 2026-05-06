@@ -21,7 +21,9 @@ public sealed record ActionDefinition(
     string IconId = "",
     PetAnimationState AnimationState = PetAnimationState.Idle,
     string FeedbackText = "",
-    bool IsPrimaryAction = true);
+    bool IsPrimaryAction = true,
+    string? OptionalAnimationFamily = null,
+    string? PropOverlay = null);
 
 public sealed record EnvironmentDefinition(
     string Id,
