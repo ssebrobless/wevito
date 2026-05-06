@@ -56,6 +56,25 @@ const EGG_TINTS := {
 
 # State machine
 enum PetState { WANDERING, MOVING_TO_ENV, ACTING }
+enum FetchStage { NONE, MOVE_TO_BALL, PICKUP, HOLD, CARRY_WALK, CARRY_RUN, DROP, RETURN_IDLE }
+const FETCH_STAGE_DURATIONS := {
+	FetchStage.MOVE_TO_BALL: 2.4,
+	FetchStage.PICKUP: 0.7,
+	FetchStage.HOLD: 0.45,
+	FetchStage.CARRY_WALK: 0.8,
+	FetchStage.CARRY_RUN: 1.4,
+	FetchStage.DROP: 0.7,
+	FetchStage.RETURN_IDLE: 0.35
+}
+const FETCH_STAGE_ANIMATIONS := {
+	FetchStage.MOVE_TO_BALL: ["walk", "idle"],
+	FetchStage.PICKUP: ["pickup_ball", "play_ball", "happy", "idle"],
+	FetchStage.HOLD: ["hold_ball", "happy", "idle"],
+	FetchStage.CARRY_WALK: ["carry_ball_walk", "hold_ball", "walk", "idle"],
+	FetchStage.CARRY_RUN: ["carry_ball_run", "carry_ball_walk", "hold_ball", "walk", "idle"],
+	FetchStage.DROP: ["drop_ball", "happy", "idle"],
+	FetchStage.RETURN_IDLE: ["happy", "idle"]
+}
 var pet_state: PetState = PetState.WANDERING
 var _target_position: Vector2 = Vector2.ZERO
 
@@ -70,6 +89,10 @@ var _idle_jump_timer: float = 6.0
 var _home_lock_timer: float = 0.0
 var _resume_wandering_after_home_lock: bool = false
 var _current_action_family: String = "home"
+var fetch_stage: int = FetchStage.NONE
+var _fetch_stage_timer: float = 0.0
+var _fetch_ball_position: Vector2 = Vector2.ZERO
+var _fetch_return_position: Vector2 = Vector2.ZERO
 
 # Sprite storage
 var _sprites: Dictionary = {}
@@ -300,6 +323,10 @@ func _process(delta):
 
 	if _home_lock_timer > 0.0:
 		_home_lock_timer = max(0.0, _home_lock_timer - delta)
+
+	if fetch_stage != FetchStage.NONE:
+		_update_fetch_sequence(delta)
+		return
 	
 	# Update based on state
 	match pet_state:
@@ -488,6 +515,83 @@ func request_auto_action(action: String) -> bool:
 		return false
 	perform_action(action)
 	return true
+
+func start_fetch_sequence(ball_position: Vector2, return_position: Vector2):
+	_current_action_family = "fetch_ball"
+	_fetch_ball_position = Vector2(ball_position.x, _floor_y)
+	_fetch_return_position = Vector2(return_position.x, _floor_y)
+	pause_wandering()
+	pet_state = PetState.ACTING
+	_set_fetch_stage(FetchStage.MOVE_TO_BALL)
+
+func is_fetch_sequence_active() -> bool:
+	return fetch_stage != FetchStage.NONE
+
+func _set_fetch_stage(next_stage: int):
+	fetch_stage = next_stage
+	_fetch_stage_timer = 0.0
+	animation_frame = 0
+	if fetch_stage == FetchStage.NONE:
+		_current_action_family = "home"
+		current_animation = _first_available_animation(["idle"])
+		pet_state = PetState.WANDERING
+		return
+	current_animation = _first_available_animation(FETCH_STAGE_ANIMATIONS.get(fetch_stage, ["idle"]))
+
+func _advance_fetch_stage():
+	match fetch_stage:
+		FetchStage.MOVE_TO_BALL:
+			_set_fetch_stage(FetchStage.PICKUP)
+		FetchStage.PICKUP:
+			_set_fetch_stage(FetchStage.HOLD)
+		FetchStage.HOLD:
+			_set_fetch_stage(FetchStage.CARRY_WALK)
+		FetchStage.CARRY_WALK:
+			_set_fetch_stage(FetchStage.CARRY_RUN)
+		FetchStage.CARRY_RUN:
+			_set_fetch_stage(FetchStage.DROP)
+		FetchStage.DROP:
+			_set_fetch_stage(FetchStage.RETURN_IDLE)
+		FetchStage.RETURN_IDLE:
+			_set_fetch_stage(FetchStage.NONE)
+		_:
+			_set_fetch_stage(FetchStage.NONE)
+
+func _update_fetch_sequence(delta: float):
+	_fetch_stage_timer += delta
+	var max_duration = float(FETCH_STAGE_DURATIONS.get(fetch_stage, 0.5))
+
+	match fetch_stage:
+		FetchStage.MOVE_TO_BALL:
+			if _move_fetch_toward(_fetch_ball_position, delta, 92.0) or _fetch_stage_timer >= max_duration:
+				_advance_fetch_stage()
+		FetchStage.CARRY_WALK:
+			var midpoint = Vector2((_fetch_ball_position.x + _fetch_return_position.x) * 0.5, _floor_y)
+			if _move_fetch_toward(midpoint, delta, 72.0) or _fetch_stage_timer >= max_duration:
+				_advance_fetch_stage()
+		FetchStage.CARRY_RUN:
+			if _move_fetch_toward(_fetch_return_position, delta, 112.0) or _fetch_stage_timer >= max_duration:
+				_advance_fetch_stage()
+		_:
+			if _fetch_stage_timer >= max_duration:
+				_advance_fetch_stage()
+
+func _move_fetch_toward(target_position: Vector2, delta: float, speed: float) -> bool:
+	var delta_to_target = target_position - position
+	var distance = delta_to_target.length()
+	if distance < 3.0:
+		position = target_position
+		if pet_data:
+			pet_data.position = position
+			pet_data.target_position = position
+		return true
+	position += delta_to_target.normalized() * min(distance, speed * delta)
+	position.y = _floor_y
+	if pet_data:
+		pet_data.position = position
+		pet_data.target_position = target_position
+	_set_horizontal_facing(delta_to_target.x)
+	return false
 
 func perform_action(action: String):
 	_current_action_family = action
