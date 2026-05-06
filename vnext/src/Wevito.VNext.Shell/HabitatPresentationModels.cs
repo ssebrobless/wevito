@@ -25,4 +25,7 @@ internal sealed record StagePropSpec(
     double Top,
     double Width,
     double Height,
-    double Opacity = 1.0);
+    double Opacity = 1.0,
+    DepthBand DepthBand = DepthBand.GroundContact,
+    OcclusionMode OcclusionMode = OcclusionMode.None,
+    ContactShadowMode ContactShadowMode = ContactShadowMode.Soft);
