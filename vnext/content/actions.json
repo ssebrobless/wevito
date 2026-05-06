@@ -14,6 +14,7 @@
     "effectSummary": "Restores thirst and steadies comfort.",
     "iconId": "water",
     "animationState": "eat",
+    "optionalAnimationFamily": "drink",
     "feedbackText": "Clean water is refreshed for the group.",
     "isPrimaryAction": true
   },
@@ -32,6 +33,7 @@
     "effectSummary": "Raises affection and mood.",
     "iconId": "exercise",
     "animationState": "happy",
+    "optionalAnimationFamily": "play_ball",
     "feedbackText": "The pets perk up and play around the habitat.",
     "isPrimaryAction": true
   },

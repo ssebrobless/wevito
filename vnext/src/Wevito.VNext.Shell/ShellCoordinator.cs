@@ -1031,7 +1031,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
 
         _state = _state with
         {
-            ActivePets = _petSimulationEngine.ApplyAction(actionId, _state.ActivePets, DateTimeOffset.UtcNow),
+            ActivePets = _petSimulationEngine.ApplyAction(actionDefinition, _state.ActivePets, DateTimeOffset.UtcNow),
             ActiveTool = new ToolSession("basket", false)
         };
 

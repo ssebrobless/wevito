@@ -6,7 +6,7 @@ using Wevito.VNext.Contracts;
 
 namespace Wevito.VNext.Shell;
 
-internal sealed class SpriteAssetService
+public sealed class SpriteAssetService
 {
     private readonly string _authoredPetSpriteRoot;
     private readonly string _petSpriteRoot;
@@ -36,7 +36,7 @@ internal sealed class SpriteAssetService
 
     public ImageSource? GetPetFrame(PetActor pet, DateTimeOffset now)
     {
-        var animationId = pet.CurrentAnimationState.ToString().ToLowerInvariant();
+        var animationId = GetAnimationId(pet);
         var frames = GetAnimationFrames(pet, animationId);
         var fallbackAnimationId = GetFallbackAnimationId(pet.CurrentAnimationState);
         if (frames.Count == 0 && !string.Equals(animationId, fallbackAnimationId, StringComparison.Ordinal))
@@ -71,6 +71,11 @@ internal sealed class SpriteAssetService
         var elapsed = Math.Max(0, (now - animationStart).TotalMilliseconds);
         var frameIndex = (int)(elapsed / frameDuration) % frames.Count;
         return LoadImage(frames[frameIndex]);
+    }
+
+    public IReadOnlyList<string> GetAnimationFramePaths(PetActor pet, string animationId)
+    {
+        return GetAnimationFrames(pet, animationId);
     }
 
     public ImageSource? GetEnvironment(string assetId)
@@ -194,6 +199,20 @@ internal sealed class SpriteAssetService
             return [];
         }
 
+        var optionalFamilyDirectory = Path.Combine(directory, animationId);
+        if (Directory.Exists(optionalFamilyDirectory))
+        {
+            var optionalFrames = Directory
+                .EnumerateFiles(optionalFamilyDirectory, "*.png", SearchOption.TopDirectoryOnly)
+                .Where(path => !path.EndsWith(".import", StringComparison.OrdinalIgnoreCase))
+                .OrderBy(path => path, StringComparer.OrdinalIgnoreCase)
+                .ToList();
+            if (optionalFrames.Count > 0)
+            {
+                return optionalFrames;
+            }
+        }
+
         return Directory
             .EnumerateFiles(directory, $"{animationId}_*.png", SearchOption.TopDirectoryOnly)
             .Where(path => !path.EndsWith(".import", StringComparison.OrdinalIgnoreCase))
@@ -283,6 +302,33 @@ internal sealed class SpriteAssetService
             PetAnimationState.Review => 180,
             _ => 240
         };
+    }
+
+    private static string GetAnimationId(PetActor pet)
+    {
+        if (pet.CurrentActionVisualIntent is { } intent)
+        {
+            return intent.Family switch
+            {
+                AnimationFamily.Walk => "walk",
+                AnimationFamily.Eat => "eat",
+                AnimationFamily.Happy => "happy",
+                AnimationFamily.Sad => "sad",
+                AnimationFamily.Sleep => "sleep",
+                AnimationFamily.Sick => "sick",
+                AnimationFamily.Bathe => "bathe",
+                AnimationFamily.Drink => "drink",
+                AnimationFamily.PlayBall => "play_ball",
+                AnimationFamily.HoldBall => "hold_ball",
+                AnimationFamily.PickupBall => "pickup_ball",
+                AnimationFamily.DropBall => "drop_ball",
+                AnimationFamily.CarryBallWalk => "carry_ball_walk",
+                AnimationFamily.CarryBallRun => "carry_ball_run",
+                _ => "idle"
+            };
+        }
+
+        return pet.CurrentAnimationState.ToString().ToLowerInvariant();
     }
 
     private static string GetFallbackAnimationId(PetAnimationState animationState)

@@ -1,9 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
 
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
@@ -23,6 +24,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Wevito.VNext.Contracts\Wevito.VNext.Contracts.csproj" />
     <ProjectReference Include="..\..\src\Wevito.VNext.Core\Wevito.VNext.Core.csproj" />
+    <ProjectReference Include="..\..\src\Wevito.VNext.Shell\Wevito.VNext.Shell.csproj" />
   </ItemGroup>
 
 </Project>

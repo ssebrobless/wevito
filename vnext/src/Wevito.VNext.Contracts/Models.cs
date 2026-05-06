@@ -57,6 +57,36 @@ public enum PetAnimationState
     Review
 }
 
+public enum AnimationFamily
+{
+    Idle,
+    Walk,
+    Eat,
+    Happy,
+    Sad,
+    Sleep,
+    Sick,
+    Bathe,
+    Drink,
+    PlayBall,
+    HoldBall,
+    PickupBall,
+    DropBall,
+    CarryBallWalk,
+    CarryBallRun
+}
+
+public enum PropOverlayKind
+{
+    None,
+    Ball,
+    WaterBowl,
+    FoodDish,
+    MedicineItem,
+    GroomingItem,
+    BathTowel
+}
+
 public enum PetStatusType
 {
     Hungry,
@@ -128,6 +158,11 @@ public sealed record PetConditionRecord(
     string Id,
     int Severity = 1,
     bool IsInnate = false);
+
+public sealed record ActionVisualIntent(
+    AnimationFamily Family = AnimationFamily.Idle,
+    PropOverlayKind Overlay = PropOverlayKind.None,
+    bool LoopUntilStopped = false);
 
 public sealed record PetWellbeingSnapshot(
     Guid PetId,
@@ -254,7 +289,8 @@ public sealed record PetActor(
     PetHabitProfile? HabitProfile = null,
     IReadOnlyList<PetConditionRecord>? ActiveConditions = null,
     IReadOnlyList<PetStatusType>? ActiveStatuses = null,
-    string SelectedEnvironmentId = "");
+    string SelectedEnvironmentId = "",
+    ActionVisualIntent? CurrentActionVisualIntent = null);
 
 public sealed record ToolSession(
     string ToolId,

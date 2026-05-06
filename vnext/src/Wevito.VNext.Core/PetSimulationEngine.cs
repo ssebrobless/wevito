@@ -236,7 +236,23 @@ public sealed class PetSimulationEngine
 
     public IReadOnlyList<PetActor> ApplyAction(string actionId, IReadOnlyList<PetActor> pets, DateTimeOffset now)
     {
-        return pets.Select(pet => ApplyAction(actionId, pet, now)).ToList();
+        var actionDefinition = BuildImplicitActionDefinition(actionId);
+        return ApplyAction(actionDefinition, pets, now);
+    }
+
+    public IReadOnlyList<PetActor> ApplyAction(ActionDefinition actionDefinition, IReadOnlyList<PetActor> pets, DateTimeOffset now)
+    {
+        return pets.Select(pet => ApplyAction(actionDefinition, pet, now)).ToList();
+    }
+
+    public static ActionVisualIntent ResolveActionVisualIntent(ActionDefinition actionDefinition)
+    {
+        var family = string.IsNullOrWhiteSpace(actionDefinition.OptionalAnimationFamily)
+            ? MapAnimationStateToFamily(actionDefinition.AnimationState)
+            : ParseAnimationFamily(actionDefinition.OptionalAnimationFamily);
+        var overlay = ParsePropOverlay(actionDefinition.PropOverlay);
+        var loopUntilStopped = family is AnimationFamily.HoldBall or AnimationFamily.CarryBallWalk or AnimationFamily.CarryBallRun;
+        return new ActionVisualIntent(family, overlay, loopUntilStopped);
     }
 
     public IReadOnlyDictionary<string, double> BuildAverageNeedSnapshot(IReadOnlyList<PetActor> pets)
@@ -542,8 +558,9 @@ public sealed class PetSimulationEngine
         };
     }
 
-    private PetActor ApplyAction(string actionId, PetActor pet, DateTimeOffset now)
+    private PetActor ApplyAction(ActionDefinition actionDefinition, PetActor pet, DateTimeOffset now)
     {
+        var actionId = actionDefinition.Id;
         var normalized = NormalizePet(pet);
         var habits = normalized.HabitProfile ?? new PetHabitProfile();
         var personality = normalized.Personality ?? new PetPersonalityProfile();
@@ -647,15 +664,8 @@ public sealed class PetSimulationEngine
             _ => conditions
         };
 
-        var animation = actionId switch
-        {
-            "feed" or "water" => PetAnimationState.Eat,
-            "rest" or "home" => PetAnimationState.Sleep,
-            "play" or "groom" => PetAnimationState.Happy,
-            "bath" => PetAnimationState.Bathe,
-            "medicine" or "doctor" => PetAnimationState.Sick,
-            _ => updated.CurrentAnimationState
-        };
+        var animation = actionDefinition.AnimationState;
+        var visualIntent = ResolveActionVisualIntent(actionDefinition);
 
         updated = updated with
         {
@@ -666,10 +676,87 @@ public sealed class PetSimulationEngine
             OverrideAnimationEndsAtUtc = now.AddSeconds(2.4),
             LastActionId = actionId,
             LastActionAtUtc = now,
-            AnimationStartedAtUtc = now
+            AnimationStartedAtUtc = now,
+            CurrentActionVisualIntent = visualIntent
         };
 
         return RefreshPresentationState(RefreshDerivedValues(updated), CompanionMode.Focused, now);
+    }
+
+    private static ActionDefinition BuildImplicitActionDefinition(string actionId)
+    {
+        var animationState = actionId switch
+        {
+            "feed" or "water" => PetAnimationState.Eat,
+            "rest" or "home" => PetAnimationState.Sleep,
+            "play" or "groom" => PetAnimationState.Happy,
+            "bath" => PetAnimationState.Bathe,
+            "medicine" or "doctor" => PetAnimationState.Sick,
+            _ => PetAnimationState.Idle
+        };
+        return new ActionDefinition(actionId, actionId, string.Empty, AnimationState: animationState);
+    }
+
+    private static AnimationFamily MapAnimationStateToFamily(PetAnimationState animationState)
+    {
+        return animationState switch
+        {
+            PetAnimationState.Walk => AnimationFamily.Walk,
+            PetAnimationState.Eat => AnimationFamily.Eat,
+            PetAnimationState.Happy => AnimationFamily.Happy,
+            PetAnimationState.Sad => AnimationFamily.Sad,
+            PetAnimationState.Sleep => AnimationFamily.Sleep,
+            PetAnimationState.Sick => AnimationFamily.Sick,
+            PetAnimationState.Bathe => AnimationFamily.Bathe,
+            _ => AnimationFamily.Idle
+        };
+    }
+
+    private static AnimationFamily ParseAnimationFamily(string value)
+    {
+        return NormalizeToken(value) switch
+        {
+            "idle" => AnimationFamily.Idle,
+            "walk" => AnimationFamily.Walk,
+            "eat" => AnimationFamily.Eat,
+            "happy" => AnimationFamily.Happy,
+            "sad" => AnimationFamily.Sad,
+            "sleep" => AnimationFamily.Sleep,
+            "sick" => AnimationFamily.Sick,
+            "bathe" => AnimationFamily.Bathe,
+            "drink" => AnimationFamily.Drink,
+            "playball" => AnimationFamily.PlayBall,
+            "holdball" => AnimationFamily.HoldBall,
+            "pickupball" => AnimationFamily.PickupBall,
+            "dropball" => AnimationFamily.DropBall,
+            "carryballwalk" => AnimationFamily.CarryBallWalk,
+            "carryballrun" => AnimationFamily.CarryBallRun,
+            _ => AnimationFamily.Idle
+        };
+    }
+
+    private static PropOverlayKind ParsePropOverlay(string? value)
+    {
+        return NormalizeToken(value) switch
+        {
+            "ball" => PropOverlayKind.Ball,
+            "waterbowl" => PropOverlayKind.WaterBowl,
+            "fooddish" => PropOverlayKind.FoodDish,
+            "medicineitem" => PropOverlayKind.MedicineItem,
+            "groomingitem" => PropOverlayKind.GroomingItem,
+            "bathtowel" => PropOverlayKind.BathTowel,
+            _ => PropOverlayKind.None
+        };
+    }
+
+    private static string NormalizeToken(string? value)
+    {
+        return string.IsNullOrWhiteSpace(value)
+            ? string.Empty
+            : value.Replace("_", string.Empty, StringComparison.Ordinal)
+                .Replace("-", string.Empty, StringComparison.Ordinal)
+                .Trim()
+                .ToLowerInvariant();
     }
 
     private static PetActor MoveTowardHome(PetActor pet, DateTimeOffset now, double deltaSeconds)
