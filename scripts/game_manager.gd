@@ -452,8 +452,29 @@ func apply_decay(pet_index: int):
 		var thirst_urgency = (80.0 - pd.hydration) / 80.0  # 0 at 80%, 1 at 0%
 		var drink_chance = 0.05 + (thirst_urgency * 0.75)  # 5% at 80%, 80% at 0%
 		if randf() < drink_chance:
-			pd.hydration = min(100.0, pd.hydration + 20)
-			pd.water_bowl_level = max(0.0, pd.water_bowl_level - 5)
+			_apply_auto_drink(pet_index)
+
+func _apply_auto_drink(pet_index: int) -> bool:
+	if pet_index >= pet_datas.size():
+		return false
+	var pd = pet_datas[pet_index]
+	if pd == null or pd.is_dead or pd.is_hatching or pd.is_sleeping:
+		return false
+	if pd.hydration >= 80 or pd.water_bowl_level <= 0:
+		return false
+
+	pd.hydration = min(100.0, pd.hydration + 20)
+	pd.water_bowl_level = max(0.0, pd.water_bowl_level - 5)
+	if pet_index < pets.size() and pets[pet_index]:
+		var pet = pets[pet_index]
+		if pet.has_method("request_auto_action"):
+			pet.request_auto_action("drink")
+		else:
+			pet.perform_action("drink")
+	return true
+
+func force_auto_drink_for_test(pet_index: int) -> bool:
+	return _apply_auto_drink(pet_index)
 
 func get_personality_modifiers(pet_index: int) -> Dictionary:
 	if pet_index >= pet_datas.size():

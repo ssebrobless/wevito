@@ -245,6 +245,24 @@ public sealed class PetSimulationEngine
         return pets.Select(pet => ApplyAction(actionDefinition, pet, now)).ToList();
     }
 
+    public PetActor ApplyAutoCare(PetActor pet, DateTimeOffset now)
+    {
+        var normalized = NormalizePet(pet);
+        if (normalized.Thirst >= 80)
+        {
+            return normalized;
+        }
+
+        if (normalized.CurrentActionVisualIntent?.Family == AnimationFamily.Drink &&
+            normalized.OverrideAnimationEndsAtUtc is not null &&
+            normalized.OverrideAnimationEndsAtUtc > now)
+        {
+            return normalized;
+        }
+
+        return ApplyAction(BuildWaterActionDefinition(includeOptionalFamily: true), normalized, now);
+    }
+
     public static ActionVisualIntent ResolveActionVisualIntent(ActionDefinition actionDefinition)
     {
         var family = string.IsNullOrWhiteSpace(actionDefinition.OptionalAnimationFamily)
@@ -685,9 +703,14 @@ public sealed class PetSimulationEngine
 
     private static ActionDefinition BuildImplicitActionDefinition(string actionId)
     {
+        if (string.Equals(actionId, "water", StringComparison.OrdinalIgnoreCase))
+        {
+            return BuildWaterActionDefinition(includeOptionalFamily: false);
+        }
+
         var animationState = actionId switch
         {
-            "feed" or "water" => PetAnimationState.Eat,
+            "feed" => PetAnimationState.Eat,
             "rest" or "home" => PetAnimationState.Sleep,
             "play" or "groom" => PetAnimationState.Happy,
             "bath" => PetAnimationState.Bathe,
@@ -695,6 +718,16 @@ public sealed class PetSimulationEngine
             _ => PetAnimationState.Idle
         };
         return new ActionDefinition(actionId, actionId, string.Empty, AnimationState: animationState);
+    }
+
+    private static ActionDefinition BuildWaterActionDefinition(bool includeOptionalFamily)
+    {
+        return new ActionDefinition(
+            "water",
+            "Water",
+            "Restores thirst.",
+            AnimationState: PetAnimationState.Eat,
+            OptionalAnimationFamily: includeOptionalFamily ? "drink" : null);
     }
 
     private static AnimationFamily MapAnimationStateToFamily(PetAnimationState animationState)

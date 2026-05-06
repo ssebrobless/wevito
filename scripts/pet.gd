@@ -483,6 +483,12 @@ func get_current_sprite_path() -> String:
 			return frames[frame_idx].get_path()
 	return ""
 
+func request_auto_action(action: String) -> bool:
+	if _current_action_family == action and (pet_state == PetState.ACTING or pet_state == PetState.MOVING_TO_ENV):
+		return false
+	perform_action(action)
+	return true
+
 func perform_action(action: String):
 	_current_action_family = action
 	_interaction_timer = 0.0
