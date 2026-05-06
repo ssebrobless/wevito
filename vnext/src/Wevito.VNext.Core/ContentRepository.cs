@@ -23,7 +23,8 @@ public sealed class ContentRepository
         var items = await LoadArrayAsync<ItemDefinition>("items.json", cancellationToken);
         var conditions = await LoadArrayAsync<ConditionDefinition>("conditions.json", cancellationToken);
         var itemVisualMappings = await LoadArrayAsync<ItemVisualMapping>("item_visual_mapping.json", cancellationToken);
-        return new GameContent(species, actions, environments, tools, needs, statuses, items, conditions, itemVisualMappings);
+        var habitatLoadouts = await LoadOptionalArrayAsync<HabitatLoadoutDefinition>("habitat_loadouts.json", cancellationToken);
+        return new GameContent(species, actions, environments, tools, needs, statuses, items, conditions, itemVisualMappings, habitatLoadouts);
     }
 
     private async Task<IReadOnlyList<TItem>> LoadArrayAsync<TItem>(string fileName, CancellationToken cancellationToken)
@@ -32,5 +33,16 @@ public sealed class ContentRepository
         await using var stream = File.OpenRead(path);
         var items = await JsonSerializer.DeserializeAsync<List<TItem>>(stream, JsonDefaults.Options, cancellationToken);
         return items ?? [];
+    }
+
+    private async Task<IReadOnlyList<TItem>?> LoadOptionalArrayAsync<TItem>(string fileName, CancellationToken cancellationToken)
+    {
+        var path = Path.Combine(_contentRoot, fileName);
+        if (!File.Exists(path))
+        {
+            return null;
+        }
+
+        return await LoadArrayAsync<TItem>(fileName, cancellationToken);
     }
 }

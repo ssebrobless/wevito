@@ -75,6 +75,61 @@ public sealed record ItemVisualMapping(
     bool HabitatObjectSafe = false,
     string Notes = "");
 
+public enum DepthBand
+{
+    Backdrop,
+    FarProp,
+    GroundContact,
+    PetShadow,
+    PetBody,
+    HeldOrCarriedProp,
+    NearOccluder,
+    UiOverlay
+}
+
+public enum OcclusionMode
+{
+    None,
+    BodyOnly,
+    FullPet
+}
+
+public enum ContactShadowMode
+{
+    None,
+    Soft,
+    Hard
+}
+
+public enum AgeScalePolicy
+{
+    Constant,
+    PerStage
+}
+
+public sealed record HabitatRect(
+    double Left,
+    double Top,
+    double Width,
+    double Height);
+
+public sealed record HabitatObjectSlot(
+    string SlotId,
+    string Role,
+    string AssetId,
+    HabitatRect DefaultRect,
+    DepthBand DepthBand,
+    OcclusionMode OcclusionMode,
+    ContactShadowMode ContactShadowMode,
+    AgeScalePolicy AgeScalePolicy,
+    int PriorityTier = 0,
+    string Notes = "");
+
+public sealed record HabitatLoadoutDefinition(
+    string SpeciesId,
+    string EnvironmentId,
+    IReadOnlyList<HabitatObjectSlot> Slots);
+
 public sealed record GameContent(
     IReadOnlyList<SpeciesDefinition> Species,
     IReadOnlyList<ActionDefinition> Actions,
@@ -84,4 +139,5 @@ public sealed record GameContent(
     IReadOnlyList<StatusDefinition> Statuses,
     IReadOnlyList<ItemDefinition> Items,
     IReadOnlyList<ConditionDefinition> Conditions,
-    IReadOnlyList<ItemVisualMapping>? ItemVisualMappings = null);
+    IReadOnlyList<ItemVisualMapping>? ItemVisualMappings = null,
+    IReadOnlyList<HabitatLoadoutDefinition>? HabitatLoadouts = null);

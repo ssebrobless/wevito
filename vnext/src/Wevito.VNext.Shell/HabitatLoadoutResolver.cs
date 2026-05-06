@@ -181,7 +181,8 @@ internal static class HabitatLoadoutResolver
                     .ToList(),
                 StringComparer.OrdinalIgnoreCase);
 
-        var dynamicProps = BuildDynamicStageProps(species.Id, ordered);
+        var dynamicProps = BuildManifestStageProps(species, content)
+            ?? BuildDynamicStageProps(species.Id, ordered);
         return new HabitatLoadout(recommended, actionMap, actionOptions, dynamicProps);
     }
 
@@ -356,6 +357,87 @@ internal static class HabitatLoadoutResolver
         }
 
         return stageProps;
+    }
+
+    private static IReadOnlyList<StagePropSpec>? BuildManifestStageProps(SpeciesDefinition species, GameContent content)
+    {
+        var manifestLoadouts = content.HabitatLoadouts;
+        if (manifestLoadouts is null || manifestLoadouts.Count == 0)
+        {
+            TraceLog.Write("habitat-loadout", $"manifest-missing species={species.Id}; using hardcoded fallback");
+            return null;
+        }
+
+        var loadout = manifestLoadouts.FirstOrDefault(candidate =>
+            string.Equals(candidate.SpeciesId, species.Id, StringComparison.OrdinalIgnoreCase) &&
+            string.Equals(candidate.EnvironmentId, species.DefaultEnvironmentId, StringComparison.OrdinalIgnoreCase));
+        if (loadout is null)
+        {
+            TraceLog.Write("habitat-loadout", $"species-missing species={species.Id} environment={species.DefaultEnvironmentId}; using hardcoded fallback");
+            return null;
+        }
+
+        var visualMappings = content.ItemVisualMappings ?? [];
+        var props = new List<StagePropSpec>();
+        foreach (var slot in loadout.Slots.OrderBy(slot => slot.PriorityTier))
+        {
+            if (!TryResolveCategoryFolder(slot.AssetId, visualMappings, out var categoryFolder))
+            {
+                TraceLog.Write("habitat-loadout", $"asset-unmapped species={species.Id} asset={slot.AssetId}; using hardcoded fallback");
+                return null;
+            }
+
+            props.Add(new StagePropSpec(
+                categoryFolder,
+                slot.AssetId,
+                slot.DefaultRect.Left,
+                slot.DefaultRect.Top,
+                slot.DefaultRect.Width,
+                slot.DefaultRect.Height,
+                ResolveManifestOpacity(slot),
+                slot.DepthBand,
+                slot.OcclusionMode,
+                slot.ContactShadowMode));
+        }
+
+        return props;
+    }
+
+    private static bool TryResolveCategoryFolder(
+        string assetId,
+        IReadOnlyList<ItemVisualMapping> visualMappings,
+        out string categoryFolder)
+    {
+        var mapping = visualMappings.FirstOrDefault(candidate =>
+        {
+            var parts = candidate.VisualAssetId.Split('/', StringSplitOptions.RemoveEmptyEntries);
+            return parts.Length == 3 && string.Equals(parts[2], assetId, StringComparison.OrdinalIgnoreCase);
+        });
+
+        if (mapping is null)
+        {
+            categoryFolder = string.Empty;
+            return false;
+        }
+
+        var visualParts = mapping.VisualAssetId.Split('/', StringSplitOptions.RemoveEmptyEntries);
+        categoryFolder = visualParts[1];
+        return true;
+    }
+
+    private static double ResolveManifestOpacity(HabitatObjectSlot slot)
+    {
+        return slot.DepthBand switch
+        {
+            DepthBand.FarProp => 0.9,
+            DepthBand.NearOccluder => 0.94,
+            _ => slot.SlotId switch
+            {
+                "primary" => 0.98,
+                "interaction" => 0.94,
+                _ => 0.92
+            }
+        };
     }
 
     private static HabitatDisplayItem? PickPreferredItem(
