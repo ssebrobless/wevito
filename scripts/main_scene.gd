@@ -1590,6 +1590,29 @@ func _run_automation_suite():
 			]
 		_automation_assert(checks, "forced_low_hydration_plays_drink_animation", auto_drink_ok, auto_drink_details)
 
+	if scenario == "force_fetch_sequence":
+		var fetch_pet = game_manager.get_active_pet()
+		active_pd = game_manager.get_active_pet_data()
+		var fetch_ok = false
+		var fetch_details = "no active pet"
+		if fetch_pet and active_pd:
+			active_pd.animal_type = "goose"
+			active_pd.gender = "female"
+			active_pd.egg_color = "blue"
+			active_pd.stage = 1
+			active_pd.affection = 100.0
+			fetch_pet.setup(active_pd)
+			var ball_target = fetch_pet.position + Vector2(80, 0)
+			var result = game_manager.perform_fetch_sequence(ball_target)
+			await get_tree().create_timer(5.4).timeout
+			fetch_ok = bool(result.get("accepted", false)) and not fetch_pet.is_fetch_sequence_active() and fetch_pet.current_animation in ["happy", "idle"]
+			fetch_details = "accepted=%s active=%s animation=%s" % [
+				str(result.get("accepted", false)),
+				str(fetch_pet.is_fetch_sequence_active()),
+				fetch_pet.current_animation
+			]
+		_automation_assert(checks, "forced_fetch_sequence_completes", fetch_ok, fetch_details)
+
 	var slots = _get_environment_slot_rects(float(get_window().size.x), float(get_window().size.y), game_manager.get_pet_count())
 	_show_action_tab("feed")
 	await get_tree().process_frame
@@ -5240,7 +5263,7 @@ func _handle_ball_throw(click_position: Vector2):
 		_clear_held_item()
 		return
 
-	var result = game_manager.perform_action("fetch_ball")
+	var result = game_manager.perform_fetch_sequence(click_position)
 	_spawn_ball_throw_marker(click_position, pet.position)
 	if sound_manager:
 		sound_manager.play_sound(pd.animal_type, "exercise", pd.gender)
