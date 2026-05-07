@@ -26,7 +26,11 @@ public partial class ToolPopupWindow : Window
     public ToolPopupWindow()
     {
         InitializeComponent();
-        SourceInitialized += (_, _) => OverlayWindowStyler.Apply(this, clickThrough: false, noActivate: false);
+        SourceInitialized += (_, _) =>
+        {
+            OverlayWindowStyler.Apply(this, clickThrough: false, noActivate: false);
+            WindowDisplayAffinity.ExcludeFromCapture(this);
+        };
         Visibility = Visibility.Hidden;
 
         HungerSlider.ValueChanged += (_, _) => UpdateSliderLabels();
@@ -445,6 +449,7 @@ public partial class ToolPopupWindow : Window
             TaskCardStatus.Approved => "Next: run the approved safe adapter or wait for its report.",
             TaskCardStatus.Running => "Next: wait for the adapter to finish and write its artifact report.",
             TaskCardStatus.Reviewing when string.Equals(card.ToolFamily, "translateText", StringComparison.OrdinalIgnoreCase) => "Next: open the preview report, then RUN only if you approve sending this text to the configured provider.",
+            TaskCardStatus.Reviewing when string.Equals(card.ToolFamily, "screenCapture", StringComparison.OrdinalIgnoreCase) && CanRunReviewedTask(card) => "Next: open the preview report, then RUN only if you want a Wevito-window screenshot artifact.",
             TaskCardStatus.Reviewing when string.Equals(card.ToolFamily, "audioAssist", StringComparison.OrdinalIgnoreCase) && CanRunReviewedTask(card) => "Next: open the preview report, then RUN only if you approve changing normal Windows volume/mute state.",
             TaskCardStatus.Reviewing when string.Equals(card.ToolFamily, "audioAssist", StringComparison.OrdinalIgnoreCase) => "Next: open the audio status report. Execution is only for set volume, mute, or unmute requests.",
             TaskCardStatus.Reviewing => "Next: open the artifact/report, then approve, revise, or cancel.",
@@ -1376,8 +1381,20 @@ public partial class ToolPopupWindow : Window
             return true;
         }
 
+        if (string.Equals(card.ToolFamily, "screenCapture", StringComparison.OrdinalIgnoreCase) &&
+            IsWevitoWindowCaptureRequest(card.Intent.RawText))
+        {
+            return true;
+        }
+
         return string.Equals(card.ToolFamily, "audioAssist", StringComparison.OrdinalIgnoreCase) &&
                IsExecutableAudioAssistRequest(card.Intent.RawText);
+    }
+
+    private static bool IsWevitoWindowCaptureRequest(string rawText)
+    {
+        return rawText.Contains("wevito", StringComparison.OrdinalIgnoreCase) ||
+               rawText.Contains("this window", StringComparison.OrdinalIgnoreCase);
     }
 
     private static bool IsExecutableAudioAssistRequest(string rawText)
