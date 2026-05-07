@@ -30,7 +30,21 @@ public sealed class TranslationPreviewAdapterTests
         Assert.Equal("Spanish", report.TargetLanguage);
         Assert.False(report.DidCallProvider);
         Assert.False(report.DidMutate);
+        Assert.Contains(report.ApplicableGlossaryEntries, entry => entry.Source == "goose" && entry.Target == "goose");
         Assert.Contains(report.SafetyNotes, note => note.Contains("No text was sent", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Fact]
+    public void BuildPreview_MarkdownSurfacesApplicableGlossaryEntries()
+    {
+        var tempRoot = CreateTempRoot();
+        var artifactRoot = Path.Combine(tempRoot, "vnext", "artifacts", "pet-tasks", "20260505-142000-translate-text");
+
+        _adapter.BuildPreview(BuildRequest(artifactRoot));
+
+        var markdown = File.ReadAllText(Path.Combine(artifactRoot, "run-summary.md"));
+        Assert.Contains("## Applicable Glossary Entries", markdown);
+        Assert.Contains("`goose` -> `goose`", markdown);
     }
 
     [Fact]
