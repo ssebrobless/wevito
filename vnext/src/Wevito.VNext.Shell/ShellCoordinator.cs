@@ -418,20 +418,30 @@ internal sealed class ShellCoordinator : IAsyncDisposable
 
     private static IReadOnlyList<PetHelperProfile> BuildHelperProfiles(IReadOnlyList<PetActor> pets)
     {
-        var roles = new[]
+        var defaultHelpers = new[]
         {
-            PetHelperRole.SpriteReviewHelper,
-            PetHelperRole.ChecklistHelper,
-            PetHelperRole.ResearchHelper
+            new { Id = PetCommandBarService.ScoutHelperId, Name = "Scout", Species = "frog", Role = PetHelperRole.ResearchHelper },
+            new { Id = PetCommandBarService.InspectorHelperId, Name = "Inspector", Species = "pigeon", Role = PetHelperRole.SpriteReviewHelper },
+            new { Id = PetCommandBarService.BuilderHelperId, Name = "Builder", Species = "rat", Role = PetHelperRole.ChecklistHelper }
         };
 
-        return pets
-            .Take(PetAgentContractLimits.MaxActiveHelpers)
-            .Select((pet, index) => new PetHelperProfile(
-                pet.Id,
-                pet.Name,
-                roles[Math.Min(index, roles.Length - 1)],
-                AllowedToolFamilies: BuildAllowedToolFamilies(roles[Math.Min(index, roles.Length - 1)])))
+        return defaultHelpers
+            .Select(helper => new PetHelperProfile(
+                helper.Id,
+                helper.Name,
+                helper.Role,
+                AllowedToolFamilies: BuildAllowedToolFamilies(helper.Role),
+                PreferenceSnapshot: new Dictionary<string, string>
+                {
+                    ["species"] = helper.Species,
+                    ["display_role"] = helper.Role switch
+                    {
+                        PetHelperRole.ResearchHelper => "docs/research",
+                        PetHelperRole.SpriteReviewHelper => "sprite QA",
+                        PetHelperRole.ChecklistHelper => "code/proofs",
+                        _ => "helper"
+                    }
+                }))
             .ToList();
     }
 

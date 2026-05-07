@@ -35,6 +35,29 @@ public sealed class PetCommandParserTests
     }
 
     [Fact]
+    public void Parse_NaturalNamePrefixWithoutComma_RoutesToNamedPet()
+    {
+        var intent = _parser.Parse("Pip summarize the latest docs", Helpers());
+
+        Assert.Equal(TaskIntentTargetMode.ExplicitPetName, intent.TargetMode);
+        Assert.Equal(_pipId, intent.TargetPetId);
+        Assert.Equal(TaskKind.SummarizeDocs, intent.TaskKind);
+        Assert.Equal("localDocs", intent.RequestedToolFamily);
+    }
+
+    [Fact]
+    public void Parse_DefaultScoutAddress_RoutesToScout()
+    {
+        var intent = _parser.Parse("Scout summarize the sprite docs", new PetCommandBarService().BuildDefaultHelperProfiles());
+
+        Assert.Equal(TaskIntentTargetMode.ExplicitPetName, intent.TargetMode);
+        Assert.Equal(PetCommandBarService.ScoutHelperId, intent.TargetPetId);
+        Assert.Equal("Scout", intent.TargetPetNameSnapshot);
+        Assert.Equal(TaskKind.SummarizeDocs, intent.TaskKind);
+        Assert.Equal("localDocs", intent.RequestedToolFamily);
+    }
+
+    [Fact]
     public void Parse_WithoutName_UsesSelectedPetWhenAvailable()
     {
         var intent = _parser.Parse("make a checklist for the visual gate", Helpers(), selectedPetId: _nixId);

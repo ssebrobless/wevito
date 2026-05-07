@@ -405,7 +405,14 @@ public partial class ToolPopupWindow : Window
         }
 
         var helper = helpers[index];
-        return $"{index + 1}. {helper.PetNameSnapshot}\n{FormatRole(helper.Role)}";
+        var species = helper.PreferenceSnapshot is not null && helper.PreferenceSnapshot.TryGetValue("species", out var speciesValue)
+            ? speciesValue
+            : "pet";
+        var state = FormatHelperState(helper.Availability);
+        var task = helper.CurrentTaskCardId is Guid taskId
+            ? $"task {taskId.ToString()[..8]}"
+            : "no task";
+        return $"{helper.PetNameSnapshot} ({species})\n{FormatRole(helper.Role)} | {state}\n{task}";
     }
 
     private static string FormatRole(PetHelperRole role)
@@ -439,6 +446,21 @@ public partial class ToolPopupWindow : Window
             TaskCardStatus.Done => "Next: review the result artifact before starting another task.",
             TaskCardStatus.Failed => "Next: inspect the failure artifact and revise the task.",
             _ => $"Next: review status {card.Status} before continuing."
+        };
+    }
+
+    private static string FormatHelperState(PetHelperAvailability availability)
+    {
+        return availability switch
+        {
+            PetHelperAvailability.Drafting => "drafting",
+            PetHelperAvailability.WaitingForApproval => "waiting",
+            PetHelperAvailability.Running => "running",
+            PetHelperAvailability.Reviewing => "reviewing",
+            PetHelperAvailability.Blocked => "blocked",
+            PetHelperAvailability.Done => "done",
+            PetHelperAvailability.Failed => "failed",
+            _ => "available"
         };
     }
 
