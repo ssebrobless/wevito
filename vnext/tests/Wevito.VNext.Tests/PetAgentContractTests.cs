@@ -319,6 +319,9 @@ public sealed class PetAgentContractTests
                     SupportsSelfHosted: false,
                     "Missing key.")
             ],
+            [
+                new TranslationGlossaryEntry("goose", "goose", CaseSensitive: false, "Canonical species name.")
+            ],
             ["No provider was called."],
             DidCallProvider: false,
             DidMutate: false,
@@ -333,6 +336,7 @@ public sealed class PetAgentContractTests
         Assert.False(roundTrip.DidCallProvider);
         Assert.False(roundTrip.DidMutate);
         Assert.Equal("Spanish", roundTrip.TargetLanguage);
+        Assert.Equal("goose", roundTrip.ApplicableGlossaryEntries[0].Target);
     }
 
     [Fact]
@@ -350,6 +354,11 @@ public sealed class PetAgentContractTests
             "EN",
             11,
             11,
+            "protected-token-shim",
+            [
+                new TranslationGlossaryEntry("goose", "goose", CaseSensitive: false, "Canonical species name.")
+            ],
+            ["fallback_used: protected-token-shim."],
             ["API key was not written to artifacts."],
             DidCallProvider: true,
             DidMutate: false,
@@ -365,6 +374,8 @@ public sealed class PetAgentContractTests
         Assert.True(roundTrip.DidCallProvider);
         Assert.False(roundTrip.DidMutate);
         Assert.Equal("Hola ganso", roundTrip.TranslatedText);
+        Assert.Equal("protected-token-shim", roundTrip.GlossaryMode);
+        Assert.Contains(roundTrip.QaWarnings, warning => warning.StartsWith("fallback_used:", StringComparison.Ordinal));
     }
 
     [Fact]

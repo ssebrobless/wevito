@@ -11,10 +11,12 @@ public sealed class TranslationExecutionAdapter
     private const int MaxRequestBytes = 128 * 1024;
     private readonly Func<string, DeepLTranslationClient> _deepLClientFactory;
     private readonly IReadOnlyDictionary<string, string?> _environment;
+    private readonly TranslationGlossaryService _glossaryService;
 
     public TranslationExecutionAdapter(
         Func<string, DeepLTranslationClient>? deepLClientFactory = null,
-        IReadOnlyDictionary<string, string?>? environment = null)
+        IReadOnlyDictionary<string, string?>? environment = null,
+        TranslationGlossaryService? glossaryService = null)
     {
         _deepLClientFactory = deepLClientFactory ?? (authKey => new DeepLTranslationClient(new HttpClient(), authKey));
         _environment = environment ?? Environment.GetEnvironmentVariables()
@@ -23,6 +25,7 @@ public sealed class TranslationExecutionAdapter
                 entry => entry.Key.ToString() ?? string.Empty,
                 entry => entry.Value?.ToString(),
                 StringComparer.OrdinalIgnoreCase);
+        _glossaryService = glossaryService ?? new TranslationGlossaryService();
     }
 
     public async Task<TaskAdapterResult> ExecuteAsync(TaskAdapterRequest request, DateTimeOffset? nowUtc = null, CancellationToken cancellationToken = default)
@@ -69,19 +72,64 @@ public sealed class TranslationExecutionAdapter
         }
 
         var client = _deepLClientFactory(authKey);
-        var response = await client.TranslateAsync(parse.Text, parse.TargetLanguageCode, parse.SourceLanguageCode, cancellationToken).ConfigureAwait(false);
+        var glossaryEntries = _glossaryService.FindApplicableEntries(parse.Text, parse.SourceLanguageCode, parse.TargetLanguageCode);
+        var protectedText = _glossaryService.ProtectTerms(parse.Text, glossaryEntries);
+        var providerSourceLanguageCode = !string.IsNullOrWhiteSpace(parse.SourceLanguageCode)
+            ? parse.SourceLanguageCode
+            : glossaryEntries.Count > 0 ? "EN" : string.Empty;
+        var glossaryMode = glossaryEntries.Count == 0
+            ? "none"
+            : "protected-token-shim";
+        var providerFallbackUsed = glossaryEntries.Count > 0;
+        var glossaryId = string.Empty;
+
+        if (glossaryEntries.Count > 0 && IsLikelyDeepLProKey(authKey))
+        {
+            try
+            {
+                glossaryId = await client.CreateGlossaryAsync(
+                    $"Wevito {providerSourceLanguageCode}-{parse.TargetLanguageCode}",
+                    providerSourceLanguageCode,
+                    parse.TargetLanguageCode,
+                    glossaryEntries,
+                    cancellationToken).ConfigureAwait(false);
+                glossaryMode = "deepl-native-v3";
+                providerFallbackUsed = false;
+            }
+            catch (InvalidOperationException)
+            {
+                glossaryId = string.Empty;
+                glossaryMode = "protected-token-shim-after-native-glossary-failure";
+                providerFallbackUsed = true;
+            }
+        }
+
+        var textForProvider = string.IsNullOrWhiteSpace(glossaryId) ? protectedText.Text : parse.Text;
+        var response = await client.TranslateAsync(textForProvider, parse.TargetLanguageCode, providerSourceLanguageCode, glossaryId, cancellationToken).ConfigureAwait(false);
+        var translatedText = string.IsNullOrWhiteSpace(glossaryId)
+            ? _glossaryService.RestoreProtectedTerms(response.Text, protectedText.Replacements)
+            : response.Text;
+        var qaWarnings = TranslationGlossaryService.BuildQaWarnings(
+            parse.Text,
+            translatedText,
+            glossaryEntries,
+            glossaryMode,
+            providerFallbackUsed);
         var report = new TranslationExecutionReport(
             "1",
             request.TaskCardId,
             ToolFamily,
             TranslationProviderKind.DeepL,
             parse.Text,
-            response.Text,
-            string.IsNullOrWhiteSpace(parse.SourceLanguageCode) ? "auto" : parse.SourceLanguageCode,
+            translatedText,
+            string.IsNullOrWhiteSpace(providerSourceLanguageCode) ? "auto" : providerSourceLanguageCode,
             parse.TargetLanguageCode,
             response.DetectedSourceLanguage,
             parse.Text.Length,
             response.BilledCharacters,
+            glossaryMode,
+            glossaryEntries,
+            qaWarnings,
             BuildSafetyNotes(),
             DidCallProvider: true,
             DidMutate: false,
@@ -91,7 +139,7 @@ public sealed class TranslationExecutionAdapter
         var textPath = Path.Combine(artifactRoot, "translated-text.txt");
         var jsonPath = Path.Combine(artifactRoot, "translation-execution-report.json");
         var markdownPath = Path.Combine(artifactRoot, "run-summary.md");
-        await File.WriteAllTextAsync(textPath, response.Text, cancellationToken).ConfigureAwait(false);
+        await File.WriteAllTextAsync(textPath, translatedText, cancellationToken).ConfigureAwait(false);
         await File.WriteAllTextAsync(jsonPath, JsonSerializer.Serialize(report, JsonDefaults.Options), cancellationToken).ConfigureAwait(false);
         await File.WriteAllTextAsync(markdownPath, BuildMarkdown(report), cancellationToken).ConfigureAwait(false);
 
@@ -119,6 +167,11 @@ public sealed class TranslationExecutionAdapter
         return environment.TryGetValue(key, out var value) && !string.IsNullOrWhiteSpace(value)
             ? value
             : null;
+    }
+
+    private static bool IsLikelyDeepLProKey(string authKey)
+    {
+        return !authKey.Trim().EndsWith(":fx", StringComparison.OrdinalIgnoreCase);
     }
 
     private static TranslationParseResult ParseRequest(string rawText)
@@ -214,6 +267,7 @@ public sealed class TranslationExecutionAdapter
             $"- Billed characters: {(report.BilledCharacters?.ToString() ?? "not reported")}",
             "- Provider called: true",
             "- Did mutate files: false",
+            $"- Glossary mode: {report.GlossaryMode}",
             "",
             "## Translated Text",
             "",
@@ -221,9 +275,38 @@ public sealed class TranslationExecutionAdapter
             report.TranslatedText,
             "```",
             "",
-            "## Safety Notes",
+            "## Applied Glossary Entries",
             ""
         };
+
+        if (report.AppliedGlossaryEntries.Count == 0)
+        {
+            lines.Add("- None.");
+        }
+        else
+        {
+            lines.AddRange(report.AppliedGlossaryEntries.Select(entry =>
+                $"- `{entry.Source}` -> `{entry.Target}` ({(entry.CaseSensitive ? "case-sensitive" : "case-insensitive")}): {entry.Notes}"));
+        }
+
+        lines.Add("");
+        lines.Add("## QA Warnings");
+        lines.Add("");
+        if (report.QaWarnings.Count == 0)
+        {
+            lines.Add("- None.");
+        }
+        else
+        {
+            lines.AddRange(report.QaWarnings.Select(warning => $"- {warning}"));
+        }
+
+        lines.AddRange(
+        [
+            "",
+            "## Safety Notes",
+            ""
+        ]);
 
         lines.AddRange(report.SafetyNotes.Select(note => $"- {note}"));
         return string.Join(Environment.NewLine, lines) + Environment.NewLine;

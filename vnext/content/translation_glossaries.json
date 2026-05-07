@@ -1,0 +1,107 @@
+{
+  "schemaVersion": "1",
+  "languagePairs": [
+    {
+      "sourceLanguage": "EN",
+      "targetLanguage": "ES",
+      "entries": [
+        {
+          "source": "Wevito",
+          "target": "Wevito",
+          "caseSensitive": true,
+          "notes": "Product name; never translate."
+        },
+        {
+          "source": "PET TASKS",
+          "target": "PET TASKS",
+          "caseSensitive": true,
+          "notes": "Tool hub label; keep canonical English."
+        },
+        {
+          "source": "goose",
+          "target": "goose",
+          "caseSensitive": false,
+          "notes": "Species names stay canonical English until localized species naming is approved."
+        },
+        {
+          "source": "rat",
+          "target": "rat",
+          "caseSensitive": false,
+          "notes": "Species names stay canonical English until localized species naming is approved."
+        },
+        {
+          "source": "crow",
+          "target": "crow",
+          "caseSensitive": false,
+          "notes": "Species names stay canonical English until localized species naming is approved."
+        },
+        {
+          "source": "snake",
+          "target": "snake",
+          "caseSensitive": false,
+          "notes": "Species names stay canonical English until localized species naming is approved."
+        },
+        {
+          "source": "frog",
+          "target": "frog",
+          "caseSensitive": false,
+          "notes": "Species names stay canonical English until localized species naming is approved."
+        },
+        {
+          "source": "deer",
+          "target": "deer",
+          "caseSensitive": false,
+          "notes": "Species names stay canonical English until localized species naming is approved."
+        },
+        {
+          "source": "fox",
+          "target": "fox",
+          "caseSensitive": false,
+          "notes": "Species names stay canonical English until localized species naming is approved."
+        },
+        {
+          "source": "mouse",
+          "target": "mouse",
+          "caseSensitive": false,
+          "notes": "Species names stay canonical English until localized species naming is approved."
+        },
+        {
+          "source": "pigeon",
+          "target": "pigeon",
+          "caseSensitive": false,
+          "notes": "Species names stay canonical English until localized species naming is approved."
+        },
+        {
+          "source": "raccoon",
+          "target": "raccoon",
+          "caseSensitive": false,
+          "notes": "Species names stay canonical English until localized species naming is approved."
+        },
+        {
+          "source": "squirrel",
+          "target": "squirrel",
+          "caseSensitive": false,
+          "notes": "Species names stay canonical English until localized species naming is approved."
+        }
+      ]
+    },
+    {
+      "sourceLanguage": "ES",
+      "targetLanguage": "EN",
+      "entries": [
+        {
+          "source": "Wevito",
+          "target": "Wevito",
+          "caseSensitive": true,
+          "notes": "Product name; never translate."
+        },
+        {
+          "source": "PET TASKS",
+          "target": "PET TASKS",
+          "caseSensitive": true,
+          "notes": "Tool hub label; keep canonical English."
+        }
+      ]
+    }
+  ]
+}
