@@ -22,6 +22,7 @@ public sealed class AudioBoostHandoffAdapterTests
         Assert.Equal(TaskAdapterResultStatus.PreviewReady, result.Status);
         Assert.False(result.DidMutate);
         Assert.Contains(result.WrittenPaths ?? [], path => path.EndsWith("setup-guide.md", StringComparison.OrdinalIgnoreCase));
+        Assert.Contains(result.WrittenPaths ?? [], path => path.EndsWith("boost-plan.txt", StringComparison.OrdinalIgnoreCase));
 
         var report = JsonSerializer.Deserialize<AudioBoostHandoffReport>(
             File.ReadAllText(Path.Combine(artifactRoot, "audio-boost-handoff-report.json")),
@@ -36,6 +37,46 @@ public sealed class AudioBoostHandoffAdapterTests
         Assert.Contains("WHO", guide);
         Assert.Contains("-1 dBTP", guide);
         Assert.Contains("Wevito will not edit", guide);
+    }
+
+    [Fact]
+    public void BuildSetupGuide_WritesConservativePresetPlanWithSafetyNotes()
+    {
+        var tempRoot = CreateTempRoot();
+        var artifactRoot = Path.Combine(tempRoot, "vnext", "artifacts", "pet-tasks", "20260507-audio-boost-handoff");
+        var adapter = new AudioBoostHandoffAdapter(new FakeAudioBoostEnvironment([], [], [], []));
+
+        adapter.BuildSetupGuide(BuildRequest(artifactRoot), DateTimeOffset.Parse("2026-05-07T00:00:00Z"));
+
+        var plan = File.ReadAllText(Path.Combine(artifactRoot, "boost-plan.txt"));
+        Assert.Contains("PRESET: Warmth", plan);
+        Assert.Contains("Filter: ON LSC Fc 200 Hz Gain +1.5 dB Q 0.7", plan);
+        Assert.Contains("PRESET: Speech clarity", plan);
+        Assert.Contains("Filter: ON PK Fc 3000 Hz Gain +2 dB Q 1.0", plan);
+        Assert.Contains("PRESET: Modest +3 dB safe boost", plan);
+        Assert.Contains("Preamp: +3 dB", plan);
+        Assert.Contains("User applies manually; Wevito does not edit your config.", plan);
+        Assert.Contains("80 dB(A) for 40 h/week", plan);
+        Assert.Contains("https://www.who.int/news-room/questions-and-answers/item/deafness-and-hearing-loss-safe-listening", plan);
+        Assert.Contains("-1 dBTP true-peak ceiling", plan);
+        Assert.Contains("https://tech.ebu.ch/publications/r128", plan);
+    }
+
+    [Fact]
+    public void BuildSetupGuide_PresetPlanDoesNotExceedSixDb()
+    {
+        var tempRoot = CreateTempRoot();
+        var artifactRoot = Path.Combine(tempRoot, "vnext", "artifacts", "pet-tasks", "20260507-audio-boost-handoff");
+        var adapter = new AudioBoostHandoffAdapter(new FakeAudioBoostEnvironment([], [], [], []));
+
+        adapter.BuildSetupGuide(BuildRequest(artifactRoot), DateTimeOffset.Parse("2026-05-07T00:00:00Z"));
+
+        var plan = File.ReadAllText(Path.Combine(artifactRoot, "boost-plan.txt"));
+        var gains = System.Text.RegularExpressions.Regex.Matches(plan, @"(?:Gain|Preamp):\s*\+(?<gain>\d+(?:\.\d+)?)\s*dB")
+            .Select(match => double.Parse(match.Groups["gain"].Value, System.Globalization.CultureInfo.InvariantCulture))
+            .ToArray();
+        Assert.NotEmpty(gains);
+        Assert.All(gains, gain => Assert.True(gain <= 6d, $"Gain {gain} dB exceeds the +6 dB cap."));
     }
 
     [Fact]
@@ -71,6 +112,7 @@ public sealed class AudioBoostHandoffAdapterTests
 
         Assert.Equal(TaskAdapterResultStatus.PreviewReady, result.Status);
         Assert.Contains(result.WrittenPaths ?? [], path => path.EndsWith("setup-guide.md", StringComparison.OrdinalIgnoreCase));
+        Assert.Contains(result.WrittenPaths ?? [], path => path.EndsWith("boost-plan.txt", StringComparison.OrdinalIgnoreCase));
         Assert.Contains("boost handoff", result.PreviewSummary, StringComparison.OrdinalIgnoreCase);
     }
 

@@ -58,8 +58,10 @@ public sealed class AudioBoostHandoffAdapter
         Directory.CreateDirectory(artifactRoot);
         var jsonPath = Path.Combine(artifactRoot, "audio-boost-handoff-report.json");
         var guidePath = Path.Combine(artifactRoot, "setup-guide.md");
+        var boostPlanPath = Path.Combine(artifactRoot, "boost-plan.txt");
         File.WriteAllText(jsonPath, JsonSerializer.Serialize(report, JsonDefaults.Options));
         File.WriteAllText(guidePath, BuildMarkdown(report));
+        File.WriteAllText(boostPlanPath, BuildBoostPlanText(report));
 
         return new TaskAdapterResult(
             request.TaskCardId,
@@ -67,8 +69,8 @@ public sealed class AudioBoostHandoffAdapter
             TaskAdapterResultStatus.PreviewReady,
             DidMutate: false,
             ReadPaths: [],
-            WrittenPaths: [jsonPath, guidePath],
-            PreviewSummary: "Wrote audio boost handoff guide. No installer/config/elevation action was run.",
+            WrittenPaths: [jsonPath, guidePath, boostPlanPath],
+            PreviewSummary: "Wrote audio boost handoff guide and conservative preset plans. No installer/config/elevation action was run.",
             ResultSummary: $"audioAssist boost handoff ready: {guidePath}",
             AuditLogPath: guidePath,
             CompletedAtUtc: timestamp);
@@ -178,6 +180,50 @@ public sealed class AudioBoostHandoffAdapter
         lines.Add("## Safety Notes");
         lines.Add("");
         lines.AddRange(report.SafetyNotes.Select(note => $"- {note}"));
+        return string.Join(Environment.NewLine, lines) + Environment.NewLine;
+    }
+
+    private static string BuildBoostPlanText(AudioBoostHandoffReport report)
+    {
+        var lines = new List<string>
+        {
+            "PET TASKS Audio Boost Preset Plans",
+            $"Generated: {report.GeneratedAtUtc:O}",
+            "",
+            "IMPORTANT SAFETY AND CONTROL NOTES",
+            "User applies manually; Wevito does not edit your config.",
+            "WHO safe-listening note: keep exposure around or below 80 dB(A) for 40 h/week where possible. Source: https://www.who.int/news-room/questions-and-answers/item/deafness-and-hearing-loss-safe-listening",
+            "EBU R 128 true-peak note: keep a -1 dBTP true-peak ceiling to reduce clipping risk. Source: https://tech.ebu.ch/publications/r128",
+            "All gain values in these starter plans are conservative and capped below +6 dB.",
+            "",
+            "PRESET: Warmth",
+            "Purpose: gentle low-shelf body without chasing loudness.",
+            "Equalizer APO style block:",
+            "Preamp: 0 dB",
+            "Filter: ON LSC Fc 200 Hz Gain +1.5 dB Q 0.7",
+            "Limiter note: if this causes distortion, reduce preamp by -1 dB before increasing any gain.",
+            "",
+            "PRESET: Speech clarity",
+            "Purpose: modest presence lift for voices without harsh treble.",
+            "Equalizer APO style block:",
+            "Preamp: -1 dB",
+            "Filter: ON PK Fc 3000 Hz Gain +2 dB Q 1.0",
+            "Filter: ON HSC Fc 6000 Hz Gain +0.75 dB Q 0.7",
+            "Limiter note: keep final output below a -1 dBTP true-peak ceiling.",
+            "",
+            "PRESET: Modest +3 dB safe boost",
+            "Purpose: small overall lift while leaving clipping headroom guidance visible.",
+            "Equalizer APO style block:",
+            "Preamp: +3 dB",
+            "Filter: ON PK Fc 120 Hz Gain +0 dB Q 1.0",
+            "Limiter note: use an external limiter or reduce app/player volume so true peaks stay at or below -1 dBTP.",
+            "",
+            "DO NOT PASTE BLINDLY",
+            "Read the Equalizer APO documentation and apply manually only if you understand the change.",
+            @"Equalizer APO config path, if installed: C:\Program Files\EqualizerAPO\config\config.txt",
+            "Wevito never edits that file, never installs APOs, and never requests elevation for these plans."
+        };
+
         return string.Join(Environment.NewLine, lines) + Environment.NewLine;
     }
 
