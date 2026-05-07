@@ -21,7 +21,7 @@
     "speciesId": "crow",
     "environmentId": "crow",
     "slots": [
-      {"slotId":"primary","role":"primaryAnchor","assetId":"branch_perch","priorityTier":0,"defaultRect":{"left":200,"top":54,"width":176,"height":50},"depthBand":"groundContact","occlusionMode":"bodyOnly","contactShadowMode":"hard","ageScalePolicy":"constant","notes":"Explicit perch anchor; crow should contact the branch rather than float in front."},
+      {"slotId":"primary","role":"primaryAnchor","assetId":"branch_perch","priorityTier":0,"defaultRect":{"left":176,"top":146,"width":124,"height":36},"depthBand":"groundContact","occlusionMode":"bodyOnly","contactShadowMode":"hard","ageScalePolicy":"constant","notes":"Explicit perch anchor; crow should contact the branch rather than float in front."},
       {"slotId":"interaction","role":"activeInteraction","assetId":"seed_tray","priorityTier":1,"defaultRect":{"left":176,"top":192,"width":68,"height":24},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Seed interaction object."},
       {"slotId":"decor","role":"optionalDecor","assetId":"shiny_reward","priorityTier":2,"defaultRect":{"left":286,"top":176,"width":72,"height":38},"depthBand":"farProp","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Crow-specific enrichment reward; keep subtle."}
     ]
