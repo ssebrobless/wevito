@@ -34,6 +34,8 @@ public partial class HomePanelWindow : Window
 
     public event Func<Task>? ToggleHelpersRequested;
 
+    public event Func<Task>? OpenSpriteWorkflowV2Requested;
+
     public event Func<Task>? SaveRequested;
 
     public event Func<Task>? OpenSettingsRequested;
@@ -142,7 +144,7 @@ public partial class HomePanelWindow : Window
         HelperTabButton.FontWeight = state.ActiveTool.IsOpen && string.Equals(state.ActiveTool.ToolId, "helpers", StringComparison.OrdinalIgnoreCase)
             ? FontWeights.SemiBold
             : FontWeights.Normal;
-        WebToolSlot3Button.Content = "EMPTY";
+        WebToolSlot3Button.Content = "SPRITES";
         WebToolSlot4Button.Content = "EMPTY";
         WebToolSlot5Button.Content = "EMPTY";
         WebToolsHintText.Text = state.BasketItems.Count switch
@@ -2099,6 +2101,14 @@ public partial class HomePanelWindow : Window
         if (ToggleHelpersRequested is not null)
         {
             await ToggleHelpersRequested.Invoke();
+        }
+    }
+
+    private async void WebToolSlot3Button_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (OpenSpriteWorkflowV2Requested is not null)
+        {
+            await OpenSpriteWorkflowV2Requested.Invoke();
         }
     }
 

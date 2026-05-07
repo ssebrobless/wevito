@@ -201,9 +201,9 @@
                         <Button x:Name="WebToolSlot3Button"
                                 Style="{StaticResource WebToolTabStyle}"
                                 Margin="0,0,6,0"
-                                IsEnabled="False"
                                 automation:AutomationProperties.AutomationId="WebToolSlot3Button"
-                                Content="EMPTY" />
+                                Content="SPRITES"
+                                Click="WebToolSlot3Button_OnClick" />
                         <Button x:Name="WebToolSlot4Button"
                                 Style="{StaticResource WebToolTabStyle}"
                                 Margin="0,0,6,0"

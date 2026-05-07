@@ -42,6 +42,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private readonly HomePanelWindow _homeWindow = new();
     private readonly RoamBandWindow _roamBandWindow = new();
     private readonly ToolPopupWindow _toolPopupWindow = new();
+    private SpriteWorkflowV2Window? _spriteWorkflowV2Window;
 
     private BrokerClient? _brokerClient;
     private Process? _brokerProcess;
@@ -72,6 +73,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _homeWindow.ToggleWebToolsRequested += async () => await ToggleWebToolsAsync();
         _homeWindow.ToggleBasketRequested += async () => await ToggleBasketAsync();
         _homeWindow.ToggleHelpersRequested += async () => await ToggleHelpersAsync();
+        _homeWindow.OpenSpriteWorkflowV2Requested += async () => await OpenSpriteWorkflowV2Async();
         _homeWindow.OpenSettingsRequested += async () => await ToggleSettingsAsync();
         _homeWindow.ToggleCompactRequested += async () => await ToggleCompactHudAsync();
         _homeWindow.SaveRequested += async () => await SaveAsync();
@@ -559,6 +561,24 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private async Task ToggleHelpersAsync()
     {
         await ToggleToolAsync("helpers");
+    }
+
+    private Task OpenSpriteWorkflowV2Async()
+    {
+        if (_spriteWorkflowV2Window is null)
+        {
+            _spriteWorkflowV2Window = new SpriteWorkflowV2Window
+            {
+                Owner = _homeWindow
+            };
+            _spriteWorkflowV2Window.Closed += (_, _) => _spriteWorkflowV2Window = null;
+        }
+
+        _spriteWorkflowV2Window.LoadProject(ResolveRepoRootOrBaseDirectory());
+        _spriteWorkflowV2Window.Show();
+        _spriteWorkflowV2Window.Activate();
+        TraceLog.Write("sprite-workflow-v2", "opened read-only workbench");
+        return Task.CompletedTask;
     }
 
     private async Task ToggleSettingsAsync()
