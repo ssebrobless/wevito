@@ -14,9 +14,13 @@ public partial class SpriteWorkflowV2Window : Window
     private readonly SpriteWorkflowContactSheetGenerator _contactSheetGenerator = new();
     private readonly SpriteWorkflowCandidateImporter _candidateImporter = new();
     private readonly SpriteWorkflowDryRunApplyService _dryRunApplyService = new();
+    private readonly SpriteWorkflowApplyService _applyService = new();
+    private readonly SpriteWorkflowRollbackService _rollbackService = new();
     private SpriteWorkflowManifestSnapshot? _snapshot;
     private SpriteWorkflowQueueRow? _selectedRow;
     private SpriteWorkflowCandidateImportManifest? _lastCandidateImport;
+    private SpriteWorkflowDryRunApplyManifest? _lastDryRunManifest;
+    private SpriteWorkflowApplyManifest? _lastApplyManifest;
     private string _repoRoot = "";
 
     public SpriteWorkflowV2Window()
@@ -105,9 +109,47 @@ public partial class SpriteWorkflowV2Window : Window
             _lastCandidateImport.CandidateFolder,
             artifactRoot,
             DateTimeOffset.UtcNow));
+        _lastDryRunManifest = result.Manifest;
         DryRunPreviewTextBox.Text = result.Succeeded && result.Manifest is not null
             ? BuildDryRunPreview(result.Manifest, result.ManifestPath)
             : result.Message;
+        RefreshApplyButtons();
+    }
+
+    private void ApplyConfirmationTextBox_OnTextChanged(object sender, TextChangedEventArgs e)
+    {
+        RefreshApplyButtons();
+    }
+
+    private void ApplyButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (_lastDryRunManifest is null)
+        {
+            DryRunPreviewTextBox.Text = "Run a dry-run apply before applying.";
+            return;
+        }
+
+        var result = _applyService.Apply(new SpriteWorkflowApplyRequest(_lastDryRunManifest, DateTimeOffset.UtcNow));
+        DryRunPreviewTextBox.Text = result.Message + (result.Succeeded ? $"{Environment.NewLine}apply log: {result.ApplyLogPath}" : "");
+        _lastApplyManifest = result.Manifest;
+        RollbackButton.IsEnabled = result.Succeeded;
+        RefreshApplyButtons();
+    }
+
+    private void RollbackButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (_lastApplyManifest is null)
+        {
+            DryRunPreviewTextBox.Text = "No apply manifest is available for rollback.";
+            return;
+        }
+
+        var result = _rollbackService.Rollback(new SpriteWorkflowRollbackRequest(_lastApplyManifest, DateTimeOffset.UtcNow));
+        DryRunPreviewTextBox.Text = result.Message + (result.Succeeded ? $"{Environment.NewLine}rollback log: {result.RollbackLogPath}" : "");
+        if (result.Succeeded)
+        {
+            RollbackButton.IsEnabled = false;
+        }
     }
 
     private void ApplyFilter()
@@ -135,18 +177,34 @@ public partial class SpriteWorkflowV2Window : Window
     {
         _selectedRow = row;
         _lastCandidateImport = null;
+        _lastDryRunManifest = null;
+        _lastApplyManifest = null;
         SelectedRowHeaderText.Text = row.RowId;
         SelectedRowSubheaderText.Text = "Candidate import writes only to sprites_authored/.candidates. Dry-run apply writes a plan only.";
         FindingsTextBox.Text = string.Join(Environment.NewLine, row.Findings.Select(finding => "- " + finding));
         ProvenanceTextBox.Text = BuildProvenance(row);
         DryRunPreviewTextBox.Text = "";
         DryRunApplyButton.IsEnabled = false;
+        ApplyButton.IsEnabled = false;
+        RollbackButton.IsEnabled = false;
+        ApplyConfirmationTextBox.Text = "";
         CandidateStripImage.Source = null;
         CandidatePlaceholderText.Text = "No candidate imported yet";
 
         SourceStripImage.Source = GenerateSheetImage(row, SpriteWorkflowRootKind.AuthoredVerified) ??
                                   GenerateSheetImage(row, SpriteWorkflowRootKind.Authored);
         RuntimeStripImage.Source = GenerateSheetImage(row, SpriteWorkflowRootKind.Runtime);
+    }
+
+    private void RefreshApplyButtons()
+    {
+        var rowMatches = _selectedRow is not null && IsApplyConfirmationMatch(ApplyConfirmationTextBox.Text, _selectedRow.RowId);
+        ApplyButton.IsEnabled = rowMatches && _lastDryRunManifest is not null && _lastApplyManifest is null;
+    }
+
+    public static bool IsApplyConfirmationMatch(string typedText, string rowId)
+    {
+        return string.Equals(typedText.Trim(), rowId, StringComparison.Ordinal);
     }
 
     private BitmapImage? GenerateSheetImage(SpriteWorkflowQueueRow row, SpriteWorkflowRootKind rootKind)

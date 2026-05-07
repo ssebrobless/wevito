@@ -111,6 +111,30 @@
                                     Click="DryRunApplyButton_OnClick"
                                     IsEnabled="False" />
                         </StackPanel>
+                        <StackPanel Margin="0,8,0,0" Orientation="Horizontal">
+                            <TextBox x:Name="ApplyConfirmationTextBox"
+                                     Width="260"
+                                     Margin="0,0,8,0"
+                                     automation:AutomationProperties.AutomationId="SpriteWorkflowV2ApplyConfirmationTextBox"
+                                     Background="#0D161C"
+                                     Foreground="#F4FAFA"
+                                     BorderBrush="#416176"
+                                     TextChanged="ApplyConfirmationTextBox_OnTextChanged"
+                                     ToolTip="Type the exact selected row id to enable one-row apply." />
+                            <Button x:Name="ApplyButton"
+                                    Padding="8,4"
+                                    Margin="0,0,8,0"
+                                    automation:AutomationProperties.AutomationId="SpriteWorkflowV2ApplyButton"
+                                    Content="Apply"
+                                    Click="ApplyButton_OnClick"
+                                    IsEnabled="False" />
+                            <Button x:Name="RollbackButton"
+                                    Padding="8,4"
+                                    automation:AutomationProperties.AutomationId="SpriteWorkflowV2RollbackButton"
+                                    Content="Rollback"
+                                    Click="RollbackButton_OnClick"
+                                    IsEnabled="False" />
+                        </StackPanel>
                     </StackPanel>
 
                     <Grid Grid.Row="1" Margin="0,4">
