@@ -35,7 +35,7 @@
                            Foreground="#F7FBFC"
                            FontSize="24"
                            FontWeight="Bold" />
-                <TextBlock Text="Read-only row auditor: source, runtime, candidates, proof evidence, findings, provenance."
+                <TextBlock Text="Runtime-safe row auditor: source, runtime, candidates, dry-run plan, findings, provenance."
                            Foreground="#9FB7C4"
                            FontSize="12" />
             </StackPanel>
@@ -97,6 +97,20 @@
                                    Foreground="#9FB7C4"
                                    FontSize="11"
                                    Text="No mutation controls are present in this phase." />
+                        <StackPanel Margin="0,8,0,0" Orientation="Horizontal">
+                            <Button x:Name="ImportCandidateButton"
+                                    Padding="8,4"
+                                    Margin="0,0,8,0"
+                                    automation:AutomationProperties.AutomationId="SpriteWorkflowV2ImportCandidateButton"
+                                    Content="Import Candidate..."
+                                    Click="ImportCandidateButton_OnClick" />
+                            <Button x:Name="DryRunApplyButton"
+                                    Padding="8,4"
+                                    automation:AutomationProperties.AutomationId="SpriteWorkflowV2DryRunApplyButton"
+                                    Content="Dry-Run Apply"
+                                    Click="DryRunApplyButton_OnClick"
+                                    IsEnabled="False" />
+                        </StackPanel>
                     </StackPanel>
 
                     <Grid Grid.Row="1" Margin="0,4">
@@ -128,11 +142,14 @@
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="Candidate" Style="{StaticResource SectionLabel}" VerticalAlignment="Center" />
                         <Border Grid.Column="1" Background="#0E1A21" BorderBrush="#253D4C" BorderThickness="1">
-                            <TextBlock x:Name="CandidatePlaceholderText"
-                                       Foreground="#7892A0"
-                                       HorizontalAlignment="Center"
-                                       VerticalAlignment="Center"
-                                       Text="No candidate import in C-PHASE 20" />
+                            <Grid>
+                                <Image x:Name="CandidateStripImage" Stretch="Uniform" />
+                                <TextBlock x:Name="CandidatePlaceholderText"
+                                           Foreground="#7892A0"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Text="No candidate imported yet" />
+                            </Grid>
                         </Border>
                     </Grid>
 
@@ -157,6 +174,7 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*" />
                         <RowDefinition Height="*" />
+                        <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
                     <StackPanel Grid.Row="0">
                         <TextBlock Text="Validator Findings" Style="{StaticResource SectionLabel}" />
@@ -171,6 +189,18 @@
                                  VerticalScrollBarVisibility="Auto" />
                     </StackPanel>
                     <StackPanel Grid.Row="1" Margin="0,12,0,0">
+                        <TextBlock Text="Dry-Run Plan" Style="{StaticResource SectionLabel}" />
+                        <TextBox x:Name="DryRunPreviewTextBox"
+                                 Margin="0,8,0,0"
+                                 Background="#0E1A21"
+                                 Foreground="#F2F8F8"
+                                 BorderBrush="#253D4C"
+                                 TextWrapping="Wrap"
+                                 IsReadOnly="True"
+                                 AcceptsReturn="True"
+                                 VerticalScrollBarVisibility="Auto" />
+                    </StackPanel>
+                    <StackPanel Grid.Row="2" Margin="0,12,0,0">
                         <TextBlock Text="Provenance" Style="{StaticResource SectionLabel}" />
                         <TextBox x:Name="ProvenanceTextBox"
                                  Margin="0,8,0,0"

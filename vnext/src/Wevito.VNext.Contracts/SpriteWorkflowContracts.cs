@@ -114,3 +114,30 @@ public sealed record SpriteWorkflowManifestSnapshot(
     string RepoRoot,
     IReadOnlyList<SpriteWorkflowQueueRow> Rows,
     DateTimeOffset GeneratedAtUtc);
+
+public sealed record SpriteWorkflowCandidateImportManifest(
+    string SchemaVersion,
+    SpriteRowKey Target,
+    string SourceFolder,
+    string CandidateFolder,
+    IReadOnlyList<SpriteWorkflowFrameEntry> ImportedFrames,
+    DateTimeOffset ImportedAtUtc);
+
+public sealed record SpriteWorkflowDryRunChange(
+    string FrameId,
+    string RuntimePath,
+    string CandidatePath,
+    string BackupPath,
+    string CurrentRuntimeBlake3,
+    string CandidateBlake3,
+    bool WouldOverwriteRuntime);
+
+public sealed record SpriteWorkflowDryRunApplyManifest(
+    string SchemaVersion,
+    SpriteRowKey Target,
+    string CandidateFolder,
+    string RuntimeRowFolder,
+    string PlannedBackupFolder,
+    IReadOnlyList<SpriteWorkflowDryRunChange> Changes,
+    bool WouldMutateRuntime,
+    DateTimeOffset GeneratedAtUtc);
