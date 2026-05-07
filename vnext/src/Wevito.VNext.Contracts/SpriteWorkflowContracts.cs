@@ -141,3 +141,24 @@ public sealed record SpriteWorkflowDryRunApplyManifest(
     IReadOnlyList<SpriteWorkflowDryRunChange> Changes,
     bool WouldMutateRuntime,
     DateTimeOffset GeneratedAtUtc);
+
+public sealed record SpriteWorkflowApplyManifest(
+    string SchemaVersion,
+    SpriteRowKey Target,
+    string CandidateFolder,
+    string RuntimeRowFolder,
+    string StagingFolder,
+    string BackupFolder,
+    IReadOnlyList<SpriteWorkflowDryRunChange> Changes,
+    string ApplyLogPath,
+    bool Applied,
+    DateTimeOffset AppliedAtUtc);
+
+public sealed record SpriteWorkflowRollbackManifest(
+    string SchemaVersion,
+    SpriteRowKey Target,
+    string RuntimeRowFolder,
+    string BackupFolder,
+    IReadOnlyList<SpriteWorkflowDryRunChange> RestoredChanges,
+    bool RolledBack,
+    DateTimeOffset RolledBackAtUtc);
