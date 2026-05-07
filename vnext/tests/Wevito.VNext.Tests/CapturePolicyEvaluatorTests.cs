@@ -8,16 +8,29 @@ public sealed class CapturePolicyEvaluatorTests
     private readonly CapturePolicyEvaluator _evaluator = new();
 
     [Fact]
-    public void Evaluate_AllowsWevitoWindowStillCapture()
+    public void Evaluate_RequiresApprovalForWevitoWindowStillCapture()
     {
         var decision = _evaluator.Evaluate(new CaptureRequest(
             Guid.NewGuid(),
             CapturePreset.WevitoWindow,
             CaptureTargetKind.WevitoWindow));
 
-        Assert.Equal(ToolPolicyDecisionStatus.Allowed, decision.Status);
-        Assert.Equal(ToolRiskLevel.Low, decision.RiskLevel);
-        Assert.Equal(ApprovalRequirement.None, decision.ApprovalRequirement);
+        Assert.Equal(ToolPolicyDecisionStatus.ApprovalRequired, decision.Status);
+        Assert.Equal(ToolRiskLevel.Medium, decision.RiskLevel);
+        Assert.Equal(ApprovalRequirement.ActionTime, decision.ApprovalRequirement);
+    }
+
+    [Fact]
+    public void Evaluate_BlocksProofSurfaceUntilDedicatedTargetExists()
+    {
+        var decision = _evaluator.Evaluate(new CaptureRequest(
+            Guid.NewGuid(),
+            CapturePreset.ProofSurface,
+            CaptureTargetKind.ProofSurface));
+
+        Assert.Equal(ToolPolicyDecisionStatus.Blocked, decision.Status);
+        Assert.Equal(ToolRiskLevel.Blocked, decision.RiskLevel);
+        Assert.Equal(ApprovalRequirement.HandOffRequired, decision.ApprovalRequirement);
     }
 
     [Theory]

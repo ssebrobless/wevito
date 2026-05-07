@@ -33,6 +33,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private readonly PetTaskAdapterPreviewDispatcher _petTaskAdapterPreviewDispatcher = new();
     private readonly TranslationExecutionAdapter _translationExecutionAdapter = new();
     private readonly AudioAssistExecutionAdapter _audioAssistExecutionAdapter = new();
+    private readonly ScreenCaptureExecutionAdapter _screenCaptureExecutionAdapter;
     private readonly DispatcherTimer _tickTimer;
     private readonly bool _devToolsEnabled = BrokerProcessManager.IsDevelopmentBuild();
 
@@ -57,6 +58,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     public ShellCoordinator(Application application)
     {
         _application = application;
+        _screenCaptureExecutionAdapter = new ScreenCaptureExecutionAdapter(new WindowsGraphicsCaptureBackend(() => _homeWindow));
         _tickTimer = new DispatcherTimer(DispatcherPriority.Render)
         {
             Interval = TimeSpan.FromMilliseconds(33)
@@ -469,7 +471,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             new ToolPolicy("checklist-readonly", "checklist", ToolAccessMode.ReadOnly, ToolRiskLevel.Low, ApprovalRequirement.None),
             new ToolPolicy("translate-text-readonly", "translateText", ToolAccessMode.ReadOnly, ToolRiskLevel.Low, ApprovalRequirement.None),
             new ToolPolicy("audio-assist-readonly", "audioAssist", ToolAccessMode.ReadOnly, ToolRiskLevel.Low, ApprovalRequirement.None),
-            new ToolPolicy("screen-capture-readonly", "screenCapture", ToolAccessMode.ReadOnly, ToolRiskLevel.Low, ApprovalRequirement.None),
+            new ToolPolicy("screen-capture-approval", "screenCapture", ToolAccessMode.ReadOnly, ToolRiskLevel.Medium, ApprovalRequirement.BeforeExecution),
             new ToolPolicy("proof-capture-readonly", "proofCapture", ToolAccessMode.ReadOnly, ToolRiskLevel.Low, ApprovalRequirement.None),
             new ToolPolicy("basket-readonly", "basket", ToolAccessMode.ReadOnly, ToolRiskLevel.Low, ApprovalRequirement.None),
             new ToolPolicy("build-proof-approval", "buildProof", ToolAccessMode.Write, ToolRiskLevel.Medium, ApprovalRequirement.BeforeExecution)
@@ -667,7 +669,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             updatedCard,
             LastPolicyDecision: null,
             StatusMessage: nextStatus == TaskCardStatus.Approved
-                ? "Task card approved locally. Execution adapters are still disabled."
+                ? "Task card approved locally. Preview the approval-gated report next."
                 : "Task card cancelled locally. No execution was started.",
             UpdatedAtUtc: DateTimeOffset.UtcNow,
             QueuedTaskCards: taskCards,
@@ -778,9 +780,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             TaskAdapterRunMode.Execute,
             ResolvePetTaskArtifactRoot(card, timestamp),
             timestamp);
-        var result = string.Equals(card.ToolFamily, "translateText", StringComparison.OrdinalIgnoreCase)
-            ? await _translationExecutionAdapter.ExecuteAsync(request, timestamp)
-            : _audioAssistExecutionAdapter.Execute(request, timestamp);
+        var result = await ExecutePetTaskAdapterAsync(card, request, timestamp);
 
         if (!_petTaskCardQueueService.TryApplyAdapterResult(
                 _state.TaskCards,
@@ -845,11 +845,29 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             ApprovalRequirement.BeforeExecution);
     }
 
+    private static ToolPolicy BuildScreenCaptureExecutionPolicySnapshot()
+    {
+        return new ToolPolicy(
+            "screen-capture-wevito-window-approval",
+            "screenCapture",
+            ToolAccessMode.ReadOnly,
+            ToolRiskLevel.Medium,
+            ApprovalRequirement.BeforeExecution);
+    }
+
     private static ToolPolicy BuildExecutionPolicySnapshot(TaskCard card)
     {
-        return string.Equals(card.ToolFamily, "translateText", StringComparison.OrdinalIgnoreCase)
-            ? BuildTranslationExecutionPolicySnapshot()
-            : BuildAudioAssistExecutionPolicySnapshot();
+        if (string.Equals(card.ToolFamily, "translateText", StringComparison.OrdinalIgnoreCase))
+        {
+            return BuildTranslationExecutionPolicySnapshot();
+        }
+
+        if (string.Equals(card.ToolFamily, "screenCapture", StringComparison.OrdinalIgnoreCase))
+        {
+            return BuildScreenCaptureExecutionPolicySnapshot();
+        }
+
+        return BuildAudioAssistExecutionPolicySnapshot();
     }
 
     private static bool CanExecuteReviewedPetTask(TaskCard card)
@@ -865,9 +883,31 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             return true;
         }
 
+        if (card.Intent.TaskKind == TaskKind.ScreenCapture &&
+            string.Equals(card.ToolFamily, "screenCapture", StringComparison.OrdinalIgnoreCase) &&
+            IsWevitoWindowCaptureRequest(card.Intent.RawText))
+        {
+            return true;
+        }
+
         return card.Intent.TaskKind == TaskKind.AudioAssist &&
                string.Equals(card.ToolFamily, "audioAssist", StringComparison.OrdinalIgnoreCase) &&
                IsExecutableAudioAssistRequest(card.Intent.RawText);
+    }
+
+    private async Task<TaskAdapterResult> ExecutePetTaskAdapterAsync(TaskCard card, TaskAdapterRequest request, DateTimeOffset timestamp)
+    {
+        if (string.Equals(card.ToolFamily, "translateText", StringComparison.OrdinalIgnoreCase))
+        {
+            return await _translationExecutionAdapter.ExecuteAsync(request, timestamp);
+        }
+
+        if (string.Equals(card.ToolFamily, "screenCapture", StringComparison.OrdinalIgnoreCase))
+        {
+            return await _screenCaptureExecutionAdapter.ExecuteAsync(request, timestamp);
+        }
+
+        return _audioAssistExecutionAdapter.Execute(request, timestamp);
     }
 
     private static bool IsExecutableAudioAssistRequest(string rawText)
@@ -876,6 +916,12 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             rawText,
             @"\b(unmute|mute|(?:set|change|turn|put|make)\b.*?\bvolume\b.*?\d{1,3}|volume\b.*?\b(?:to|at)\b\s*\d{1,3})",
             System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+    }
+
+    private static bool IsWevitoWindowCaptureRequest(string rawText)
+    {
+        return rawText.Contains("wevito", StringComparison.OrdinalIgnoreCase) ||
+               rawText.Contains("this window", StringComparison.OrdinalIgnoreCase);
     }
 
     private static IReadOnlyList<string> ResolvePreviewApprovedRoots(string toolFamily)

@@ -10,6 +10,8 @@ public partial class App : Application
     {
         base.OnStartup(e);
         ShutdownMode = ShutdownMode.OnExplicitShutdown;
+        // When future settings/credential windows are split out, call SetWindowDisplayAffinity
+        // on those surfaces too so they are excluded from Wevito capture artifacts.
 
         _coordinator = new ShellCoordinator(this);
         await _coordinator.StartAsync();

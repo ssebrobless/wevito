@@ -8,6 +8,7 @@ param(
     [string]$ExpectedToolFamily = "spriteAudit",
     [switch]$ApproveBeforePreview,
     [switch]$ExpectExecuteEnabledAfterPreview,
+    [string]$ExpectArtifactFileCreated = "",
     [switch]$SkipSpriteHashCheck,
     [string]$LayoutScreenshotPath = "",
     [int]$StartupDelayMs = 2500
@@ -16,7 +17,12 @@ param(
 $ErrorActionPreference = "Stop"
 
 $ProjectRoot = Split-Path -Parent $PSScriptRoot
-$BuildShellExe = Join-Path $ProjectRoot "vnext\src\Wevito.VNext.Shell\bin\$Configuration\net8.0-windows\Wevito.VNext.Shell.exe"
+$ShellBinRoot = Join-Path $ProjectRoot "vnext\src\Wevito.VNext.Shell\bin\$Configuration"
+$BuildShellExeCandidates = @(
+    (Join-Path $ShellBinRoot "net8.0-windows10.0.19041.0\Wevito.VNext.Shell.exe"),
+    (Join-Path $ShellBinRoot "net8.0-windows\Wevito.VNext.Shell.exe")
+)
+$BuildShellExe = $BuildShellExeCandidates | Where-Object { Test-Path $_ } | Select-Object -First 1
 $OutputRoot = Join-Path $ProjectRoot "vnext\artifacts\pet-task-probes"
 $RunStamp = "$(Get-Date -Format "yyyyMMdd-HHmmss-fff")-$([Guid]::NewGuid().ToString("N").Substring(0, 8))"
 $OutputDir = Join-Path $OutputRoot $RunStamp
@@ -49,7 +55,7 @@ if (-not $SkipBuild) {
     }
 }
 
-if (-not (Test-Path $BuildShellExe)) {
+if ([string]::IsNullOrWhiteSpace($BuildShellExe) -or -not (Test-Path $BuildShellExe)) {
     throw "Missing shell executable: $BuildShellExe"
 }
 
@@ -527,6 +533,10 @@ try {
     }
 
     $executeEnabledAfterPreview = $null
+    $executionAuditPath = ""
+    $expectedArtifactPath = ""
+    $shellTracePath = Join-Path $TraceDir "Wevito.VNext.Shell.trace.log"
+    $escapedFamily = [System.Text.RegularExpressions.Regex]::Escape($ExpectedToolFamily)
     if ($ExpectExecuteEnabledAfterPreview) {
         $executeButton = Get-AutomationElement -Handle $toolWindow.Handle -AutomationId "PetTaskExecuteButton" -ControlType ([System.Windows.Automation.ControlType]::Button)
         if ($null -eq $executeButton) {
@@ -538,8 +548,27 @@ try {
         }
     }
 
-    $shellTracePath = Join-Path $TraceDir "Wevito.VNext.Shell.trace.log"
-    $escapedFamily = [System.Text.RegularExpressions.Regex]::Escape($ExpectedToolFamily)
+    if (-not [string]::IsNullOrWhiteSpace($ExpectArtifactFileCreated)) {
+        Invoke-Button -WindowInfo $toolWindow -AutomationId "PetTaskExecuteButton"
+        $executeTrace = Wait-ForTraceText -TracePath $shellTracePath -Pattern "pet-command \| .*execute .*family=$escapedFamily.*status=Completed" -TimeoutMs 12000
+        if ($null -eq $executeTrace) {
+            throw "PET TASKS execute trace was not observed."
+        }
+
+        if ($executeTrace.Line -match "audit=(?<audit>.+)$") {
+            $executionAuditPath = $Matches.audit.Trim()
+        }
+        if ([string]::IsNullOrWhiteSpace($executionAuditPath) -or -not (Test-Path $executionAuditPath)) {
+            throw "PET TASKS execution did not produce a readable audit path. trace='$($executeTrace.Line)'"
+        }
+
+        $executionArtifactRoot = Split-Path -Parent $executionAuditPath
+        $expectedArtifactPath = Join-Path $executionArtifactRoot $ExpectArtifactFileCreated
+        if (-not (Test-Path $expectedArtifactPath)) {
+            throw "PET TASKS execution did not produce expected artifact '$ExpectArtifactFileCreated'. expected='$expectedArtifactPath'"
+        }
+    }
+
     $previewTrace = Wait-ForTraceText -TracePath $shellTracePath -Pattern "pet-command \| .*preview .*family=$escapedFamily.*status=PreviewReady"
     if ($null -eq $previewTrace) {
         throw "PET TASKS preview trace was not observed."
@@ -579,6 +608,9 @@ try {
         approve_before_preview = [bool]$ApproveBeforePreview
         expect_execute_enabled_after_preview = [bool]$ExpectExecuteEnabledAfterPreview
         execute_enabled_after_preview = $executeEnabledAfterPreview
+        expect_artifact_file_created = $ExpectArtifactFileCreated
+        execution_audit_path = $executionAuditPath
+        expected_artifact_path = $expectedArtifactPath
         wellbeing_text = $wellbeingText
         capability_text = $capabilityText
         next_action_text = $nextActionText

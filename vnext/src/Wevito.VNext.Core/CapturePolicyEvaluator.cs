@@ -28,12 +28,19 @@ public sealed class CapturePolicyEvaluator
 
         return request.TargetKind switch
         {
-            CaptureTargetKind.WevitoWindow or CaptureTargetKind.ProofSurface => Decision(
+            CaptureTargetKind.WevitoWindow => Decision(
                 request,
-                ToolPolicyDecisionStatus.Allowed,
-                ToolRiskLevel.Low,
-                ApprovalRequirement.None,
-                "Wevito-only still capture is allowed as a low-risk local proof artifact."),
+                ToolPolicyDecisionStatus.ApprovalRequired,
+                ToolRiskLevel.Medium,
+                ApprovalRequirement.ActionTime,
+                "Wevito-window still capture requires explicit approval before capture starts."),
+
+            CaptureTargetKind.ProofSurface => Decision(
+                request,
+                ToolPolicyDecisionStatus.Blocked,
+                ToolRiskLevel.Blocked,
+                ApprovalRequirement.HandOffRequired,
+                "Proof-surface capture is blocked until a dedicated proof target is implemented."),
 
             CaptureTargetKind.SelectedRegion or CaptureTargetKind.LastRegion => Decision(
                 request,
