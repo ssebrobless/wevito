@@ -17,6 +17,10 @@ public partial class HomePanelWindow : Window
     public HomePanelWindow()
     {
         InitializeComponent();
+        Canvas.SetZIndex(StageBackdropCanvas, HabitatDepthOrder.GetZIndex(DepthBand.Backdrop));
+        Canvas.SetZIndex(StagePropCanvas, HabitatDepthOrder.GetZIndex(DepthBand.GroundContact));
+        Canvas.SetZIndex(HomePetCanvas, HabitatDepthOrder.GetZIndex(DepthBand.PetBody));
+        Canvas.SetZIndex(StageDecorationCanvas, HabitatDepthOrder.GetZIndex(DepthBand.NearOccluder));
         SourceInitialized += (_, _) => OverlayWindowStyler.Apply(this, clickThrough: false, noActivate: false);
     }
 
@@ -206,8 +210,15 @@ public partial class HomePanelWindow : Window
                     renderedInteractionCue = true;
                 }
             }
+            var shadow = CreatePetContactShadow(pet, width, height);
+            Canvas.SetLeft(shadow, Math.Round(localX + width * 0.12));
+            Canvas.SetTop(shadow, Math.Round(localY + height - shadow.Height * 0.58));
+            Canvas.SetZIndex(shadow, HabitatDepthOrder.GetShadowZIndex(ContactShadowMode.Soft));
+            HomePetCanvas.Children.Add(shadow);
+
             Canvas.SetLeft(image, localX);
             Canvas.SetTop(image, localY);
+            Canvas.SetZIndex(image, HabitatDepthOrder.GetZIndex(DepthBand.PetBody));
             HomePetCanvas.Children.Add(image);
 
             if (!showPetNames || state.Mode == CompanionMode.Passive)
@@ -223,6 +234,7 @@ public partial class HomePanelWindow : Window
             };
             Canvas.SetLeft(label, Math.Round(localX - 2));
             Canvas.SetTop(label, Math.Round(localY - 14));
+            Canvas.SetZIndex(label, HabitatDepthOrder.GetZIndex(DepthBand.UiOverlay));
             HomePetCanvas.Children.Add(label);
         }
     }
@@ -552,10 +564,28 @@ public partial class HomePanelWindow : Window
                 continue;
             }
 
+            if (string.Equals(scaledSpec.SlotId, "primary", StringComparison.OrdinalIgnoreCase) &&
+                scaledSpec.ContactShadowMode != ContactShadowMode.None)
+            {
+                var shadow = CreateAnchorContactShadow(scaledSpec);
+                Canvas.SetLeft(shadow, Math.Round(scaledSpec.Left + (scaledSpec.Width - shadow.Width) / 2.0));
+                Canvas.SetTop(shadow, Math.Round(scaledSpec.Top + scaledSpec.Height - shadow.Height * 0.62));
+                Canvas.SetZIndex(shadow, HabitatDepthOrder.GetShadowZIndex(scaledSpec.ContactShadowMode));
+                StagePropCanvas.Children.Add(shadow);
+            }
+
             element.Opacity = scaledSpec.Opacity;
             Canvas.SetLeft(element, Math.Round(scaledSpec.Left));
             Canvas.SetTop(element, Math.Round(scaledSpec.Top));
-            StagePropCanvas.Children.Add(element);
+            Canvas.SetZIndex(element, HabitatDepthOrder.GetZIndex(scaledSpec.DepthBand));
+            if (scaledSpec.DepthBand == DepthBand.NearOccluder)
+            {
+                StageDecorationCanvas.Children.Add(element);
+            }
+            else
+            {
+                StagePropCanvas.Children.Add(element);
+            }
         }
 
         return scaledSpecs;
@@ -717,7 +747,7 @@ public partial class HomePanelWindow : Window
             {
                 return (
                     Math.Round(anchor.Left + (anchor.Width * 0.26)),
-                    Math.Round(anchor.Top + (anchor.Height * 0.08) - petHeight));
+                    Math.Round(anchor.Top + (anchor.Height * 0.1) - (petHeight * 0.58)));
             }
 
             if (anchor.AssetId == "stump_perch")
@@ -744,7 +774,7 @@ public partial class HomePanelWindow : Window
                     Math.Round(anchor.Top + (anchor.Height * 0.56) - (petHeight * 0.82))),
                 "branch_perch" => (
                     Math.Round(anchor.Left + (anchor.Width * 0.28)),
-                    Math.Round(anchor.Top + (anchor.Height * 0.12) - petHeight)),
+                    Math.Round(anchor.Top + (anchor.Height * 0.12) - (petHeight * 0.58))),
                 "stump_perch" => (
                     Math.Round(anchor.Left + (anchor.Width * 0.18)),
                     Math.Round(anchor.Top + (anchor.Height * 0.14) - petHeight)),
@@ -807,6 +837,7 @@ public partial class HomePanelWindow : Window
         };
         Canvas.SetLeft(ground, 10);
         Canvas.SetTop(ground, 210);
+        Canvas.SetZIndex(ground, HabitatDepthOrder.GetZIndex(DepthBand.FarProp));
         StagePropCanvas.Children.Add(ground);
     }
 
@@ -818,7 +849,8 @@ public partial class HomePanelWindow : Window
             Height = spec.Height,
             IsHitTestVisible = false,
             SnapsToDevicePixels = true,
-            UseLayoutRounding = true
+            UseLayoutRounding = true,
+            ClipToBounds = true
         };
         RenderOptions.SetBitmapScalingMode(root, BitmapScalingMode.NearestNeighbor);
         RenderOptions.SetEdgeMode(root, EdgeMode.Aliased);
@@ -862,6 +894,46 @@ public partial class HomePanelWindow : Window
         return root;
     }
 
+    private static Ellipse CreateAnchorContactShadow(StagePropSpec spec)
+    {
+        var opacity = spec.ContactShadowMode switch
+        {
+            ContactShadowMode.Hard => 0.34,
+            ContactShadowMode.Soft => 0.22,
+            _ => 0
+        };
+
+        return new Ellipse
+        {
+            Width = Math.Max(18, spec.Width * 0.78),
+            Height = Math.Max(7, spec.Height * 0.16),
+            Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2E111820")),
+            Opacity = opacity,
+            IsHitTestVisible = false
+        };
+    }
+
+    private static Ellipse CreatePetContactShadow(PetActor pet, double width, double height)
+    {
+        var speciesScale = pet.SpeciesId switch
+        {
+            "snake" => (Width: 0.9, Height: 0.11),
+            "frog" => (Width: 0.72, Height: 0.16),
+            "crow" or "pigeon" => (Width: 0.64, Height: 0.12),
+            "goose" => (Width: 0.76, Height: 0.14),
+            _ => (Width: 0.7, Height: 0.14)
+        };
+
+        return new Ellipse
+        {
+            Width = Math.Max(12, width * speciesScale.Width),
+            Height = Math.Max(5, height * speciesScale.Height),
+            Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#3810181D")),
+            Opacity = 0.28,
+            IsHitTestVisible = false
+        };
+    }
+
     private static bool TryCreateStageSafePropVisual(StagePropSpec spec, out FrameworkElement? element)
     {
         element = spec.AssetId switch
@@ -875,6 +947,13 @@ public partial class HomePanelWindow : Window
             "branch_perch" => CreateBranchPerchVisual(spec),
             "rock_basking_spot" => CreateRockBaskingSpotVisual(spec),
             "leaf_pile" => CreateLeafPileVisual(spec),
+            "ball" => CreateBallVisual(spec),
+            "bug_treat" => CreateBugTreatVisual(spec),
+            "moss_patch" => CreateMossPatchVisual(spec),
+            "pebble_cluster" => CreatePebbleClusterVisual(spec),
+            "shiny_reward" => CreateShinyRewardVisual(spec),
+            "snack_bowl" => CreateSnackBowlVisual(spec),
+            "storage_basket" => CreateStorageBasketVisual(spec),
             _ => null
         };
         return element is not null;
@@ -1206,11 +1285,213 @@ public partial class HomePanelWindow : Window
                 HorizontalAlignment = HorizontalAlignment.Left,
                 VerticalAlignment = VerticalAlignment.Top,
                 Margin = new Thickness(spec.Width * segment.Item1, spec.Height * segment.Item2, 0, 0),
+                RenderTransformOrigin = new Point(0.5, 0.5),
                 RenderTransform = new RotateTransform(segment.Item5)
             };
             root.Children.Add(branch);
         }
 
+        return root;
+    }
+
+    private static FrameworkElement CreateBallVisual(StagePropSpec spec)
+    {
+        var root = CreateStagePropRoot(spec);
+        root.Children.Add(CreatePropShadow(spec.Width * 0.62, spec.Height * 0.18, 0.62));
+        var ball = new Ellipse
+        {
+            Width = spec.Width * 0.48,
+            Height = spec.Width * 0.48,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Bottom,
+            Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#D66A42")),
+            Stroke = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#6B2F23")),
+            StrokeThickness = Math.Max(1, Math.Round(spec.Width * 0.035))
+        };
+        root.Children.Add(ball);
+        root.Children.Add(new Border
+        {
+            Width = spec.Width * 0.14,
+            Height = spec.Width * 0.48,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Bottom,
+            Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F0B05E")),
+            Opacity = 0.75,
+            CornerRadius = new CornerRadius(spec.Width * 0.04)
+        });
+        return root;
+    }
+
+    private static FrameworkElement CreateBugTreatVisual(StagePropSpec spec)
+    {
+        var root = CreateStagePropRoot(spec);
+        root.Children.Add(CreatePropShadow(spec.Width * 0.72, spec.Height * 0.16, 0.58));
+        var body = new Ellipse
+        {
+            Width = spec.Width * 0.36,
+            Height = spec.Height * 0.42,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Bottom,
+            Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#C8793E")),
+            Stroke = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#6A3A24")),
+            StrokeThickness = Math.Max(1, Math.Round(spec.Height * 0.04))
+        };
+        root.Children.Add(body);
+        foreach (var x in new[] { 0.22, 0.34, 0.58, 0.7 })
+        {
+            root.Children.Add(new Border
+            {
+                Width = spec.Width * 0.16,
+                Height = Math.Max(2, spec.Height * 0.05),
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment = VerticalAlignment.Bottom,
+                Margin = new Thickness(spec.Width * x, 0, 0, spec.Height * 0.18),
+                Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#5B3020")),
+                CornerRadius = new CornerRadius(spec.Height * 0.03)
+            });
+        }
+        return root;
+    }
+
+    private static FrameworkElement CreateMossPatchVisual(StagePropSpec spec)
+    {
+        var root = CreateStagePropRoot(spec);
+        root.Children.Add(CreatePropShadow(spec.Width * 0.86, spec.Height * 0.18, 0.54));
+        foreach (var tuft in new[]
+                 {
+                     (0.04, 0.08, 0.22, 0.58, "#6FA657"),
+                     (0.22, 0.0, 0.26, 0.72, "#8AC36D"),
+                     (0.46, 0.06, 0.24, 0.62, "#5F974D"),
+                     (0.66, 0.1, 0.24, 0.54, "#7DBB63")
+                 })
+        {
+            root.Children.Add(new Ellipse
+            {
+                Width = spec.Width * tuft.Item3,
+                Height = spec.Height * tuft.Item4,
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment = VerticalAlignment.Bottom,
+                Margin = new Thickness(spec.Width * tuft.Item1, 0, 0, spec.Height * tuft.Item2),
+                Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString(tuft.Item5))
+            });
+        }
+        return root;
+    }
+
+    private static FrameworkElement CreatePebbleClusterVisual(StagePropSpec spec)
+    {
+        var root = CreateStagePropRoot(spec);
+        root.Children.Add(CreatePropShadow(spec.Width * 0.82, spec.Height * 0.14, 0.5));
+        foreach (var pebble in new[]
+                 {
+                     (0.08, 0.18, 0.22, 0.28, "#879090"),
+                     (0.28, 0.08, 0.28, 0.38, "#A7AAA4"),
+                     (0.54, 0.16, 0.2, 0.28, "#737B7D"),
+                     (0.68, 0.22, 0.22, 0.22, "#B8B4AA")
+                 })
+        {
+            root.Children.Add(new Ellipse
+            {
+                Width = spec.Width * pebble.Item3,
+                Height = spec.Height * pebble.Item4,
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment = VerticalAlignment.Bottom,
+                Margin = new Thickness(spec.Width * pebble.Item1, 0, 0, spec.Height * pebble.Item2),
+                Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString(pebble.Item5))
+            });
+        }
+        return root;
+    }
+
+    private static FrameworkElement CreateShinyRewardVisual(StagePropSpec spec)
+    {
+        var root = CreateStagePropRoot(spec);
+        root.Children.Add(CreatePropShadow(spec.Width * 0.62, spec.Height * 0.12, 0.42));
+        foreach (var sparkle in new[]
+                 {
+                     (0.18, 0.34, 0.16),
+                     (0.48, 0.18, 0.22),
+                     (0.72, 0.42, 0.14)
+                 })
+        {
+            var gem = new Polygon
+            {
+                Points = new PointCollection([
+                    new Point(spec.Width * sparkle.Item3 / 2, 0),
+                    new Point(spec.Width * sparkle.Item3, spec.Height * sparkle.Item3 / 2),
+                    new Point(spec.Width * sparkle.Item3 / 2, spec.Height * sparkle.Item3),
+                    new Point(0, spec.Height * sparkle.Item3 / 2)
+                ]),
+                Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F8D66D")),
+                Stroke = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#A86D2E")),
+                StrokeThickness = Math.Max(1, Math.Round(spec.Height * 0.025))
+            };
+            Canvas.SetLeft(gem, spec.Width * sparkle.Item1);
+            Canvas.SetTop(gem, spec.Height * sparkle.Item2);
+            root.Children.Add(gem);
+        }
+        return root;
+    }
+
+    private static FrameworkElement CreateSnackBowlVisual(StagePropSpec spec)
+    {
+        var root = CreateStagePropRoot(spec);
+        root.Children.Add(CreatePropShadow(spec.Width * 0.78, spec.Height * 0.16, 0.58));
+        var bowl = new Border
+        {
+            Width = spec.Width * 0.7,
+            Height = spec.Height * 0.34,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Bottom,
+            Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#9B6A48")),
+            BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#503223")),
+            BorderThickness = new Thickness(Math.Max(1, Math.Round(spec.Height * 0.04))),
+            CornerRadius = new CornerRadius(spec.Height * 0.14)
+        };
+        root.Children.Add(bowl);
+        foreach (var x in new[] { 0.34, 0.46, 0.58 })
+        {
+            root.Children.Add(new Ellipse
+            {
+                Width = spec.Width * 0.1,
+                Height = spec.Width * 0.1,
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment = VerticalAlignment.Bottom,
+                Margin = new Thickness(spec.Width * x, 0, 0, spec.Height * 0.24),
+                Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#D9B06C"))
+            });
+        }
+        return root;
+    }
+
+    private static FrameworkElement CreateStorageBasketVisual(StagePropSpec spec)
+    {
+        var root = CreateStagePropRoot(spec);
+        root.Children.Add(CreatePropShadow(spec.Width * 0.78, spec.Height * 0.16, 0.58));
+        var basket = new Border
+        {
+            Width = spec.Width * 0.72,
+            Height = spec.Height * 0.54,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Bottom,
+            Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#9F7149")),
+            BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#5A3B28")),
+            BorderThickness = new Thickness(Math.Max(1, Math.Round(spec.Height * 0.04))),
+            CornerRadius = new CornerRadius(spec.Height * 0.08)
+        };
+        root.Children.Add(basket);
+        for (var i = 1; i <= 3; i++)
+        {
+            root.Children.Add(new Border
+            {
+                Width = Math.Max(2, spec.Width * 0.035),
+                Height = spec.Height * 0.5,
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment = VerticalAlignment.Bottom,
+                Margin = new Thickness(spec.Width * (0.28 + i * 0.12), 0, 0, spec.Height * 0.02),
+                Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#C3915E"))
+            });
+        }
         return root;
     }
 
@@ -1581,7 +1862,10 @@ public partial class HomePanelWindow : Window
 
         scale *= spec.AssetId switch
         {
+            "ball" => 0.42,
+            "bug_treat" => 0.72,
             "branch_perch" => 0.42,
+            "pebble_cluster" or "shiny_reward" => 0.7,
             "stump_perch" => 0.58,
             _ => 1.0
         };
@@ -1634,6 +1918,11 @@ public partial class HomePanelWindow : Window
     {
         _ = environment;
         var speciesId = focusPet?.SpeciesId ?? string.Empty;
+        if (UsesManifestHabitatPilot(speciesId) && dynamicStageProps.Count > 0)
+        {
+            return dynamicStageProps;
+        }
+
         var template = speciesId switch
         {
             "rat" => new[]
@@ -1703,6 +1992,11 @@ public partial class HomePanelWindow : Window
         }
 
         return dynamicStageProps;
+    }
+
+    private static bool UsesManifestHabitatPilot(string speciesId)
+    {
+        return speciesId is "goose" or "rat" or "crow" or "snake" or "frog";
     }
 
     private static string BuildLeadPetSummary(PetActor? pet, int basketCount)

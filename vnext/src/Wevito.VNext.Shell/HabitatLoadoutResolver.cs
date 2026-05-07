@@ -181,7 +181,7 @@ internal static class HabitatLoadoutResolver
                     .ToList(),
                 StringComparer.OrdinalIgnoreCase);
 
-        var dynamicProps = BuildManifestStageProps(species, content)
+        var dynamicProps = BuildManifestStageProps(species, focusPet, needSnapshot, content)
             ?? BuildDynamicStageProps(species.Id, ordered);
         return new HabitatLoadout(recommended, actionMap, actionOptions, dynamicProps);
     }
@@ -359,7 +359,11 @@ internal static class HabitatLoadoutResolver
         return stageProps;
     }
 
-    private static IReadOnlyList<StagePropSpec>? BuildManifestStageProps(SpeciesDefinition species, GameContent content)
+    private static IReadOnlyList<StagePropSpec>? BuildManifestStageProps(
+        SpeciesDefinition species,
+        PetActor focusPet,
+        IReadOnlyDictionary<string, double> needSnapshot,
+        GameContent content)
     {
         var manifestLoadouts = content.HabitatLoadouts;
         if (manifestLoadouts is null || manifestLoadouts.Count == 0)
@@ -379,7 +383,9 @@ internal static class HabitatLoadoutResolver
 
         var visualMappings = content.ItemVisualMappings ?? [];
         var props = new List<StagePropSpec>();
-        foreach (var slot in loadout.Slots.OrderBy(slot => slot.PriorityTier))
+        foreach (var slot in loadout.Slots
+                     .Where(slot => ShouldShowManifestSlot(slot, focusPet, needSnapshot))
+                     .OrderBy(slot => slot.PriorityTier))
         {
             if (!TryResolveCategoryFolder(slot.AssetId, visualMappings, out var categoryFolder))
             {
@@ -397,10 +403,80 @@ internal static class HabitatLoadoutResolver
                 ResolveManifestOpacity(slot),
                 slot.DepthBand,
                 slot.OcclusionMode,
-                slot.ContactShadowMode));
+                slot.ContactShadowMode,
+                slot.SlotId));
         }
 
         return props;
+    }
+
+    private static bool ShouldShowManifestSlot(
+        HabitatObjectSlot slot,
+        PetActor focusPet,
+        IReadOnlyDictionary<string, double> needSnapshot)
+    {
+        if (!string.Equals(slot.SlotId, "interaction", StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        var recentActionId = focusPet.LastActionAtUtc is not null &&
+                             DateTimeOffset.UtcNow - focusPet.LastActionAtUtc.Value < TimeSpan.FromMinutes(12)
+            ? focusPet.LastActionId
+            : ResolveActionId(focusPet.CurrentActionVisualIntent);
+
+        if (string.Equals(recentActionId, "play", StringComparison.OrdinalIgnoreCase) &&
+            slot.AssetId is "ball" or "bell_toy" or "branch_perch" or "leaf_pile")
+        {
+            return true;
+        }
+
+        if (string.Equals(recentActionId, "feed", StringComparison.OrdinalIgnoreCase) &&
+            slot.AssetId is "snack_bowl" or "seed_tray" or "bug_treat")
+        {
+            return true;
+        }
+
+        if (string.Equals(recentActionId, "water", StringComparison.OrdinalIgnoreCase) &&
+            slot.AssetId is "pond_dish" or "shallow_water_dish" or "water_bowl")
+        {
+            return true;
+        }
+
+        return slot.AssetId switch
+        {
+            "ball" => GetNeed(needSnapshot, "affection") < 72 || GetNeed(needSnapshot, "fitness") < 68,
+            "snack_bowl" or "seed_tray" or "bug_treat" => GetNeed(needSnapshot, "hunger") < 78,
+            "pond_dish" or "shallow_water_dish" or "water_bowl" => GetNeed(needSnapshot, "thirst") < 78,
+            _ => false
+        };
+    }
+
+    private static double GetNeed(IReadOnlyDictionary<string, double> needSnapshot, string key)
+    {
+        return needSnapshot.TryGetValue(key, out var value) ? value : 0;
+    }
+
+    private static string ResolveActionId(ActionVisualIntent? intent)
+    {
+        if (intent is null)
+        {
+            return string.Empty;
+        }
+
+        if (intent.Overlay == PropOverlayKind.Ball ||
+            intent.Family is AnimationFamily.PlayBall or AnimationFamily.HoldBall or AnimationFamily.PickupBall or AnimationFamily.DropBall or AnimationFamily.CarryBallWalk or AnimationFamily.CarryBallRun)
+        {
+            return "play";
+        }
+
+        return intent.Family switch
+        {
+            AnimationFamily.Drink => "water",
+            AnimationFamily.Eat => "feed",
+            AnimationFamily.Bathe => "bath",
+            _ => string.Empty
+        };
     }
 
     private static bool TryResolveCategoryFolder(
