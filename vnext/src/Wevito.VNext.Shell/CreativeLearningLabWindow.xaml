@@ -1,0 +1,175 @@
+<Window x:Class="Wevito.VNext.Shell.CreativeLearningLabWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:automation="clr-namespace:System.Windows.Automation;assembly=PresentationCore"
+        Title="Wevito Creative Learning Lab"
+        Width="1120"
+        Height="720"
+        Background="#091116"
+        Foreground="#F3F7F4"
+        WindowStartupLocation="CenterOwner">
+    <Window.Resources>
+        <Style x:Key="MetricCardStyle" TargetType="Border">
+            <Setter Property="Background" Value="#16242B" />
+            <Setter Property="BorderBrush" Value="#36515A" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="14" />
+            <Setter Property="Padding" Value="14,12" />
+            <Setter Property="Margin" Value="0,0,10,0" />
+        </Style>
+        <Style x:Key="PanelStyle" TargetType="Border">
+            <Setter Property="Background" Value="#12202A" />
+            <Setter Property="BorderBrush" Value="#314956" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="16" />
+            <Setter Property="Padding" Value="14" />
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="18">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <DockPanel Grid.Row="0">
+            <StackPanel DockPanel.Dock="Left">
+                <TextBlock Text="Creative Learning Lab"
+                           FontSize="30"
+                           FontWeight="Bold"
+                           Foreground="#F3F7F4" />
+                <TextBlock x:Name="StatusText"
+                           Margin="0,4,0,0"
+                           FontSize="13"
+                           Foreground="#B9D7D2"
+                           Text="Read-only review dashboard. Nothing is labeled, exported, trained, or mutated." />
+            </StackPanel>
+            <Button DockPanel.Dock="Right"
+                    Width="110"
+                    Height="34"
+                    Margin="12,6,0,0"
+                    Background="#2D4A52"
+                    BorderBrush="#6EA0A0"
+                    Foreground="#F3F7F4"
+                    FontWeight="SemiBold"
+                    automation:AutomationProperties.AutomationId="RefreshLearningLabButton"
+                    Content="Refresh"
+                    Click="RefreshButton_OnClick" />
+        </DockPanel>
+
+        <UniformGrid Grid.Row="1"
+                     Margin="0,18,0,18"
+                     Columns="5">
+            <Border Style="{StaticResource MetricCardStyle}">
+                <StackPanel>
+                    <TextBlock Text="Raw" Foreground="#9FD5D0" FontSize="12" />
+                    <TextBlock x:Name="RawMetricText" Text="0" FontSize="28" FontWeight="Bold" />
+                </StackPanel>
+            </Border>
+            <Border Style="{StaticResource MetricCardStyle}">
+                <StackPanel>
+                    <TextBlock Text="Cleaned" Foreground="#9FD5D0" FontSize="12" />
+                    <TextBlock x:Name="CleanedMetricText" Text="0" FontSize="28" FontWeight="Bold" />
+                </StackPanel>
+            </Border>
+            <Border Style="{StaticResource MetricCardStyle}">
+                <StackPanel>
+                    <TextBlock Text="Labeled" Foreground="#9FD5D0" FontSize="12" />
+                    <TextBlock x:Name="LabeledMetricText" Text="0" FontSize="28" FontWeight="Bold" />
+                </StackPanel>
+            </Border>
+            <Border Style="{StaticResource MetricCardStyle}">
+                <StackPanel>
+                    <TextBlock Text="Bundled" Foreground="#9FD5D0" FontSize="12" />
+                    <TextBlock x:Name="BundledMetricText" Text="0" FontSize="28" FontWeight="Bold" />
+                </StackPanel>
+            </Border>
+            <Border Style="{StaticResource MetricCardStyle}" Margin="0">
+                <StackPanel>
+                    <TextBlock Text="Eval" Foreground="#9FD5D0" FontSize="12" />
+                    <TextBlock x:Name="EvalMetricText" Text="0" FontSize="28" FontWeight="Bold" />
+                </StackPanel>
+            </Border>
+        </UniformGrid>
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" Style="{StaticResource PanelStyle}" Margin="0,0,14,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <StackPanel>
+                        <TextBlock Text="Review Queue"
+                                   FontSize="18"
+                                   FontWeight="SemiBold" />
+                        <TextBlock x:Name="QueueHintText"
+                                   Margin="0,4,0,12"
+                                   Foreground="#A7C5C4"
+                                   Text="Existing markdown and JSON manifests that may need human review." />
+                    </StackPanel>
+                    <ListView Grid.Row="1"
+                              x:Name="ArtifactListView"
+                              Background="#0D1820"
+                              BorderBrush="#263E48"
+                              Foreground="#F3F7F4"
+                              automation:AutomationProperties.AutomationId="LearningLabArtifactList">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Type" Width="150" DisplayMemberBinding="{Binding ArtifactKind}" />
+                                <GridViewColumn Header="Status" Width="120" DisplayMemberBinding="{Binding Status}" />
+                                <GridViewColumn Header="Target" Width="180" DisplayMemberBinding="{Binding Target}" />
+                                <GridViewColumn Header="File" Width="330" DisplayMemberBinding="{Binding FileName}" />
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </Grid>
+            </Border>
+
+            <StackPanel Grid.Column="1">
+                <Border Style="{StaticResource PanelStyle}" Margin="0,0,0,14">
+                    <StackPanel>
+                        <TextBlock Text="Bundle Gate"
+                                   FontSize="18"
+                                   FontWeight="SemiBold" />
+                        <TextBlock Margin="0,8,0,0"
+                                   Foreground="#A7C5C4"
+                                   TextWrapping="Wrap"
+                                   Text="Waiting for Phase 25 labels. Bundles require provenance, human decisions, intended use, and rollback/deprecation notes." />
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource PanelStyle}" Margin="0,0,0,14">
+                    <StackPanel>
+                        <TextBlock Text="Eval Bench"
+                                   FontSize="18"
+                                   FontWeight="SemiBold" />
+                        <TextBlock Margin="0,8,0,0"
+                                   Foreground="#A7C5C4"
+                                   TextWrapping="Wrap"
+                                   Text="Placeholders only: sprite-validator-vs-human, palette-identity, optional-overlay-policy, contact-sheet-clarity, habitat-scale." />
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource PanelStyle}">
+                    <StackPanel>
+                        <TextBlock Text="Indexed Evidence"
+                                   FontSize="18"
+                                   FontWeight="SemiBold" />
+                        <TextBlock x:Name="IndexedEvidenceText"
+                                   Margin="0,8,0,0"
+                                   Foreground="#A7C5C4"
+                                   TextWrapping="Wrap"
+                                   Text="0 markdown files, 0 JSON files." />
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

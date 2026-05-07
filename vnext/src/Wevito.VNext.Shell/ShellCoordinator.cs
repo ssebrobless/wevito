@@ -43,6 +43,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private readonly RoamBandWindow _roamBandWindow = new();
     private readonly ToolPopupWindow _toolPopupWindow = new();
     private SpriteWorkflowV2Window? _spriteWorkflowV2Window;
+    private CreativeLearningLabWindow? _creativeLearningLabWindow;
 
     private BrokerClient? _brokerClient;
     private Process? _brokerProcess;
@@ -74,6 +75,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _homeWindow.ToggleBasketRequested += async () => await ToggleBasketAsync();
         _homeWindow.ToggleHelpersRequested += async () => await ToggleHelpersAsync();
         _homeWindow.OpenSpriteWorkflowV2Requested += async () => await OpenSpriteWorkflowV2Async();
+        _homeWindow.OpenCreativeLearningLabRequested += async () => await OpenCreativeLearningLabAsync();
         _homeWindow.OpenSettingsRequested += async () => await ToggleSettingsAsync();
         _homeWindow.ToggleCompactRequested += async () => await ToggleCompactHudAsync();
         _homeWindow.SaveRequested += async () => await SaveAsync();
@@ -578,6 +580,24 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _spriteWorkflowV2Window.Show();
         _spriteWorkflowV2Window.Activate();
         TraceLog.Write("sprite-workflow-v2", "opened read-only workbench");
+        return Task.CompletedTask;
+    }
+
+    private Task OpenCreativeLearningLabAsync()
+    {
+        if (_creativeLearningLabWindow is null)
+        {
+            _creativeLearningLabWindow = new CreativeLearningLabWindow
+            {
+                Owner = _homeWindow
+            };
+            _creativeLearningLabWindow.Closed += (_, _) => _creativeLearningLabWindow = null;
+        }
+
+        _creativeLearningLabWindow.LoadProject(ResolveRepoRootOrBaseDirectory());
+        _creativeLearningLabWindow.Show();
+        _creativeLearningLabWindow.Activate();
+        TraceLog.Write("creative-learning-lab", "opened read-only artifact index");
         return Task.CompletedTask;
     }
 
