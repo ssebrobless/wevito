@@ -87,10 +87,10 @@ public sealed class ScreenCapturePreviewAdapter
                 "Full-desktop screenshots can expose private information and must remain explicitly approval-gated."),
             new ScreenCaptureCapability(
                 ScreenCaptureActionKind.ScreenRecording,
-                ScreenCaptureCapabilityStatus.Blocked,
-                ToolRiskLevel.High,
-                ApprovalRequirement.HandOffRequired,
-                "Screen recording is blocked until a separate privacy, duration, and storage gate exists."),
+                ScreenCaptureCapabilityStatus.ApprovalRequired,
+                ToolRiskLevel.Medium,
+                ApprovalRequirement.BeforeExecution,
+                "Execution target: 5-10 second Wevito-window-only MP4 proof clip, no audio."),
             new ScreenCaptureCapability(
                 ScreenCaptureActionKind.GifRecording,
                 ScreenCaptureCapabilityStatus.Blocked,
@@ -106,7 +106,9 @@ public sealed class ScreenCapturePreviewAdapter
             rawText.Contains("video", StringComparison.OrdinalIgnoreCase) ||
             rawText.Contains("gif", StringComparison.OrdinalIgnoreCase))
         {
-            return "The request appears to ask for screen recording. Recording is blocked until a dedicated execution gate is implemented.";
+            return ScreenCaptureTargetResolver.ResolveTarget(rawText).TargetKind == CaptureTargetKind.WevitoWindow
+                ? "The request appears to ask for a short Wevito-window proof clip. Execution requires approval, shows a visible Wevito recording indicator, records no audio, and is capped at 10 seconds."
+                : "The request appears to ask for screen recording outside the Wevito window. Region, foreground, and desktop recording remain blocked in this phase.";
         }
 
         if (rawText.Contains("desktop", StringComparison.OrdinalIgnoreCase) ||
@@ -143,7 +145,7 @@ public sealed class ScreenCapturePreviewAdapter
             "No screen recording was started.",
             "No clipboard, desktop, project file, or sprite asset was changed.",
             "Future screenshot execution should prefer Wevito-window or selected-region scope over full desktop.",
-            "Screen recording remains blocked until a separate privacy and duration gate exists."
+            "Short proof clips are Wevito-window-only, no-audio, approval-gated, and capped at 10 seconds."
         ];
     }
 

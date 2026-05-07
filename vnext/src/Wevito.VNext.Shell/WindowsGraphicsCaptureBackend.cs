@@ -11,11 +11,16 @@ namespace Wevito.VNext.Shell;
 
 public sealed class WindowsGraphicsCaptureBackend : IScreenCaptureBackend
 {
-    private readonly Func<Window?> _targetWindowFactory;
+    private const int ClipFrameRate = 10;
+    private static readonly TimeSpan MaxClipDuration = TimeSpan.FromSeconds(10);
 
-    public WindowsGraphicsCaptureBackend(Func<Window?> targetWindowFactory)
+    private readonly Func<Window?> _targetWindowFactory;
+    private readonly IMediaFoundationVideoEncoder _videoEncoder;
+
+    public WindowsGraphicsCaptureBackend(Func<Window?> targetWindowFactory, IMediaFoundationVideoEncoder? videoEncoder = null)
     {
         _targetWindowFactory = targetWindowFactory;
+        _videoEncoder = videoEncoder ?? new MediaFoundationVideoEncoder();
     }
 
     public Task<ScreenCaptureBackendResult> CaptureWevitoWindowAsync(string outputPath, CancellationToken cancellationToken = default)
@@ -153,6 +158,87 @@ public sealed class WindowsGraphicsCaptureBackend : IScreenCaptureBackend
             ]));
     }
 
+    public async Task<ScreenCaptureBackendResult> CaptureWevitoWindowClipAsync(
+        string outputPath,
+        TimeSpan duration,
+        IProgress<TimeSpan>? remainingProgress = null,
+        CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        var window = _targetWindowFactory();
+        if (window is null || !window.IsVisible)
+        {
+            throw new InvalidOperationException("Wevito target window is not visible.");
+        }
+
+        var cappedDuration = TimeSpan.FromMilliseconds(Math.Clamp(duration.TotalMilliseconds, 1_000, MaxClipDuration.TotalMilliseconds));
+        var frameCount = Math.Max(1, (int)Math.Ceiling(cappedDuration.TotalSeconds * ClipFrameRate));
+        var frames = new List<byte[]>(frameCount);
+        CaptureRegion? targetRect = null;
+        var delay = TimeSpan.FromSeconds(1.0 / ClipFrameRate);
+
+        for (var index = 0; index < frameCount; index++)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var frame = await CaptureWevitoWindowFrameAsync(window, cancellationToken).ConfigureAwait(false);
+            targetRect ??= frame.Region;
+            frames.Add(frame.Pixels);
+
+            var remaining = TimeSpan.FromMilliseconds(Math.Max(0, cappedDuration.TotalMilliseconds - ((index + 1) * delay.TotalMilliseconds)));
+            remainingProgress?.Report(remaining);
+            if (index < frameCount - 1)
+            {
+                await Task.Delay(delay, cancellationToken).ConfigureAwait(false);
+            }
+        }
+
+        var first = await CaptureWevitoWindowFrameAsync(window, cancellationToken).ConfigureAwait(false);
+        await _videoEncoder.EncodeBgraFramesAsync(
+            outputPath,
+            first.Width,
+            first.Height,
+            ClipFrameRate,
+            frames,
+            cancellationToken).ConfigureAwait(false);
+
+        return new ScreenCaptureBackendResult(
+            true,
+            await window.Dispatcher.InvokeAsync(() => window.Title),
+            targetRect ?? first.Region,
+            IndicatorVisible: true,
+            RedactionState: "Tool popup excluded from capture with WDA_EXCLUDEFROMCAPTURE when available; no credential surfaces exist yet. Clip capture is Wevito-window-only and records no audio.",
+            Warnings:
+            [
+                "C-PHASE 13 records a short Wevito-window-only proof clip from WPF-rendered frames into the MediaFoundationVideoEncoder seam.",
+                "Audio, region recording, foreground-window recording, desktop recording, and network upload/share are not enabled."
+            ]);
+    }
+
+    private static async Task<CapturedFrame> CaptureWevitoWindowFrameAsync(Window window, CancellationToken cancellationToken)
+    {
+        return await window.Dispatcher.InvokeAsync(() =>
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            window.UpdateLayout();
+
+            var width = Math.Max(2, (int)Math.Ceiling(window.ActualWidth));
+            var height = Math.Max(2, (int)Math.Ceiling(window.ActualHeight));
+            if (width % 2 != 0) { width--; }
+            if (height % 2 != 0) { height--; }
+
+            var screenTopLeft = window.PointToScreen(new Point(0, 0));
+            var renderTarget = new RenderTargetBitmap(width, height, 96, 96, PixelFormats.Pbgra32);
+            renderTarget.Render(window);
+            var pixels = new byte[width * height * 4];
+            renderTarget.CopyPixels(pixels, width * 4, 0);
+            return new CapturedFrame(
+                width,
+                height,
+                pixels,
+                new CaptureRegion((int)Math.Round(screenTopLeft.X), (int)Math.Round(screenTopLeft.Y), width, height));
+        });
+    }
+
     private const int CopyPixelOperationSourceCopy = 0x00CC0020;
 
     [DllImport("user32.dll")]
@@ -178,4 +264,6 @@ public sealed class WindowsGraphicsCaptureBackend : IScreenCaptureBackend
 
     [DllImport("gdi32.dll")]
     private static extern bool DeleteDC(IntPtr hDc);
+
+    private sealed record CapturedFrame(int Width, int Height, byte[] Pixels, CaptureRegion Region);
 }

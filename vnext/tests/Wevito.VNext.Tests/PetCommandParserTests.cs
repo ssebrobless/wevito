@@ -215,6 +215,18 @@ public sealed class PetCommandParserTests
     }
 
     [Fact]
+    public void Parse_WevitoRecordingCommandRoutesToScreenCapturePreview()
+    {
+        var intent = _parser.Parse("record the Wevito window for 5 seconds", Helpers());
+
+        Assert.Equal(TaskIntentTargetMode.RouteToBestHelper, intent.TargetMode);
+        Assert.Equal(_nixId, intent.TargetPetId);
+        Assert.Equal(TaskKind.ScreenCapture, intent.TaskKind);
+        Assert.Equal("screenCapture", intent.RequestedToolFamily);
+        Assert.False(intent.NeedsApproval);
+    }
+
+    [Fact]
     public void Parse_CodeReviewCommandRoutesToReadOnlyCodeReviewAdapter()
     {
         var intent = _parser.Parse("review code in the shell popup", Helpers());

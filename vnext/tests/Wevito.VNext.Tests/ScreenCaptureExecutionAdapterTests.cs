@@ -86,6 +86,50 @@ public sealed class ScreenCaptureExecutionAdapterTests
         Assert.Contains("requires a selected region", result.BlockReason);
     }
 
+    [Fact]
+    public async Task ExecuteAsync_WevitoRecording_WritesClipManifestAndSummary()
+    {
+        var adapter = new ScreenCaptureExecutionAdapter(new FakeScreenCaptureBackend());
+        var tempRoot = CreateTempRoot();
+        var artifactRoot = Path.Combine(tempRoot, "vnext", "artifacts", "pet-tasks", "20260506-screencapture-clip");
+        var request = BuildRequest(artifactRoot, "record the Wevito window for 5 seconds");
+        var progressReports = new RecordingProgress();
+
+        var result = await adapter.ExecuteAsync(
+            request,
+            DateTimeOffset.Parse("2026-05-06T18:00:00Z"),
+            recordingProgress: progressReports);
+
+        Assert.Equal(TaskAdapterResultStatus.Completed, result.Status);
+        Assert.Contains(result.WrittenPaths ?? [], path => path.EndsWith("clip.mp4", StringComparison.OrdinalIgnoreCase));
+        Assert.True(File.Exists(Path.Combine(artifactRoot, "clip.mp4")));
+        Assert.Contains(TimeSpan.Zero, progressReports.Values);
+
+        using var manifest = JsonDocument.Parse(File.ReadAllText(Path.Combine(artifactRoot, "manifest.json")));
+        var root = manifest.RootElement;
+        Assert.Equal("shortRecording", root.GetProperty("preset").GetString());
+        Assert.Equal("clipMp4", root.GetProperty("outputKind").GetString());
+        Assert.Equal("wevitoWindow", root.GetProperty("targetKind").GetString());
+        Assert.Equal("fake clip backend", root.GetProperty("redactionState").GetString());
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_RegionRecording_Blocks()
+    {
+        var adapter = new ScreenCaptureExecutionAdapter(new FakeScreenCaptureBackend());
+        var tempRoot = CreateTempRoot();
+        var artifactRoot = Path.Combine(tempRoot, "vnext", "artifacts", "pet-tasks", "20260506-screencapture-clip");
+        var request = BuildRequest(artifactRoot, "record a selected region for 5 seconds");
+
+        var result = await adapter.ExecuteAsync(
+            request,
+            DateTimeOffset.Parse("2026-05-06T18:00:00Z"),
+            new CaptureRegion(1, 2, 100, 100));
+
+        Assert.Equal(TaskAdapterResultStatus.Blocked, result.Status);
+        Assert.Contains("Wevito window", result.BlockReason);
+    }
+
     private static TaskAdapterRequest BuildRequest(string artifactRoot, string rawText = "screenshot the Wevito window")
     {
         var intent = new TaskIntent(
@@ -114,5 +158,15 @@ public sealed class ScreenCaptureExecutionAdapterTests
         var root = Path.Combine(Path.GetTempPath(), "wevito-screen-capture-execution-tests", Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(root);
         return root;
+    }
+
+    private sealed class RecordingProgress : IProgress<TimeSpan>
+    {
+        public List<TimeSpan> Values { get; } = [];
+
+        public void Report(TimeSpan value)
+        {
+            Values.Add(value);
+        }
     }
 }
