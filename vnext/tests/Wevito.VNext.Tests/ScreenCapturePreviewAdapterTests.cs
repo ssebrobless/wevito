@@ -43,6 +43,23 @@ public sealed class ScreenCapturePreviewAdapterTests
         Assert.Contains("dry-run report", result.BlockReason);
     }
 
+    [Fact]
+    public void BuildPreview_DescribesSelectedRegionWithoutCapturing()
+    {
+        var tempRoot = CreateTempRoot();
+        var artifactRoot = Path.Combine(tempRoot, "vnext", "artifacts", "pet-tasks", "20260505-152000-screen-capture");
+
+        var result = _adapter.BuildPreview(BuildRequest(artifactRoot, "screenshot a region"));
+
+        Assert.Equal(TaskAdapterResultStatus.PreviewReady, result.Status);
+        var report = JsonSerializer.Deserialize<ScreenCapturePreviewReport>(
+            File.ReadAllText(Path.Combine(artifactRoot, "screen-capture-preview-report.json")),
+            JsonDefaults.Options);
+        Assert.NotNull(report);
+        Assert.Contains("selected-region", report.RequestedCaptureSummary, StringComparison.OrdinalIgnoreCase);
+        Assert.False(report.DidCaptureScreen);
+    }
+
     private static TaskAdapterRequest BuildRequest(
         string artifactRoot,
         string rawText,
