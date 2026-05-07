@@ -49,11 +49,48 @@ public sealed class ScreenCaptureExecutionAdapterTests
         Assert.Contains("approval-gated", result.BlockReason);
     }
 
-    private static TaskAdapterRequest BuildRequest(string artifactRoot)
+    [Fact]
+    public async Task ExecuteAsync_SelectedRegion_WritesRegionManifest()
+    {
+        var adapter = new ScreenCaptureExecutionAdapter(new FakeScreenCaptureBackend());
+        var tempRoot = CreateTempRoot();
+        var artifactRoot = Path.Combine(tempRoot, "vnext", "artifacts", "pet-tasks", "20260506-region-capture-execute");
+        var request = BuildRequest(artifactRoot, "screenshot a region");
+        var region = new CaptureRegion(42, 64, 320, 180);
+
+        var result = await adapter.ExecuteAsync(request, DateTimeOffset.Parse("2026-05-06T18:00:00Z"), region);
+
+        Assert.Equal(TaskAdapterResultStatus.Completed, result.Status);
+        using var manifest = JsonDocument.Parse(File.ReadAllText(Path.Combine(artifactRoot, "manifest.json")));
+        var root = manifest.RootElement;
+        Assert.Equal("selectedRegion", root.GetProperty("targetKind").GetString());
+        Assert.Equal("selectedRegion", root.GetProperty("privacyLevel").GetString());
+        Assert.Equal("Selected Region", root.GetProperty("targetWindowTitle").GetString());
+        Assert.Equal(42, root.GetProperty("targetWindowRect").GetProperty("x").GetInt32());
+        Assert.Equal(64, root.GetProperty("targetWindowRect").GetProperty("y").GetInt32());
+        Assert.Equal(320, root.GetProperty("targetWindowRect").GetProperty("width").GetInt32());
+        Assert.Equal(180, root.GetProperty("targetWindowRect").GetProperty("height").GetInt32());
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_LastRegion_BlocksWhenRegionMissing()
+    {
+        var adapter = new ScreenCaptureExecutionAdapter(new FakeScreenCaptureBackend());
+        var tempRoot = CreateTempRoot();
+        var artifactRoot = Path.Combine(tempRoot, "vnext", "artifacts", "pet-tasks", "20260506-region-capture-execute");
+        var request = BuildRequest(artifactRoot, "screenshot last region");
+
+        var result = await adapter.ExecuteAsync(request, DateTimeOffset.Parse("2026-05-06T18:00:00Z"));
+
+        Assert.Equal(TaskAdapterResultStatus.Blocked, result.Status);
+        Assert.Contains("requires a selected region", result.BlockReason);
+    }
+
+    private static TaskAdapterRequest BuildRequest(string artifactRoot, string rawText = "screenshot the Wevito window")
     {
         var intent = new TaskIntent(
             Guid.Parse("c6000000-0000-0000-0000-000000000003"),
-            "screenshot the Wevito window",
+            rawText,
             TaskIntentTargetMode.RouteToBestHelper,
             TaskKind: TaskKind.ScreenCapture,
             RequestedToolFamily: "screenCapture");

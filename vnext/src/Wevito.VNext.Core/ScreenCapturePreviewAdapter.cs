@@ -72,13 +72,13 @@ public sealed class ScreenCapturePreviewAdapter
                 ScreenCaptureCapabilityStatus.ApprovalRequired,
                 ToolRiskLevel.Medium,
                 ApprovalRequirement.BeforeExecution,
-                "Future first execution target: capture only the Wevito window or a named app window."),
+                "Execution target: capture only the Wevito window."),
             new ScreenCaptureCapability(
                 ScreenCaptureActionKind.RegionScreenshot,
                 ScreenCaptureCapabilityStatus.ApprovalRequired,
                 ToolRiskLevel.Medium,
                 ApprovalRequirement.BeforeExecution,
-                "Future selected-region capture should require explicit user selection or a previously approved region."),
+                "Execution target: capture an explicitly selected region or the saved last region."),
             new ScreenCaptureCapability(
                 ScreenCaptureActionKind.Screenshot,
                 ScreenCaptureCapabilityStatus.ApprovalRequired,
@@ -114,6 +114,16 @@ public sealed class ScreenCapturePreviewAdapter
             rawText.Contains("fullscreen", StringComparison.OrdinalIgnoreCase))
         {
             return "The request appears to ask for a full-desktop screenshot. This will require explicit approval before capture.";
+        }
+
+        if (ScreenCaptureTargetResolver.ResolveTarget(rawText).TargetKind == CaptureTargetKind.LastRegion)
+        {
+            return "The request appears to ask for the last saved screenshot region. Execution will require approval and a previously saved region.";
+        }
+
+        if (ScreenCaptureTargetResolver.ResolveTarget(rawText).TargetKind == CaptureTargetKind.SelectedRegion)
+        {
+            return "The request appears to ask for a selected-region screenshot. Execution will require approval, then a drag-to-select region picker.";
         }
 
         if (rawText.Contains("window", StringComparison.OrdinalIgnoreCase) ||

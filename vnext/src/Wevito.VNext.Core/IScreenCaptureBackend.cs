@@ -5,6 +5,8 @@ namespace Wevito.VNext.Core;
 public interface IScreenCaptureBackend
 {
     Task<ScreenCaptureBackendResult> CaptureWevitoWindowAsync(string outputPath, CancellationToken cancellationToken = default);
+
+    Task<ScreenCaptureBackendResult> CaptureRegionAsync(CaptureRegion region, string outputPath, CancellationToken cancellationToken = default);
 }
 
 public sealed record ScreenCaptureBackendResult(

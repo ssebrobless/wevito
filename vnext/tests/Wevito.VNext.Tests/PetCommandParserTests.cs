@@ -189,6 +189,32 @@ public sealed class PetCommandParserTests
     }
 
     [Fact]
+    public void Parse_RegionScreenshotCommandRoutesToScreenCapturePreview()
+    {
+        var intent = _parser.Parse("screenshot a region", Helpers());
+
+        Assert.Equal(TaskIntentTargetMode.RouteToBestHelper, intent.TargetMode);
+        Assert.Equal(_nixId, intent.TargetPetId);
+        Assert.Equal(TaskKind.ScreenCapture, intent.TaskKind);
+        Assert.Equal("screenCapture", intent.RequestedToolFamily);
+        Assert.Contains("selected-region", intent.ExpectedOutput, StringComparison.OrdinalIgnoreCase);
+        Assert.False(intent.NeedsApproval);
+    }
+
+    [Fact]
+    public void Parse_LastRegionScreenshotCommandRoutesToScreenCapturePreview()
+    {
+        var intent = _parser.Parse("screenshot last region", Helpers());
+
+        Assert.Equal(TaskIntentTargetMode.RouteToBestHelper, intent.TargetMode);
+        Assert.Equal(_nixId, intent.TargetPetId);
+        Assert.Equal(TaskKind.ScreenCapture, intent.TaskKind);
+        Assert.Equal("screenCapture", intent.RequestedToolFamily);
+        Assert.Contains("last-region", intent.ExpectedOutput, StringComparison.OrdinalIgnoreCase);
+        Assert.False(intent.NeedsApproval);
+    }
+
+    [Fact]
     public void Parse_CodeReviewCommandRoutesToReadOnlyCodeReviewAdapter()
     {
         var intent = _parser.Parse("review code in the shell popup", Helpers());

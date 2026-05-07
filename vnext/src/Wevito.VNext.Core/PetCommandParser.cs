@@ -287,12 +287,19 @@ public sealed class PetCommandParser
             normalized.Contains("record screen") ||
             normalized.Contains("screen recording"))
         {
+            var target = ScreenCaptureTargetResolver.ResolveTarget(commandBody);
+            var targetLabel = target.TargetKind switch
+            {
+                CaptureTargetKind.LastRegion => "last-region",
+                CaptureTargetKind.SelectedRegion => "selected-region",
+                _ => "Wevito-window"
+            };
             return new Classification(
                 TaskKind.ScreenCapture,
                 "screenCapture",
                 ToolRiskLevel.Low,
                 NeedsApproval: false,
-                ExpectedOutput: "No-capture screen capture preview report");
+                ExpectedOutput: $"No-capture {targetLabel} screen capture preview report");
         }
 
         if (normalized.Contains("asset inventory") ||

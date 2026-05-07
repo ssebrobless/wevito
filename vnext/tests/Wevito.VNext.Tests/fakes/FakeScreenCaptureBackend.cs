@@ -29,4 +29,16 @@ internal sealed class FakeScreenCaptureBackend : IScreenCaptureBackend
             RedactionState: "fake backend",
             Warnings: []));
     }
+
+    public Task<ScreenCaptureBackendResult> CaptureRegionAsync(CaptureRegion region, string outputPath, CancellationToken cancellationToken = default)
+    {
+        File.WriteAllBytes(outputPath, OnePixelPng);
+        return Task.FromResult(new ScreenCaptureBackendResult(
+            true,
+            "Selected Region",
+            region,
+            IndicatorVisible: false,
+            RedactionState: "fake region backend",
+            Warnings: []));
+    }
 }

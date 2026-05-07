@@ -449,7 +449,7 @@ public partial class ToolPopupWindow : Window
             TaskCardStatus.Approved => "Next: run the approved safe adapter or wait for its report.",
             TaskCardStatus.Running => "Next: wait for the adapter to finish and write its artifact report.",
             TaskCardStatus.Reviewing when string.Equals(card.ToolFamily, "translateText", StringComparison.OrdinalIgnoreCase) => "Next: open the preview report, then RUN only if you approve sending this text to the configured provider.",
-            TaskCardStatus.Reviewing when string.Equals(card.ToolFamily, "screenCapture", StringComparison.OrdinalIgnoreCase) && CanRunReviewedTask(card) => "Next: open the preview report, then RUN only if you want a Wevito-window screenshot artifact.",
+            TaskCardStatus.Reviewing when string.Equals(card.ToolFamily, "screenCapture", StringComparison.OrdinalIgnoreCase) && CanRunReviewedTask(card) => FormatScreenCaptureRunMessage(card.Intent.RawText),
             TaskCardStatus.Reviewing when string.Equals(card.ToolFamily, "audioAssist", StringComparison.OrdinalIgnoreCase) && CanRunReviewedTask(card) => "Next: open the preview report, then RUN only if you approve changing normal Windows volume/mute state.",
             TaskCardStatus.Reviewing when string.Equals(card.ToolFamily, "audioAssist", StringComparison.OrdinalIgnoreCase) => "Next: open the audio status report. Execution is only for set volume, mute, or unmute requests.",
             TaskCardStatus.Reviewing => "Next: open the artifact/report, then approve, revise, or cancel.",
@@ -473,6 +473,17 @@ public partial class ToolPopupWindow : Window
             PetHelperAvailability.Done => "done",
             PetHelperAvailability.Failed => "failed",
             _ => "available"
+        };
+    }
+
+    private static string FormatScreenCaptureRunMessage(string rawText)
+    {
+        var target = ScreenCaptureTargetResolver.ResolveTarget(rawText);
+        return target.TargetKind switch
+        {
+            CaptureTargetKind.SelectedRegion => "Next: open the preview report, then RUN only if you want to drag-select a screenshot region.",
+            CaptureTargetKind.LastRegion => "Next: open the preview report, then RUN only if you want to recapture the saved last region.",
+            _ => "Next: open the preview report, then RUN only if you want a Wevito-window screenshot artifact."
         };
     }
 
@@ -1382,7 +1393,7 @@ public partial class ToolPopupWindow : Window
         }
 
         if (string.Equals(card.ToolFamily, "screenCapture", StringComparison.OrdinalIgnoreCase) &&
-            IsWevitoWindowCaptureRequest(card.Intent.RawText))
+            IsExecutableScreenCaptureRequest(card.Intent.RawText))
         {
             return true;
         }
@@ -1395,6 +1406,18 @@ public partial class ToolPopupWindow : Window
     {
         return rawText.Contains("wevito", StringComparison.OrdinalIgnoreCase) ||
                rawText.Contains("this window", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool IsExecutableScreenCaptureRequest(string rawText)
+    {
+        return IsWevitoWindowCaptureRequest(rawText) ||
+               IsRegionCaptureRequest(rawText);
+    }
+
+    private static bool IsRegionCaptureRequest(string rawText)
+    {
+        var target = ScreenCaptureTargetResolver.ResolveTarget(rawText);
+        return target.TargetKind is CaptureTargetKind.SelectedRegion or CaptureTargetKind.LastRegion;
     }
 
     private static bool IsExecutableAudioAssistRequest(string rawText)

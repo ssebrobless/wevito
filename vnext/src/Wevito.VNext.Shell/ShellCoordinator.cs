@@ -34,6 +34,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private readonly TranslationExecutionAdapter _translationExecutionAdapter = new();
     private readonly AudioAssistExecutionAdapter _audioAssistExecutionAdapter = new();
     private readonly ScreenCaptureExecutionAdapter _screenCaptureExecutionAdapter;
+    private readonly RegionSelectionStore _regionSelectionStore = new();
     private readonly DispatcherTimer _tickTimer;
     private readonly bool _devToolsEnabled = BrokerProcessManager.IsDevelopmentBuild();
 
@@ -885,7 +886,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
 
         if (card.Intent.TaskKind == TaskKind.ScreenCapture &&
             string.Equals(card.ToolFamily, "screenCapture", StringComparison.OrdinalIgnoreCase) &&
-            IsWevitoWindowCaptureRequest(card.Intent.RawText))
+            IsExecutableScreenCaptureRequest(card.Intent.RawText))
         {
             return true;
         }
@@ -904,7 +905,18 @@ internal sealed class ShellCoordinator : IAsyncDisposable
 
         if (string.Equals(card.ToolFamily, "screenCapture", StringComparison.OrdinalIgnoreCase))
         {
-            return await _screenCaptureExecutionAdapter.ExecuteAsync(request, timestamp);
+            var region = ResolveScreenCaptureRegion(card.Intent.RawText);
+            if (region.Status == ScreenCaptureRegionStatus.Cancelled)
+            {
+                return BuildBlockedScreenCaptureResult(request, "Selected-region capture was cancelled.", timestamp);
+            }
+
+            if (region.Status == ScreenCaptureRegionStatus.MissingLastRegion)
+            {
+                return BuildBlockedScreenCaptureResult(request, "No last screenshot region has been saved yet.", timestamp);
+            }
+
+            return await _screenCaptureExecutionAdapter.ExecuteAsync(request, timestamp, region.Region);
         }
 
         return _audioAssistExecutionAdapter.Execute(request, timestamp);
@@ -922,6 +934,56 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     {
         return rawText.Contains("wevito", StringComparison.OrdinalIgnoreCase) ||
                rawText.Contains("this window", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private ScreenCaptureRegionResolution ResolveScreenCaptureRegion(string rawText)
+    {
+        var target = ScreenCaptureTargetResolver.ResolveTarget(rawText);
+        if (target.TargetKind == CaptureTargetKind.SelectedRegion)
+        {
+            var selected = RegionPickerWindow.Pick(_homeWindow);
+            if (selected is null)
+            {
+                return new ScreenCaptureRegionResolution(ScreenCaptureRegionStatus.Cancelled, null);
+            }
+
+            _regionSelectionStore.Save(selected);
+            return new ScreenCaptureRegionResolution(ScreenCaptureRegionStatus.Ready, selected);
+        }
+
+        if (target.TargetKind == CaptureTargetKind.LastRegion)
+        {
+            return _regionSelectionStore.TryLoad(out var lastRegion)
+                ? new ScreenCaptureRegionResolution(ScreenCaptureRegionStatus.Ready, lastRegion)
+                : new ScreenCaptureRegionResolution(ScreenCaptureRegionStatus.MissingLastRegion, null);
+        }
+
+        return new ScreenCaptureRegionResolution(ScreenCaptureRegionStatus.Ready, null);
+    }
+
+    private static TaskAdapterResult BuildBlockedScreenCaptureResult(TaskAdapterRequest request, string reason, DateTimeOffset timestamp)
+    {
+        return new TaskAdapterResult(
+            request.TaskCardId,
+            "screenCapture",
+            TaskAdapterResultStatus.Blocked,
+            DidMutate: false,
+            ReadPaths: [],
+            WrittenPaths: [],
+            BlockReason: reason,
+            CompletedAtUtc: timestamp);
+    }
+
+    private static bool IsExecutableScreenCaptureRequest(string rawText)
+    {
+        return IsWevitoWindowCaptureRequest(rawText) ||
+               IsRegionCaptureRequest(rawText);
+    }
+
+    private static bool IsRegionCaptureRequest(string rawText)
+    {
+        var target = ScreenCaptureTargetResolver.ResolveTarget(rawText);
+        return target.TargetKind is CaptureTargetKind.SelectedRegion or CaptureTargetKind.LastRegion;
     }
 
     private static IReadOnlyList<string> ResolvePreviewApprovedRoots(string toolFamily)
@@ -2140,4 +2202,15 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         JsonElement? FacingDirection,
         string? EnvironmentId,
         string? Name);
+
+    private sealed record ScreenCaptureRegionResolution(
+        ScreenCaptureRegionStatus Status,
+        CaptureRegion? Region);
+
+    private enum ScreenCaptureRegionStatus
+    {
+        Ready,
+        Cancelled,
+        MissingLastRegion
+    }
 }
