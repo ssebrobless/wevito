@@ -183,6 +183,7 @@ public enum TranslationProviderKind
 
 public enum TranslationProviderAvailability
 {
+    Available,
     Configured,
     MissingCredentials,
     MissingEndpoint,
@@ -542,7 +543,10 @@ public sealed record TranslationProviderStatus(
     TranslationProviderAvailability Availability,
     bool SupportsGlossary,
     bool SupportsSelfHosted,
-    string Detail);
+    string Detail,
+    bool IsDefault = false,
+    bool IsUserSelected = false,
+    string ConsentSummary = "");
 
 public sealed record TranslationGlossaryEntry(
     string Source,
