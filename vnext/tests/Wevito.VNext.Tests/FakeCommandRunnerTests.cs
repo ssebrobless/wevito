@@ -32,6 +32,8 @@ public sealed class FakeCommandRunnerTests
         Assert.True(File.Exists(result.StdoutPath));
         Assert.True(File.Exists(result.StderrPath));
         Assert.True(File.Exists(result.MergedLogPath));
+        Assert.True(File.Exists(result.ManifestPath));
+        Assert.False(result.MutationDetected);
         Assert.Contains("FAKE RUN: dotnet build", File.ReadAllText(result.StdoutPath));
         Assert.Contains("did not start a process", result.Summary);
     }
