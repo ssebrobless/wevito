@@ -1414,6 +1414,12 @@ public partial class ToolPopupWindow : Window
             return true;
         }
 
+        if (string.Equals(card.ToolFamily, "buildProof", StringComparison.OrdinalIgnoreCase) &&
+            card.Intent.TaskKind == TaskKind.BuildProof)
+        {
+            return true;
+        }
+
         return string.Equals(card.ToolFamily, "audioAssist", StringComparison.OrdinalIgnoreCase) &&
                IsExecutableAudioAssistRequest(card.Intent.RawText);
     }
