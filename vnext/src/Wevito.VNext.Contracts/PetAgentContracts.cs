@@ -22,6 +22,14 @@ public enum PetHelperAvailability
     Failed
 }
 
+public enum HelperPetState
+{
+    Available,
+    Drafting,
+    Reviewing,
+    Blocked
+}
+
 public enum TaskIntentTargetMode
 {
     ExplicitPetName,
@@ -224,6 +232,14 @@ public sealed record PetHelperProfile(
     Guid? CurrentTaskCardId = null,
     IReadOnlyList<string>? AllowedToolFamilies = null,
     IReadOnlyDictionary<string, string>? PreferenceSnapshot = null);
+
+public sealed record HelperPet(
+    Guid Id,
+    string Name,
+    string Species,
+    PetHelperRole Role,
+    HelperPetState State = HelperPetState.Available,
+    Guid? CurrentTaskId = null);
 
 public static class PetAgentContractLimits
 {
