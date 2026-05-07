@@ -91,6 +91,7 @@ public partial class ToolPopupWindow : Window
         ActionPanel.Visibility = showingAction ? Visibility.Visible : Visibility.Collapsed;
         SettingsPanel.Visibility = showingSettings ? Visibility.Visible : Visibility.Collapsed;
         PetCommandPanel.Visibility = showingPetCommand ? Visibility.Visible : Visibility.Collapsed;
+        PetTaskReportOnlyBadge.Visibility = showingPetCommand ? Visibility.Visible : Visibility.Collapsed;
         DevPanel.Visibility = showingDev ? Visibility.Visible : Visibility.Collapsed;
         SettingsSaveButton.Visibility = showingSettings ? Visibility.Visible : Visibility.Collapsed;
         SettingsDevButton.Visibility = showingSettings && devToolsEnabled ? Visibility.Visible : Visibility.Collapsed;
@@ -301,6 +302,7 @@ public partial class ToolPopupWindow : Window
         {
             PetCommandResultPanel.Visibility = Visibility.Collapsed;
             PetTaskNextActionText.Text = "Next: prepare a task, then preview a report before anything can run.";
+            PetTaskResultPathText.Text = "Result: preview report path appears here.";
             return;
         }
 
@@ -314,6 +316,7 @@ public partial class ToolPopupWindow : Window
             : $"Policy: {state.LastPolicyDecision.Status} ({state.LastPolicyDecision.RiskLevel})";
         PetCommandTimelineText.Text = $"Latest: {card.Timeline?.LastOrDefault() ?? "draft_created"}";
         PetTaskNextActionText.Text = FormatNextAction(card);
+        PetTaskResultPathText.Text = FormatResultPath(card);
     }
 
     private static string FormatTaskQueue(IReadOnlyList<TaskCard>? cards)
@@ -363,7 +366,7 @@ public partial class ToolPopupWindow : Window
             lines.Add($"+{snapshots.Count - lines.Count} more pet snapshot(s)");
         }
 
-        return $"Wellbeing:\n{string.Join("\n", lines)}";
+        return $"Wellbeing: {string.Join(" / ", lines)}";
     }
 
     private void RenderPetTaskQueue(IReadOnlyList<TaskCard>? cards, Guid? selectedCardId)
@@ -436,6 +439,27 @@ public partial class ToolPopupWindow : Window
             TaskCardStatus.Done => "Next: review the result artifact before starting another task.",
             TaskCardStatus.Failed => "Next: inspect the failure artifact and revise the task.",
             _ => $"Next: review status {card.Status} before continuing."
+        };
+    }
+
+    private static string FormatResultPath(TaskCard card)
+    {
+        if (!string.IsNullOrWhiteSpace(card.AuditLogPath))
+        {
+            return $"Report: {card.AuditLogPath}";
+        }
+
+        if (!string.IsNullOrWhiteSpace(card.ResultSummary))
+        {
+            return $"Result: {card.ResultSummary}";
+        }
+
+        return card.Status switch
+        {
+            TaskCardStatus.Draft => "Result: no report yet. Preview will create a report-only artifact.",
+            TaskCardStatus.Blocked => "Result: blocked before a report could be written.",
+            TaskCardStatus.Cancelled => "Result: task cancelled.",
+            _ => "Result: waiting for a report-only artifact."
         };
     }
 
