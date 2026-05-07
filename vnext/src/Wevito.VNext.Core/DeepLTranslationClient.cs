@@ -26,6 +26,7 @@ public sealed class DeepLTranslationClient
         string text,
         string targetLanguageCode,
         string sourceLanguageCode = "",
+        string glossaryId = "",
         CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(text))
@@ -53,6 +54,10 @@ public sealed class DeepLTranslationClient
         {
             payload["source_lang"] = sourceLanguageCode;
         }
+        if (!string.IsNullOrWhiteSpace(glossaryId))
+        {
+            payload["glossary_id"] = glossaryId;
+        }
 
         using var message = new HttpRequestMessage(HttpMethod.Post, _endpoint);
         message.Headers.Authorization = new AuthenticationHeaderValue("DeepL-Auth-Key", _authKey);
@@ -78,6 +83,54 @@ public sealed class DeepLTranslationClient
             parsed?.BilledCharacters);
     }
 
+    public async Task<string> CreateGlossaryAsync(
+        string name,
+        string sourceLanguageCode,
+        string targetLanguageCode,
+        IReadOnlyList<TranslationGlossaryEntry> entries,
+        CancellationToken cancellationToken = default)
+    {
+        if (entries.Count == 0)
+        {
+            throw new InvalidOperationException("At least one glossary entry is required.");
+        }
+
+        var glossaryEndpoint = new Uri(_endpoint.GetLeftPart(UriPartial.Authority) + "/v3/glossaries");
+        var payload = new
+        {
+            name,
+            dictionaries = new[]
+            {
+                new
+                {
+                    source_lang = sourceLanguageCode.ToLowerInvariant(),
+                    target_lang = targetLanguageCode.ToLowerInvariant(),
+                    entries = TranslationGlossaryService.ToDeepLTsv(entries),
+                    entries_format = "tsv"
+                }
+            }
+        };
+
+        using var message = new HttpRequestMessage(HttpMethod.Post, glossaryEndpoint);
+        message.Headers.Authorization = new AuthenticationHeaderValue("DeepL-Auth-Key", _authKey);
+        message.Content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
+
+        using var response = await _httpClient.SendAsync(message, cancellationToken).ConfigureAwait(false);
+        var body = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new InvalidOperationException($"DeepL glossary creation failed with HTTP {(int)response.StatusCode}: {body}");
+        }
+
+        var parsed = JsonSerializer.Deserialize<DeepLGlossaryEnvelope>(body, JsonDefaults.Options);
+        if (string.IsNullOrWhiteSpace(parsed?.GlossaryId))
+        {
+            throw new InvalidOperationException("DeepL glossary response did not include a glossary id.");
+        }
+
+        return parsed.GlossaryId;
+    }
+
     public static Uri ResolveDefaultEndpoint(string authKey)
     {
         var host = authKey.Trim().EndsWith(":fx", StringComparison.OrdinalIgnoreCase)
@@ -97,6 +150,10 @@ public sealed class DeepLTranslationClient
         string? DetectedSourceLanguage,
         [property: JsonPropertyName("text")]
         string? Text);
+
+    private sealed record DeepLGlossaryEnvelope(
+        [property: JsonPropertyName("glossary_id")]
+        string? GlossaryId);
 }
 
 public sealed record DeepLTranslationResponse(

@@ -8,10 +8,14 @@ public sealed class TranslationPreviewAdapter
 {
     private const string ToolFamily = "translateText";
     private readonly TranslationProviderRouter _providerRouter;
+    private readonly TranslationGlossaryService _glossaryService;
 
-    public TranslationPreviewAdapter(TranslationProviderRouter? providerRouter = null)
+    public TranslationPreviewAdapter(
+        TranslationProviderRouter? providerRouter = null,
+        TranslationGlossaryService? glossaryService = null)
     {
         _providerRouter = providerRouter ?? new TranslationProviderRouter();
+        _glossaryService = glossaryService ?? new TranslationGlossaryService();
     }
 
     public TaskAdapterResult BuildPreview(TaskAdapterRequest request, DateTimeOffset? nowUtc = null)
@@ -42,6 +46,7 @@ public sealed class TranslationPreviewAdapter
         var parse = ParseRequest(request.Intent.RawText);
         var providers = _providerRouter.GetProviderStatuses();
         var preferred = _providerRouter.SelectPreferredProvider(providers);
+        var glossaryEntries = _glossaryService.FindApplicableEntries(parse.Text, parse.SourceLanguage, parse.TargetLanguage);
         var report = new TranslationPreviewReport(
             "1",
             request.TaskCardId,
@@ -52,6 +57,7 @@ public sealed class TranslationPreviewAdapter
             preferred.Provider.ToString(),
             parse.Text.Length,
             providers,
+            glossaryEntries,
             BuildSafetyNotes(preferred),
             DidCallProvider: false,
             DidMutate: false,
@@ -149,6 +155,22 @@ public sealed class TranslationPreviewAdapter
             "- Provider called: false",
             "- Did mutate files: false",
             "",
+            "## Applicable Glossary Entries",
+            ""
+        };
+
+        if (report.ApplicableGlossaryEntries.Count == 0)
+        {
+            lines.Add("- None.");
+        }
+        else
+        {
+            lines.AddRange(report.ApplicableGlossaryEntries.Select(entry =>
+                $"- `{entry.Source}` -> `{entry.Target}` ({(entry.CaseSensitive ? "case-sensitive" : "case-insensitive")}): {entry.Notes}"));
+        }
+
+        lines.AddRange(
+        [
             "## Text Preview",
             "",
             "```text",
@@ -157,7 +179,7 @@ public sealed class TranslationPreviewAdapter
             "",
             "## Provider Status",
             ""
-        };
+        ]);
 
         lines.AddRange(report.Providers.Select(provider => $"- {provider.Provider}: {provider.Availability} - {provider.Detail}"));
         lines.Add("");

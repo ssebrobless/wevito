@@ -544,6 +544,12 @@ public sealed record TranslationProviderStatus(
     bool SupportsSelfHosted,
     string Detail);
 
+public sealed record TranslationGlossaryEntry(
+    string Source,
+    string Target,
+    bool CaseSensitive,
+    string Notes);
+
 public sealed record TranslationPreviewReport(
     string SchemaVersion,
     Guid TaskCardId,
@@ -554,6 +560,7 @@ public sealed record TranslationPreviewReport(
     string PreferredProvider,
     int CharacterCount,
     IReadOnlyList<TranslationProviderStatus> Providers,
+    IReadOnlyList<TranslationGlossaryEntry> ApplicableGlossaryEntries,
     IReadOnlyList<string> SafetyNotes,
     bool DidCallProvider,
     bool DidMutate,
@@ -571,6 +578,9 @@ public sealed record TranslationExecutionReport(
     string DetectedSourceLanguage,
     int CharacterCount,
     int? BilledCharacters,
+    string GlossaryMode,
+    IReadOnlyList<TranslationGlossaryEntry> AppliedGlossaryEntries,
+    IReadOnlyList<string> QaWarnings,
     IReadOnlyList<string> SafetyNotes,
     bool DidCallProvider,
     bool DidMutate,
