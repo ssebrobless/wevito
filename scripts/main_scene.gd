@@ -145,6 +145,7 @@ var native_focus_state: Dictionary = {}
 var native_focus_state_updated_at_ms: int = -1
 var native_focus_backend: String = ""
 var debug_last_pinned_dispatch: Dictionary = {}
+var habitat_proof_mode: bool = false
 
 const AUTOMATION_ENV := "WEVITO_AUTOMATION"
 const AUTOMATION_SCENARIO_ENV := "WEVITO_AUTOMATION_SCENARIO"
@@ -1612,24 +1613,63 @@ func _run_automation_suite():
 			window_has_focus = true
 			_apply_runtime_settings()
 			_apply_window_mode_layout(true)
+			get_window().size = Vector2i(520, 480)
 			close_all_overlays()
+			habitat_proof_mode = true
+			for extra_index in range(game_manager.get_pet_count() - 1, 0, -1):
+				var extra_pet = game_manager.pets[extra_index]
+				if extra_pet:
+					extra_pet.queue_free()
+				game_manager.pets.remove_at(extra_index)
+				game_manager.pet_datas.remove_at(extra_index)
+			game_manager.active_pet_index = 0
+			habitat_pet = game_manager.get_active_pet()
+			active_pd = game_manager.get_active_pet_data()
 			active_pd.animal_type = habitat_mirror_species
 			active_pd.gender = "female"
 			active_pd.egg_color = "blue"
-			active_pd.stage = 3
+			active_pd.stage = 1
+			active_pd.is_hatching = false
 			active_pd.is_sleeping = false
 			habitat_pet.setup(active_pd)
+			habitat_pet.z_index = Z_PET_BODY
+			habitat_pet.current_animation = "idle"
+			habitat_pet.animation_frame = 0
+			habitat_pet.update_sprite()
+			if habitat_pet.sprite and habitat_pet.sprite.texture == null:
+				var proof_frame = habitat_pet._load_texture("res://sprites_runtime/%s/baby/female/blue/idle_00.png" % habitat_mirror_species)
+				if proof_frame:
+					habitat_pet.sprite.texture = proof_frame
+			if habitat_pet.sprite:
+				habitat_pet.sprite.scale *= 0.45
 			game_manager.set_active_pet(game_manager.active_pet_index)
 			update_environment_background()
 			_recall_all_pets_home(0.0, false)
+			_set_all_ui_controls_visible(false)
+			_set_environment_stages_visible(true)
 			await get_tree().process_frame
 			await get_tree().process_frame
-			habitat_pet.position = get_pet_home_position_for_node(habitat_pet, "home")
+			var pet_stage_position = get_pet_home_position_for_node(habitat_pet, "home")
+			if habitat_pet.sprite and habitat_pet.sprite.texture:
+				pet_stage_position.y -= habitat_pet.sprite.texture.get_size().y * habitat_pet.sprite.scale.y * 0.5
+			habitat_pet.position = pet_stage_position
 			habitat_pet.pet_data.position = habitat_pet.position
 			habitat_pet.pet_data.target_position = habitat_pet.position
 			await get_tree().process_frame
 			screenshot_ok = await _automation_capture_screenshot(screenshot_path)
-			screenshot_details += " saved=%s position=%s" % [str(screenshot_ok), str(habitat_pet.position)]
+			var texture_size = Vector2.ZERO
+			var texture_path = ""
+			if habitat_pet.sprite and habitat_pet.sprite.texture:
+				texture_size = habitat_pet.sprite.texture.get_size()
+				texture_path = habitat_pet.sprite.texture.get_path()
+			screenshot_details += " saved=%s position=%s z=%d visible=%s texture=%s size=%s" % [
+				str(screenshot_ok),
+				str(habitat_pet.position),
+				habitat_pet.z_index,
+				str(habitat_pet.visible),
+				texture_path,
+				str(texture_size)
+			]
 		else:
 			screenshot_details += " allowed=%s active_pet=%s" % [str(species_allowed), str(habitat_pet != null)]
 		_automation_assert(checks, "c_phase_6_5_habitat_mirror_screenshot", screenshot_ok, screenshot_details)
@@ -2419,6 +2459,11 @@ func _ensure_environment_stage_nodes(required_count: int):
 func _get_environment_slot_rects(window_width: float, window_height: float, count: int) -> Array[Rect2]:
 	var slots: Array[Rect2] = []
 	var c = max(1, count)
+	if habitat_proof_mode:
+		var proof_w = clamp(window_width * 0.78, 248.0, 420.0)
+		var proof_h = clamp(window_height * 0.62, 220.0, 300.0)
+		slots.append(Rect2(Vector2((window_width - proof_w) * 0.5, (window_height - proof_h) * 0.5), Vector2(proof_w, proof_h)))
+		return slots
 	if monitor_roam_active and window_width >= 900.0:
 		var panel = _get_overlay_panel_rect(window_width, window_height, c)
 		var desktop_stage_w = clamp(window_width * 0.06, 120.0, 180.0)
@@ -2616,7 +2661,7 @@ func _apply_environment_layout(window_height: int):
 			stage_mid.size = Vector2(stage_w, max(0.0, ground_top - mid_top))
 		if stage_ground:
 			stage_ground.position = Vector2(x, ground_top)
-			stage_ground.size = Vector2(stage_w, max(0.0, h - ground_top))
+			stage_ground.size = Vector2(stage_w, max(0.0, (stage_top + stage_h) - ground_top))
 		if stage_decor:
 			var decor_w = max(48.0, stage_w - 10.0)
 			var decor_h = max(48.0, stage_h * 0.72)
