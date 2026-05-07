@@ -2,11 +2,14 @@ param(
     [ValidateSet("Debug", "Release")]
     [string]$Configuration = "Debug",
     [switch]$SkipBuild,
+    [ValidateSet("", "localDocs", "spriteAudit", "assetInventory", "petState", "codeReview", "codePatchPlan", "buildProof", "translateText", "audioAssist", "screenCapture")]
+    [string]$TaskKind = "",
     [string]$TaskText = "review goose baby female blue sprites",
     [string]$ExpectedToolFamily = "spriteAudit",
     [switch]$ApproveBeforePreview,
     [switch]$ExpectExecuteEnabledAfterPreview,
     [switch]$SkipSpriteHashCheck,
+    [string]$LayoutScreenshotPath = "",
     [int]$StartupDelayMs = 2500
 )
 
@@ -21,6 +24,23 @@ $DataDir = Join-Path $OutputDir "data"
 $TraceDir = Join-Path $OutputDir "trace"
 $TargetRow = Join-Path $ProjectRoot "sprites_runtime\goose\baby\female\blue"
 $BuildTargetRow = Join-Path (Split-Path -Parent $BuildShellExe) "sprites_runtime\goose\baby\female\blue"
+
+if (-not [string]::IsNullOrWhiteSpace($TaskKind)) {
+    $ExpectedToolFamily = $TaskKind
+    $TaskText = switch ($TaskKind) {
+        "localDocs" { "summarize the local docs" }
+        "spriteAudit" { "review goose baby female blue sprites" }
+        "assetInventory" { "inventory assets in sprites_runtime" }
+        "petState" { "review pet state" }
+        "codeReview" { "review the code in Wevito.VNext.Core" }
+        "codePatchPlan" { "plan a code fix in vnext" }
+        "buildProof" { "run a build proof" }
+        "translateText" { "translate Hello goose to Spanish" }
+        "audioAssist" { "boost my PC volume" }
+        "screenCapture" { "screenshot the Wevito window" }
+        default { $TaskText }
+    }
+}
 
 if (-not $SkipBuild) {
     dotnet build (Join-Path $ProjectRoot "vnext\src\Wevito.VNext.Shell\Wevito.VNext.Shell.csproj") --configuration $Configuration
@@ -43,6 +63,9 @@ New-Item -ItemType Directory -Force -Path $TraceDir | Out-Null
 
 Add-Type -AssemblyName UIAutomationClient
 Add-Type -AssemblyName UIAutomationTypes
+if (-not [string]::IsNullOrWhiteSpace($LayoutScreenshotPath)) {
+    Add-Type -AssemblyName System.Drawing
+}
 
 Add-Type @"
 using System;
@@ -246,6 +269,39 @@ function Set-WindowForeground {
     }
 }
 
+function Save-WindowScreenshot {
+    param(
+        $WindowInfo,
+        [string]$Path
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Path)) {
+        return
+    }
+
+    $fullPath = [System.IO.Path]::GetFullPath($Path)
+    $parent = Split-Path -Parent $fullPath
+    if (-not [string]::IsNullOrWhiteSpace($parent)) {
+        New-Item -ItemType Directory -Force -Path $parent | Out-Null
+    }
+
+    $bitmap = [System.Drawing.Bitmap]::new($WindowInfo.Width, $WindowInfo.Height)
+    $graphics = [System.Drawing.Graphics]::FromImage($bitmap)
+    try {
+        $graphics.CopyFromScreen(
+            $WindowInfo.Left,
+            $WindowInfo.Top,
+            0,
+            0,
+            [System.Drawing.Size]::new($WindowInfo.Width, $WindowInfo.Height))
+        $bitmap.Save($fullPath, [System.Drawing.Imaging.ImageFormat]::Png)
+    }
+    finally {
+        $graphics.Dispose()
+        $bitmap.Dispose()
+    }
+}
+
 function Get-AllTargetHashes {
     $rows = @($TargetRow)
     if ((Test-Path $BuildTargetRow) -and -not [string]::Equals($BuildTargetRow, $TargetRow, [System.StringComparison]::OrdinalIgnoreCase)) {
@@ -379,6 +435,12 @@ try {
 
     $toolWindow = Get-ToolWindowInfo -ProcessId $shellProcess.Id -Title "Wevito PET TASKS"
     Set-WindowForeground -WindowInfo $toolWindow
+    Save-WindowScreenshot -WindowInfo $toolWindow -Path $LayoutScreenshotPath
+    $reportOnlyElement = Get-AutomationElement -Handle $toolWindow.Handle -AutomationId "PetTaskReportOnlyBadge" -ControlType ([System.Windows.Automation.ControlType]::Text)
+    if ($null -eq $reportOnlyElement -or $reportOnlyElement.Current.Name.IndexOf("REPORT ONLY", [System.StringComparison]::Ordinal) -lt 0) {
+        throw "Missing PET TASKS REPORT ONLY badge."
+    }
+
     $wellbeingElement = Get-AutomationElement -Handle $toolWindow.Handle -AutomationId "PetWellbeingSnapshotText" -ControlType ([System.Windows.Automation.ControlType]::Text)
     if ($null -eq $wellbeingElement) {
         throw "Missing PET TASKS wellbeing snapshot text."
@@ -418,6 +480,24 @@ try {
         throw "PET TASKS next-action text was not populated. text='$nextActionText'"
     }
 
+    $resultPathElement = Get-AutomationElement -Handle $toolWindow.Handle -AutomationId "PetTaskResultPathText" -ControlType ([System.Windows.Automation.ControlType]::Text)
+    if ($null -eq $resultPathElement) {
+        throw "Missing PET TASKS result path text."
+    }
+    $resultPathText = $resultPathElement.Current.Name
+    if ([string]::IsNullOrWhiteSpace($resultPathText) -or
+        ($resultPathText.IndexOf("Result:", [System.StringComparison]::Ordinal) -lt 0 -and
+         $resultPathText.IndexOf("Report:", [System.StringComparison]::Ordinal) -lt 0)) {
+        throw "PET TASKS result path text was not populated. text='$resultPathText'"
+    }
+
+    foreach ($artifactButtonId in @("PetTaskOpenReportButton", "PetTaskCopyPathButton", "PetTaskOpenFolderButton")) {
+        $artifactButton = Get-AutomationElement -Handle $toolWindow.Handle -AutomationId $artifactButtonId -ControlType ([System.Windows.Automation.ControlType]::Button)
+        if ($null -eq $artifactButton) {
+            throw "Missing PET TASKS artifact button '$artifactButtonId'."
+        }
+    }
+
     Set-TextBoxValue -WindowInfo $toolWindow -AutomationId "PetCommandTextBox" -Value $TaskText
     Invoke-Button -WindowInfo $toolWindow -AutomationId "PetCommandSubmitButton"
     if ($ApproveBeforePreview) {
@@ -433,6 +513,17 @@ try {
     if ([string]::IsNullOrWhiteSpace($postPreviewNextActionText) -or
         $postPreviewNextActionText.IndexOf("Next:", [System.StringComparison]::Ordinal) -lt 0) {
         throw "PET TASKS post-preview next-action text was not populated. text='$postPreviewNextActionText'"
+    }
+
+    $postPreviewResultPathElement = Get-AutomationElement -Handle $toolWindow.Handle -AutomationId "PetTaskResultPathText" -ControlType ([System.Windows.Automation.ControlType]::Text)
+    if ($null -eq $postPreviewResultPathElement) {
+        throw "Missing PET TASKS post-preview result path text."
+    }
+    $postPreviewResultPathText = $postPreviewResultPathElement.Current.Name
+    if ([string]::IsNullOrWhiteSpace($postPreviewResultPathText) -or
+        ($postPreviewResultPathText.IndexOf("Result:", [System.StringComparison]::Ordinal) -lt 0 -and
+         $postPreviewResultPathText.IndexOf("Report:", [System.StringComparison]::Ordinal) -lt 0)) {
+        throw "PET TASKS post-preview result path text was not populated. text='$postPreviewResultPathText'"
     }
 
     $executeEnabledAfterPreview = $null
@@ -480,6 +571,7 @@ try {
     $summary = [ordered]@{
         captured_at = (Get-Date).ToString("s")
         output_dir = $OutputDir
+        layout_screenshot_path = if ([string]::IsNullOrWhiteSpace($LayoutScreenshotPath)) { "" } else { [System.IO.Path]::GetFullPath($LayoutScreenshotPath) }
         trace = $shellTracePath
         audit_path = $auditPath
         task_text = $TaskText
@@ -491,6 +583,8 @@ try {
         capability_text = $capabilityText
         next_action_text = $nextActionText
         post_preview_next_action_text = $postPreviewNextActionText
+        result_path_text = $resultPathText
+        post_preview_result_path_text = $postPreviewResultPathText
         target_rows_checked = @($beforeHashes | ForEach-Object { $_.row })
         target_hash_check_skipped = [bool]$SkipSpriteHashCheck
         target_hashes_unchanged = if ($SkipSpriteHashCheck) { $null } else { $true }
