@@ -80,3 +80,37 @@ public sealed record ApplyProofManifest(
     string ProofReportPath = "",
     DateTimeOffset CreatedAtUtc = default,
     DateTimeOffset UpdatedAtUtc = default);
+
+public enum SpriteWorkflowRootKind
+{
+    Runtime,
+    Authored,
+    AuthoredVerified,
+    Candidate,
+    Proof
+}
+
+public sealed record SpriteWorkflowFrameEntry(
+    SpriteWorkflowRootKind RootKind,
+    string FrameId,
+    string RelativePath,
+    string AbsolutePath,
+    string Blake3,
+    SpriteFrameGeometry Geometry);
+
+public sealed record SpriteWorkflowRowEvidence(
+    SpriteWorkflowRootKind RootKind,
+    string RootPath,
+    IReadOnlyList<SpriteWorkflowFrameEntry> Frames);
+
+public sealed record SpriteWorkflowQueueRow(
+    SpriteRowKey Key,
+    string RowId,
+    IReadOnlyList<SpriteWorkflowRowEvidence> Evidence,
+    IReadOnlyList<string> Findings);
+
+public sealed record SpriteWorkflowManifestSnapshot(
+    string SchemaVersion,
+    string RepoRoot,
+    IReadOnlyList<SpriteWorkflowQueueRow> Rows,
+    DateTimeOffset GeneratedAtUtc);
