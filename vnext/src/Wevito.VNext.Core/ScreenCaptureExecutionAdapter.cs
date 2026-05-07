@@ -17,6 +17,7 @@ public sealed class ScreenCaptureExecutionAdapter
     public async Task<TaskAdapterResult> ExecuteAsync(
         TaskAdapterRequest request,
         DateTimeOffset? nowUtc = null,
+        CaptureRegion? region = null,
         CancellationToken cancellationToken = default)
     {
         var timestamp = nowUtc ?? DateTimeOffset.UtcNow;
@@ -37,7 +38,13 @@ public sealed class ScreenCaptureExecutionAdapter
             return Block(request, "Screen capture execution requires an approval-gated read-only policy.", timestamp);
         }
 
-        var captureRequest = BuildCaptureRequest(request, timestamp);
+        var captureRequest = BuildCaptureRequest(request, timestamp, region);
+        if (captureRequest.TargetKind is CaptureTargetKind.SelectedRegion or CaptureTargetKind.LastRegion &&
+            captureRequest.Region is null)
+        {
+            return Block(request, $"Screen capture target {captureRequest.TargetKind} requires a selected region.", timestamp);
+        }
+
         var policyDecision = new CapturePolicyEvaluator().Evaluate(captureRequest);
         if (policyDecision.Status != ToolPolicyDecisionStatus.ApprovalRequired ||
             policyDecision.RiskLevel != ToolRiskLevel.Medium ||
@@ -60,7 +67,14 @@ public sealed class ScreenCaptureExecutionAdapter
         ScreenCaptureBackendResult backendResult;
         try
         {
-            backendResult = await _backend.CaptureWevitoWindowAsync(screenshotPath, cancellationToken).ConfigureAwait(false);
+            backendResult = captureRequest.TargetKind switch
+            {
+                CaptureTargetKind.SelectedRegion or CaptureTargetKind.LastRegion when captureRequest.Region is { } selectedRegion =>
+                    await _backend.CaptureRegionAsync(selectedRegion, screenshotPath, cancellationToken).ConfigureAwait(false),
+                CaptureTargetKind.WevitoWindow =>
+                    await _backend.CaptureWevitoWindowAsync(screenshotPath, cancellationToken).ConfigureAwait(false),
+                _ => throw new NotSupportedException($"Screen capture target {captureRequest.TargetKind} is not executable in this phase.")
+            };
         }
         catch (Exception exception) when (exception is InvalidOperationException or NotSupportedException or IOException)
         {
@@ -107,20 +121,13 @@ public sealed class ScreenCaptureExecutionAdapter
             CompletedAtUtc: timestamp);
     }
 
-    private static CaptureRequest BuildCaptureRequest(TaskAdapterRequest request, DateTimeOffset timestamp)
+    private static CaptureRequest BuildCaptureRequest(TaskAdapterRequest request, DateTimeOffset timestamp, CaptureRegion? region)
     {
-        return new CaptureRequest(
-            Guid.NewGuid(),
-            CapturePreset.WevitoWindow,
-            CaptureTargetKind.WevitoWindow,
-            CaptureOutputKind.ScreenshotPng,
-            CapturePrivacyLevel.WevitoOnly,
+        return ScreenCaptureTargetResolver.ResolveRequest(
+            request.Intent.RawText,
             request.TaskCardId,
-            IncludeCursor: false,
-            IncludeOverlayMetadata: true,
-            IsRecording: false,
-            IsExternalShareRequested: false,
-            CreatedAtUtc: timestamp);
+            timestamp,
+            region);
     }
 
     private static string ResolveArtifactRoot(string artifactRoot, DateTimeOffset timestamp)
