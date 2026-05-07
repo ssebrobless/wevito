@@ -26,6 +26,46 @@ public sealed class PetCommandBarServiceTests
     }
 
     [Fact]
+    public void BuildDefaultRoster_UsesStableThreeHelperNamesAndSpecies()
+    {
+        var roster = _service.BuildDefaultRoster();
+
+        Assert.Equal(PetAgentContractLimits.MaxActiveHelpers, roster.Count);
+        Assert.Collection(
+            roster,
+            helper =>
+            {
+                Assert.Equal("Scout", helper.Name);
+                Assert.Equal("frog", helper.Species);
+                Assert.Equal(PetHelperRole.ResearchHelper, helper.Role);
+                Assert.Equal(HelperPetState.Available, helper.State);
+            },
+            helper =>
+            {
+                Assert.Equal("Inspector", helper.Name);
+                Assert.Equal("pigeon", helper.Species);
+                Assert.Equal(PetHelperRole.SpriteReviewHelper, helper.Role);
+            },
+            helper =>
+            {
+                Assert.Equal("Builder", helper.Name);
+                Assert.Equal("rat", helper.Species);
+                Assert.Equal(PetHelperRole.ChecklistHelper, helper.Role);
+            });
+    }
+
+    [Fact]
+    public void AddHelper_RejectsWhenRosterAlreadyHasThreeHelpers()
+    {
+        var roster = _service.BuildDefaultRoster();
+        var extra = new HelperPet(Guid.NewGuid(), "Juniper", "fox", PetHelperRole.ReminderHelper);
+
+        var exception = Assert.Throws<InvalidOperationException>(() => _service.AddHelper(roster, extra));
+
+        Assert.Contains("3 active helper pets", exception.Message);
+    }
+
+    [Fact]
     public void SubmitDraft_AllowsSafeReadOnlyTaskWithoutExecutingIt()
     {
         var state = _service.SubmitDraft(

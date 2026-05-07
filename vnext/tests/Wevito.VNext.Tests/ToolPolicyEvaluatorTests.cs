@@ -81,17 +81,42 @@ public sealed class ToolPolicyEvaluatorTests
         Assert.Equal("Human handoff required.", decision.Reason);
     }
 
+    [Fact]
+    public void Evaluate_DoesNotChangePolicyDecisionByHelperIdentityOrRole()
+    {
+        var policies = new[]
+        {
+            Policy("localDocs", ToolAccessMode.ReadOnly, ToolRiskLevel.Low, ApprovalRequirement.None)
+        };
+        var helperNames = new[] { "Scout", "Inspector", "Builder" };
+
+        var decisions = helperNames
+            .Select(name => _evaluator.Evaluate(
+                Intent("localDocs", TaskKind.SummarizeDocs, targetPetName: name),
+                policies))
+            .ToList();
+
+        Assert.All(decisions, decision =>
+        {
+            Assert.Equal(ToolPolicyDecisionStatus.Allowed, decision.Status);
+            Assert.Equal(ApprovalRequirement.None, decision.ApprovalRequirement);
+            Assert.Equal(ToolRiskLevel.Low, decision.RiskLevel);
+        });
+    }
+
     private static TaskIntent Intent(
         string toolFamily,
         TaskKind taskKind,
         ToolRiskLevel riskLevel = ToolRiskLevel.Low,
         bool needsApproval = false,
-        string refusalReason = "")
+        string refusalReason = "",
+        string targetPetName = "")
     {
         return new TaskIntent(
             Guid.NewGuid(),
             "test command",
             TaskIntentTargetMode.RouteToBestHelper,
+            TargetPetNameSnapshot: targetPetName,
             TaskKind: taskKind,
             RequestedToolFamily: toolFamily,
             RiskLevel: riskLevel,
