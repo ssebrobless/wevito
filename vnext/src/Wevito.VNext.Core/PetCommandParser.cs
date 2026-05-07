@@ -161,14 +161,24 @@ public sealed class PetCommandParser
 
         foreach (var helper in helpers)
         {
-            var prefix = helper.PetNameSnapshot + ",";
-            if (rawText.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+            var commaPrefix = helper.PetNameSnapshot + ",";
+            if (rawText.StartsWith(commaPrefix, StringComparison.OrdinalIgnoreCase))
             {
                 return new TargetResolution(
                     TaskIntentTargetMode.ExplicitPetName,
                     helper,
                     helper.PetNameSnapshot,
-                    rawText[prefix.Length..]);
+                    rawText[commaPrefix.Length..]);
+            }
+
+            var spacePrefix = helper.PetNameSnapshot + " ";
+            if (rawText.StartsWith(spacePrefix, StringComparison.OrdinalIgnoreCase))
+            {
+                return new TargetResolution(
+                    TaskIntentTargetMode.ExplicitPetName,
+                    helper,
+                    helper.PetNameSnapshot,
+                    rawText[spacePrefix.Length..]);
             }
         }
 
@@ -301,6 +311,18 @@ public sealed class PetCommandParser
                 TargetPathsOrAssets: targets.Count == 0 ? null : targets);
         }
 
+        if (normalized.Contains("summarize") || normalized.Contains("summary") || normalized.Contains("docs"))
+        {
+            var targets = ExtractLocalPathTargets(commandBody).ToList();
+            return new Classification(
+                TaskKind.SummarizeDocs,
+                "localDocs",
+                ToolRiskLevel.Low,
+                NeedsApproval: false,
+                ExpectedOutput: "Local document summary",
+                TargetPathsOrAssets: targets.Count == 0 ? null : targets);
+        }
+
         if (normalized.Contains("code review") ||
             normalized.Contains("review code") ||
             normalized.Contains("review the code") ||
@@ -350,18 +372,6 @@ public sealed class PetCommandParser
                 ToolRiskLevel.Low,
                 NeedsApproval: false,
                 ExpectedOutput: "No-mutation sprite review task card",
-                TargetPathsOrAssets: targets.Count == 0 ? null : targets);
-        }
-
-        if (normalized.Contains("summarize") || normalized.Contains("summary") || normalized.Contains("docs"))
-        {
-            var targets = ExtractLocalPathTargets(commandBody).ToList();
-            return new Classification(
-                TaskKind.SummarizeDocs,
-                "localDocs",
-                ToolRiskLevel.Low,
-                NeedsApproval: false,
-                ExpectedOutput: "Local document summary",
                 TargetPathsOrAssets: targets.Count == 0 ? null : targets);
         }
 
