@@ -48,45 +48,45 @@
     "speciesId": "fox",
     "environmentId": "fox",
     "slots": [
-      {"slotId":"primary","role":"primaryAnchor","assetId":"moss_bed","priorityTier":0,"defaultRect":{"left":244,"top":176,"width":112,"height":48},"depthBand":"groundContact","occlusionMode":"bodyOnly","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Placeholder mirroring current hardcoded stage prop."},
-      {"slotId":"interaction","role":"activeInteraction","assetId":"shallow_water_dish","priorityTier":1,"defaultRect":{"left":154,"top":192,"width":70,"height":24},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Placeholder mirroring current hardcoded stage prop."},
-      {"slotId":"decor","role":"optionalDecor","assetId":"leaf_pile","priorityTier":2,"defaultRect":{"left":108,"top":190,"width":56,"height":34},"depthBand":"farProp","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Placeholder mirroring current hardcoded stage prop."}
+      {"slotId":"primary","role":"primaryAnchor","assetId":"log_shelter","priorityTier":0,"defaultRect":{"left":238,"top":156,"width":118,"height":64},"depthBand":"groundContact","occlusionMode":"bodyOnly","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Den Brush shelter anchor; fox should stage beside the log opening without hiding the face."},
+      {"slotId":"interaction","role":"activeInteraction","assetId":"digging_tray","priorityTier":1,"defaultRect":{"left":112,"top":188,"width":72,"height":34},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Digging enrichment object from the recommended mapping table."},
+      {"slotId":"decor","role":"optionalDecor","assetId":"blanket_mat","priorityTier":2,"defaultRect":{"left":188,"top":190,"width":80,"height":30},"depthBand":"farProp","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Soft den bedding, lower priority than the log shelter."}
     ]
   },
   {
     "speciesId": "deer",
     "environmentId": "deer",
     "slots": [
-      {"slotId":"primary","role":"primaryAnchor","assetId":"hay_bed","priorityTier":0,"defaultRect":{"left":282,"top":182,"width":92,"height":42},"depthBand":"groundContact","occlusionMode":"bodyOnly","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Placeholder mirroring current hardcoded stage prop."},
-      {"slotId":"interaction","role":"activeInteraction","assetId":"shallow_water_dish","priorityTier":1,"defaultRect":{"left":174,"top":192,"width":72,"height":26},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Placeholder mirroring current hardcoded stage prop."},
-      {"slotId":"decor","role":"optionalDecor","assetId":"leaf_pile","priorityTier":2,"defaultRect":{"left":108,"top":190,"width":58,"height":36},"depthBand":"farProp","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Placeholder mirroring current hardcoded stage prop."}
+      {"slotId":"primary","role":"primaryAnchor","assetId":"hay_bed","priorityTier":0,"defaultRect":{"left":270,"top":180,"width":100,"height":42},"depthBand":"groundContact","occlusionMode":"bodyOnly","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Meadow Edge bedding anchor; deer stages near the hay without covering the body silhouette."},
+      {"slotId":"interaction","role":"activeInteraction","assetId":"clover_bunch","priorityTier":1,"defaultRect":{"left":156,"top":192,"width":74,"height":26},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Graze/snack object from the recommended mapping table."},
+      {"slotId":"decor","role":"optionalDecor","assetId":"leaf_pile","priorityTier":2,"defaultRect":{"left":92,"top":186,"width":72,"height":34},"depthBand":"farProp","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Meadow dressing kept low and off the deer silhouette."}
     ]
   },
   {
     "speciesId": "pigeon",
     "environmentId": "pigeon",
     "slots": [
-      {"slotId":"primary","role":"primaryAnchor","assetId":"branch_perch","priorityTier":0,"defaultRect":{"left":196,"top":56,"width":174,"height":48},"depthBand":"groundContact","occlusionMode":"bodyOnly","contactShadowMode":"hard","ageScalePolicy":"constant","notes":"Placeholder mirroring current hardcoded stage prop."},
-      {"slotId":"interaction","role":"activeInteraction","assetId":"seed_tray","priorityTier":1,"defaultRect":{"left":144,"top":192,"width":64,"height":24},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Placeholder bird interaction prop for three-slot schema."},
-      {"slotId":"decor","role":"optionalDecor","assetId":"nest_bed","priorityTier":2,"defaultRect":{"left":284,"top":178,"width":70,"height":36},"depthBand":"farProp","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Placeholder mirroring current hardcoded stage prop."}
+      {"slotId":"primary","role":"primaryAnchor","assetId":"nest_bed","priorityTier":0,"defaultRect":{"left":278,"top":174,"width":76,"height":38},"depthBand":"groundContact","occlusionMode":"bodyOnly","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Rooftop Ledge nest anchor; pigeon stays near the nest rim rather than floating."},
+      {"slotId":"interaction","role":"activeInteraction","assetId":"seed_tray","priorityTier":1,"defaultRect":{"left":142,"top":192,"width":66,"height":24},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Seed tray interaction object from the recommended mapping table."},
+      {"slotId":"decor","role":"optionalDecor","assetId":"stump_perch","priorityTier":2,"defaultRect":{"left":72,"top":158,"width":70,"height":56},"depthBand":"farProp","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Secondary perch/ledge dressing, kept away from the active nest anchor."}
     ]
   },
   {
     "speciesId": "raccoon",
     "environmentId": "raccoon",
     "slots": [
-      {"slotId":"primary","role":"primaryAnchor","assetId":"stump_perch","priorityTier":0,"defaultRect":{"left":88,"top":158,"width":70,"height":58},"depthBand":"groundContact","occlusionMode":"bodyOnly","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Placeholder mirroring current hardcoded stage prop."},
-      {"slotId":"interaction","role":"activeInteraction","assetId":"shallow_water_dish","priorityTier":1,"defaultRect":{"left":184,"top":192,"width":68,"height":24},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Placeholder mirroring current hardcoded stage prop."},
-      {"slotId":"decor","role":"optionalDecor","assetId":"log_shelter","priorityTier":2,"defaultRect":{"left":272,"top":154,"width":98,"height":60},"depthBand":"farProp","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Placeholder mirroring current hardcoded stage prop."}
+      {"slotId":"primary","role":"primaryAnchor","assetId":"crate_hideout","priorityTier":0,"defaultRect":{"left":86,"top":132,"width":76,"height":66},"depthBand":"groundContact","occlusionMode":"bodyOnly","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Crate Hideout shelter anchor; raccoon should read as rummaging beside the opening."},
+      {"slotId":"interaction","role":"activeInteraction","assetId":"storage_basket","priorityTier":1,"defaultRect":{"left":268,"top":178,"width":88,"height":44},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Rummage/enrichment object from the recommended mapping table."},
+      {"slotId":"decor","role":"optionalDecor","assetId":"blanket_mat","priorityTier":2,"defaultRect":{"left":176,"top":190,"width":84,"height":28},"depthBand":"farProp","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Soft crate bedding, secondary to the hideout and basket."}
     ]
   },
   {
     "speciesId": "squirrel",
     "environmentId": "squirrel",
     "slots": [
-      {"slotId":"primary","role":"primaryAnchor","assetId":"branch_perch","priorityTier":0,"defaultRect":{"left":194,"top":56,"width":184,"height":48},"depthBand":"groundContact","occlusionMode":"bodyOnly","contactShadowMode":"hard","ageScalePolicy":"constant","notes":"Placeholder mirroring current hardcoded stage prop."},
-      {"slotId":"interaction","role":"activeInteraction","assetId":"shallow_water_dish","priorityTier":1,"defaultRect":{"left":144,"top":192,"width":64,"height":24},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Placeholder mirroring current hardcoded stage prop."},
-      {"slotId":"decor","role":"optionalDecor","assetId":"stump_perch","priorityTier":2,"defaultRect":{"left":330,"top":162,"width":62,"height":52},"depthBand":"farProp","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Placeholder mirroring current hardcoded stage prop."}
+      {"slotId":"primary","role":"primaryAnchor","assetId":"nest_bed","priorityTier":0,"defaultRect":{"left":284,"top":174,"width":74,"height":38},"depthBand":"groundContact","occlusionMode":"bodyOnly","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Branch Litter nest anchor; squirrel stages near the nest without obscuring the tail."},
+      {"slotId":"interaction","role":"activeInteraction","assetId":"nut_pile","priorityTier":1,"defaultRect":{"left":146,"top":190,"width":66,"height":28},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Forage/play snack object from the recommended mapping table."},
+      {"slotId":"decor","role":"optionalDecor","assetId":"stump_perch","priorityTier":2,"defaultRect":{"left":66,"top":160,"width":72,"height":54},"depthBand":"farProp","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Secondary climbing/perch object for branch-litter staging."}
     ]
   }
 ]

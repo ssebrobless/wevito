@@ -10,13 +10,13 @@ Purpose: living project dashboard for tracking Wevito's game, visual, tool, help
 Wevito full vision
 ├─ playable pet game foundation        ███████░░░  ~68%
 ├─ visual/sprite asset lane            ███████░░░  ~72%
-├─ habitat/items/care integration      ████░░░░░░  ~45%
+├─ habitat/items/care integration      ███████░░░  ~70%
 ├─ PET TASKS/tool hub                  ████░░░░░░  ~40%
 ├─ advanced helper/AI/ML systems       ██░░░░░░░░  ~18%
 └─ final QA/release readiness          ████░░░░░░  ~42%
 
-Total project completion: ~55%
-Remaining to complete full vision: ~45%
+Total project completion: ~59%
+Remaining to complete full vision: ~41%
 ```
 
 This estimate treats "everything done" as the expanded full Wevito vision: a working desktop pet game, clean sprites and animations, habitats, items, helper tools, screenshot/capture, translation, audio assist, coding helpers, Sprite Workflow V2, Creative Learning Lab, and pet-agent behavior.
@@ -33,7 +33,7 @@ If measuring only the basic playable pet-game foundation, Wevito is closer to 65
 | Sprites/visuals | Much better, not final | 72% | Final in-motion QA, optional animations, no artifacts, no boxing/shrink-grow, final proof sweeps. |
 | Color variants | Mostly green | 85% | Only targeted review/fixes, not broad regeneration. |
 | Care/medicine/items | Assets exist | 45% | Map items into gameplay/UI, confirm readability, remove stale expectations. |
-| Habitat/environment | Planned well | 35% | Runtime anchors, depth, occlusion, shadows, enter/perch/hide/use zones. |
+| Habitat/environment | All 10 species loadout-proven | 70% | Pilot interaction zones/occlusion are in place; remaining work is richer enter/perch/hide/use behavior and final visual polish. |
 | Overlay UI | Direction is clear | 50% | Implement Claude/visual design direction in vNext without replacing pet overlay. |
 | PET TASKS/tool hub | Functional seed exists | 40% | Simpler UI, artifact buttons, report-only polish, then approval-gated execution. |
 | Screenshot/capture tools | Planned | 20% | Wevito-window screenshot first, then region capture, later short proof clips. |
