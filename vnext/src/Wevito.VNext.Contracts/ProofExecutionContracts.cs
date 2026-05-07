@@ -12,7 +12,8 @@ public enum ProofExecutionResultStatus
     Failed,
     Blocked,
     Cancelled,
-    TimedOut
+    TimedOut,
+    MutationDetected
 }
 
 public sealed record ProofExecutionCommand(
@@ -46,6 +47,7 @@ public sealed record ProofExecutionManifest(
     bool DidMutateCode,
     bool DidMutateAssets,
     bool DidRunAssetPrep,
+    bool MutationDetected,
     DateTimeOffset StartedAtUtc,
     DateTimeOffset? FinishedAtUtc,
     ProofExecutionResultStatus Status,
@@ -59,6 +61,8 @@ public sealed record ProofExecutionResult(
     string StdoutPath,
     string StderrPath,
     string MergedLogPath,
+    string ManifestPath,
+    bool MutationDetected,
     string Summary,
     DateTimeOffset StartedAtUtc,
     DateTimeOffset FinishedAtUtc);

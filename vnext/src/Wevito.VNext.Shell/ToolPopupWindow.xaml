@@ -672,7 +672,7 @@
                     <TextBlock x:Name="PetTaskCapabilityText"
                                Margin="0,4,0,0"
                                automation:AutomationProperties.AutomationId="PetTaskCapabilityText"
-                              Text="Preview-ready: spriteAudit, assetInventory, codeReview, codePatchPlan, buildProof plans, translateText preview, audioAssist status, screenCapture preview, petState, localDocs. Approval-gated: translation provider calls, normal audio volume/mute changes, screenshots, Wevito-window proof clips. Locked: sprite import, generation, PNG mutation, prop anchors, build/proof execution, browser automation, region/desktop recording, audio boosters/drivers/APOs."
+                              Text="Preview-ready: spriteAudit, assetInventory, codeReview, codePatchPlan, buildProof plans, translateText preview, audioAssist status, screenCapture preview, petState, localDocs. Approval-gated: build/proof execution, translation provider calls, normal audio volume/mute changes, screenshots, Wevito-window proof clips. Locked: sprite import, generation, PNG mutation, prop anchors, browser automation, region/desktop recording, audio boosters/drivers/APOs."
                                Foreground="#FF9FB7C4"
                                FontSize="10"
                                TextWrapping="Wrap" />

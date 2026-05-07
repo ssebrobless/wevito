@@ -13,11 +13,13 @@ public sealed class FakeCommandRunner : ICommandRunner
         var stdoutPath = Path.Combine(request.ArtifactRoot, "stdout.txt");
         var stderrPath = Path.Combine(request.ArtifactRoot, "stderr.txt");
         var mergedLogPath = Path.Combine(request.ArtifactRoot, "merged.log");
+        var manifestPath = Path.Combine(request.ArtifactRoot, "proof-execution-manifest.json");
         var commandLine = request.Command.Executable + " " + string.Join(" ", request.Command.Arguments);
 
         await File.WriteAllTextAsync(stdoutPath, $"FAKE RUN: {commandLine}{Environment.NewLine}", cancellationToken).ConfigureAwait(false);
         await File.WriteAllTextAsync(stderrPath, string.Empty, cancellationToken).ConfigureAwait(false);
         await File.WriteAllTextAsync(mergedLogPath, $"[fake-command-runner] {commandLine}{Environment.NewLine}", cancellationToken).ConfigureAwait(false);
+        await File.WriteAllTextAsync(manifestPath, "{}", cancellationToken).ConfigureAwait(false);
 
         return new ProofExecutionResult(
             request.TaskCardId,
@@ -27,6 +29,8 @@ public sealed class FakeCommandRunner : ICommandRunner
             stdoutPath,
             stderrPath,
             mergedLogPath,
+            manifestPath,
+            MutationDetected: false,
             "Fake runner recorded the command but did not start a process.",
             started,
             finished);

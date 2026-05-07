@@ -550,7 +550,7 @@ try {
 
     if (-not [string]::IsNullOrWhiteSpace($ExpectArtifactFileCreated)) {
         Invoke-Button -WindowInfo $toolWindow -AutomationId "PetTaskExecuteButton"
-        $executeTrace = Wait-ForTraceText -TracePath $shellTracePath -Pattern "pet-command \| .*execute .*family=$escapedFamily.*status=Completed" -TimeoutMs 12000
+        $executeTrace = Wait-ForTraceText -TracePath $shellTracePath -Pattern "pet-command \| .*execute .*family=$escapedFamily.*status=Completed" -TimeoutMs 60000
         if ($null -eq $executeTrace) {
             throw "PET TASKS execute trace was not observed."
         }

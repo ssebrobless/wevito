@@ -145,6 +145,7 @@ public sealed class ProofExecutionAllowlistEvaluatorTests
             DidMutateCode: false,
             DidMutateAssets: false,
             DidRunAssetPrep: false,
+            MutationDetected: false,
             DateTimeOffset.Parse("2026-05-07T00:00:00Z"),
             DateTimeOffset.Parse("2026-05-07T00:00:01Z"),
             ProofExecutionResultStatus.Succeeded,
@@ -155,6 +156,7 @@ public sealed class ProofExecutionAllowlistEvaluatorTests
 
         Assert.Contains("\"toolFamily\":\"buildProof\"", json);
         Assert.Contains("\"didRunAssetPrep\":false", json);
+        Assert.Contains("\"mutationDetected\":false", json);
         Assert.NotNull(roundTrip);
         Assert.Equal("dotnet", roundTrip.Command.Executable);
         Assert.False(roundTrip.DidMutateAssets);

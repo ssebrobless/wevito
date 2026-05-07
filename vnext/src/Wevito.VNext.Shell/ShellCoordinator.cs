@@ -33,6 +33,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private readonly PetTaskAdapterPreviewDispatcher _petTaskAdapterPreviewDispatcher = new();
     private readonly TranslationExecutionAdapter _translationExecutionAdapter = new();
     private readonly AudioAssistExecutionAdapter _audioAssistExecutionAdapter = new();
+    private readonly BuildProofExecutionAdapter _buildProofExecutionAdapter = new();
     private readonly ScreenCaptureExecutionAdapter _screenCaptureExecutionAdapter;
     private readonly RegionSelectionStore _regionSelectionStore = new();
     private readonly DispatcherTimer _tickTimer;
@@ -453,7 +454,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         return role switch
         {
             PetHelperRole.SpriteReviewHelper => ["spriteAudit", "assetInventory", "proofCapture", "localDocs", "petState"],
-            PetHelperRole.ChecklistHelper => ["codeReview", "codePatchPlan", "checklist", "localDocs", "basket", "petState"],
+            PetHelperRole.ChecklistHelper => ["codeReview", "codePatchPlan", "checklist", "buildProof", "localDocs", "basket", "petState"],
             PetHelperRole.ResearchHelper => ["localDocs", "translateText", "audioAssist", "screenCapture", "assetInventory", "basket", "proofCapture", "petState"],
             _ => ["localDocs"]
         };
@@ -768,7 +769,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
 
         if (!CanExecuteReviewedPetTask(card))
         {
-            SetFeedback("Only reviewed translateText and approved audioAssist action tasks can run right now.");
+            SetFeedback("Only reviewed translateText, screenCapture, audioAssist, and buildProof tasks can run right now.");
             Render();
             return;
         }
@@ -856,6 +857,16 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             ApprovalRequirement.BeforeExecution);
     }
 
+    private static ToolPolicy BuildProofExecutionPolicySnapshot()
+    {
+        return new ToolPolicy(
+            "build-proof-execution-approval",
+            "buildProof",
+            ToolAccessMode.Write,
+            ToolRiskLevel.Medium,
+            ApprovalRequirement.BeforeExecution);
+    }
+
     private static ToolPolicy BuildExecutionPolicySnapshot(TaskCard card)
     {
         if (string.Equals(card.ToolFamily, "translateText", StringComparison.OrdinalIgnoreCase))
@@ -866,6 +877,11 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         if (string.Equals(card.ToolFamily, "screenCapture", StringComparison.OrdinalIgnoreCase))
         {
             return BuildScreenCaptureExecutionPolicySnapshot();
+        }
+
+        if (string.Equals(card.ToolFamily, "buildProof", StringComparison.OrdinalIgnoreCase))
+        {
+            return BuildProofExecutionPolicySnapshot();
         }
 
         return BuildAudioAssistExecutionPolicySnapshot();
@@ -887,6 +903,12 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         if (card.Intent.TaskKind == TaskKind.ScreenCapture &&
             string.Equals(card.ToolFamily, "screenCapture", StringComparison.OrdinalIgnoreCase) &&
             IsExecutableScreenCaptureRequest(card.Intent.RawText))
+        {
+            return true;
+        }
+
+        if (card.Intent.TaskKind == TaskKind.BuildProof &&
+            string.Equals(card.ToolFamily, "buildProof", StringComparison.OrdinalIgnoreCase))
         {
             return true;
         }
@@ -922,6 +944,11 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             }
 
             return await _screenCaptureExecutionAdapter.ExecuteAsync(request, timestamp, region.Region);
+        }
+
+        if (string.Equals(card.ToolFamily, "buildProof", StringComparison.OrdinalIgnoreCase))
+        {
+            return await _buildProofExecutionAdapter.ExecuteAsync(request, timestamp);
         }
 
         return _audioAssistExecutionAdapter.Execute(request, timestamp);
