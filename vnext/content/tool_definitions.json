@@ -8,5 +8,40 @@
     "id": "settings",
     "displayName": "Settings",
     "capacity": 0
+  },
+  {
+    "id": "pet_model_adapter",
+    "displayName": "Pet Model Adapter",
+    "capacity": 0,
+    "defaultProvider": "none",
+    "requiresFirstCallApproval": true,
+    "apiKeyStorage": "windows-credential-manager",
+    "modelCallDefault": "disabled",
+    "helpers": [
+      {
+        "name": "Scout",
+        "role": "ResearchHelper",
+        "allowedToolFamilies": [
+          "localDocs",
+          "codeReview"
+        ]
+      },
+      {
+        "name": "Inspector",
+        "role": "SpriteReviewHelper",
+        "allowedToolFamilies": [
+          "spriteAudit",
+          "petState"
+        ]
+      },
+      {
+        "name": "Builder",
+        "role": "ChecklistHelper",
+        "allowedToolFamilies": [
+          "codePatchPlan",
+          "codeReview"
+        ]
+      }
+    ]
   }
 ]
