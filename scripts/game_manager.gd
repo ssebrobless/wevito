@@ -49,58 +49,11 @@ const ENVIRONMENT_POSITIONS = {
 	"lake": Vector2(200, 290)
 }
 
-const HABITAT_INTERACTION_DATA = {
-	"rat": {
-		"primary_object": "crate_hideout",
-		"interaction": "enter_hideout",
-		"anchors": {"home": Vector2(0.42, 0.82), "rest": Vector2(0.38, 0.80), "feed": Vector2(0.62, 0.84), "drink": Vector2(0.62, 0.84), "play": Vector2(0.52, 0.80)}
-	},
-	"crow": {
-		"primary_object": "branch_perch",
-		"interaction": "perch",
-		"anchors": {"home": Vector2(0.50, 0.62), "rest": Vector2(0.50, 0.58), "feed": Vector2(0.62, 0.78), "drink": Vector2(0.62, 0.78), "play": Vector2(0.48, 0.76)}
-	},
-	"fox": {
-		"primary_object": "log_shelter",
-		"interaction": "enter_burrow",
-		"anchors": {"home": Vector2(0.46, 0.82), "rest": Vector2(0.42, 0.82), "feed": Vector2(0.62, 0.84), "drink": Vector2(0.62, 0.84), "play": Vector2(0.52, 0.80)}
-	},
-	"snake": {
-		"primary_object": "rock_basking_spot",
-		"interaction": "coil_on_rock",
-		"anchors": {"home": Vector2(0.48, 0.78), "rest": Vector2(0.50, 0.72), "feed": Vector2(0.60, 0.82), "drink": Vector2(0.58, 0.84), "play": Vector2(0.50, 0.80)}
-	},
-	"deer": {
-		"primary_object": "hay_bundle",
-		"interaction": "graze",
-		"anchors": {"home": Vector2(0.48, 0.82), "rest": Vector2(0.44, 0.82), "feed": Vector2(0.64, 0.82), "drink": Vector2(0.62, 0.84), "play": Vector2(0.54, 0.80)}
-	},
-	"frog": {
-		"primary_object": "pond_dish",
-		"interaction": "perch_or_enter_water",
-		"anchors": {"home": Vector2(0.48, 0.80), "rest": Vector2(0.44, 0.76), "feed": Vector2(0.60, 0.82), "drink": Vector2(0.58, 0.84), "play": Vector2(0.50, 0.78)}
-	},
-	"pigeon": {
-		"primary_object": "hanging_feeder",
-		"interaction": "perch_ledge",
-		"anchors": {"home": Vector2(0.50, 0.66), "rest": Vector2(0.50, 0.62), "feed": Vector2(0.62, 0.74), "drink": Vector2(0.62, 0.82), "play": Vector2(0.48, 0.76)}
-	},
-	"raccoon": {
-		"primary_object": "food_crate",
-		"interaction": "rummage",
-		"anchors": {"home": Vector2(0.44, 0.82), "rest": Vector2(0.40, 0.82), "feed": Vector2(0.62, 0.84), "drink": Vector2(0.62, 0.84), "play": Vector2(0.52, 0.80)}
-	},
-	"squirrel": {
-		"primary_object": "stump_perch",
-		"interaction": "perch_or_climb",
-		"anchors": {"home": Vector2(0.50, 0.66), "rest": Vector2(0.50, 0.62), "feed": Vector2(0.62, 0.78), "drink": Vector2(0.62, 0.82), "play": Vector2(0.48, 0.76)}
-	},
-	"goose": {
-		"primary_object": "shallow_water_dish",
-		"interaction": "enter_water",
-		"anchors": {"home": Vector2(0.48, 0.80), "rest": Vector2(0.44, 0.78), "feed": Vector2(0.62, 0.82), "drink": Vector2(0.60, 0.84), "play": Vector2(0.50, 0.78)}
-	}
-}
+const HABITAT_LOADOUTS_PATH := "res://vnext/content/habitat_loadouts.json"
+const HABITAT_MANIFEST_STAGE_SIZE := Vector2(400.0, 240.0)
+const HABITAT_FOOD_ASSETS := ["snack_bowl", "seed_tray", "bug_treat"]
+const HABITAT_DRINK_ASSETS := ["pond_dish", "shallow_water_dish", "water_bowl"]
+const HABITAT_PLAY_ASSETS := ["ball", "bell_toy", "branch_perch", "leaf_pile", "rope_toy"]
 
 var pets: Array[Pet] = []
 var pet_datas: Array[PetData] = []
@@ -115,6 +68,7 @@ var auto_save_timer: float = 0.0
 # Runtime action state trackers (per pet index)
 var forage_state: Dictionary = {}
 var workout_heat: Dictionary = {}
+var habitat_loadouts: Dictionary = {}
 
 # Game settings
 var tick_rate: float = 60.0  # 1 tick per second for testing
@@ -165,7 +119,7 @@ signal active_pet_changed(pet_index: int)
 signal naming_needed(pet_index: int)
 
 func _ready():
-	pass
+	_load_habitat_loadouts()
 
 func get_active_pet() -> Pet:
 	if pets.size() > 0 and active_pet_index < pets.size():
@@ -802,19 +756,101 @@ func get_environment_position(animal_type: String) -> Vector2:
 	var env = ANIMAL_DATA.get(animal_type, {}).get("environment", "sewers")
 	return ENVIRONMENT_POSITIONS.get(env, ENVIRONMENT_POSITIONS["sewers"])
 
+func _load_habitat_loadouts():
+	habitat_loadouts.clear()
+	if not FileAccess.file_exists(HABITAT_LOADOUTS_PATH):
+		push_warning("Habitat loadout manifest missing: " + HABITAT_LOADOUTS_PATH)
+		return
+
+	var file = FileAccess.open(HABITAT_LOADOUTS_PATH, FileAccess.READ)
+	if file == null:
+		push_warning("Unable to open habitat loadout manifest: " + HABITAT_LOADOUTS_PATH)
+		return
+
+	var raw = file.get_as_text()
+	file.close()
+	var parsed = JSON.parse_string(raw)
+	if not (parsed is Array):
+		push_warning("Habitat loadout manifest must be a JSON array: " + HABITAT_LOADOUTS_PATH)
+		return
+
+	for entry in parsed:
+		if not (entry is Dictionary):
+			continue
+		var species_id = str(entry.get("speciesId", "")).strip_edges()
+		if species_id == "":
+			continue
+		habitat_loadouts[species_id] = entry
+
+func get_habitat_loadout(animal_type: String) -> Dictionary:
+	if habitat_loadouts.is_empty():
+		_load_habitat_loadouts()
+	return habitat_loadouts.get(animal_type, {})
+
+func _find_habitat_slot(animal_type: String, slot_id: String) -> Dictionary:
+	var loadout = get_habitat_loadout(animal_type)
+	var slots = loadout.get("slots", [])
+	if not (slots is Array):
+		return {}
+	for slot in slots:
+		if slot is Dictionary and str(slot.get("slotId", "")) == slot_id:
+			return slot
+	return {}
+
+func _find_habitat_slot_for_action(animal_type: String, action_family: String) -> Dictionary:
+	var primary = _find_habitat_slot(animal_type, "primary")
+	var interaction = _find_habitat_slot(animal_type, "interaction")
+	var normalized = normalize_action_family(action_family)
+	var interaction_asset = str(interaction.get("assetId", ""))
+
+	if normalized == "feed" and HABITAT_FOOD_ASSETS.has(interaction_asset):
+		return interaction
+	if normalized == "drink" and HABITAT_DRINK_ASSETS.has(interaction_asset):
+		return interaction
+	if normalized == "play" and HABITAT_PLAY_ASSETS.has(interaction_asset):
+		return interaction
+	return primary if not primary.is_empty() else interaction
+
+func _slot_anchor(slot: Dictionary) -> Vector2:
+	var rect = slot.get("defaultRect", {})
+	if not (rect is Dictionary):
+		return Vector2(0.5, 0.82)
+
+	var left = float(rect.get("left", 0.0))
+	var top = float(rect.get("top", 0.0))
+	var width = float(rect.get("width", 0.0))
+	var height = float(rect.get("height", 0.0))
+	var manifest_width = max(1.0, HABITAT_MANIFEST_STAGE_SIZE.x)
+	var manifest_height = max(1.0, HABITAT_MANIFEST_STAGE_SIZE.y)
+	return Vector2(
+		clamp((left + (width * 0.5)) / manifest_width, 0.05, 0.95),
+		clamp((top + height) / manifest_height, 0.15, 0.95)
+	)
+
 func get_habitat_interaction_data(animal_type: String) -> Dictionary:
-	return HABITAT_INTERACTION_DATA.get(animal_type, {})
+	var loadout = get_habitat_loadout(animal_type)
+	if loadout.is_empty():
+		return {}
+	var primary = _find_habitat_slot(animal_type, "primary")
+	var interaction = _find_habitat_slot(animal_type, "interaction")
+	return {
+		"primary_object": str(primary.get("assetId", "")),
+		"interaction": str(interaction.get("assetId", primary.get("assetId", "stand"))),
+		"loadout": loadout
+	}
 
 func get_habitat_anchor(animal_type: String, action_family: String = "home") -> Vector2:
-	var habitat = get_habitat_interaction_data(animal_type)
-	var anchors = habitat.get("anchors", {})
-	var normalized = normalize_action_family(action_family)
-	if anchors.has(normalized):
-		return anchors[normalized]
-	return anchors.get("home", Vector2(0.5, 0.82))
+	var slot = _find_habitat_slot_for_action(animal_type, action_family)
+	if slot.is_empty():
+		return Vector2(0.5, 0.82)
+	return _slot_anchor(slot)
 
 func get_habitat_interaction_name(animal_type: String) -> String:
-	return str(get_habitat_interaction_data(animal_type).get("interaction", "stand"))
+	var interaction = _find_habitat_slot(animal_type, "interaction")
+	if not interaction.is_empty():
+		return str(interaction.get("assetId", "stand"))
+	var primary = _find_habitat_slot(animal_type, "primary")
+	return str(primary.get("assetId", "stand"))
 
 func normalize_action_family(action_family: String) -> String:
 	if action_family == "drink" or action_family == "feed_hydrate":

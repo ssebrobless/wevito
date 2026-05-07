@@ -148,6 +148,7 @@ var debug_last_pinned_dispatch: Dictionary = {}
 
 const AUTOMATION_ENV := "WEVITO_AUTOMATION"
 const AUTOMATION_SCENARIO_ENV := "WEVITO_AUTOMATION_SCENARIO"
+const AUTOMATION_SCREENSHOT_PATH_ENV := "WEVITO_AUTOMATION_SCREENSHOT_PATH"
 const AUTOMATION_REPORT_PATH := "user://automation_report.json"
 const AUTOMATION_SAVE_PATH := "user://save_slot.json"
 const RUNTIME_STATE_PATH := "user://runtime_state.json"
@@ -186,6 +187,19 @@ const STAGE_WIDTH_RATIO := 0.78
 const STAGE_MIN_WIDTH := 228.0
 const STAGE_MAX_WIDTH := 292.0
 const STAGE_TOP_INSET := 6.0
+const HABITAT_MANIFEST_STAGE_SIZE := Vector2(400.0, 240.0)
+const STAGE_NODE_KEYS := ["bg", "mid", "ground", "primary_shadow", "pet_shadow", "decor", "accent", "frame"]
+const Z_BACKDROP := 0
+const Z_FAR_PROP := 10
+const Z_GROUND_CONTACT := 20
+const Z_PET_SHADOW := 30
+const Z_PET_BODY := 40
+const Z_HELD_OR_CARRIED_PROP := 50
+const Z_NEAR_OCCLUDER := 60
+const Z_UI_OVERLAY := 70
+const Z_FOCUS_BACKDROP := Z_BACKDROP - 5
+const Z_MODAL_OVERLAY := Z_UI_OVERLAY + 430
+const Z_FLOATING_FEEDBACK := Z_UI_OVERLAY + 150
 const MONITOR_ROAM_MARGIN_X := 28.0
 const MONITOR_ROAM_MARGIN_Y := 38.0
 const MONITOR_ROAM_STRIP_HEIGHT := 170
@@ -958,13 +972,13 @@ func _ready():
 	focus_backdrop = ColorRect.new()
 	focus_backdrop.color = Color(0.0, 0.0, 0.0, 0.0)
 	focus_backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	focus_backdrop.z_index = -5
+	focus_backdrop.z_index = Z_FOCUS_BACKDROP
 	add_child(focus_backdrop)
 
 	hud_hit_surface = ColorRect.new()
 	hud_hit_surface.color = Color(0.0, 0.0, 0.0, 0.01)
 	hud_hit_surface.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	hud_hit_surface.z_index = 60
+	hud_hit_surface.z_index = Z_UI_OVERLAY
 	add_child(hud_hit_surface)
 	
 	# Create audio player
@@ -981,7 +995,7 @@ func _ready():
 
 	celestial_sprite = TextureRect.new()
 	celestial_sprite.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	celestial_sprite.z_index = -1
+	celestial_sprite.z_index = Z_FAR_PROP
 	celestial_sprite.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	celestial_sprite.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	add_child(celestial_sprite)
@@ -1374,6 +1388,24 @@ func _automation_write_report(report: Dictionary):
 		file.store_string(JSON.stringify(report))
 		file.close()
 
+func _automation_species_from_scenario(scenario: String) -> String:
+	var prefix = "c_phase_6_5_habitat_mirror_"
+	if scenario.begins_with(prefix):
+		return scenario.substr(prefix.length()).strip_edges()
+	return ""
+
+func _automation_capture_screenshot(path: String) -> bool:
+	if path.strip_edges() == "":
+		return false
+	await get_tree().process_frame
+	var texture = get_viewport().get_texture()
+	if texture == null:
+		return false
+	var image = texture.get_image()
+	if image == null:
+		return false
+	return image.save_png(path) == OK
+
 func _rect2_to_dict(rect: Rect2) -> Dictionary:
 	return {
 		"x": rect.position.x,
@@ -1563,6 +1595,54 @@ func _run_automation_suite():
 		active_pd.water_bowl_level = 100.0
 		active_pd.conditions.clear()
 	_on_stats_updated()
+
+	var habitat_mirror_species = _automation_species_from_scenario(scenario)
+	if habitat_mirror_species != "":
+		var habitat_pet = game_manager.get_active_pet()
+		active_pd = game_manager.get_active_pet_data()
+		var screenshot_path = OS.get_environment(AUTOMATION_SCREENSHOT_PATH_ENV)
+		var species_allowed = GameManager.ANIMAL_TYPES.has(habitat_mirror_species)
+		var screenshot_ok = false
+		var screenshot_details = "species=%s path=%s" % [habitat_mirror_species, screenshot_path]
+		if habitat_pet and active_pd and species_allowed:
+			settings["desktop_companion_roam"] = false
+			settings["experimental_monitor_roam"] = false
+			settings["ghost_mode"] = false
+			overlay_ui_pinned = true
+			window_has_focus = true
+			_apply_runtime_settings()
+			_apply_window_mode_layout(true)
+			close_all_overlays()
+			active_pd.animal_type = habitat_mirror_species
+			active_pd.gender = "female"
+			active_pd.egg_color = "blue"
+			active_pd.stage = 3
+			active_pd.is_sleeping = false
+			habitat_pet.setup(active_pd)
+			game_manager.set_active_pet(game_manager.active_pet_index)
+			update_environment_background()
+			_recall_all_pets_home(0.0, false)
+			await get_tree().process_frame
+			await get_tree().process_frame
+			habitat_pet.position = get_pet_home_position_for_node(habitat_pet, "home")
+			habitat_pet.pet_data.position = habitat_pet.position
+			habitat_pet.pet_data.target_position = habitat_pet.position
+			await get_tree().process_frame
+			screenshot_ok = await _automation_capture_screenshot(screenshot_path)
+			screenshot_details += " saved=%s position=%s" % [str(screenshot_ok), str(habitat_pet.position)]
+		else:
+			screenshot_details += " allowed=%s active_pet=%s" % [str(species_allowed), str(habitat_pet != null)]
+		_automation_assert(checks, "c_phase_6_5_habitat_mirror_screenshot", screenshot_ok, screenshot_details)
+		var habitat_report = {
+			"scenario": scenario,
+			"passed": screenshot_ok,
+			"checks": checks,
+			"species": habitat_mirror_species,
+			"screenshot_path": screenshot_path
+		}
+		_automation_write_report(habitat_report)
+		get_tree().quit(0 if screenshot_ok else 1)
+		return
 
 	if scenario == "force_low_hydration_drink":
 		var drink_pet = game_manager.get_active_pet()
@@ -1942,7 +2022,7 @@ func _create_priority_modal(card_size: Vector2, backdrop_alpha: float = 0.6) -> 
 	var overlay = Control.new()
 	overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
 	overlay.mouse_filter = Control.MOUSE_FILTER_STOP
-	overlay.z_index = 500
+	overlay.z_index = Z_MODAL_OVERLAY
 	add_child(overlay)
 
 	var overlay_bg = ColorRect.new()
@@ -2278,45 +2358,55 @@ func _ensure_environment_stage_nodes(required_count: int):
 		var stage_bg = ColorRect.new()
 		stage_bg.color = COLOR_BG
 		stage_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		stage_bg.z_index = -2
+		stage_bg.z_index = Z_BACKDROP
 		add_child(stage_bg)
 
 		var stage_mid = ColorRect.new()
 		stage_mid.color = Color(0.18, 0.2, 0.21)
 		stage_mid.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		stage_mid.z_index = -2
+		stage_mid.z_index = Z_FAR_PROP
 		add_child(stage_mid)
 
 		var stage_ground = ColorRect.new()
 		stage_ground.color = Color(0.06, 0.07, 0.08)
 		stage_ground.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		stage_ground.z_index = -2
+		stage_ground.z_index = Z_GROUND_CONTACT
 		add_child(stage_ground)
+
+		var stage_primary_shadow = Polygon2D.new()
+		stage_primary_shadow.color = Color(0.0, 0.0, 0.0, 0.18)
+		stage_primary_shadow.z_index = Z_PET_SHADOW
+		add_child(stage_primary_shadow)
+
+		var stage_pet_shadow = Polygon2D.new()
+		stage_pet_shadow.color = Color(0.0, 0.0, 0.0, 0.24)
+		stage_pet_shadow.z_index = Z_PET_SHADOW
+		add_child(stage_pet_shadow)
 
 		var stage_decor = TextureRect.new()
 		stage_decor.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		stage_decor.z_index = -1
+		stage_decor.z_index = Z_FAR_PROP
 		stage_decor.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		stage_decor.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		add_child(stage_decor)
 
 		var stage_accent = TextureRect.new()
 		stage_accent.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		stage_accent.z_index = -1
+		stage_accent.z_index = Z_FAR_PROP
 		stage_accent.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		stage_accent.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		add_child(stage_accent)
 
 		var stage_frame = Panel.new()
 		stage_frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		stage_frame.z_index = -1
+		stage_frame.z_index = Z_NEAR_OCCLUDER
 		add_child(stage_frame)
 
-		environment_stages.append({"bg": stage_bg, "mid": stage_mid, "ground": stage_ground, "decor": stage_decor, "accent": stage_accent, "frame": stage_frame})
+		environment_stages.append({"bg": stage_bg, "mid": stage_mid, "ground": stage_ground, "primary_shadow": stage_primary_shadow, "pet_shadow": stage_pet_shadow, "decor": stage_decor, "accent": stage_accent, "frame": stage_frame})
 
 	while environment_stages.size() > target:
 		var stage = environment_stages.pop_back()
-		for key in ["frame", "accent", "decor", "ground", "mid", "bg"]:
+		for key in STAGE_NODE_KEYS:
 			var node = stage.get(key)
 			if node:
 				node.queue_free()
@@ -2390,7 +2480,7 @@ func _apply_pet_bounds_for_mode(focused: bool):
 
 func _set_environment_stages_visible(should_show: bool):
 	for stage in environment_stages:
-		for key in ["bg", "mid", "ground", "decor", "accent", "frame"]:
+		for key in STAGE_NODE_KEYS:
 			var node = stage.get(key)
 			if node:
 				node.visible = should_show
@@ -2445,6 +2535,44 @@ func get_pet_home_position_for_node(pet_node: Pet, action_family: String = "home
 		slot.position.y + (slot.size.y * clamp(anchor.y, 0.15, 0.95))
 	)
 
+func _ellipse_polygon(radius: Vector2, segments: int = 28) -> PackedVector2Array:
+	var points := PackedVector2Array()
+	var safe_segments = max(8, segments)
+	for i in range(safe_segments):
+		var angle = (TAU * float(i)) / float(safe_segments)
+		points.append(Vector2(cos(angle) * radius.x, sin(angle) * radius.y))
+	return points
+
+func _stage_anchor_position(slot: Rect2, animal_type: String, action_family: String = "home") -> Vector2:
+	var anchor = Vector2(0.5, 0.82)
+	if game_manager and game_manager.has_method("get_habitat_anchor"):
+		anchor = game_manager.get_habitat_anchor(animal_type, action_family)
+	return Vector2(
+		slot.position.x + (slot.size.x * clamp(anchor.x, 0.05, 0.95)),
+		slot.position.y + (slot.size.y * clamp(anchor.y, 0.15, 0.95))
+	)
+
+func _stage_manifest_slot_rect(stage_slot: Rect2, animal_type: String, slot_id: String) -> Rect2:
+	if game_manager == null or not game_manager.has_method("get_habitat_loadout"):
+		return Rect2(Vector2.ZERO, Vector2.ZERO)
+	var loadout = game_manager.get_habitat_loadout(animal_type)
+	var slots = loadout.get("slots", [])
+	if not (slots is Array):
+		return Rect2(Vector2.ZERO, Vector2.ZERO)
+	for manifest_slot in slots:
+		if not (manifest_slot is Dictionary) or str(manifest_slot.get("slotId", "")) != slot_id:
+			continue
+		var rect = manifest_slot.get("defaultRect", {})
+		if not (rect is Dictionary):
+			return Rect2(Vector2.ZERO, Vector2.ZERO)
+		var sx = stage_slot.size.x / HABITAT_MANIFEST_STAGE_SIZE.x
+		var sy = stage_slot.size.y / HABITAT_MANIFEST_STAGE_SIZE.y
+		return Rect2(
+			Vector2(stage_slot.position.x + (float(rect.get("left", 0.0)) * sx), stage_slot.position.y + (float(rect.get("top", 0.0)) * sy)),
+			Vector2(float(rect.get("width", 0.0)) * sx, float(rect.get("height", 0.0)) * sy)
+		)
+	return Rect2(Vector2.ZERO, Vector2.ZERO)
+
 func _start_monitor_roam_all_pets():
 	if game_manager == null:
 		return
@@ -2475,6 +2603,10 @@ func _apply_environment_layout(window_height: int):
 		var stage_decor = stage.get("decor") as TextureRect
 		var stage_accent = stage.get("accent") as TextureRect
 		var stage_frame = stage.get("frame") as Panel
+		var primary_shadow = stage.get("primary_shadow") as Polygon2D
+		var pet_shadow = stage.get("pet_shadow") as Polygon2D
+		var slot_pet_data = game_manager.pet_datas[i] if game_manager and i < game_manager.pet_datas.size() else null
+		var animal_type = slot_pet_data.animal_type if slot_pet_data else "goose"
 
 		if stage_bg:
 			stage_bg.position = Vector2(x, stage_top)
@@ -2491,13 +2623,24 @@ func _apply_environment_layout(window_height: int):
 			stage_decor.position = Vector2(x + ((stage_w - decor_w) * 0.5), stage_top + (stage_h - decor_h) - 10.0)
 			stage_decor.size = Vector2(decor_w, decor_h)
 		if stage_accent:
-			var accent_w = max(24.0, stage_w * 0.34)
-			var accent_h = max(24.0, stage_h * 0.28)
-			stage_accent.position = Vector2(x + stage_w - accent_w - 6.0, ground_top - (accent_h * 0.28))
-			stage_accent.size = Vector2(accent_w, accent_h)
+			var accent_rect = _stage_manifest_slot_rect(slot, animal_type, "primary")
+			if accent_rect.size.x <= 0.0 or accent_rect.size.y <= 0.0:
+				var accent_w = max(24.0, stage_w * 0.34)
+				var accent_h = max(24.0, stage_h * 0.28)
+				accent_rect = Rect2(Vector2(x + stage_w - accent_w - 6.0, ground_top - (accent_h * 0.28)), Vector2(accent_w, accent_h))
+			stage_accent.position = accent_rect.position
+			stage_accent.size = accent_rect.size
 		if stage_frame:
 			stage_frame.position = Vector2(x, stage_top)
 			stage_frame.size = Vector2(stage_w, stage_h)
+		if primary_shadow:
+			primary_shadow.position = _stage_anchor_position(slot, animal_type, "home") + Vector2(0.0, stage_h * 0.012)
+			primary_shadow.polygon = _ellipse_polygon(Vector2(max(12.0, stage_w * 0.18), max(2.5, stage_h * 0.028)))
+			primary_shadow.visible = slot.size.x > 0.0 and slot.size.y > 0.0
+		if pet_shadow:
+			pet_shadow.position = _stage_anchor_position(slot, animal_type, "rest") + Vector2(0.0, stage_h * 0.035)
+			pet_shadow.polygon = _ellipse_polygon(Vector2(max(10.0, stage_w * 0.14), max(2.5, stage_h * 0.024)))
+			pet_shadow.visible = slot.size.x > 0.0 and slot.size.y > 0.0
 
 	var floor_y = h - PET_FLOOR_INSET
 	_set_pet_floor(floor_y)
@@ -2833,7 +2976,7 @@ func create_ui():
 	# Pet navigation arrows
 	nav_arrows = HBoxContainer.new()
 	nav_arrows.position = Vector2(100, 31)
-	nav_arrows.z_index = 120
+	nav_arrows.z_index = Z_UI_OVERLAY
 	nav_arrows.add_theme_constant_override("separation", 8)
 	add_child(nav_arrows)
 	
@@ -2881,7 +3024,7 @@ func create_ui():
 	basket_button.custom_minimum_size = Vector2(40, 24)
 	basket_button.size = Vector2(40, 24)
 	basket_button.position = Vector2(238, 6)
-	basket_button.z_index = 120
+	basket_button.z_index = Z_UI_OVERLAY
 	basket_button.add_theme_font_size_override("font_size", 8)
 	basket_button.add_theme_stylebox_override("normal", create_button_style_normal())
 	basket_button.add_theme_stylebox_override("hover", create_button_style_hover())
@@ -2901,7 +3044,7 @@ func create_ui():
 	pin_ui_button.custom_minimum_size = Vector2(28, 24)
 	pin_ui_button.size = Vector2(28, 24)
 	pin_ui_button.position = Vector2(186, 30)
-	pin_ui_button.z_index = 120
+	pin_ui_button.z_index = Z_UI_OVERLAY
 	pin_ui_button.add_theme_font_size_override("font_size", 8)
 	pin_ui_button.add_theme_stylebox_override("normal", create_button_style_normal())
 	pin_ui_button.add_theme_stylebox_override("hover", create_button_style_hover())
@@ -2987,7 +3130,7 @@ func create_ui():
 	actions_bar.position = Vector2(10, 210)
 	actions_bar.size = Vector2(300, 22)
 	actions_bar.clip_contents = true
-	actions_bar.z_index = 120
+	actions_bar.z_index = Z_UI_OVERLAY
 	actions_bar.alignment = BoxContainer.ALIGNMENT_CENTER
 	actions_bar.add_theme_constant_override("separation", int(HUD_ACTION_BUTTON_GAP))
 	add_child(actions_bar)
@@ -3223,30 +3366,26 @@ func _environment_decor_path(animal_type: String) -> String:
 		return ""
 	return "res://sprites/environment/%s.png" % animal_type
 
-func _environment_accent_path(animal_type: String) -> String:
-	match animal_type:
-		"rat":
-			return "res://sprites/items/toys_b/crate_hideout.png"
-		"crow":
-			return "res://sprites/items/toys_a/branch_perch.png"
-		"fox":
-			return "res://sprites/items/toys_b/log_shelter.png"
-		"snake":
-			return "res://sprites/items/toys_b/rock_basking_spot.png"
-		"deer":
-			return "res://sprites/items/food_herbivore/hay_bundle.png"
-		"frog":
-			return "res://sprites/items/containers/pond_dish.png"
-		"pigeon":
-			return "res://sprites/items/containers/hanging_feeder.png"
-		"raccoon":
-			return "res://sprites/items/utility/food_crate.png"
-		"squirrel":
-			return "res://sprites/items/toys_b/stump_perch.png"
-		"goose":
-			return "res://sprites/items/containers/shallow_water_dish.png"
-		_:
-			return ""
+func _item_asset_path(asset_id: String) -> String:
+	if asset_id == "":
+		return ""
+	for category in ["containers", "food_birds", "food_herbivore", "food_omnivore", "toys_a", "toys_b", "utility"]:
+		var path = "res://sprites/items/%s/%s.png" % [category, asset_id]
+		if FileAccess.file_exists(path):
+			return path
+	return ""
+
+func _environment_slot_asset_path(animal_type: String, slot_id: String) -> String:
+	if game_manager == null or not game_manager.has_method("get_habitat_loadout"):
+		return ""
+	var loadout = game_manager.get_habitat_loadout(animal_type)
+	var slots = loadout.get("slots", [])
+	if not (slots is Array):
+		return ""
+	for slot in slots:
+		if slot is Dictionary and str(slot.get("slotId", "")) == slot_id:
+			return _item_asset_path(str(slot.get("assetId", "")))
+	return ""
 
 func _load_ui_asset_texture(asset_ref: String) -> Texture2D:
 	if asset_ref.begins_with("res://"):
@@ -3401,7 +3540,7 @@ func create_icon_button(icon_name: String, action_callback: Callable, action_arg
 	var btn = Button.new()
 	btn.custom_minimum_size = Vector2(28, 24)
 	btn.size = Vector2(28, 24)
-	btn.z_index = 120
+	btn.z_index = Z_UI_OVERLAY
 	
 	var tex = load_icon_texture(icon_name)
 	if tex:
@@ -4464,7 +4603,7 @@ func update_environment_background():
 				stage_decor.visible = false
 		if stage_accent:
 			if slot_pet_data:
-				var accent_path = _environment_accent_path(slot_pet_data.animal_type)
+				var accent_path = _environment_slot_asset_path(slot_pet_data.animal_type, "primary")
 				stage_accent.texture = _load_environment_texture(accent_path)
 				stage_accent.visible = stage_accent.texture != null
 			else:
@@ -5191,7 +5330,7 @@ func _create_held_item_sprite():
 	if tex:
 		held_item_sprite.texture = tex
 		held_item_sprite.scale = Vector2(2, 2)
-		held_item_sprite.z_index = 100
+		held_item_sprite.z_index = Z_HELD_OR_CARRIED_PROP
 		add_child(held_item_sprite)
 
 func _handle_held_item_click(click_position: Vector2):
@@ -5284,7 +5423,7 @@ func _spawn_ball_throw_marker(target_position: Vector2, pet_position: Vector2):
 	thrown_ball_sprite = marker
 	marker.position = target_position
 	marker.scale = Vector2(2, 2)
-	marker.z_index = 90
+	marker.z_index = Z_HELD_OR_CARRIED_PROP
 	add_child(marker)
 
 	var return_point = pet_position + Vector2(0, -24)
@@ -5329,7 +5468,7 @@ func _show_feedback_message(message: String):
 	feedback_label.size = Vector2(float(get_window().size.x), 18)
 	feedback_label.position = Vector2(0, float(get_window().size.y) - 150.0)
 	feedback_label.modulate.a = 0.0
-	feedback_label.z_index = 220
+	feedback_label.z_index = Z_FLOATING_FEEDBACK
 	add_child(feedback_label)
 	var current_feedback := feedback_label
 
