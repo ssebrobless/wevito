@@ -3,8 +3,11 @@ using System.Windows.Controls;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
 using System.Runtime.CompilerServices;
 using Wevito.VNext.Contracts;
+using Wevito.VNext.Core;
 
 namespace Wevito.VNext.Shell;
 
@@ -226,6 +229,9 @@ public partial class ToolPopupWindow : Window
             if (await TryInvokeButtonAsync(PetTaskPreviewButton, localPoint, PublishPetTaskPreviewAsync)) { return true; }
             if (await TryInvokeButtonAsync(PetTaskCancelButton, localPoint, () => PublishPetTaskStatusChangeAsync(TaskCardStatus.Cancelled))) { return true; }
             if (await TryInvokeButtonAsync(PetTaskExecuteButton, localPoint, PublishPetTaskExecutionAsync)) { return true; }
+            if (await TryInvokeButtonAsync(PetTaskOpenReportButton, localPoint, OpenSelectedPetTaskReportAsync)) { return true; }
+            if (await TryInvokeButtonAsync(PetTaskCopyPathButton, localPoint, CopySelectedPetTaskPathAsync)) { return true; }
+            if (await TryInvokeButtonAsync(PetTaskOpenFolderButton, localPoint, OpenSelectedPetTaskFolderAsync)) { return true; }
         }
         else if (DevPanel.Visibility == Visibility.Visible)
         {
@@ -378,7 +384,8 @@ public partial class ToolPopupWindow : Window
                 card.ToolFamily,
                 card.Status,
                 card.Intent.RawText,
-                CanRunReviewedTask(card)))
+                CanRunReviewedTask(card),
+                card.AuditLogPath))
             .ToList();
 
         _suppressTaskQueueSelection = true;
@@ -690,6 +697,21 @@ public partial class ToolPopupWindow : Window
     private async void PetTaskExecuteButton_OnClick(object sender, RoutedEventArgs e)
     {
         await PublishPetTaskExecutionAsync();
+    }
+
+    private async void PetTaskOpenReportButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        await OpenSelectedPetTaskReportAsync();
+    }
+
+    private async void PetTaskCopyPathButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        await CopySelectedPetTaskPathAsync();
+    }
+
+    private async void PetTaskOpenFolderButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        await OpenSelectedPetTaskFolderAsync();
     }
 
     private async void DeleteButton_OnClick(object sender, RoutedEventArgs e)
@@ -1223,6 +1245,112 @@ public partial class ToolPopupWindow : Window
         }
     }
 
+    private Task OpenSelectedPetTaskReportAsync()
+    {
+        var resolution = ResolveSelectedPetTaskArtifactPath();
+        if (!resolution.IsAllowed)
+        {
+            SetPetTaskArtifactBlockedMessage(resolution.BlockReason);
+            return Task.CompletedTask;
+        }
+
+        if (!File.Exists(resolution.ReportPath))
+        {
+            SetPetTaskArtifactBlockedMessage("blocked: report file does not exist");
+            return Task.CompletedTask;
+        }
+
+        try
+        {
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = resolution.ReportPath,
+                UseShellExecute = true
+            });
+        }
+        catch (Exception exception) when (exception is Win32Exception or InvalidOperationException)
+        {
+            SetPetTaskArtifactBlockedMessage("blocked: report could not be opened");
+            return Task.CompletedTask;
+        }
+
+        PetTaskNextActionText.Text = "Opened the selected task report.";
+        return Task.CompletedTask;
+    }
+
+    private Task CopySelectedPetTaskPathAsync()
+    {
+        var resolution = ResolveSelectedPetTaskArtifactPath();
+        if (!resolution.IsAllowed)
+        {
+            SetPetTaskArtifactBlockedMessage(resolution.BlockReason);
+            return Task.CompletedTask;
+        }
+
+        Clipboard.SetText(resolution.ReportPath);
+        PetTaskNextActionText.Text = "Copied the selected report path.";
+        return Task.CompletedTask;
+    }
+
+    private Task OpenSelectedPetTaskFolderAsync()
+    {
+        var resolution = ResolveSelectedPetTaskArtifactPath();
+        if (!resolution.IsAllowed)
+        {
+            SetPetTaskArtifactBlockedMessage(resolution.BlockReason);
+            return Task.CompletedTask;
+        }
+
+        var explorerArgument = File.Exists(resolution.ReportPath)
+            ? $"/select,\"{resolution.ReportPath}\""
+            : $"\"{resolution.ArtifactFolder}\"";
+        try
+        {
+            Process.Start("explorer.exe", explorerArgument);
+        }
+        catch (Exception exception) when (exception is Win32Exception or InvalidOperationException)
+        {
+            SetPetTaskArtifactBlockedMessage("blocked: report folder could not be opened");
+            return Task.CompletedTask;
+        }
+
+        PetTaskNextActionText.Text = "Opened the selected report folder.";
+        return Task.CompletedTask;
+    }
+
+    private PetTaskArtifactPathResolution ResolveSelectedPetTaskArtifactPath()
+    {
+        if (PetTaskQueueComboBox.SelectedItem is not PetTaskQueueRowItem selectedRow)
+        {
+            return new PetTaskArtifactPathResolution(false, "", "", "No task card is selected.");
+        }
+
+        return PetTaskCardQueueService.ResolveArtifactReportPath(selectedRow.AuditLogPath, ResolveRepoRoot());
+    }
+
+    private static string ResolveRepoRoot()
+    {
+        var directory = new DirectoryInfo(AppContext.BaseDirectory);
+        while (directory is not null)
+        {
+            if (Directory.Exists(Path.Combine(directory.FullName, "vnext")))
+            {
+                return directory.FullName;
+            }
+
+            directory = directory.Parent;
+        }
+
+        return AppContext.BaseDirectory;
+    }
+
+    private void SetPetTaskArtifactBlockedMessage(string reason)
+    {
+        PetTaskNextActionText.Text = string.IsNullOrWhiteSpace(reason)
+            ? "Blocked: the selected artifact path could not be opened safely."
+            : reason;
+    }
+
     private void UpdatePetTaskButtons()
     {
         var selectedRow = PetTaskQueueComboBox.SelectedItem as PetTaskQueueRowItem;
@@ -1230,6 +1358,10 @@ public partial class ToolPopupWindow : Window
         PetTaskPreviewButton.IsEnabled = selectedRow?.Status is TaskCardStatus.Draft or TaskCardStatus.Approved;
         PetTaskCancelButton.IsEnabled = selectedRow?.Status is TaskCardStatus.Draft or TaskCardStatus.WaitingForApproval or TaskCardStatus.Approved;
         PetTaskExecuteButton.IsEnabled = selectedRow is { Status: TaskCardStatus.Reviewing, CanExecute: true };
+        var hasArtifactPath = !string.IsNullOrWhiteSpace(selectedRow?.AuditLogPath);
+        PetTaskOpenReportButton.IsEnabled = hasArtifactPath;
+        PetTaskCopyPathButton.IsEnabled = hasArtifactPath;
+        PetTaskOpenFolderButton.IsEnabled = hasArtifactPath;
     }
 
     private static bool CanRunReviewedTask(TaskCard card)
@@ -1439,7 +1571,8 @@ internal sealed record PetTaskQueueRowItem(
     string ToolFamily,
     TaskCardStatus Status,
     string RawText,
-    bool CanExecute);
+    bool CanExecute,
+    string AuditLogPath);
 
 internal sealed record DevConditionOption(
     string Id,

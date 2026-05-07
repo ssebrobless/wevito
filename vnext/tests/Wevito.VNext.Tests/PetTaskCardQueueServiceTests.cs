@@ -197,6 +197,47 @@ public sealed class PetTaskCardQueueServiceTests
         Assert.Contains(updatedCard?.Timeline ?? [], entry => entry.StartsWith("adapter_completed:", StringComparison.Ordinal));
     }
 
+    [Fact]
+    public void ResolveArtifactReportPath_AllowsRunSummaryUnderPetTasksRoot()
+    {
+        var repoRoot = Path.Combine(Path.GetTempPath(), "wevito-artifact-control-tests", Guid.NewGuid().ToString("N"));
+        var reportPath = Path.Combine(repoRoot, "vnext", "artifacts", "pet-tasks", "20260506-local-docs", "run-summary.md");
+        Directory.CreateDirectory(Path.GetDirectoryName(reportPath)!);
+        File.WriteAllText(reportPath, "# report");
+
+        var resolution = PetTaskCardQueueService.ResolveArtifactReportPath(reportPath, repoRoot);
+
+        Assert.True(resolution.IsAllowed, resolution.BlockReason);
+        Assert.Equal(Path.GetFullPath(reportPath), resolution.ReportPath);
+        Assert.Equal(Path.GetDirectoryName(Path.GetFullPath(reportPath)), resolution.ArtifactFolder);
+    }
+
+    [Fact]
+    public void ResolveArtifactReportPath_ResolvesDirectoryToRunSummary()
+    {
+        var repoRoot = Path.Combine(Path.GetTempPath(), "wevito-artifact-control-tests", Guid.NewGuid().ToString("N"));
+        var artifactFolder = Path.Combine(repoRoot, "vnext", "artifacts", "pet-tasks", "20260506-local-docs");
+        Directory.CreateDirectory(artifactFolder);
+
+        var resolution = PetTaskCardQueueService.ResolveArtifactReportPath(artifactFolder, repoRoot);
+
+        Assert.True(resolution.IsAllowed, resolution.BlockReason);
+        Assert.Equal(Path.Combine(Path.GetFullPath(artifactFolder), "run-summary.md"), resolution.ReportPath);
+        Assert.Equal(Path.GetFullPath(artifactFolder), resolution.ArtifactFolder);
+    }
+
+    [Fact]
+    public void ResolveArtifactReportPath_BlocksPathOutsidePetTasksRoot()
+    {
+        var repoRoot = Path.Combine(Path.GetTempPath(), "wevito-artifact-control-tests", Guid.NewGuid().ToString("N"));
+        var outsideReport = Path.Combine(repoRoot, "docs", "run-summary.md");
+
+        var resolution = PetTaskCardQueueService.ResolveArtifactReportPath(outsideReport, repoRoot);
+
+        Assert.False(resolution.IsAllowed);
+        Assert.Contains("outside artifact root", resolution.BlockReason);
+    }
+
     private static TaskCard BuildCard(string rawText, DateTimeOffset timestamp)
     {
         var intent = new TaskIntent(
