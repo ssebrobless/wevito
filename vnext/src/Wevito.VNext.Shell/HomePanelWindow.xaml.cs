@@ -36,6 +36,8 @@ public partial class HomePanelWindow : Window
 
     public event Func<Task>? OpenSpriteWorkflowV2Requested;
 
+    public event Func<Task>? OpenCreativeLearningLabRequested;
+
     public event Func<Task>? SaveRequested;
 
     public event Func<Task>? OpenSettingsRequested;
@@ -145,11 +147,11 @@ public partial class HomePanelWindow : Window
             ? FontWeights.SemiBold
             : FontWeights.Normal;
         WebToolSlot3Button.Content = "SPRITES";
-        WebToolSlot4Button.Content = "EMPTY";
+        WebToolSlot4Button.Content = "LAB";
         WebToolSlot5Button.Content = "EMPTY";
         WebToolsHintText.Text = state.BasketItems.Count switch
         {
-            0 => "Link Bin and Pet Tasks are ready. Remaining slots are reserved for future tools.",
+            0 => "Link Bin, Pet Tasks, Sprites, and Lab are ready. One slot is reserved for future tools.",
             1 => "Link Bin has 1 saved link. Pet Tasks can draft helper assignments.",
             _ => $"Link Bin has {state.BasketItems.Count} saved links. Pet Tasks can draft helper assignments."
         };
@@ -278,6 +280,16 @@ public partial class HomePanelWindow : Window
         }
 
         if (await TryInvokeButtonAsync(HelperTabButton, localPoint, ToggleHelpersRequested))
+        {
+            return true;
+        }
+
+        if (await TryInvokeButtonAsync(WebToolSlot3Button, localPoint, OpenSpriteWorkflowV2Requested))
+        {
+            return true;
+        }
+
+        if (await TryInvokeButtonAsync(WebToolSlot4Button, localPoint, OpenCreativeLearningLabRequested))
         {
             return true;
         }
@@ -2109,6 +2121,14 @@ public partial class HomePanelWindow : Window
         if (OpenSpriteWorkflowV2Requested is not null)
         {
             await OpenSpriteWorkflowV2Requested.Invoke();
+        }
+    }
+
+    private async void WebToolSlot4Button_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (OpenCreativeLearningLabRequested is not null)
+        {
+            await OpenCreativeLearningLabRequested.Invoke();
         }
     }
 
