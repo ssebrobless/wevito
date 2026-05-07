@@ -478,6 +478,11 @@ public partial class ToolPopupWindow : Window
 
     private static string FormatScreenCaptureRunMessage(string rawText)
     {
+        if (ScreenCaptureTargetResolver.IsRecordingRequest(rawText))
+        {
+            return "Next: open the preview report, then RUN only if you want a 5-10 second no-audio Wevito-window proof clip.";
+        }
+
         var target = ScreenCaptureTargetResolver.ResolveTarget(rawText);
         return target.TargetKind switch
         {
@@ -1410,6 +1415,11 @@ public partial class ToolPopupWindow : Window
 
     private static bool IsExecutableScreenCaptureRequest(string rawText)
     {
+        if (ScreenCaptureTargetResolver.IsRecordingRequest(rawText))
+        {
+            return IsWevitoWindowCaptureRequest(rawText) && !IsRegionCaptureRequest(rawText);
+        }
+
         return IsWevitoWindowCaptureRequest(rawText) ||
                IsRegionCaptureRequest(rawText);
     }

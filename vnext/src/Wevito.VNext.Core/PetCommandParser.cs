@@ -285,7 +285,9 @@ public sealed class PetCommandParser
             normalized.Contains("screen capture") ||
             normalized.Contains("capture screen") ||
             normalized.Contains("record screen") ||
-            normalized.Contains("screen recording"))
+            normalized.Contains("screen recording") ||
+            normalized.Contains("proof clip") ||
+            (normalized.Contains("record") && (normalized.Contains("wevito") || normalized.Contains("window"))))
         {
             var target = ScreenCaptureTargetResolver.ResolveTarget(commandBody);
             var targetLabel = target.TargetKind switch

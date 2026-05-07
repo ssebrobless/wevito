@@ -41,4 +41,21 @@ internal sealed class FakeScreenCaptureBackend : IScreenCaptureBackend
             RedactionState: "fake region backend",
             Warnings: []));
     }
+
+    public Task<ScreenCaptureBackendResult> CaptureWevitoWindowClipAsync(
+        string outputPath,
+        TimeSpan duration,
+        IProgress<TimeSpan>? remainingProgress = null,
+        CancellationToken cancellationToken = default)
+    {
+        File.WriteAllBytes(outputPath, [0x00, 0x00, 0x00, 0x18, 0x66, 0x74, 0x79, 0x70, 0x69, 0x73, 0x6F, 0x6D]);
+        remainingProgress?.Report(TimeSpan.Zero);
+        return Task.FromResult(new ScreenCaptureBackendResult(
+            true,
+            "Wevito Home Panel",
+            new CaptureRegion(10, 20, 320, 240),
+            IndicatorVisible: true,
+            RedactionState: "fake clip backend",
+            Warnings: ["fake deterministic clip"]));
+    }
 }

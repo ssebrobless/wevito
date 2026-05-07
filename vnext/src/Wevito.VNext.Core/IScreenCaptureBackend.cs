@@ -7,6 +7,12 @@ public interface IScreenCaptureBackend
     Task<ScreenCaptureBackendResult> CaptureWevitoWindowAsync(string outputPath, CancellationToken cancellationToken = default);
 
     Task<ScreenCaptureBackendResult> CaptureRegionAsync(CaptureRegion region, string outputPath, CancellationToken cancellationToken = default);
+
+    Task<ScreenCaptureBackendResult> CaptureWevitoWindowClipAsync(
+        string outputPath,
+        TimeSpan duration,
+        IProgress<TimeSpan>? remainingProgress = null,
+        CancellationToken cancellationToken = default);
 }
 
 public sealed record ScreenCaptureBackendResult(

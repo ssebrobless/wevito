@@ -916,6 +916,11 @@ internal sealed class ShellCoordinator : IAsyncDisposable
                 return BuildBlockedScreenCaptureResult(request, "No last screenshot region has been saved yet.", timestamp);
             }
 
+            if (ScreenCaptureTargetResolver.IsRecordingRequest(card.Intent.RawText))
+            {
+                return await ExecuteScreenRecordingAsync(request, timestamp, region.Region);
+            }
+
             return await _screenCaptureExecutionAdapter.ExecuteAsync(request, timestamp, region.Region);
         }
 
@@ -961,6 +966,21 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         return new ScreenCaptureRegionResolution(ScreenCaptureRegionStatus.Ready, null);
     }
 
+    private async Task<TaskAdapterResult> ExecuteScreenRecordingAsync(TaskAdapterRequest request, DateTimeOffset timestamp, CaptureRegion? region)
+    {
+        var indicator = new RecordingIndicatorWindow(_homeWindow);
+        var progress = new Progress<TimeSpan>(indicator.UpdateRemaining);
+        try
+        {
+            indicator.ShowNear(_homeWindow, TimeSpan.FromSeconds(5));
+            return await _screenCaptureExecutionAdapter.ExecuteAsync(request, timestamp, region, progress);
+        }
+        finally
+        {
+            indicator.Close();
+        }
+    }
+
     private static TaskAdapterResult BuildBlockedScreenCaptureResult(TaskAdapterRequest request, string reason, DateTimeOffset timestamp)
     {
         return new TaskAdapterResult(
@@ -976,6 +996,11 @@ internal sealed class ShellCoordinator : IAsyncDisposable
 
     private static bool IsExecutableScreenCaptureRequest(string rawText)
     {
+        if (ScreenCaptureTargetResolver.IsRecordingRequest(rawText))
+        {
+            return IsWevitoWindowCaptureRequest(rawText) && !IsRegionCaptureRequest(rawText);
+        }
+
         return IsWevitoWindowCaptureRequest(rawText) ||
                IsRegionCaptureRequest(rawText);
     }
@@ -1035,7 +1060,11 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private static string ResolvePetTaskArtifactRoot(TaskCard card, DateTimeOffset timestamp)
     {
         var repoRoot = ResolveRepoRootOrBaseDirectory();
-        var slug = $"{timestamp:yyyyMMdd-HHmmss}-{SanitizeArtifactSlug(card.ToolFamily)}-{SanitizeArtifactSlug(card.Intent.TaskKind.ToString())}";
+        var taskSlug = string.Equals(card.ToolFamily, "screenCapture", StringComparison.OrdinalIgnoreCase) &&
+            ScreenCaptureTargetResolver.IsRecordingRequest(card.Intent.RawText)
+                ? "clip"
+                : SanitizeArtifactSlug(card.Intent.TaskKind.ToString());
+        var slug = $"{timestamp:yyyyMMdd-HHmmss}-{SanitizeArtifactSlug(card.ToolFamily)}-{taskSlug}";
         return Path.Combine(repoRoot, "vnext", "artifacts", "pet-tasks", slug);
     }
 

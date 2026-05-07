@@ -28,7 +28,7 @@ public sealed class ScreenCapturePreviewAdapterTests
         Assert.False(report.DidRecordScreen);
         Assert.False(report.DidMutate);
         Assert.Contains(report.Capabilities, capability => capability.ActionKind == ScreenCaptureActionKind.WindowScreenshot && capability.ApprovalRequirement == ApprovalRequirement.BeforeExecution);
-        Assert.Contains(report.Capabilities, capability => capability.ActionKind == ScreenCaptureActionKind.ScreenRecording && capability.Status == ScreenCaptureCapabilityStatus.Blocked);
+        Assert.Contains(report.Capabilities, capability => capability.ActionKind == ScreenCaptureActionKind.ScreenRecording && capability.Status == ScreenCaptureCapabilityStatus.ApprovalRequired);
     }
 
     [Fact]
@@ -58,6 +58,23 @@ public sealed class ScreenCapturePreviewAdapterTests
         Assert.NotNull(report);
         Assert.Contains("selected-region", report.RequestedCaptureSummary, StringComparison.OrdinalIgnoreCase);
         Assert.False(report.DidCaptureScreen);
+    }
+
+    [Fact]
+    public void BuildPreview_DescribesWevitoProofClipWithoutRecording()
+    {
+        var tempRoot = CreateTempRoot();
+        var artifactRoot = Path.Combine(tempRoot, "vnext", "artifacts", "pet-tasks", "20260505-152000-screen-capture");
+
+        var result = _adapter.BuildPreview(BuildRequest(artifactRoot, "record the Wevito window for 5 seconds"));
+
+        Assert.Equal(TaskAdapterResultStatus.PreviewReady, result.Status);
+        var report = JsonSerializer.Deserialize<ScreenCapturePreviewReport>(
+            File.ReadAllText(Path.Combine(artifactRoot, "screen-capture-preview-report.json")),
+            JsonDefaults.Options);
+        Assert.NotNull(report);
+        Assert.Contains("proof clip", report.RequestedCaptureSummary, StringComparison.OrdinalIgnoreCase);
+        Assert.False(report.DidRecordScreen);
     }
 
     private static TaskAdapterRequest BuildRequest(

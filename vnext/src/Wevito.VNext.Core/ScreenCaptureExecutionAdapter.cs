@@ -18,6 +18,7 @@ public sealed class ScreenCaptureExecutionAdapter
         TaskAdapterRequest request,
         DateTimeOffset? nowUtc = null,
         CaptureRegion? region = null,
+        IProgress<TimeSpan>? recordingProgress = null,
         CancellationToken cancellationToken = default)
     {
         var timestamp = nowUtc ?? DateTimeOffset.UtcNow;
@@ -45,6 +46,11 @@ public sealed class ScreenCaptureExecutionAdapter
             return Block(request, $"Screen capture target {captureRequest.TargetKind} requires a selected region.", timestamp);
         }
 
+        if (captureRequest.IsRecording && captureRequest.TargetKind != CaptureTargetKind.WevitoWindow)
+        {
+            return Block(request, "Screen recording is limited to the Wevito window in this phase.", timestamp);
+        }
+
         var policyDecision = new CapturePolicyEvaluator().Evaluate(captureRequest);
         if (policyDecision.Status != ToolPolicyDecisionStatus.ApprovalRequired ||
             policyDecision.RiskLevel != ToolRiskLevel.Medium ||
@@ -60,7 +66,7 @@ public sealed class ScreenCaptureExecutionAdapter
         }
 
         Directory.CreateDirectory(artifactRoot);
-        var screenshotPath = Path.Combine(artifactRoot, "screenshot.png");
+        var outputPath = Path.Combine(artifactRoot, captureRequest.OutputKind == CaptureOutputKind.ClipMp4 ? "clip.mp4" : "screenshot.png");
         var manifestPath = Path.Combine(artifactRoot, "manifest.json");
         var summaryPath = Path.Combine(artifactRoot, "run-summary.md");
 
@@ -69,10 +75,12 @@ public sealed class ScreenCaptureExecutionAdapter
         {
             backendResult = captureRequest.TargetKind switch
             {
+                CaptureTargetKind.WevitoWindow when captureRequest.IsRecording =>
+                    await _backend.CaptureWevitoWindowClipAsync(outputPath, ResolveClipDuration(request.Intent.RawText), recordingProgress, cancellationToken).ConfigureAwait(false),
                 CaptureTargetKind.SelectedRegion or CaptureTargetKind.LastRegion when captureRequest.Region is { } selectedRegion =>
-                    await _backend.CaptureRegionAsync(selectedRegion, screenshotPath, cancellationToken).ConfigureAwait(false),
+                    await _backend.CaptureRegionAsync(selectedRegion, outputPath, cancellationToken).ConfigureAwait(false),
                 CaptureTargetKind.WevitoWindow =>
-                    await _backend.CaptureWevitoWindowAsync(screenshotPath, cancellationToken).ConfigureAwait(false),
+                    await _backend.CaptureWevitoWindowAsync(outputPath, cancellationToken).ConfigureAwait(false),
                 _ => throw new NotSupportedException($"Screen capture target {captureRequest.TargetKind} is not executable in this phase.")
             };
         }
@@ -81,9 +89,9 @@ public sealed class ScreenCaptureExecutionAdapter
             return Block(request, $"Screen capture unavailable: {exception.Message}", timestamp);
         }
 
-        if (!backendResult.DidCapture || !File.Exists(screenshotPath))
+        if (!backendResult.DidCapture || !File.Exists(outputPath))
         {
-            return Block(request, "Screen capture backend did not produce screenshot.png.", timestamp);
+            return Block(request, $"Screen capture backend did not produce {Path.GetFileName(outputPath)}.", timestamp);
         }
 
         var manifest = new ScreenCaptureExecutionManifest(
@@ -95,7 +103,7 @@ public sealed class ScreenCaptureExecutionAdapter
             captureRequest.OutputKind,
             captureRequest.PrivacyLevel,
             artifactRoot,
-            screenshotPath,
+            outputPath,
             manifestPath,
             summaryPath,
             backendResult.TargetWindowTitle,
@@ -115,7 +123,7 @@ public sealed class ScreenCaptureExecutionAdapter
             TaskAdapterResultStatus.Completed,
             DidMutate: false,
             ReadPaths: [],
-            WrittenPaths: [screenshotPath, manifestPath, summaryPath],
+            WrittenPaths: [outputPath, manifestPath, summaryPath],
             ResultSummary: $"screenCapture execution complete: {summaryPath}",
             AuditLogPath: summaryPath,
             CompletedAtUtc: timestamp);
@@ -139,6 +147,16 @@ public sealed class ScreenCaptureExecutionAdapter
 
         var slug = timestamp.ToString("yyyyMMdd-HHmmss") + "-screencapture-execute";
         return Path.GetFullPath(Path.Combine("vnext", "artifacts", "pet-tasks", slug));
+    }
+
+    private static TimeSpan ResolveClipDuration(string rawText)
+    {
+        var normalized = rawText ?? string.Empty;
+        var seconds = System.Text.RegularExpressions.Regex.Match(normalized, @"\b(?<seconds>\d{1,2})\s*(?:s|sec|secs|second|seconds)\b", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+        var requestedSeconds = seconds.Success && int.TryParse(seconds.Groups["seconds"].Value, out var parsed)
+            ? parsed
+            : 5;
+        return TimeSpan.FromSeconds(Math.Clamp(requestedSeconds, 1, 10));
     }
 
     private static bool IsSafePetTaskArtifactRoot(string artifactRoot)
@@ -166,6 +184,7 @@ public sealed class ScreenCaptureExecutionAdapter
             $"- Target: {manifest.TargetKind}",
             $"- Window title: {manifest.TargetWindowTitle}",
             $"- Output: {manifest.OutputPath}",
+            $"- Output kind: {manifest.OutputKind}",
             $"- OS capture indicator expected/visible: {manifest.IndicatorVisible}",
             $"- Redaction state: {manifest.RedactionState}",
             $"- Did upload/share: {manifest.DidUploadOrShare}",

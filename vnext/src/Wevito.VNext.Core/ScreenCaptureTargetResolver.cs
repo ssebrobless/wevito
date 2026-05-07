@@ -11,17 +11,18 @@ public static class ScreenCaptureTargetResolver
         CaptureRegion? region = null)
     {
         var target = ResolveTarget(rawText);
+        var isRecording = IsRecordingRequest(rawText);
         return new CaptureRequest(
             Guid.NewGuid(),
-            target.Preset,
+            isRecording ? CapturePreset.ShortRecording : target.Preset,
             target.TargetKind,
-            CaptureOutputKind.ScreenshotPng,
+            isRecording ? CaptureOutputKind.ClipMp4 : CaptureOutputKind.ScreenshotPng,
             target.PrivacyLevel,
             taskCardId,
             region,
             IncludeCursor: false,
             IncludeOverlayMetadata: true,
-            IsRecording: false,
+            IsRecording: isRecording,
             IsExternalShareRequested: false,
             CreatedAtUtc: createdAtUtc);
     }
@@ -57,6 +58,17 @@ public static class ScreenCaptureTargetResolver
             CapturePreset.WevitoWindow,
             CaptureTargetKind.WevitoWindow,
             CapturePrivacyLevel.WevitoOnly);
+    }
+
+    public static bool IsRecordingRequest(string rawText)
+    {
+        var normalized = (rawText ?? string.Empty).Trim().ToLowerInvariant();
+        return normalized.Contains("record") ||
+               normalized.Contains("recording") ||
+               normalized.Contains("proof clip") ||
+               normalized.Contains("video clip") ||
+               normalized.Contains("clip.mp4") ||
+               normalized.Contains("mp4");
     }
 }
 

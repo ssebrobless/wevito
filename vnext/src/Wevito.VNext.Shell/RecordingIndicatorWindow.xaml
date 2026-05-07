@@ -1,0 +1,36 @@
+<Window x:Class="Wevito.VNext.Shell.RecordingIndicatorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Wevito Recording Indicator"
+        Width="220"
+        Height="72"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        Topmost="True"
+        AllowsTransparency="True"
+        Background="Transparent">
+    <Border CornerRadius="18"
+            Padding="16,10"
+            Background="#E6111724"
+            BorderBrush="#FFFF6B6B"
+            BorderThickness="2">
+        <StackPanel Orientation="Horizontal"
+                    VerticalAlignment="Center">
+            <Ellipse Width="14"
+                     Height="14"
+                     Fill="#FFFF4D4D"
+                     Margin="0,0,10,0" />
+            <StackPanel>
+                <TextBlock Text="WEVITO RECORDING"
+                           Foreground="White"
+                           FontWeight="Bold"
+                           FontSize="13" />
+                <TextBlock x:Name="CountdownText"
+                           Text="00:05 remaining"
+                           Foreground="#FFBBD7FF"
+                           FontSize="12" />
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</Window>
