@@ -269,6 +269,10 @@ public sealed class PetCommandParser
             normalized.Contains("volume") ||
             normalized.Contains("mute") ||
             normalized.Contains("unmute") ||
+            normalized.Contains("boost") ||
+            normalized.Contains("equalizer") ||
+            normalized.Contains("fxsound") ||
+            normalized.Contains("apo") ||
             normalized.Contains("sound boost") ||
             normalized.Contains("volume boost"))
         {
