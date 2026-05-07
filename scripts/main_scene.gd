@@ -1651,7 +1651,13 @@ func _run_automation_suite():
 			await get_tree().process_frame
 			var pet_stage_position = get_pet_home_position_for_node(habitat_pet, "home")
 			if habitat_pet.sprite and habitat_pet.sprite.texture:
-				pet_stage_position.y -= habitat_pet.sprite.texture.get_size().y * habitat_pet.sprite.scale.y * 0.5
+				var texture_extent = habitat_pet.sprite.texture.get_size() * habitat_pet.sprite.scale * 0.5
+				pet_stage_position.y -= texture_extent.y
+				var proof_slots = _get_environment_slot_rects(float(get_window().size.x), float(get_window().size.y), 1)
+				if not proof_slots.is_empty():
+					var proof_slot = proof_slots[0]
+					pet_stage_position.x = clamp(pet_stage_position.x, proof_slot.position.x + texture_extent.x, proof_slot.end.x - texture_extent.x)
+					pet_stage_position.y = clamp(pet_stage_position.y, proof_slot.position.y + texture_extent.y, proof_slot.end.y - texture_extent.y)
 			habitat_pet.position = pet_stage_position
 			habitat_pet.pet_data.position = habitat_pet.position
 			habitat_pet.pet_data.target_position = habitat_pet.position
@@ -2460,6 +2466,9 @@ func _get_environment_slot_rects(window_width: float, window_height: float, coun
 	var slots: Array[Rect2] = []
 	var c = max(1, count)
 	if habitat_proof_mode:
+		var viewport_size = get_viewport().get_visible_rect().size if get_viewport() else Vector2(window_width, window_height)
+		window_width = viewport_size.x
+		window_height = viewport_size.y
 		var proof_w = clamp(window_width * 0.78, 248.0, 420.0)
 		var proof_h = clamp(window_height * 0.62, 220.0, 300.0)
 		slots.append(Rect2(Vector2((window_width - proof_w) * 0.5, (window_height - proof_h) * 0.5), Vector2(proof_w, proof_h)))
@@ -3510,6 +3519,9 @@ func _current_celestial_texture_path() -> String:
 
 func _update_celestial_layout():
 	if celestial_sprite == null:
+		return
+	if habitat_proof_mode:
+		celestial_sprite.visible = false
 		return
 	if environment_stages.is_empty() or game_manager == null or game_manager.get_pet_count() == 0:
 		celestial_sprite.visible = false
