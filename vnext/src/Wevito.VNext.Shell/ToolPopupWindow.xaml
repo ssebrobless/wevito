@@ -802,20 +802,23 @@
                                         Style="{StaticResource PopupButtonStyle}"
                                         automation:AutomationProperties.AutomationId="PetTaskOpenReportButton"
                                         Content="Open Report"
-                                        IsEnabled="False" />
+                                        IsEnabled="False"
+                                        Click="PetTaskOpenReportButton_OnClick" />
                                 <Button x:Name="PetTaskCopyPathButton"
                                         Margin="0,0,6,0"
                                         Padding="8,4"
                                         Style="{StaticResource PopupButtonStyle}"
                                         automation:AutomationProperties.AutomationId="PetTaskCopyPathButton"
                                         Content="Copy Path"
-                                        IsEnabled="False" />
+                                        IsEnabled="False"
+                                        Click="PetTaskCopyPathButton_OnClick" />
                                 <Button x:Name="PetTaskOpenFolderButton"
                                         Padding="8,4"
                                         Style="{StaticResource PopupButtonStyle}"
                                         automation:AutomationProperties.AutomationId="PetTaskOpenFolderButton"
                                         Content="Open Folder"
-                                        IsEnabled="False" />
+                                        IsEnabled="False"
+                                        Click="PetTaskOpenFolderButton_OnClick" />
                             </UniformGrid>
                             <TextBlock Text="Timeline"
                                        Margin="0,5,0,0"

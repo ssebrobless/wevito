@@ -2,6 +2,12 @@ using Wevito.VNext.Contracts;
 
 namespace Wevito.VNext.Core;
 
+public sealed record PetTaskArtifactPathResolution(
+    bool IsAllowed,
+    string ReportPath,
+    string ArtifactFolder,
+    string BlockReason);
+
 public sealed class PetTaskCardQueueService
 {
     public const int DefaultMaxCards = 25;
@@ -148,6 +154,61 @@ public sealed class PetTaskCardQueueService
         return true;
     }
 
+    public static PetTaskArtifactPathResolution ResolveArtifactReportPath(string auditLogPath, string repoRoot)
+    {
+        if (string.IsNullOrWhiteSpace(auditLogPath))
+        {
+            return Block("No report path is available for the selected task card.");
+        }
+
+        if (string.IsNullOrWhiteSpace(repoRoot))
+        {
+            return Block("Project root is not available for artifact path validation.");
+        }
+
+        string canonicalRepoRoot;
+        string canonicalReportPath;
+        string canonicalArtifactRoot;
+        try
+        {
+            canonicalRepoRoot = Path.GetFullPath(repoRoot);
+            canonicalArtifactRoot = Path.GetFullPath(Path.Combine(canonicalRepoRoot, "vnext", "artifacts", "pet-tasks"));
+            canonicalReportPath = Path.GetFullPath(auditLogPath);
+        }
+        catch (Exception exception) when (exception is ArgumentException or NotSupportedException or PathTooLongException)
+        {
+            return Block("Report path could not be canonicalized safely.");
+        }
+
+        if (!IsPathUnderRoot(canonicalReportPath, canonicalArtifactRoot))
+        {
+            return Block("blocked: path outside artifact root");
+        }
+
+        var reportPath = Directory.Exists(canonicalReportPath)
+            ? Path.Combine(canonicalReportPath, "run-summary.md")
+            : canonicalReportPath;
+
+        var artifactFolder = Directory.Exists(canonicalReportPath)
+            ? canonicalReportPath
+            : Path.GetDirectoryName(canonicalReportPath) ?? canonicalArtifactRoot;
+
+        if (!string.Equals(Path.GetFileName(reportPath), "run-summary.md", StringComparison.OrdinalIgnoreCase))
+        {
+            var siblingReport = Path.Combine(artifactFolder, "run-summary.md");
+            if (File.Exists(siblingReport))
+            {
+                reportPath = siblingReport;
+            }
+        }
+
+        return new PetTaskArtifactPathResolution(
+            true,
+            reportPath,
+            artifactFolder,
+            "");
+    }
+
     private static bool CanTransition(TaskCardStatus current, TaskCardStatus next)
     {
         if (current == next)
@@ -176,5 +237,16 @@ public sealed class PetTaskCardQueueService
         }
 
         return result.BlockReason;
+    }
+
+    private static PetTaskArtifactPathResolution Block(string reason)
+    {
+        return new PetTaskArtifactPathResolution(false, "", "", reason);
+    }
+
+    private static bool IsPathUnderRoot(string path, string root)
+    {
+        var normalizedRoot = root.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar) + Path.DirectorySeparatorChar;
+        return path.StartsWith(normalizedRoot, StringComparison.OrdinalIgnoreCase);
     }
 }
