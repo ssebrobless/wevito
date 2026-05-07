@@ -113,6 +113,12 @@ public sealed class AudioAssistPreviewAdapter
                 ApprovalRequirement.None,
                 "Can provide safe guidance for external boost/equalizer tools without changing the system."),
             new AudioAssistCapability(
+                AudioAssistActionKind.BoostHandoff,
+                AudioAssistCapabilityStatus.Available,
+                ToolRiskLevel.Low,
+                ApprovalRequirement.None,
+                "Can detect FxSound / Equalizer APO evidence and write a handoff guide without installing or editing configs."),
+            new AudioAssistCapability(
                 AudioAssistActionKind.ExternalEnhancerHandoff,
                 AudioAssistCapabilityStatus.Blocked,
                 ToolRiskLevel.High,

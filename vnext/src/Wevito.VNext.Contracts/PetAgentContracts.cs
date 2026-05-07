@@ -197,7 +197,15 @@ public enum AudioAssistActionKind
     Mute,
     Unmute,
     BoostGuide,
+    BoostHandoff,
     ExternalEnhancerHandoff
+}
+
+public enum AudioBoostDetectionStatus
+{
+    Installed,
+    Partial,
+    NotInstalled
 }
 
 public enum AudioAssistCapabilityStatus
@@ -630,6 +638,23 @@ public sealed record AudioAssistExecutionReport(
     IReadOnlyList<string> SafetyNotes,
     bool DidChangeAudio,
     bool DidMutateFiles,
+    DateTimeOffset GeneratedAtUtc);
+
+public sealed record AudioBoostToolStatus(
+    string ToolName,
+    AudioBoostDetectionStatus Status,
+    IReadOnlyList<string> Evidence,
+    string OfficialUrl,
+    string Detail);
+
+public sealed record AudioBoostHandoffReport(
+    string SchemaVersion,
+    Guid TaskCardId,
+    string ToolFamily,
+    IReadOnlyList<AudioBoostToolStatus> Tools,
+    IReadOnlyList<string> SafetyNotes,
+    bool DidInstallOrConfigure,
+    bool DidMutate,
     DateTimeOffset GeneratedAtUtc);
 
 public sealed record ScreenCaptureCapability(

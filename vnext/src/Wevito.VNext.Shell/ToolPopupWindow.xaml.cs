@@ -451,6 +451,7 @@ public partial class ToolPopupWindow : Window
             TaskCardStatus.Reviewing when string.Equals(card.ToolFamily, "translateText", StringComparison.OrdinalIgnoreCase) => "Next: open the preview report, then RUN only if you approve sending this text to the configured provider.",
             TaskCardStatus.Reviewing when string.Equals(card.ToolFamily, "screenCapture", StringComparison.OrdinalIgnoreCase) && CanRunReviewedTask(card) => FormatScreenCaptureRunMessage(card.Intent.RawText),
             TaskCardStatus.Reviewing when string.Equals(card.ToolFamily, "audioAssist", StringComparison.OrdinalIgnoreCase) && CanRunReviewedTask(card) => "Next: open the preview report, then RUN only if you approve changing normal Windows volume/mute state.",
+            TaskCardStatus.Reviewing when string.Equals(card.ToolFamily, "audioAssist", StringComparison.OrdinalIgnoreCase) && IsAudioBoostHandoff(card.Intent.RawText) => "Next: open the audio boost setup guide. Wevito will not install software or edit enhancer/APO configs.",
             TaskCardStatus.Reviewing when string.Equals(card.ToolFamily, "audioAssist", StringComparison.OrdinalIgnoreCase) => "Next: open the audio status report. Execution is only for set volume, mute, or unmute requests.",
             TaskCardStatus.Reviewing => "Next: open the artifact/report, then approve, revise, or cancel.",
             TaskCardStatus.Blocked => "Next: revise the task or inspect the blocker report.",
@@ -490,6 +491,16 @@ public partial class ToolPopupWindow : Window
             CaptureTargetKind.LastRegion => "Next: open the preview report, then RUN only if you want to recapture the saved last region.",
             _ => "Next: open the preview report, then RUN only if you want a Wevito-window screenshot artifact."
         };
+    }
+
+    private static bool IsAudioBoostHandoff(string rawText)
+    {
+        return rawText.Contains("boost", StringComparison.OrdinalIgnoreCase) ||
+               rawText.Contains("equalizer", StringComparison.OrdinalIgnoreCase) ||
+               rawText.Contains("fxsound", StringComparison.OrdinalIgnoreCase) ||
+               rawText.Contains("apo", StringComparison.OrdinalIgnoreCase) ||
+               rawText.Contains("louder than", StringComparison.OrdinalIgnoreCase) ||
+               rawText.Contains("over 100", StringComparison.OrdinalIgnoreCase);
     }
 
     private static string FormatResultPath(TaskCard card)

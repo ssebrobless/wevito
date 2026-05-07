@@ -24,6 +24,7 @@ public sealed class PetTaskAdapterPreviewDispatcher
     private readonly BuildProofPreviewAdapter _buildProofPreviewAdapter;
     private readonly TranslationPreviewAdapter _translationPreviewAdapter;
     private readonly AudioAssistPreviewAdapter _audioAssistPreviewAdapter;
+    private readonly AudioBoostHandoffAdapter _audioBoostHandoffAdapter;
     private readonly ScreenCapturePreviewAdapter _screenCapturePreviewAdapter;
 
     public PetTaskAdapterPreviewDispatcher(
@@ -36,6 +37,7 @@ public sealed class PetTaskAdapterPreviewDispatcher
         BuildProofPreviewAdapter? buildProofPreviewAdapter = null,
         TranslationPreviewAdapter? translationPreviewAdapter = null,
         AudioAssistPreviewAdapter? audioAssistPreviewAdapter = null,
+        AudioBoostHandoffAdapter? audioBoostHandoffAdapter = null,
         ScreenCapturePreviewAdapter? screenCapturePreviewAdapter = null)
     {
         _localDocsPreviewAdapter = localDocsPreviewAdapter ?? new LocalDocsPreviewAdapter();
@@ -47,6 +49,7 @@ public sealed class PetTaskAdapterPreviewDispatcher
         _buildProofPreviewAdapter = buildProofPreviewAdapter ?? new BuildProofPreviewAdapter();
         _translationPreviewAdapter = translationPreviewAdapter ?? new TranslationPreviewAdapter();
         _audioAssistPreviewAdapter = audioAssistPreviewAdapter ?? new AudioAssistPreviewAdapter();
+        _audioBoostHandoffAdapter = audioBoostHandoffAdapter ?? new AudioBoostHandoffAdapter();
         _screenCapturePreviewAdapter = screenCapturePreviewAdapter ?? new ScreenCapturePreviewAdapter();
     }
 
@@ -85,7 +88,9 @@ public sealed class PetTaskAdapterPreviewDispatcher
             var family when string.Equals(family, TranslateTextToolFamily, StringComparison.OrdinalIgnoreCase) =>
                 _translationPreviewAdapter.BuildPreview(request, timestamp),
             var family when string.Equals(family, AudioAssistToolFamily, StringComparison.OrdinalIgnoreCase) =>
-                _audioAssistPreviewAdapter.BuildStatusReport(request, timestamp),
+                IsBoostHandoffRequest(request.Intent.RawText)
+                    ? _audioBoostHandoffAdapter.BuildSetupGuide(request, timestamp)
+                    : _audioAssistPreviewAdapter.BuildStatusReport(request, timestamp),
             var family when string.Equals(family, ScreenCaptureToolFamily, StringComparison.OrdinalIgnoreCase) =>
                 _screenCapturePreviewAdapter.BuildPreview(request, timestamp),
             _ => Block(request, ResolveResultFamily(policyFamily, intentFamily), $"No PET TASKS dry-run preview adapter is registered for tool family '{policyFamily}'.", timestamp)
@@ -97,6 +102,16 @@ public sealed class PetTaskAdapterPreviewDispatcher
         return !string.IsNullOrWhiteSpace(policyFamily)
             ? policyFamily
             : intentFamily;
+    }
+
+    private static bool IsBoostHandoffRequest(string rawText)
+    {
+        return rawText.Contains("boost", StringComparison.OrdinalIgnoreCase) ||
+               rawText.Contains("equalizer", StringComparison.OrdinalIgnoreCase) ||
+               rawText.Contains("fxsound", StringComparison.OrdinalIgnoreCase) ||
+               rawText.Contains("apo", StringComparison.OrdinalIgnoreCase) ||
+               rawText.Contains("louder than", StringComparison.OrdinalIgnoreCase) ||
+               rawText.Contains("over 100", StringComparison.OrdinalIgnoreCase);
     }
 
     private static TaskAdapterResult Block(TaskAdapterRequest request, string toolFamily, string reason, DateTimeOffset timestamp)
