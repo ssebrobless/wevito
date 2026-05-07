@@ -119,13 +119,15 @@
                               Background="#0D1820"
                               BorderBrush="#263E48"
                               Foreground="#F3F7F4"
-                              automation:AutomationProperties.AutomationId="LearningLabArtifactList">
+                              automation:AutomationProperties.AutomationId="LearningLabArtifactList"
+                              SelectionChanged="ArtifactListView_OnSelectionChanged">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn Header="Type" Width="150" DisplayMemberBinding="{Binding ArtifactKind}" />
+                                <GridViewColumn Header="Label" Width="90" DisplayMemberBinding="{Binding Label}" />
                                 <GridViewColumn Header="Status" Width="120" DisplayMemberBinding="{Binding Status}" />
                                 <GridViewColumn Header="Target" Width="180" DisplayMemberBinding="{Binding Target}" />
-                                <GridViewColumn Header="File" Width="330" DisplayMemberBinding="{Binding FileName}" />
+                                <GridViewColumn Header="File" Width="270" DisplayMemberBinding="{Binding FileName}" />
                             </GridView>
                         </ListView.View>
                     </ListView>
@@ -138,10 +140,47 @@
                         <TextBlock Text="Bundle Gate"
                                    FontSize="18"
                                    FontWeight="SemiBold" />
-                        <TextBlock Margin="0,8,0,0"
+                        <TextBlock x:Name="BundleGateText"
+                                   Margin="0,8,0,0"
                                    Foreground="#A7C5C4"
                                    TextWrapping="Wrap"
                                    Text="Waiting for Phase 25 labels. Bundles require provenance, human decisions, intended use, and rollback/deprecation notes." />
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource PanelStyle}" Margin="0,0,0,14">
+                    <StackPanel>
+                        <TextBlock Text="Reviewer Label"
+                                   FontSize="18"
+                                   FontWeight="SemiBold" />
+                        <TextBlock x:Name="SelectedArtifactText"
+                                   Margin="0,8,0,8"
+                                   Foreground="#A7C5C4"
+                                   TextWrapping="Wrap"
+                                   Text="Select an artifact to label it." />
+                        <ComboBox x:Name="LabelComboBox"
+                                  Margin="0,0,0,8"
+                                  automation:AutomationProperties.AutomationId="LearningLabLabelComboBox" />
+                        <TextBox x:Name="ReviewerTextBox"
+                                 Margin="0,0,0,8"
+                                 Height="28"
+                                 Text="code-side"
+                                 automation:AutomationProperties.AutomationId="LearningLabReviewerTextBox" />
+                        <TextBox x:Name="NotesTextBox"
+                                 Margin="0,0,0,8"
+                                 Height="58"
+                                 AcceptsReturn="True"
+                                 TextWrapping="Wrap"
+                                 automation:AutomationProperties.AutomationId="LearningLabNotesTextBox" />
+                        <Button x:Name="SaveLabelButton"
+                                Height="32"
+                                Background="#2D4A52"
+                                BorderBrush="#6EA0A0"
+                                Foreground="#F3F7F4"
+                                FontWeight="SemiBold"
+                                automation:AutomationProperties.AutomationId="LearningLabSaveLabelButton"
+                                Content="Save Label"
+                                Click="SaveLabelButton_OnClick" />
                     </StackPanel>
                 </Border>
 
