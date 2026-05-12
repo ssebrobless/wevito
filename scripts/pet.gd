@@ -583,7 +583,13 @@ func _set_fetch_stage(next_stage: int):
 	animation_frame = 0
 	if fetch_stage == FetchStage.NONE:
 		_current_action_family = "home"
-		current_animation = _first_available_animation(["idle"])
+		_wandering = false
+		_resume_wandering_after_home_lock = false
+		_interaction_timer = 0.0
+		_wander_timer = 2.0
+		if pet_data:
+			pet_data.is_wandering = false
+		current_animation = _first_available_animation(["happy", "idle"])
 		pet_state = PetState.WANDERING
 		return
 	current_animation = _first_available_animation(FETCH_STAGE_ANIMATIONS.get(fetch_stage, ["idle"]))
