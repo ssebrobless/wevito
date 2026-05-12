@@ -150,6 +150,15 @@ public partial class ToolPopupWindow : Window
         CompactHudCheckBox.IsChecked = GetSettingBool(state, "compact_hud");
         ShowPetNamesCheckBox.IsChecked = GetSettingBool(state, "show_pet_names");
         ShowStatusSummaryCheckBox.IsChecked = GetSettingBool(state, "show_status_summary", true);
+        var modelEnabled = GetSettingBool(state, "pet_model_adapter_enabled");
+        var modelFirstCallApproved = GetSettingBool(state, "pet_model_first_call_approved");
+        PetModelAdapterEnabledCheckBox.IsChecked = modelEnabled;
+        PetModelCapabilityStatusText.Text = FormatPetModelCapabilityStatus(modelEnabled, modelFirstCallApproved);
+        PetModelConsentText.Text = FormatPetModelConsentNotice();
+        PetModelConsentStatusText.Text = modelFirstCallApproved
+            ? "Consent acknowledged. Live calls still require a later explicit approval."
+            : "Consent not acknowledged. No live model calls can run.";
+        PetModelFirstCallConsentButton.IsEnabled = !modelFirstCallApproved;
         if (showingDev)
         {
             RenderDevTools(state, content);
@@ -223,6 +232,15 @@ public partial class ToolPopupWindow : Window
             if (TryToggleCheckBox(CompactHudCheckBox, localPoint)) { return true; }
             if (TryToggleCheckBox(ShowPetNamesCheckBox, localPoint)) { return true; }
             if (TryToggleCheckBox(ShowStatusSummaryCheckBox, localPoint)) { return true; }
+            if (TryToggleCheckBox(PetModelAdapterEnabledCheckBox, localPoint)) { return true; }
+            if (await TryInvokeButtonAsync(PetModelFirstCallConsentButton, localPoint, () =>
+                {
+                    PublishSetting("pet_model_first_call_approved", true);
+                    return Task.CompletedTask;
+                }))
+            {
+                return true;
+            }
             if (await TryInvokeButtonAsync(SettingsSaveButton, localPoint, SaveRequested)) { return true; }
             if (await TryInvokeButtonAsync(SettingsDevButton, localPoint, OpenDevRequested)) { return true; }
         }
@@ -830,6 +848,16 @@ public partial class ToolPopupWindow : Window
         PublishSetting("show_status_summary", ShowStatusSummaryCheckBox.IsChecked != false);
     }
 
+    private void PetModelAdapterEnabledCheckBox_OnChanged(object sender, RoutedEventArgs e)
+    {
+        PublishSetting("pet_model_adapter_enabled", PetModelAdapterEnabledCheckBox.IsChecked == true);
+    }
+
+    private void PetModelFirstCallConsentButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        PublishSetting("pet_model_first_call_approved", true);
+    }
+
     private async void SelectedPetComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (_suppressSettingEvents || SelectedPetComboBox.SelectedValue is not Guid petId)
@@ -977,6 +1005,31 @@ public partial class ToolPopupWindow : Window
         }
 
         return defaultValue;
+    }
+
+    private static string FormatPetModelCapabilityStatus(bool modelEnabled, bool firstCallApproved)
+    {
+        if (!modelEnabled)
+        {
+            return "AI helper summaries: Disabled";
+        }
+
+        return firstCallApproved
+            ? "AI helper summaries: Enabled, no live adapter wired in Shell"
+            : "AI helper summaries: Enabled flag set, waiting for first-call consent";
+    }
+
+    private static string FormatPetModelConsentNotice()
+    {
+        var notice = ModelConsentNoticeBuilder.BuildAnthropicNotice();
+        return string.Join(Environment.NewLine, [
+            $"Provider: {notice.Provider}",
+            $"Credential target: {notice.CredentialStorage}",
+            $"Data sent: {notice.WhatIsSent}",
+            $"Local audit: {notice.LocalAuditPath}",
+            $"Allowlist: {notice.AllowlistSummary}",
+            notice.NoToolExecutionStatement
+        ]);
     }
 
     private static ImageSource? ResolveActionOptionPreview(SpriteAssetService assetService, string actionId, HabitatDisplayItem item)

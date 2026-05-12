@@ -22,7 +22,7 @@ public sealed class PetModelSummaryService
         bool approvedForModelCall = false,
         CancellationToken cancellationToken = default)
     {
-        if (_modelAdapter is null || result.Status != TaskAdapterResultStatus.PreviewReady)
+        if (_modelAdapter is null || result.Status != TaskAdapterResultStatus.PreviewReady || !approvedForModelCall)
         {
             return result;
         }

@@ -602,6 +602,50 @@
                               Foreground="#FFF0F4F5"
                               Checked="ShowStatusSummaryCheckBox_OnChanged"
                               Unchecked="ShowStatusSummaryCheckBox_OnChanged" />
+                    <Border Margin="0,12,0,0"
+                            Padding="10"
+                            CornerRadius="10"
+                            BorderBrush="#334F6B7A"
+                            BorderThickness="1"
+                            Background="#1A9FB7C4">
+                        <StackPanel>
+                            <TextBlock x:Name="PetModelCapabilityStatusText"
+                                       automation:AutomationProperties.AutomationId="PetModelCapabilityStatusText"
+                                       Text="AI helper summaries: Disabled"
+                                       Foreground="#FFF0F4F5"
+                                       FontSize="12"
+                                       FontWeight="SemiBold" />
+                            <TextBlock x:Name="PetModelConsentText"
+                                       Margin="0,6,0,0"
+                                       automation:AutomationProperties.AutomationId="PetModelConsentText"
+                                       Foreground="#FFBFD2DC"
+                                       FontSize="10"
+                                       TextWrapping="Wrap" />
+                            <CheckBox x:Name="PetModelAdapterEnabledCheckBox"
+                                      Margin="0,8,0,0"
+                                      Style="{StaticResource PopupCheckBoxStyle}"
+                                      automation:AutomationProperties.AutomationId="PetModelAdapterEnabledCheckBox"
+                                      Content="Enable AI helper summaries after consent"
+                                      Foreground="#FFF0F4F5"
+                                      Checked="PetModelAdapterEnabledCheckBox_OnChanged"
+                                      Unchecked="PetModelAdapterEnabledCheckBox_OnChanged" />
+                            <UniformGrid Margin="0,8,0,0"
+                                         Columns="2">
+                                <Button x:Name="PetModelFirstCallConsentButton"
+                                        Margin="0,0,6,0"
+                                        Style="{StaticResource PopupButtonStyle}"
+                                        automation:AutomationProperties.AutomationId="PetModelFirstCallConsentButton"
+                                        Content="Acknowledge consent"
+                                        Click="PetModelFirstCallConsentButton_OnClick" />
+                                <TextBlock x:Name="PetModelConsentStatusText"
+                                           VerticalAlignment="Center"
+                                           automation:AutomationProperties.AutomationId="PetModelConsentStatusText"
+                                           Foreground="#FFE1D6A8"
+                                           FontSize="10"
+                                           TextWrapping="Wrap" />
+                            </UniformGrid>
+                        </StackPanel>
+                    </Border>
                     <UniformGrid Margin="0,12,0,0"
                                  Columns="2">
                         <Button x:Name="SettingsSaveButton"

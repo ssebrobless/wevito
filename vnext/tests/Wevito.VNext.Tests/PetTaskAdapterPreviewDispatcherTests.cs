@@ -28,6 +28,20 @@ public sealed class PetTaskAdapterPreviewDispatcherTests
     }
 
     [Fact]
+    public void BuildPreview_DoesNotAppendModelSummaryByDefault()
+    {
+        var tempRoot = CreateTempRoot();
+        var docsRoot = Path.Combine(tempRoot, "docs");
+        Directory.CreateDirectory(docsRoot);
+        File.WriteAllText(Path.Combine(docsRoot, "plan.md"), "local docs plan");
+
+        var result = _dispatcher.BuildPreview(BuildRequest("localDocs", TaskKind.SummarizeDocs, docsRoot, [docsRoot]));
+
+        Assert.Equal(TaskAdapterResultStatus.PreviewReady, result.Status);
+        Assert.DoesNotContain("Model suggestion:", result.PreviewSummary, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
     public void BuildPreview_RoutesSpriteAuditRequests()
     {
         var tempRoot = CreateTempRoot();
