@@ -1499,6 +1499,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
                         {
                             PetAgeStage.Teen => 72,
                             PetAgeStage.Adult => 258,
+                            PetAgeStage.Senior => 498,
                             _ => 0
                         }
                         : pet.BiologicalAgeMinutes,

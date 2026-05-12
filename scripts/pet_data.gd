@@ -5,7 +5,7 @@ class_name PetData
 @export var animal_type: String = "rat"
 @export var egg_color: String = "blue"
 @export var gender: String = "male"
-@export var stage: int = 0  # 0=egg, 1=baby, 2=teen, 3=adult
+@export var stage: int = 0  # 0=egg, 1=baby, 2=teen, 3=adult, 4=senior
 
 # Stats (0-100)
 @export var hunger: float = 100.0
@@ -39,6 +39,11 @@ class_name PetData
 # Death info for In Memoriam
 @export var death_sprite_path: String = ""
 @export var age_at_death: int = 0
+@export var death_elapsed_sec: float = 0.0
+@export var is_ghost: bool = false
+@export var memorial_object_id: String = ""
+@export var memorial_position: Vector2 = Vector2.ZERO
+@export var memorial_expires_at: int = 0
 
 # Water bowl
 @export var water_bowl_level: float = 100.0
@@ -98,7 +103,7 @@ func get_stage_name() -> String:
 		1: return "Baby"
 		2: return "Teen"
 		3: return "Adult"
-		4: return "Aging"
+		4: return "Senior"
 		_: return "Adult"
 
 func get_stage_from_age(age_mins: int) -> int:
@@ -111,7 +116,7 @@ func get_stage_from_age(age_mins: int) -> int:
 	elif age_mins < 480:
 		return 3  # Adult (4-8 hours)
 	else:
-		return 4  # Aging (8+ hours)
+		return 4  # Senior (8+ hours)
 
 func update_stage():
 	stage = get_stage_from_age(age_minutes)

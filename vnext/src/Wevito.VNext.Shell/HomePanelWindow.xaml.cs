@@ -189,17 +189,21 @@ public partial class HomePanelWindow : Window
         var renderedInteractionCue = false;
         foreach (var pet in state.ActivePets.Where(pet => state.Mode != CompanionMode.Passive || pet.BehaviorState == PetBehaviorState.Roaming))
         {
-            var source = assetService.GetPetFrame(pet, now);
+            RenderMemorialIfActive(pet, now, stageRect, assetService);
+            var ghostFrame = pet.IsGhost ? assetService.GetGhostPetFrame(pet, now) : null;
+            var source = ghostFrame ?? assetService.GetPetFrame(pet, now);
             if (source is null)
             {
                 continue;
             }
 
+            var usesGenericGhostOverlay = pet.IsGhost && ghostFrame is null;
             var scale = assetService.GetPetScale(pet);
             var bitmap = source as BitmapSource;
             var width = (bitmap?.PixelWidth ?? 28) * scale;
             var height = (bitmap?.PixelHeight ?? 24) * scale;
             var image = CreateSpriteImage(source, width, height, pet.FacingDirection == PetFacingDirection.Left);
+            image.Opacity = pet.IsGhost ? (usesGenericGhostOverlay ? 0.44 : 0.82) : pet.IsDead ? 0.58 : 1.0;
             var localX = Math.Round(pet.CurrentX - Left - stageRect.X - width / 2);
             var localY = Math.Round(pet.CurrentY - Top - stageRect.Y - height);
             if (focusPet is not null &&
@@ -225,6 +229,27 @@ public partial class HomePanelWindow : Window
             Canvas.SetZIndex(image, HabitatDepthOrder.GetZIndex(DepthBand.PetBody));
             HomePetCanvas.Children.Add(image);
 
+            if (pet.AgeStage == PetAgeStage.Senior && !pet.IsGhost)
+            {
+                var seniorTint = new Rectangle
+                {
+                    Width = width,
+                    Height = height,
+                    Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#8F9AA0")),
+                    Opacity = 0.16,
+                    IsHitTestVisible = false
+                };
+                Canvas.SetLeft(seniorTint, localX);
+                Canvas.SetTop(seniorTint, localY);
+                Canvas.SetZIndex(seniorTint, HabitatDepthOrder.GetZIndex(DepthBand.PetBody) + 1);
+                HomePetCanvas.Children.Add(seniorTint);
+            }
+
+            if (usesGenericGhostOverlay)
+            {
+                RenderGenericGhostOverlay(assetService, localX, localY, width, height);
+            }
+
             if (!showPetNames || state.Mode == CompanionMode.Passive)
             {
                 continue;
@@ -241,6 +266,62 @@ public partial class HomePanelWindow : Window
             Canvas.SetZIndex(label, HabitatDepthOrder.GetZIndex(DepthBand.UiOverlay));
             HomePetCanvas.Children.Add(label);
         }
+    }
+
+    private void RenderMemorialIfActive(PetActor pet, DateTimeOffset now, RectInt stageRect, SpriteAssetService assetService)
+    {
+        if (string.IsNullOrWhiteSpace(pet.MemorialObjectId) ||
+            pet.MemorialExpiresAtUtc is null ||
+            pet.MemorialExpiresAtUtc <= now)
+        {
+            return;
+        }
+
+        var source = assetService.GetItem("toys_b", pet.MemorialObjectId);
+        if (source is null)
+        {
+            return;
+        }
+
+        const double size = 28;
+        var image = CreateSpriteImage(source, size, size, flipX: false);
+        image.Opacity = 0.92;
+        var x = Math.Round(pet.MemorialX - Left - stageRect.X - size / 2);
+        var y = Math.Round(pet.MemorialY - Top - stageRect.Y - size);
+        Canvas.SetLeft(image, x);
+        Canvas.SetTop(image, y);
+        Canvas.SetZIndex(image, HabitatDepthOrder.GetZIndex(DepthBand.GroundContact) + 1);
+        HomePetCanvas.Children.Add(image);
+    }
+
+    private void RenderGenericGhostOverlay(SpriteAssetService assetService, double localX, double localY, double width, double height)
+    {
+        var icon = assetService.GetIcon("ghost");
+        if (icon is not null)
+        {
+            var iconSize = Math.Max(18, Math.Min(32, width * 0.46));
+            var ghost = CreateSpriteImage(icon, iconSize, iconSize, flipX: false);
+            ghost.Opacity = 0.78;
+            Canvas.SetLeft(ghost, Math.Round(localX + (width - iconSize) / 2));
+            Canvas.SetTop(ghost, Math.Round(localY - iconSize * 0.35));
+            Canvas.SetZIndex(ghost, HabitatDepthOrder.GetZIndex(DepthBand.PetBody) + 2);
+            HomePetCanvas.Children.Add(ghost);
+            return;
+        }
+
+        var halo = new Ellipse
+        {
+            Width = Math.Max(20, width * 0.58),
+            Height = Math.Max(18, height * 0.38),
+            Stroke = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#BFDDF7")),
+            StrokeThickness = 2,
+            Opacity = 0.62,
+            IsHitTestVisible = false
+        };
+        Canvas.SetLeft(halo, Math.Round(localX + (width - halo.Width) / 2));
+        Canvas.SetTop(halo, Math.Round(localY + height * 0.08));
+        Canvas.SetZIndex(halo, HabitatDepthOrder.GetZIndex(DepthBand.PetBody) + 2);
+        HomePetCanvas.Children.Add(halo);
     }
 
     internal void CloseSilently()
@@ -434,6 +515,8 @@ public partial class HomePanelWindow : Window
             PetStatusType.Dirty => "Dirty",
             PetStatusType.Lonely => "Lonely",
             PetStatusType.Comforted => "Safe",
+            PetStatusType.Dead => "Passed",
+            PetStatusType.Ghost => "Ghost",
             _ => status.ToString()
         };
     }
@@ -450,6 +533,8 @@ public partial class HomePanelWindow : Window
             PetStatusType.Dirty => "#45352E22",
             PetStatusType.Lonely => "#3F3B2C46",
             PetStatusType.Comforted => "#27403A2E",
+            PetStatusType.Dead => "#34252E38",
+            PetStatusType.Ghost => "#26364F5A",
             _ => "#20313A"
         };
     }
@@ -466,6 +551,8 @@ public partial class HomePanelWindow : Window
             PetStatusType.Dirty => "#A8906B",
             PetStatusType.Lonely => "#B08CC4",
             PetStatusType.Comforted => "#7FB892",
+            PetStatusType.Dead => "#C4A7B6",
+            PetStatusType.Ghost => "#A8D2FF",
             _ => "#556872"
         };
     }
@@ -2037,7 +2124,7 @@ public partial class HomePanelWindow : Window
             if (personality.Stubbornness >= 25) { personalityBits.Add("headstrong"); }
         }
 
-        var agePhase = pet.BiologicalAgeMinutes >= 480 ? "aging" : pet.AgeStage.ToString().ToLowerInvariant();
+        var agePhase = pet.IsGhost ? "ghost" : pet.IsDead ? "passed" : pet.AgeStage.ToString().ToLowerInvariant();
         var traitText = personalityBits.Count == 0 ? "settling" : string.Join(", ", personalityBits.Take(2));
         return $"{pet.Name} - {agePhase} - {traitText} - {basketText}";
     }

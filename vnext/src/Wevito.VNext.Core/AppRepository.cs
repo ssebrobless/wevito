@@ -6,6 +6,7 @@ namespace Wevito.VNext.Core;
 
 public sealed class AppRepository
 {
+    public const int CurrentSchemaVersion = 2;
     private readonly string _databasePath;
 
     public AppRepository(string databasePath)
@@ -75,7 +76,7 @@ public sealed class AppRepository
                 DateTimeOffset.Parse(reader.GetString(4))));
         }
 
-        return state with { BasketItems = basketItems };
+        return MigrateCompanionState(state with { BasketItems = basketItems });
     }
 
     public async Task SaveAsync(CompanionState state, CancellationToken cancellationToken = default)
@@ -91,7 +92,7 @@ public sealed class AppRepository
             VALUES ('companion_state', $value)
             ON CONFLICT(key) DO UPDATE SET value = excluded.value;
             """;
-        stateCommand.Parameters.AddWithValue("$value", JsonSerializer.Serialize(state with { BasketItems = [] }, JsonDefaults.Options));
+        stateCommand.Parameters.AddWithValue("$value", JsonSerializer.Serialize(MigrateCompanionState(state) with { BasketItems = [] }, JsonDefaults.Options));
         await stateCommand.ExecuteNonQueryAsync(cancellationToken);
 
         var deleteBasket = connection.CreateCommand();
@@ -121,5 +122,20 @@ public sealed class AppRepository
     private SqliteConnection OpenConnection()
     {
         return new SqliteConnection($"Data Source={_databasePath}");
+    }
+
+    private static CompanionState MigrateCompanionState(CompanionState state)
+    {
+        return state with
+        {
+            SchemaVersion = CurrentSchemaVersion,
+            ActivePets = state.ActivePets ?? [],
+            BasketItems = state.BasketItems ?? [],
+            SettingsSnapshot = state.SettingsSnapshot ?? new Dictionary<string, string>(),
+            TaskCards = state.TaskCards ?? [],
+            ActiveTool = state.ActiveTool is null || string.IsNullOrWhiteSpace(state.ActiveTool.ToolId)
+                ? new ToolSession("basket", state.ActiveTool?.IsOpen ?? false)
+                : state.ActiveTool
+        };
     }
 }

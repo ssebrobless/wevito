@@ -7,6 +7,8 @@ public sealed class PetSimulationEngine
     private const double BabyToTeenAgeMinutes = 60;
     private const double TeenToAdultAgeMinutes = 240;
     private const double AgingThresholdMinutes = 480;
+    private const double DeathToGhostTransitionSeconds = 2.5;
+    private const double MemorialLifetimeDays = 1;
     private static readonly IReadOnlyDictionary<FetchStage, double> FetchStageDurations = new Dictionary<FetchStage, double>
     {
         [FetchStage.MoveToBall] = 2.4,
@@ -209,8 +211,8 @@ public sealed class PetSimulationEngine
             {
                 HomeX = homeX,
                 HomeY = floorY,
-                CurrentX = pet.BehaviorState == PetBehaviorState.Home ? homeX : pet.CurrentX,
-                CurrentY = pet.BehaviorState == PetBehaviorState.Home ? floorY : pet.CurrentY,
+                CurrentX = !pet.IsDead && pet.BehaviorState == PetBehaviorState.Home ? homeX : pet.CurrentX,
+                CurrentY = !pet.IsDead && pet.BehaviorState == PetBehaviorState.Home ? floorY : pet.CurrentY,
                 SelectedEnvironmentId = string.IsNullOrWhiteSpace(pet.SelectedEnvironmentId) ? pet.SpeciesId : pet.SelectedEnvironmentId
             });
         }
@@ -229,12 +231,25 @@ public sealed class PetSimulationEngine
         foreach (var pet in pets)
         {
             var normalized = NormalizePet(pet);
+            if (normalized.IsDead)
+            {
+                updated.Add(RefreshPresentationState(UpdateDeadLifecycle(normalized, now), mode, now));
+                continue;
+            }
+
             var vitals = TickVitals(normalized, mode, deltaSeconds);
             var habits = UpdateHabitProfile(vitals, mode, deltaSeconds);
             var conditions = UpdateConditions(habits, deltaSeconds);
             var personality = UpdatePersonality(conditions, deltaSeconds);
             var aged = AdvanceLifecycle(UpdateBiologicalAge(personality, deltaSeconds), now);
-            var derived = RefreshDerivedValues(aged);
+            var lifecycle = ApplyDeathIfNeeded(aged, now);
+            if (lifecycle.IsDead)
+            {
+                updated.Add(RefreshPresentationState(RefreshDerivedValues(lifecycle), mode, now));
+                continue;
+            }
+
+            var derived = RefreshDerivedValues(lifecycle);
             var moved = mode is CompanionMode.Focused or CompanionMode.Pinned
                 ? MoveTowardHome(derived, now, deltaSeconds)
                 : MoveWithinRoamBand(derived, roamBandBounds, now, deltaSeconds);
@@ -258,6 +273,11 @@ public sealed class PetSimulationEngine
     public PetActor ApplyAutoCare(PetActor pet, DateTimeOffset now)
     {
         var normalized = NormalizePet(pet);
+        if (normalized.IsDead)
+        {
+            return normalized;
+        }
+
         if (normalized.Thirst >= 80)
         {
             return normalized;
@@ -275,6 +295,11 @@ public sealed class PetSimulationEngine
 
     public PetActor StartFetchSequence(PetActor pet, DateTimeOffset now)
     {
+        if (pet.IsDead)
+        {
+            return NormalizePet(pet);
+        }
+
         return SetFetchStage(NormalizePet(pet), FetchStage.MoveToBall, now, new HashSet<AnimationFamily>());
     }
 
@@ -284,6 +309,11 @@ public sealed class PetSimulationEngine
         IReadOnlySet<AnimationFamily>? availableOptionalFamilies = null)
     {
         var sequence = pet.ActiveFetchSequence;
+        if (pet.IsDead)
+        {
+            return NormalizePet(pet);
+        }
+
         if (sequence is null || sequence.Stage == FetchStage.None)
         {
             return StartFetchSequence(pet, now);
@@ -370,17 +400,18 @@ public sealed class PetSimulationEngine
 
     public bool IsActionEnabled(string actionId, IReadOnlyList<PetActor> pets)
     {
+        var livingPets = pets.Where(pet => !pet.IsDead).ToList();
         return actionId switch
         {
-            "feed" => pets.Any(pet => pet.Hunger < 95 || HasCondition(pet, "malnutrition")),
-            "water" => pets.Any(pet => pet.Thirst < 95),
-            "rest" => pets.Any(pet => pet.Energy < 96 || pet.BehaviorState != PetBehaviorState.Home || HasCondition(pet, "exhaustion")),
-            "play" => pets.Any(pet => pet.Affection < 95 || pet.Comfort < 95 || pet.Fitness < 92),
-            "groom" => pets.Any(pet => pet.Cleanliness < 95 || HasCondition(pet, "dentalProblems") || HasCondition(pet, "dentalOvergrowth") || HasCondition(pet, "parasites")),
-            "bath" => pets.Any(pet => pet.Cleanliness < 88 || HasCondition(pet, "skinInfections") || HasCondition(pet, "sheddingIssues") || HasCondition(pet, "parasites")),
-            "medicine" => pets.Any(pet => pet.Health < 95 || HasStatus(pet, PetStatusType.Sick) || CountTreatableConditions(pet) > 0),
-            "doctor" => pets.Any(pet => pet.Health < 85 || (pet.ActiveConditions?.Count ?? 0) > 0),
-            "home" => pets.Any(pet => pet.BehaviorState != PetBehaviorState.Home),
+            "feed" => livingPets.Any(pet => pet.Hunger < 95 || HasCondition(pet, "malnutrition")),
+            "water" => livingPets.Any(pet => pet.Thirst < 95),
+            "rest" => livingPets.Any(pet => pet.Energy < 96 || pet.BehaviorState != PetBehaviorState.Home || HasCondition(pet, "exhaustion")),
+            "play" => livingPets.Any(pet => pet.Affection < 95 || pet.Comfort < 95 || pet.Fitness < 92),
+            "groom" => livingPets.Any(pet => pet.Cleanliness < 95 || HasCondition(pet, "dentalProblems") || HasCondition(pet, "dentalOvergrowth") || HasCondition(pet, "parasites")),
+            "bath" => livingPets.Any(pet => pet.Cleanliness < 88 || HasCondition(pet, "skinInfections") || HasCondition(pet, "sheddingIssues") || HasCondition(pet, "parasites")),
+            "medicine" => livingPets.Any(pet => pet.Health < 95 || HasStatus(pet, PetStatusType.Sick) || CountTreatableConditions(pet) > 0),
+            "doctor" => livingPets.Any(pet => pet.Health < 85 || (pet.ActiveConditions?.Count ?? 0) > 0),
+            "home" => livingPets.Any(pet => pet.BehaviorState != PetBehaviorState.Home),
             _ => true
         };
     }
@@ -439,7 +470,7 @@ public sealed class PetSimulationEngine
     {
         var rate = CalculateAgingRate(pet);
         var lifePhase = pet.BiologicalAgeMinutes >= AgingThresholdMinutes
-            ? "aging"
+            ? "senior"
             : pet.AgeStage.ToString().ToLowerInvariant();
         var pace = rate switch
         {
@@ -626,9 +657,82 @@ public sealed class PetSimulationEngine
 
     private PetActor RefreshDerivedValues(PetActor pet)
     {
+        if (pet.IsDead)
+        {
+            return pet with
+            {
+                Speed = 0,
+                TargetX = pet.CurrentX,
+                TargetY = pet.CurrentY,
+                BehaviorState = PetBehaviorState.Home,
+                ActiveFetchSequence = null
+            };
+        }
+
         return pet with
         {
             Speed = CalculatePetSpeedFromState(pet.BaseSpeed <= 0 ? pet.Speed : pet.BaseSpeed, pet.AgeStage, pet.Gender, pet.Fitness, pet.BiologicalAgeMinutes, pet.ActiveConditions)
+        };
+    }
+
+    private static PetActor ApplyDeathIfNeeded(PetActor pet, DateTimeOffset now)
+    {
+        if (pet.IsDead || (pet.Health > 0 && pet.Hunger > 0 && pet.Thirst > 0))
+        {
+            return pet;
+        }
+
+        var memorialX = pet.CurrentX == 0 ? pet.HomeX : pet.CurrentX;
+        var memorialY = pet.CurrentY == 0 ? pet.HomeY : pet.CurrentY;
+        return pet with
+        {
+            IsDead = true,
+            IsGhost = false,
+            DiedAtUtc = now,
+            MemorialExpiresAtUtc = now.AddDays(MemorialLifetimeDays),
+            MemorialObjectId = "memorial_object",
+            MemorialX = memorialX,
+            MemorialY = memorialY,
+            Health = 0,
+            Hunger = Math.Max(0, pet.Hunger),
+            Thirst = Math.Max(0, pet.Thirst),
+            Speed = 0,
+            TargetX = memorialX,
+            TargetY = memorialY,
+            CurrentX = memorialX,
+            CurrentY = memorialY,
+            BehaviorState = PetBehaviorState.Home,
+            ActiveFetchSequence = null,
+            CurrentActionVisualIntent = null,
+            OverrideAnimationState = PetAnimationState.Sad,
+            OverrideAnimationEndsAtUtc = now.AddSeconds(DeathToGhostTransitionSeconds),
+            AnimationStartedAtUtc = now,
+            LastActionId = "death",
+            LastActionAtUtc = now
+        };
+    }
+
+    private static PetActor UpdateDeadLifecycle(PetActor pet, DateTimeOffset now)
+    {
+        if (!pet.IsDead)
+        {
+            return pet;
+        }
+
+        var diedAt = pet.DiedAtUtc ?? now;
+        var shouldGhost = (now - diedAt).TotalSeconds >= DeathToGhostTransitionSeconds;
+        var memorialExpired = pet.MemorialExpiresAtUtc is not null && pet.MemorialExpiresAtUtc <= now;
+        return pet with
+        {
+            IsGhost = pet.IsGhost || shouldGhost,
+            DiedAtUtc = diedAt,
+            MemorialObjectId = memorialExpired ? string.Empty : pet.MemorialObjectId,
+            MemorialExpiresAtUtc = memorialExpired ? null : pet.MemorialExpiresAtUtc,
+            Speed = 0,
+            TargetX = pet.CurrentX,
+            TargetY = pet.CurrentY,
+            ActiveFetchSequence = null,
+            CurrentActionVisualIntent = null
         };
     }
 
@@ -636,6 +740,11 @@ public sealed class PetSimulationEngine
     {
         var actionId = actionDefinition.Id;
         var normalized = NormalizePet(pet);
+        if (normalized.IsDead)
+        {
+            return RefreshPresentationState(normalized, CompanionMode.Focused, now);
+        }
+
         var habits = normalized.HabitProfile ?? new PetHabitProfile();
         var personality = normalized.Personality ?? new PetPersonalityProfile();
         var conditions = (normalized.ActiveConditions ?? []).ToDictionary(condition => condition.Id, condition => condition, StringComparer.OrdinalIgnoreCase);
@@ -1000,6 +1109,7 @@ public sealed class PetSimulationEngine
 
     private static PetActor RefreshPresentationState(PetActor pet, CompanionMode mode, DateTimeOffset now)
     {
+        pet = UpdateDeadLifecycle(pet, now);
         var overrideAnimation = pet.OverrideAnimationEndsAtUtc is not null && pet.OverrideAnimationEndsAtUtc > now
             ? pet.OverrideAnimationState
             : null;
@@ -1018,6 +1128,11 @@ public sealed class PetSimulationEngine
 
     private static PetAnimationState ResolveDefaultAnimation(PetActor pet, CompanionMode mode)
     {
+        if (pet.IsDead)
+        {
+            return pet.IsGhost ? PetAnimationState.Idle : PetAnimationState.Sad;
+        }
+
         if (HasStatus(pet, PetStatusType.Sick))
         {
             return PetAnimationState.Sick;
@@ -1049,6 +1164,12 @@ public sealed class PetSimulationEngine
     private static IReadOnlyList<PetStatusType> BuildStatuses(PetActor pet)
     {
         var statuses = new List<PetStatusType>();
+        if (pet.IsDead)
+        {
+            statuses.Add(pet.IsGhost ? PetStatusType.Ghost : PetStatusType.Dead);
+            return statuses;
+        }
+
         if (pet.Hunger < 35 || HasCondition(pet, "malnutrition"))
         {
             statuses.Add(PetStatusType.Hungry);
@@ -1119,6 +1240,11 @@ public sealed class PetSimulationEngine
             return PetAgeStage.Teen;
         }
 
+        if (biologicalAgeMinutes >= AgingThresholdMinutes)
+        {
+            return PetAgeStage.Senior;
+        }
+
         return PetAgeStage.Adult;
     }
 
@@ -1146,6 +1272,7 @@ public sealed class PetSimulationEngine
         {
             PetAgeStage.Baby => 0.82,
             PetAgeStage.Teen => 1.05,
+            PetAgeStage.Senior => 0.9,
             _ => 1.0
         };
     }
@@ -1213,6 +1340,7 @@ public sealed class PetSimulationEngine
         {
             PetAgeStage.Baby => new PetHabitProfile(76, 76, 58, 72, 74, 72, 74, 14),
             PetAgeStage.Teen => new PetHabitProfile(72, 72, 68, 70, 68, 66, 70, 18),
+            PetAgeStage.Senior => new PetHabitProfile(68, 68, 54, 70, 72, 78, 66, 24),
             _ => new PetHabitProfile()
         };
     }
@@ -1224,6 +1352,7 @@ public sealed class PetSimulationEngine
         {
             PetAgeStage.Baby => new PetPersonalityProfile(4, 8, 0, -6, 4, 8, 6, -6),
             PetAgeStage.Teen => new PetPersonalityProfile(0, 2, 0, 8, 2, 4, 8, 2),
+            PetAgeStage.Senior => new PetPersonalityProfile(-2, 8, 3, -8, 2, 8, -4, 2),
             _ => new PetPersonalityProfile()
         };
         var genderBias = gender == PetGender.Male
@@ -1259,6 +1388,7 @@ public sealed class PetSimulationEngine
         {
             PetAgeStage.Baby => 0,
             PetAgeStage.Teen => BabyToTeenAgeMinutes + 12,
+            PetAgeStage.Senior => AgingThresholdMinutes + 18,
             _ => TeenToAdultAgeMinutes + 18
         };
     }

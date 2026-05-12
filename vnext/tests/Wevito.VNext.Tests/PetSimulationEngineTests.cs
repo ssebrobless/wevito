@@ -162,6 +162,137 @@ public sealed class PetSimulationEngineTests
     }
 
     [Fact]
+    public void Tick_AdvancesAdultPetsToSeniorOverTime()
+    {
+        var start = DateTimeOffset.UtcNow.AddMinutes(-25);
+        var pet = new PetActor(
+            Guid.NewGuid(),
+            "Goose 1",
+            "goose",
+            AgeStage: PetAgeStage.Adult,
+            AgeStageStartedAtUtc: start,
+            BiologicalAgeMinutes: 481,
+            ActiveStatuses: []);
+
+        var updated = _engine.Tick(
+            [pet],
+            CompanionMode.Focused,
+            new RectInt(0, 922, 1920, 118),
+            DateTimeOffset.UtcNow,
+            0.2).Single();
+
+        Assert.Equal(PetAgeStage.Senior, updated.AgeStage);
+        Assert.True(updated.AgeStageStartedAtUtc > start);
+    }
+
+    [Fact]
+    public void Tick_WhenCareReachesDeathThreshold_StartsSadMemorialFlow()
+    {
+        var now = DateTimeOffset.Parse("2026-05-07T10:00:00Z");
+        var pet = new PetActor(
+            Guid.NewGuid(),
+            "Goose 1",
+            "goose",
+            CurrentX: 123,
+            CurrentY: 234,
+            Hunger: 0,
+            ActiveStatuses: []);
+
+        var updated = _engine.Tick(
+            [pet],
+            CompanionMode.Focused,
+            new RectInt(0, 922, 1920, 118),
+            now,
+            0.2).Single();
+
+        Assert.True(updated.IsDead);
+        Assert.False(updated.IsGhost);
+        Assert.Equal(PetAnimationState.Sad, updated.CurrentAnimationState);
+        Assert.Equal(PetStatusType.Dead, Assert.Single(updated.ActiveStatuses!));
+        Assert.Equal("memorial_object", updated.MemorialObjectId);
+        Assert.Equal(now.AddDays(1), updated.MemorialExpiresAtUtc);
+        Assert.Equal(123, updated.MemorialX);
+        Assert.Equal(234, updated.MemorialY);
+    }
+
+    [Fact]
+    public void Tick_DeadPetTransitionsToGhostAfterSadWindow()
+    {
+        var now = DateTimeOffset.Parse("2026-05-07T10:00:00Z");
+        var pet = new PetActor(
+            Guid.NewGuid(),
+            "Goose 1",
+            "goose",
+            IsDead: true,
+            DiedAtUtc: now.AddSeconds(-3),
+            MemorialExpiresAtUtc: now.AddHours(2),
+            MemorialObjectId: "memorial_object",
+            ActiveStatuses: []);
+
+        var updated = _engine.Tick(
+            [pet],
+            CompanionMode.Focused,
+            new RectInt(0, 922, 1920, 118),
+            now,
+            0.2).Single();
+
+        Assert.True(updated.IsGhost);
+        Assert.Equal(PetAnimationState.Idle, updated.CurrentAnimationState);
+        Assert.Equal(PetStatusType.Ghost, Assert.Single(updated.ActiveStatuses!));
+        Assert.Equal("memorial_object", updated.MemorialObjectId);
+    }
+
+    [Fact]
+    public void Tick_ExpiredMemorialClearsMarkerButKeepsGhostPet()
+    {
+        var now = DateTimeOffset.Parse("2026-05-07T10:00:00Z");
+        var pet = new PetActor(
+            Guid.NewGuid(),
+            "Goose 1",
+            "goose",
+            IsDead: true,
+            IsGhost: true,
+            DiedAtUtc: now.AddDays(-2),
+            MemorialExpiresAtUtc: now.AddSeconds(-1),
+            MemorialObjectId: "memorial_object",
+            ActiveStatuses: []);
+
+        var updated = _engine.Tick(
+            [pet],
+            CompanionMode.Focused,
+            new RectInt(0, 922, 1920, 118),
+            now,
+            0.2).Single();
+
+        Assert.True(updated.IsDead);
+        Assert.True(updated.IsGhost);
+        Assert.Equal(string.Empty, updated.MemorialObjectId);
+        Assert.Null(updated.MemorialExpiresAtUtc);
+    }
+
+    [Fact]
+    public void ApplyAction_DeadPetIgnoresCareActions()
+    {
+        var now = DateTimeOffset.Parse("2026-05-07T10:00:00Z");
+        var pet = new PetActor(
+            Guid.NewGuid(),
+            "Goose 1",
+            "goose",
+            IsDead: true,
+            DiedAtUtc: now,
+            Hunger: 5,
+            Thirst: 6,
+            ActiveStatuses: []);
+
+        var updated = _engine.ApplyAction("feed", [pet], now).Single();
+
+        Assert.Equal(5, updated.Hunger);
+        Assert.Equal(6, updated.Thirst);
+        Assert.True(updated.IsDead);
+        Assert.True(string.IsNullOrWhiteSpace(updated.LastActionId));
+    }
+
+    [Fact]
     public void Tick_PoorCareAcceleratesBiologicalAgeMoreThanStrongCare()
     {
         var poorCare = new PetActor(

@@ -1492,7 +1492,7 @@ public partial class ToolPopupWindow : Window
             return "Aging: no pet selected";
         }
 
-        var phase = pet.BiologicalAgeMinutes >= 480 ? "aging" : pet.AgeStage.ToString().ToLowerInvariant();
+        var phase = pet.IsGhost ? "ghost" : pet.IsDead ? "passed" : pet.AgeStage.ToString().ToLowerInvariant();
         var rateHint = pet.HabitProfile?.Stress > 55 || (pet.ActiveConditions?.Count ?? 0) > 2
             ? "fast"
             : (pet.HabitProfile?.Nutrition ?? 0) > 75 && (pet.HabitProfile?.Exercise ?? 0) > 70

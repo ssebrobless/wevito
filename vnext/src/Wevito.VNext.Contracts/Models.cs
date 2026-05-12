@@ -25,7 +25,8 @@ public enum PetAgeStage
 {
     Baby,
     Teen,
-    Adult
+    Adult,
+    Senior
 }
 
 public enum PetGender
@@ -108,7 +109,9 @@ public enum PetStatusType
     Happy,
     Dirty,
     Lonely,
-    Comforted
+    Comforted,
+    Dead,
+    Ghost
 }
 
 public enum PetWellbeingUrgency
@@ -308,7 +311,14 @@ public sealed record PetActor(
     IReadOnlyList<PetStatusType>? ActiveStatuses = null,
     string SelectedEnvironmentId = "",
     ActionVisualIntent? CurrentActionVisualIntent = null,
-    FetchSequenceState? ActiveFetchSequence = null);
+    FetchSequenceState? ActiveFetchSequence = null,
+    bool IsDead = false,
+    bool IsGhost = false,
+    DateTimeOffset? DiedAtUtc = null,
+    DateTimeOffset? MemorialExpiresAtUtc = null,
+    string MemorialObjectId = "",
+    double MemorialX = 0,
+    double MemorialY = 0);
 
 public sealed record ToolSession(
     string ToolId,
@@ -322,4 +332,5 @@ public sealed record CompanionState(
     IReadOnlyList<PetActor> ActivePets,
     IReadOnlyList<BasketItem> BasketItems,
     IReadOnlyDictionary<string, string> SettingsSnapshot,
-    IReadOnlyList<TaskCard>? TaskCards = null);
+    IReadOnlyList<TaskCard>? TaskCards = null,
+    int SchemaVersion = 2);

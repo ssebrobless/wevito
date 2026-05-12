@@ -58,6 +58,7 @@ var egg_texture_cache: Dictionary = {}
 var basket_entries: Array[Dictionary] = []
 var portrait_texture_cache: Dictionary = {}
 var environment_texture_cache: Dictionary = {}
+var memorial_sprites: Dictionary = {}
 
 
 # Game settings
@@ -1057,6 +1058,7 @@ func _finalize_startup_focus():
 func _process(delta):
 	_poll_native_focus_state(delta)
 	_reconcile_window_focus_state()
+	_cleanup_expired_memorials()
 
 	# Pet nodes are processed automatically by Godot since they're in the scene tree
 	if not ui_visible:
@@ -1085,6 +1087,7 @@ func _process(delta):
 func _do_auto_save():
 	# Auto-save to single file
 	var save_data = {
+		"schema_version": 2,
 		"pets": [],
 		"in_memoriam": [],
 		"link_basket": [],
@@ -1114,6 +1117,11 @@ func _do_auto_save():
 				"water_bowl_level": pet_data.water_bowl_level,
 				"water_bowl_capacity": pet_data.water_bowl_capacity,
 				"is_dead": pet_data.is_dead,
+				"is_ghost": pet_data.is_ghost,
+				"death_elapsed_sec": pet_data.death_elapsed_sec,
+				"memorial_object_id": pet_data.memorial_object_id,
+				"memorial_position": {"x": pet_data.memorial_position.x, "y": pet_data.memorial_position.y},
+				"memorial_expires_at": pet_data.memorial_expires_at,
 				"is_sleeping": pet_data.is_sleeping,
 				"is_hatching": pet_data.is_hatching,
 				"is_naming_pending": pet_data.is_naming_pending,
@@ -1211,6 +1219,11 @@ func _restore_pet_from_save(entry: Dictionary):
 	pd.water_bowl_level = float(entry.get("water_bowl_level", pd.water_bowl_level))
 	pd.water_bowl_capacity = float(entry.get("water_bowl_capacity", pd.water_bowl_capacity))
 	pd.is_dead = bool(entry.get("is_dead", false))
+	pd.is_ghost = bool(entry.get("is_ghost", false))
+	pd.death_elapsed_sec = float(entry.get("death_elapsed_sec", 0.0))
+	pd.memorial_object_id = str(entry.get("memorial_object_id", ""))
+	pd.memorial_position = _dict_to_vector2(entry.get("memorial_position", {}), pd.position)
+	pd.memorial_expires_at = int(entry.get("memorial_expires_at", 0))
 	pd.is_sleeping = bool(entry.get("is_sleeping", false))
 	var was_hatching = bool(entry.get("is_hatching", false))
 	pd.is_hatching = false
@@ -1245,6 +1258,8 @@ func _restore_pet_from_save(entry: Dictionary):
 	pet.setup(pd)
 	if pd.is_sleeping:
 		pet.perform_action("rest")
+	if pd.is_dead:
+		_spawn_or_update_memorial(pd)
 
 func _load_save_state() -> bool:
 	var save_path = "user://save_slot.json"
@@ -1309,6 +1324,7 @@ func _find_pending_name_index() -> int:
 func _clear_runtime_state():
 	close_all_overlays()
 	_clear_held_item()
+	_clear_memorial_sprites()
 	basket_entries.clear()
 	_update_basket_button_state()
 	if feedback_label and is_instance_valid(feedback_label):
@@ -1340,6 +1356,72 @@ func _reload_runtime_from_save() -> bool:
 	_on_stats_updated()
 	update_add_button()
 	return restored
+
+func _clear_memorial_sprites():
+	for key in memorial_sprites.keys():
+		var sprite = memorial_sprites[key]
+		if sprite and is_instance_valid(sprite):
+			sprite.queue_free()
+	memorial_sprites.clear()
+
+func _memorial_key(pd: PetData) -> String:
+	if pd == null:
+		return ""
+	return "%s:%s:%s:%s" % [pd.name, pd.animal_type, pd.gender, pd.age_at_death]
+
+func _spawn_or_update_memorial(pd: PetData):
+	if pd == null or pd.memorial_object_id == "":
+		return
+	if pd.memorial_expires_at > 0 and int(Time.get_unix_time_from_system()) >= pd.memorial_expires_at:
+		return
+
+	var key = _memorial_key(pd)
+	if key == "":
+		return
+
+	var marker = memorial_sprites.get(key, null) as Sprite2D
+	if marker == null or not is_instance_valid(marker):
+		marker = Sprite2D.new()
+		marker.texture = _load_ui_asset_texture("res://sprites/items/toys_b/%s.png" % pd.memorial_object_id)
+		marker.z_index = Z_GROUND_CONTACT + 1
+		marker.scale = Vector2(2.0, 2.0)
+		marker.modulate = Color(1.0, 1.0, 1.0, 0.9)
+		add_child(marker)
+		memorial_sprites[key] = marker
+
+	marker.position = pd.memorial_position
+	marker.visible = marker.texture != null
+
+func _cleanup_expired_memorials():
+	if game_manager == null:
+		return
+
+	var now = int(Time.get_unix_time_from_system())
+	var live_keys: Dictionary = {}
+	for pd in game_manager.pet_datas:
+		if pd == null or pd.memorial_object_id == "":
+			continue
+		var key = _memorial_key(pd)
+		if key == "":
+			continue
+		if pd.memorial_expires_at > 0 and now >= pd.memorial_expires_at:
+			var expired_marker = memorial_sprites.get(key, null)
+			if expired_marker and is_instance_valid(expired_marker):
+				expired_marker.queue_free()
+			memorial_sprites.erase(key)
+			pd.memorial_object_id = ""
+			pd.memorial_expires_at = 0
+			continue
+		live_keys[key] = true
+		_spawn_or_update_memorial(pd)
+
+	for key in memorial_sprites.keys():
+		if live_keys.has(key):
+			continue
+		var marker = memorial_sprites[key]
+		if marker and is_instance_valid(marker):
+			marker.queue_free()
+		memorial_sprites.erase(key)
 
 func _set_pet_name(pet_index: int, pet_name: String):
 	var safe_name = pet_name.strip_edges()
@@ -4685,23 +4767,21 @@ func _on_pet_state_changed(_state):
 	pass
 
 func _on_pet_died(pet_data: PetData):
-	# Remove pet from game
 	var pet_index = game_manager.pet_datas.find(pet_data)
 	if pet_index >= 0:
 		if game_manager.pets.size() > pet_index:
 			var pet = game_manager.pets[pet_index]
 			if pet:
-				pet.queue_free()
-		game_manager.pets.remove_at(pet_index)
-		game_manager.pet_datas.remove_at(pet_index)
-	
-	# Adjust active pet index if needed
+				pet.pause_wandering()
+				pet.current_animation = "sad"
+				pet.animation_frame = 0
+		_spawn_or_update_memorial(pet_data)
+
 	if game_manager.active_pet_index >= game_manager.pets.size():
 		game_manager.active_pet_index = max(0, game_manager.pets.size() - 1)
-	
-	# Show death popup
+
 	_show_death_popup(pet_data)
-	
+
 	update_environment_background()
 	_on_stats_updated()
 	_update_celestial_sprite(true)
