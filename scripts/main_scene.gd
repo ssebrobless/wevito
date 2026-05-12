@@ -1598,6 +1598,52 @@ func _automation_controls_at_target(target: Control) -> Array:
 	_automation_collect_controls_at_point(self, rect.position + (rect.size * 0.5), hits)
 	return hits
 
+func _automation_pet_positions_within_current_bounds() -> Dictionary:
+	var result = {
+		"passed": true,
+		"details": []
+	}
+	if game_manager == null:
+		result["passed"] = false
+		result["details"].append("missing game_manager")
+		return result
+
+	var w = float(get_window().size.x)
+	var h = float(get_window().size.y)
+	var slots = _get_environment_slot_rects(w, h, game_manager.get_pet_count())
+	var band_top = _get_pet_roam_band_top(h)
+	for i in range(game_manager.pets.size()):
+		var pet = game_manager.pets[i]
+		if pet == null or pet.pet_data == null:
+			result["passed"] = false
+			result["details"].append("pet%d missing" % i)
+			continue
+
+		var bounds = Rect2(MONITOR_ROAM_MARGIN_X, band_top, max(24.0, w - (MONITOR_ROAM_MARGIN_X * 2.0)), PET_ROAM_BAND_HEIGHT)
+		if not monitor_roam_active:
+			if i >= slots.size():
+				result["passed"] = false
+				result["details"].append("pet%d no slot" % i)
+				continue
+			var slot = slots[i]
+			bounds = Rect2(slot.position.x + 8.0, slot.position.y, max(12.0, slot.size.x - 16.0), slot.size.y)
+
+		var pos = pet.pet_data.position
+		var target = pet.pet_data.target_position
+		var pos_ok = pos.x >= bounds.position.x - 0.5 and pos.x <= bounds.end.x + 0.5
+		var target_ok = target.x >= bounds.position.x - 0.5 and target.x <= bounds.end.x + 0.5
+		if not pos_ok or not target_ok:
+			result["passed"] = false
+		result["details"].append("pet%d bounds=%s pos=%s target=%s pos_ok=%s target_ok=%s" % [
+			i,
+			str(bounds),
+			str(pos),
+			str(target),
+			str(pos_ok),
+			str(target_ok)
+		])
+	return result
+
 func _run_automation_suite():
 	if automation_running:
 		return
@@ -1620,6 +1666,24 @@ func _run_automation_suite():
 	_apply_window_mode_layout(true)
 	update_environment_background()
 	_on_stats_updated()
+
+	if scenario == "force_save_position_recovery":
+		var recovery = _automation_pet_positions_within_current_bounds()
+		_automation_assert(checks, "save_position_recovery_clamps_loaded_pets", bool(recovery.get("passed", false)), " | ".join(PackedStringArray(recovery.get("details", []))))
+		var recovery_passed = true
+		for check in checks:
+			if not bool(check.get("passed", false)):
+				recovery_passed = false
+				break
+		_automation_write_report({
+			"scenario": scenario,
+			"passed": recovery_passed,
+			"checks": checks,
+			"pet_count": game_manager.get_pet_count(),
+			"settings": settings
+		})
+		get_tree().quit(0 if recovery_passed else 1)
+		return
 
 	var expected_pet_count = game_manager.get_pet_count()
 	_automation_assert(checks, "three_pets_active", expected_pet_count == 3, "count=%d" % expected_pet_count)
