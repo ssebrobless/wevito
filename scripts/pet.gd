@@ -204,6 +204,13 @@ func set_wander_bounds(bounds: Rect2):
 		position.x = clamped_x
 		position.y = _floor_y
 		pet_data.position = position
+		var target = pet_data.target_position
+		if target == Vector2.ZERO:
+			target = position
+		target.x = clamp(target.x, _bounds.position.x, _bounds.end.x)
+		target.y = _floor_y
+		pet_data.target_position = target
+		_target_position = target
 
 func move_to_home(home_x: float, hold_seconds: float = 0.0, resume_wandering_after_hold: bool = false):
 	pause_wandering()
