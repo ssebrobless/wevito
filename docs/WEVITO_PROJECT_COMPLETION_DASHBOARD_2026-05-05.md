@@ -1,30 +1,31 @@
 # Wevito Project Completion Dashboard
 
-Last updated: 2026-05-12
+Last updated: 2026-05-12, C-PHASE 62 rollup
 
 Purpose: living project dashboard for tracking Wevito's game, visual, tool, helper-agent, and release readiness work. This file should stay as the quick percentage dashboard; deeper evidence lives in the phase reports listed below.
 
 ## Current Overall Estimate
 
 ```text
-Wevito full vision after stable v0.1.0
+Wevito full vision after C-PHASE 61
 |-- stable desktop release              ########## 100%
 |-- playable pet game foundation        #########-  ~93%
-|-- release/build/QA infrastructure     #########-  ~95%
+|-- release/build/QA infrastructure     ##########  ~98%
 |-- runtime sprite structure/contract   #########-  ~92%
 |-- visual/content quality full vision  #######---  ~72%
 |-- optional action animation coverage  #---------  ~8%
-|-- habitat/items/care integration      ########--  ~84%
-|-- PET TASKS/tool hub                  ########--  ~82%
-|-- screenshot/translation/audio tools  #######---  ~74%
-|-- advanced helper/AI/ML systems       ######----  ~60%
-|-- Sprite Workflow V2 / Creative Lab   ######----  ~62%
-`-- full expanded Wevito vision         ########--  ~84%
+|-- habitat/items/care integration      #########-  ~88%
+|-- PET TASKS/tool hub                  #########-  ~88%
+|-- screenshot/translation/audio tools  ########--  ~82%
+|-- advanced helper/AI/ML systems       #######---  ~68%
+|-- Sprite Workflow V2 / Creative Lab   ########--  ~78%
+|-- independent always-on AI readiness  #####-----  ~48%
+`-- full expanded Wevito vision         #########-  ~87%
 
-Remaining to complete full expanded vision: ~16%
+Remaining to complete full expanded vision: ~13%
 ```
 
-The basic shipped desktop pet is complete enough for stable `v0.1.0`. The remaining work belongs to the expanded Wevito vision: richer optional animations, source-faithful visual cleanup, safer and simpler tool execution, AI-helper consent/memory, Sprite Workflow V2, and the Creative Learning Lab.
+The shipped desktop pet is stable. The post-stable C-PHASE 54-61 work improved safety, tool proofing, model consent posture, Sprite Workflow V2, and Creative Learning Lab. The remaining work now clusters around **independent always-on AI behavior**: Wevito should eventually run, observe, research, synthesize, plan, learn from reviewed data, and use tools without needing Codex/GPT/Claude/Gemini/browser handoffs as permanent runtime dependencies.
 
 ## Current Release Baseline
 
@@ -52,7 +53,7 @@ Stable release evidence:
 | Area | Status | Done | What Remains |
 | --- | --- | ---: | --- |
 | Stable desktop release | Shipped | 100% | Protect the shipped baseline; future changes should be phased and proven. |
-| Git/build baseline | Green | 98% | Keep `main` clean; use PRs and avoid accidental asset-prep regeneration. |
+| Git/build baseline | Green and guarded | 98% | Keep `main` clean; use PRs and keep asset-prep regeneration guarded. |
 | Core pet sim | Strong foundation | 93% | Long-run balance, richer personality development, visible care outcomes, aging/death/ghost depth. |
 | Game interactions | Stable functional set | 88% | More species-specific action readings and richer toy/care behavior. |
 | Runtime sprite contract | Structurally green | 92% | Preserve 0 mixed-canvas/missing/invalid rows while improving source/provenance depth. |
@@ -61,26 +62,26 @@ Stable release evidence:
 | Color variants | Structurally present | 85% | Targeted color QA only; no broad all-color mutation without proof plan. |
 | Care/medicine/items | Mapped and usable | 84% | Runtime readability polish and more visible care-state feedback. |
 | Habitat/environment | Manifest-backed and proofed | 88% | Richer per-species enter/perch/hide/use behavior and final composition polish. |
-| Overlay UI | Functional and resilient | 84% | Continue simplifying PET TASKS/task-card UX without replacing the pet overlay. |
-| PET TASKS/tool hub | Report/preview foundation | 82% | Simpler one-entry task flow, richer artifact buttons, adapter proof packets. |
-| Screenshot/capture tools | Implemented cautiously | 74% | More proof packets; keep screen recording gated. |
-| Translation/audio tools | Implemented behind safety posture | 74% | Provider clarity, safe Windows volume UX, no hidden third-party booster control. |
+| Overlay UI | Functional and clearer | 88% | Continue reducing tool friction without replacing the pet overlay. |
+| PET TASKS/tool hub | Simplified report/preview foundation | 88% | Add always-on supervisor integration and approval-aware execution history. |
+| Screenshot/capture tools | Proof packets exist | 82% | Keep screen recording gated; add low-interference capture policies. |
+| Translation/audio tools | Implemented behind safety posture | 82% | Provider clarity, safe Windows volume UX, no hidden third-party booster control. |
 | Coding helpers | Report/plan surfaces working | 78% | Approval-gated patch execution and clearer review artifacts. |
-| Sprite Workflow V2 | Pattern exists, product incomplete | 62% | Compact single-row workbench, source/runtime/candidate/proof lanes, provenance manifests. |
-| Creative Learning Lab | Planned with seams | 62% | Reviewed examples, preference snapshots, exportable learning packs, no uncontrolled training. |
-| Pet AI agents | Dormant safe foundation | 60% | Disabled-by-default model flag, consent UI, fake-adapter proof, then first-call approval. |
+| Sprite Workflow V2 | Compact workbench scaffolded | 78% | Add app-owned candidate review, local repair strategy, and non-Codex generation alternatives. |
+| Creative Learning Lab | Reviewed-example export surface | 78% | Add supervised promotion workflow; no automatic training until reviewed gates exist. |
+| Pet AI agents | Dormant safe foundation | 68% | Add local supervisor, local-first AI/research loop, local model/offline strategy, and approved memory promotion. |
+| Always-on independence | Early foundation | 48% | Add low-interference runtime supervisor, local/offline model strategy, task scheduler, learning loop, resource policy. |
 
 ## Fresh Audit Snapshot
 
-From `docs/C_PHASE53_PROJECT_PROGRESS_REPORT_2026-05-12.md`:
+From `docs/C_PHASE62_FULL_EXPANDED_VISION_REASSESSMENT_2026-05-12.md`:
 
 ```text
 verification
 |
 +-- dotnet build                         PASS, 0 warnings/errors
-+-- dotnet test                          PASS, 280/280
++-- dotnet test                          PASS, 300/300
 +-- vNext publish -SkipAssetPrep         PASS
-+-- stable release download/hash         PASS
 +-- runtime mixed-canvas audit           PASS
 +-- sprite source/runtime contract audit PASS
 `-- optional readiness audit             PASS with fallback-only caveat
@@ -284,59 +285,95 @@ AI/helper-agent lane
 
 Priority: medium after the baseline lock and tool simplification.
 
-## Recommended Execution Order
+## Independent Always-On AI Readiness
 
 ```text
-next concrete plan seed
+independent AI target
 |
-+-- C-PHASE 54: Post-stable baseline lock and asset-prep safety
-|   +-- record stable release/hash/checks in a short lock packet
-|   +-- add/confirm guardrails around asset-prep regeneration
-|   +-- make accidental runtime sprite churn harder
-|   `-- keep this phase non-visual and deterministic
++-- must not require Codex as runtime brain
++-- must not require GPT/Claude/Gemini/browser handoff for normal operation
++-- must be able to research and synthesize through app-owned tools
++-- should prefer app-owned local services and local/offline provider settings
++-- should keep pets visually as normal pets
++-- should run quietly while user uses other apps
++-- should explain what it is doing at any moment
+`-- should learn only from reviewed/approved data
+```
+
+Current readiness: **about 48%**.
+
+What exists:
+
+- Stable desktop app and vNext shell.
+- PET TASKS command/task-card foundation.
+- Adapter proof packets.
+- Disabled-by-default model capability and consent UI.
+- Local pet memory primitives.
+- Creative Learning Lab reviewed-example export.
+- Sprite Workflow V2 compact source/runtime/candidate/proof workbench.
+- Stable baseline lock and asset-prep guard.
+
+What is missing before Wevito can be left running confidently:
+
+| Gap | Why It Matters | Next Direction |
+| --- | --- | --- |
+| Always-on runtime supervisor | The app needs to manage background work, quiet mode, focus, and resource budgets. | Add tray/supervisor state, pause/resume, fullscreen/game detection, CPU/memory guardrails. |
+| App-owned AI/research layer | Wevito should not rely on Codex/GPT/Claude/Gemini as the operating brain. | Add local-first reasoning/research planner, source collector, citation store, synthesis reports, and local/offline provider mode. |
+| Autonomous task scheduler | PET TASKS currently reacts to user requests; it does not safely choose work over time. | Add a scheduler that proposes tasks, writes previews, and waits for approval where needed. |
+| Reviewed learning promotion | Creative Lab exports examples, but does not promote them into memory/training. | Add approval-gated promotion from reviewed bundles into pet memory or local eval datasets. |
+| Local/offline learning strategy | "Training" is not currently implemented. | Start with retrieval/memory/eval updates before true model fine-tuning; prefer local embeddings and small local models. |
+| Low-interference desktop behavior | The user wants Wevito open while using other apps. | Add no-focus-steal rules, quiet mode, task throttles, and visible activity summaries. |
+| Self-maintenance proof | Wevito cannot yet prove it improved itself safely. | Add daily/periodic reports, rollbackable changes, and "what changed since launch" evidence packets. |
+
+## Recommended Next Execution Order
+
+```text
+post C-PHASE 62 autonomy plan seed
 |
-+-- C-PHASE 55: Visual/source-of-truth recovery plan
-|   +-- reconcile authored coverage vs runtime coverage
-|   +-- identify source boards needed for care/expression
-|   +-- choose contact-sheet review order
-|   `-- no broad mutation yet
++-- C-PHASE 63: Always-on runtime supervisor and quiet mode
+|   +-- tray/status control
+|   +-- pause/resume/background task queue
+|   +-- no focus steal
+|   +-- fullscreen/game detection policy
+|   `-- CPU/memory/task-rate budget
 |
-+-- C-PHASE 56: Optional animation pilot expansion
-|   +-- pick one small target lane
-|   +-- produce source/candidate/proof artifacts
-|   +-- apply with backup/hash/rollback
-|   `-- scale only after the pilot is pleasant
++-- C-PHASE 64: Local-first app-owned AI/research strategy
+|   +-- local/offline-first provider interface
+|   +-- app-owned research planner and synthesis report contract
+|   +-- hosted providers remain explicit opt-in
+|   +-- no Codex/GPT/Claude/Gemini runtime dependency
+|   +-- no browser/Gemini handoff dependency for normal tasks
+|   `-- first-call proof remains user-approved
 |
-+-- C-PHASE 57: Tool hub simplification pass
-|   +-- one text bar
-|   +-- clear helper routing
-|   +-- simpler task/result cards
-|   `-- no new risky execution
++-- C-PHASE 65: Autonomous task scheduler, preview only
+|   +-- propose maintenance tasks
+|   +-- write reports
+|   +-- no mutation without approval
+|   `-- daily activity summary
 |
-+-- C-PHASE 58: Adapter proof packets
-|   +-- screenshot
-|   +-- translation
-|   +-- audio assist
-|   +-- codeReview/codePatchPlan
-|   `-- buildProof
++-- C-PHASE 66: Reviewed learning promotion gate
+|   +-- import Creative Lab reviewed bundles
+|   +-- promote accepted examples into local memory/eval datasets
+|   +-- block rejected/blocked examples
+|   `-- no model training yet
 |
-+-- C-PHASE 59: Model capability flag and consent UI
-|   +-- disabled by default
-|   +-- fake adapter validation
-|   +-- first-call copy
-|   `-- still no live call until approved
++-- C-PHASE 67: Local learning/eval loop
+|   +-- retrieval quality evals
+|   +-- preference snapshots
+|   +-- local embeddings
+|   `-- candidate model strategy doc/prototype
 |
-+-- C-PHASE 60: Sprite Workflow V2 compact workbench
-|   +-- report-only first
-|   +-- source/runtime/candidate/proof lanes
-|   +-- provenance manifest
-|   `-- no hidden app scrolling maze
++-- C-PHASE 68: Self-improvement report loop
+|   +-- "what did Wevito do today?"
+|   +-- "what did it learn?"
+|   +-- "what changed?"
+|   `-- rollbackable evidence packets
 |
-`-- C-PHASE 61: Creative Learning Lab seed
-    +-- reviewed examples only
-    +-- local preference snapshots
-    +-- exportable learning packs
-    `-- no uncontrolled training
+`-- C-PHASE 69: Independent assistant beta gate
+    +-- run for long sessions
+    +-- low-interference proof
+    +-- safe tool use proof
+    `-- decide whether to enable limited autonomous execution
 ```
 
 ## Current Source-Of-Truth Docs
@@ -344,6 +381,8 @@ next concrete plan seed
 Use these documents when creating the next concrete implementation plan:
 
 - `docs/POST_STABLE_FULL_VISION_IMPLEMENTATION_PLAN_2026-05-12.md`
+- `docs/POST_CPHASE62_INDEPENDENT_AI_ROADMAP_2026-05-12.md`
+- `docs/C_PHASE62_FULL_EXPANDED_VISION_REASSESSMENT_2026-05-12.md`
 - `docs/CODEX_MEDIUM_POST_STABLE_PHASE_PROMPTS_2026-05-12.md`
 - `docs/C_PHASE52_STABLE_RELEASE_PROMOTION_2026-05-12.md`
 - `docs/C_PHASE53_PROJECT_PROGRESS_REPORT_2026-05-12.md`
