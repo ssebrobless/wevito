@@ -151,9 +151,9 @@ public partial class HomePanelWindow : Window
         WebToolSlot5Button.Content = "EMPTY";
         WebToolsHintText.Text = state.BasketItems.Count switch
         {
-            0 => "Link Bin, Pet Tasks, Sprites, and Lab are ready. One slot is reserved for future tools.",
-            1 => "Link Bin has 1 saved link. Pet Tasks can draft helper assignments.",
-            _ => $"Link Bin has {state.BasketItems.Count} saved links. Pet Tasks can draft helper assignments."
+            0 => "Link Bin, report-first Pet Tasks, Sprites, and Lab are ready. One slot is reserved for future tools.",
+            1 => "Link Bin has 1 saved link. Pet Tasks prepares reports first; execution stays gated.",
+            _ => $"Link Bin has {state.BasketItems.Count} saved links. Pet Tasks prepares reports first; execution stays gated."
         };
         var focusPet = state.ActivePets.FirstOrDefault();
         StatusText.Text = showStatusSummary

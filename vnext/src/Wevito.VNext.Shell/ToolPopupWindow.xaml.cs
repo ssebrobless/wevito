@@ -311,8 +311,8 @@ public partial class ToolPopupWindow : Window
         if (state?.LastTaskCard is not { } card)
         {
             PetCommandResultPanel.Visibility = Visibility.Collapsed;
-            PetTaskNextActionText.Text = "Next: prepare a task, then preview a report before anything can run.";
-            PetTaskResultPathText.Text = "Result: preview report path appears here.";
+            PetTaskNextActionText.Text = "Next: PREPARE creates a task card. PREVIEW writes a report. Only a few reviewed cards can RUN APPROVED.";
+            PetTaskResultPathText.Text = "Result: report path appears here after preview.";
             return;
         }
 
@@ -339,6 +339,7 @@ public partial class ToolPopupWindow : Window
         var draftCount = cards.Count(card => card.Status == TaskCardStatus.Draft);
         var approvalCount = cards.Count(card => card.Status == TaskCardStatus.WaitingForApproval);
         var blockedCount = cards.Count(card => card.Status == TaskCardStatus.Blocked);
+        var runnableCount = cards.Count(CanRunReviewedTask);
         var latest = cards
             .Take(3)
             .Select(card =>
@@ -347,7 +348,7 @@ public partial class ToolPopupWindow : Window
                 return $"{petName}: {card.Intent.TaskKind} ({card.Status})";
             });
 
-        return $"Queue: {cards.Count} saved | draft {draftCount} | approval {approvalCount} | blocked {blockedCount}\nLatest: {string.Join(" / ", latest)}";
+        return $"Queue: {cards.Count} saved | draft {draftCount} | approval {approvalCount} | runnable {runnableCount} | blocked {blockedCount}\nLatest: {string.Join(" / ", latest)}";
     }
 
     private static string FormatWellbeingSnapshots(IReadOnlyList<PetWellbeingSnapshot>? snapshots)
@@ -446,14 +447,14 @@ public partial class ToolPopupWindow : Window
         {
             TaskCardStatus.Draft => "Next: preview this task. Preview is report-only and must not mutate files.",
             TaskCardStatus.WaitingForApproval => "Next: approve only if you want the queued safe action to continue.",
-            TaskCardStatus.Approved => "Next: run the approved safe adapter or wait for its report.",
+            TaskCardStatus.Approved => "Next: preview the approved card. RUN APPROVED stays disabled until a reviewed report exists.",
             TaskCardStatus.Running => "Next: wait for the adapter to finish and write its artifact report.",
             TaskCardStatus.Reviewing when string.Equals(card.ToolFamily, "translateText", StringComparison.OrdinalIgnoreCase) => "Next: open the preview report, then RUN only if you approve sending this text to the configured provider.",
             TaskCardStatus.Reviewing when string.Equals(card.ToolFamily, "screenCapture", StringComparison.OrdinalIgnoreCase) && CanRunReviewedTask(card) => FormatScreenCaptureRunMessage(card.Intent.RawText),
             TaskCardStatus.Reviewing when string.Equals(card.ToolFamily, "audioAssist", StringComparison.OrdinalIgnoreCase) && CanRunReviewedTask(card) => "Next: open the preview report, then RUN only if you approve changing normal Windows volume/mute state.",
             TaskCardStatus.Reviewing when string.Equals(card.ToolFamily, "audioAssist", StringComparison.OrdinalIgnoreCase) && IsAudioBoostHandoff(card.Intent.RawText) => "Next: open the audio boost setup guide. Wevito will not install software or edit enhancer/APO configs.",
             TaskCardStatus.Reviewing when string.Equals(card.ToolFamily, "audioAssist", StringComparison.OrdinalIgnoreCase) => "Next: open the audio status report. Execution is only for set volume, mute, or unmute requests.",
-            TaskCardStatus.Reviewing => "Next: open the artifact/report, then approve, revise, or cancel.",
+            TaskCardStatus.Reviewing => "Next: open the artifact/report. Most reviewed cards are report-only and cannot run.",
             TaskCardStatus.Blocked => "Next: revise the task or inspect the blocker report.",
             TaskCardStatus.Cancelled => "Next: prepare a new task if you still want help.",
             TaskCardStatus.Done => "Next: review the result artifact before starting another task.",
@@ -517,7 +518,7 @@ public partial class ToolPopupWindow : Window
 
         return card.Status switch
         {
-            TaskCardStatus.Draft => "Result: no report yet. Preview will create a report-only artifact.",
+            TaskCardStatus.Draft => "Result: no report yet. PREVIEW will create a report-only artifact.",
             TaskCardStatus.Blocked => "Result: blocked before a report could be written.",
             TaskCardStatus.Cancelled => "Result: task cancelled.",
             _ => "Result: waiting for a report-only artifact."
