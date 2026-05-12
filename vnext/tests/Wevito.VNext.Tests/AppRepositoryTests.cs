@@ -1,3 +1,4 @@
+using Microsoft.Data.Sqlite;
 using Wevito.VNext.Contracts;
 using Wevito.VNext.Core;
 
@@ -45,6 +46,60 @@ public sealed class AppRepositoryTests
         Assert.Equal(TaskCardStatus.Draft, loaded.TaskCards[0].Status);
         Assert.Single(loaded.BasketItems);
         Assert.Equal("https://example.test", loaded.BasketItems[0].Url);
+        Assert.Equal(AppRepository.CurrentSchemaVersion, loaded.SchemaVersion);
+    }
+
+    [Fact]
+    public async Task LoadAsync_MigratesLegacyStateToSchemaVersion2()
+    {
+        var tempRoot = Path.Combine(Path.GetTempPath(), "wevito-tests", Guid.NewGuid().ToString("N"));
+        var databasePath = Path.Combine(tempRoot, "state.db");
+        var repository = new AppRepository(databasePath);
+        await repository.InitializeAsync();
+
+        const string legacyState = """
+            {
+              "mode": "Focused",
+              "isPinned": false,
+              "activeEnvironmentId": "pond",
+              "activeTool": { "toolId": "", "isOpen": true },
+              "activePets": [
+                {
+                  "id": "10000000-0000-0000-0000-000000000001",
+                  "name": "Bean",
+                  "speciesId": "goose",
+                  "activeStatuses": []
+                }
+              ],
+              "basketItems": [],
+              "settingsSnapshot": {}
+            }
+            """;
+
+        await using (var connection = new SqliteConnection($"Data Source={databasePath}"))
+        {
+            await connection.OpenAsync();
+            var command = connection.CreateCommand();
+            command.CommandText = """
+                INSERT INTO app_state (key, value)
+                VALUES ('companion_state', $value);
+                """;
+            command.Parameters.AddWithValue("$value", legacyState);
+            await command.ExecuteNonQueryAsync();
+        }
+
+        var loaded = await repository.LoadAsync();
+
+        Assert.NotNull(loaded);
+        Assert.Equal(AppRepository.CurrentSchemaVersion, loaded.SchemaVersion);
+        Assert.Equal("basket", loaded.ActiveTool.ToolId);
+        Assert.True(loaded.ActiveTool.IsOpen);
+        var pet = Assert.Single(loaded.ActivePets);
+        Assert.False(pet.IsDead);
+        Assert.False(pet.IsGhost);
+        Assert.Null(pet.DiedAtUtc);
+        Assert.Null(pet.MemorialExpiresAtUtc);
+        Assert.Equal(string.Empty, pet.MemorialObjectId);
     }
 
     private static TaskCard BuildTaskCard(DateTimeOffset timestamp)

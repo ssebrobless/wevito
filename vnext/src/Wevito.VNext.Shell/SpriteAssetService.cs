@@ -73,6 +73,25 @@ public sealed class SpriteAssetService
         return LoadImage(frames[frameIndex]);
     }
 
+    public ImageSource? GetGhostPetFrame(PetActor pet, DateTimeOffset now)
+    {
+        var frames = GetAnimationFrames(pet, "ghost");
+        if (frames.Count == 0)
+        {
+            return null;
+        }
+
+        var animationStart = pet.DiedAtUtc ?? pet.AnimationStartedAtUtc;
+        if (animationStart == default)
+        {
+            animationStart = now;
+        }
+
+        var elapsed = Math.Max(0, (now - animationStart).TotalMilliseconds);
+        var frameIndex = (int)(elapsed / 260) % frames.Count;
+        return LoadImage(frames[frameIndex]);
+    }
+
     public IReadOnlyList<string> GetAnimationFramePaths(PetActor pet, string animationId)
     {
         return GetAnimationFrames(pet, animationId);
@@ -222,7 +241,9 @@ public sealed class SpriteAssetService
 
     private static string BuildPetDirectory(string root, PetActor pet)
     {
-        var age = pet.AgeStage.ToString().ToLowerInvariant();
+        var age = pet.AgeStage == PetAgeStage.Senior
+            ? PetAgeStage.Adult.ToString().ToLowerInvariant()
+            : pet.AgeStage.ToString().ToLowerInvariant();
         var gender = pet.Gender.ToString().ToLowerInvariant();
         var color = pet.ColorVariant.ToLowerInvariant();
         return Path.Combine(root, pet.SpeciesId, age, gender, color);

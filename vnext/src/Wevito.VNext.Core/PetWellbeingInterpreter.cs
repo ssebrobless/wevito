@@ -6,6 +6,26 @@ public sealed class PetWellbeingInterpreter
 {
     public PetWellbeingSnapshot BuildSnapshot(PetActor pet)
     {
+        if (pet.IsDead)
+        {
+            var status = pet.IsGhost ? PetStatusType.Ghost : PetStatusType.Dead;
+            return new PetWellbeingSnapshot(
+                pet.Id,
+                pet.Name,
+                pet.SpeciesId,
+                pet.AgeStage,
+                pet.Gender,
+                pet.ColorVariant,
+                PetWellbeingUrgency.Stable,
+                PetDriveFamily.Rest,
+                PetEmotionChannel.Relief,
+                pet.IsGhost ? $"{pet.Name} is resting as a gentle ghost." : $"{pet.Name} has passed away.",
+                BuildNeedPressures(pet),
+                BuildPersonalityDescriptors(pet.Personality),
+                [],
+                [status]);
+        }
+
         var normalizedStatuses = pet.ActiveStatuses ?? [];
         var pressures = BuildNeedPressures(pet);
         var dominantNeed = pressures

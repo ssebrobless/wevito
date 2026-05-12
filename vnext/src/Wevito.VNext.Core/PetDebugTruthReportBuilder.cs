@@ -139,6 +139,11 @@ public sealed class PetDebugTruthReportBuilder
 
     private static PetAnimationState ResolveExpectedAnimationHint(PetActor pet, CompanionMode mode)
     {
+        if (pet.IsDead)
+        {
+            return pet.IsGhost ? PetAnimationState.Idle : PetAnimationState.Sad;
+        }
+
         if (pet.ActiveStatuses?.Contains(PetStatusType.Sick) == true)
         {
             return PetAnimationState.Sick;
