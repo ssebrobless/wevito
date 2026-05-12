@@ -955,6 +955,15 @@ public partial class ToolPopupWindow : Window
 
     private static ImageSource? ResolveActionOptionPreview(SpriteAssetService assetService, string actionId, HabitatDisplayItem item)
     {
+        if (item.IsSmallIconSafe)
+        {
+            var itemArt = assetService.GetItem(item.CategoryFolder, item.AssetId);
+            if (itemArt is not null)
+            {
+                return itemArt;
+            }
+        }
+
         ImageSource? preview = item.CategoryFolder switch
         {
             "containers" => assetService.GetIcon("water_bowl") ?? assetService.GetIcon("water"),

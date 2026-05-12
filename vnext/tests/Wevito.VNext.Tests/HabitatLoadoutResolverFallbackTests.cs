@@ -7,6 +7,51 @@ namespace Wevito.VNext.Tests;
 public sealed class HabitatLoadoutResolverFallbackTests
 {
     [Fact]
+    public async Task Resolve_AttachesVisualMappingMetadataToRecommendedAndActionItems()
+    {
+        var repository = new ContentRepository(FindPath("vnext", "content"));
+        var content = await repository.LoadAsync();
+        var state = CreateState("goose", pet => pet with
+        {
+            Health = 42,
+            Cleanliness = 35,
+            ActiveConditions = [new PetConditionRecord("injury", 3, false)]
+        });
+
+        var loadout = HabitatLoadoutResolver.Resolve(state, content);
+        var actionItems = loadout.ActionOptions.Values.SelectMany(items => items).ToArray();
+
+        Assert.All(loadout.RecommendedItems, item => Assert.False(string.IsNullOrWhiteSpace(item.VisualMappingId)));
+        Assert.All(actionItems, item => Assert.False(string.IsNullOrWhiteSpace(item.VisualMappingId)));
+    }
+
+    [Fact]
+    public void EnrichForVisualMapping_PreservesSmallIconSafetyForNarrowCareAssets()
+    {
+        var item = new HabitatDisplayItem(
+            "care:medicine_dropper",
+            "Medicine Dropper",
+            "care",
+            "medicine_dropper",
+            "Medicine",
+            ActionId: "medicine");
+        var mappings = new[]
+        {
+            new ItemVisualMapping(
+                "care-medicine-dropper",
+                "Medicine Dropper",
+                "care",
+                "items/care/medicine_dropper",
+                SmallIconSafe: false)
+        };
+
+        var enriched = HabitatLoadoutResolver.EnrichForVisualMapping(item, mappings);
+
+        Assert.Equal("care-medicine-dropper", enriched.VisualMappingId);
+        Assert.False(enriched.IsSmallIconSafe);
+    }
+
+    [Fact]
     public async Task Resolve_UsesManifestStagePropsWhenSpeciesLoadoutExists()
     {
         var repository = new ContentRepository(FindPath("vnext", "content"));

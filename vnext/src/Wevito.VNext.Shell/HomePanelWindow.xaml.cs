@@ -559,6 +559,15 @@ public partial class HomePanelWindow : Window
 
     private static ImageSource? ResolveRecommendationIcon(SpriteAssetService assetService, HabitatDisplayItem item)
     {
+        if (item.IsSmallIconSafe)
+        {
+            var itemArt = assetService.GetItem(item.CategoryFolder, item.AssetId);
+            if (itemArt is not null)
+            {
+                return itemArt;
+            }
+        }
+
         var iconId = item.ActionId switch
         {
             "feed" => "feed",

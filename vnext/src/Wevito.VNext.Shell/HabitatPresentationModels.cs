@@ -10,7 +10,9 @@ internal sealed record HabitatDisplayItem(
     string Purpose,
     string PreferenceHint = "",
     string ActionId = "",
-    bool IsUrgent = false);
+    bool IsUrgent = false,
+    bool IsSmallIconSafe = true,
+    string VisualMappingId = "");
 
 internal sealed record HabitatLoadout(
     IReadOnlyList<HabitatDisplayItem> RecommendedItems,
