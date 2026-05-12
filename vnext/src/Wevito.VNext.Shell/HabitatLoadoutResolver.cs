@@ -120,6 +120,7 @@ internal static class HabitatLoadoutResolver
 
         void AddItem(HabitatDisplayItem item)
         {
+            item = EnrichForVisualMapping(item, content.ItemVisualMappings ?? []);
             if (!added.Add($"{item.CategoryFolder}/{item.AssetId}"))
             {
                 return;
@@ -499,6 +500,34 @@ internal static class HabitatLoadoutResolver
         var visualParts = mapping.VisualAssetId.Split('/', StringSplitOptions.RemoveEmptyEntries);
         categoryFolder = visualParts[1];
         return true;
+    }
+
+    internal static HabitatDisplayItem EnrichForVisualMapping(
+        HabitatDisplayItem item,
+        IReadOnlyList<ItemVisualMapping> visualMappings)
+    {
+        var mapping = TryFindVisualMapping(item.CategoryFolder, item.AssetId, visualMappings);
+        if (mapping is null)
+        {
+            return item;
+        }
+
+        return item with
+        {
+            Label = string.IsNullOrWhiteSpace(mapping.DisplayName) ? item.Label : mapping.DisplayName,
+            IsSmallIconSafe = mapping.SmallIconSafe,
+            VisualMappingId = mapping.Id
+        };
+    }
+
+    private static ItemVisualMapping? TryFindVisualMapping(
+        string categoryFolder,
+        string assetId,
+        IReadOnlyList<ItemVisualMapping> visualMappings)
+    {
+        var expectedVisualAssetId = $"items/{categoryFolder}/{assetId}";
+        return visualMappings.FirstOrDefault(candidate =>
+            string.Equals(candidate.VisualAssetId, expectedVisualAssetId, StringComparison.OrdinalIgnoreCase));
     }
 
     private static double ResolveManifestOpacity(HabitatObjectSlot slot)
