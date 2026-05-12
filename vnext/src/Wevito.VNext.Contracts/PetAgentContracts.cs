@@ -52,6 +52,7 @@ public enum TaskKind
     ReviewCode,
     PlanCodePatch,
     ReviewPetState,
+    Research,
     BuildProof,
     TranslateText,
     AudioAssist,

@@ -141,7 +141,7 @@ public sealed class PetCommandBarService
         {
             PetHelperRole.SpriteReviewHelper => ["spriteAudit", "assetInventory", "proofCapture", "localDocs", "petState", "petMemory"],
             PetHelperRole.ChecklistHelper => ["codeReview", "codePatchPlan", "checklist", "localDocs", "basket", "petState", "buildProof", "petMemory"],
-            PetHelperRole.ResearchHelper => ["localDocs", "translateText", "audioAssist", "screenCapture", "assetInventory", "basket", "proofCapture", "petState", "petMemory"],
+            PetHelperRole.ResearchHelper => ["localDocs", "localResearch", "translateText", "audioAssist", "screenCapture", "assetInventory", "basket", "proofCapture", "petState", "petMemory"],
             _ => ["localDocs"]
         };
     }

@@ -5,6 +5,7 @@ namespace Wevito.VNext.Core;
 public sealed class PetTaskAdapterPreviewDispatcher
 {
     private const string LocalDocsToolFamily = "localDocs";
+    private const string LocalResearchToolFamily = "localResearch";
     private const string SpriteAuditToolFamily = "spriteAudit";
     private const string PetStateToolFamily = "petState";
     private const string AssetInventoryToolFamily = "assetInventory";
@@ -17,6 +18,7 @@ public sealed class PetTaskAdapterPreviewDispatcher
     private const string PetMemoryToolFamily = "petMemory";
 
     private readonly LocalDocsPreviewAdapter _localDocsPreviewAdapter;
+    private readonly LocalResearchPreviewAdapter _localResearchPreviewAdapter;
     private readonly SpriteAuditPreviewAdapter _spriteAuditPreviewAdapter;
     private readonly PetStatePreviewAdapter _petStatePreviewAdapter;
     private readonly AssetInventoryPreviewAdapter _assetInventoryPreviewAdapter;
@@ -31,6 +33,7 @@ public sealed class PetTaskAdapterPreviewDispatcher
 
     public PetTaskAdapterPreviewDispatcher(
         LocalDocsPreviewAdapter? localDocsPreviewAdapter = null,
+        LocalResearchPreviewAdapter? localResearchPreviewAdapter = null,
         SpriteAuditPreviewAdapter? spriteAuditPreviewAdapter = null,
         PetStatePreviewAdapter? petStatePreviewAdapter = null,
         AssetInventoryPreviewAdapter? assetInventoryPreviewAdapter = null,
@@ -44,6 +47,7 @@ public sealed class PetTaskAdapterPreviewDispatcher
         PetMemoryPreviewAdapter? petMemoryPreviewAdapter = null)
     {
         _localDocsPreviewAdapter = localDocsPreviewAdapter ?? new LocalDocsPreviewAdapter();
+        _localResearchPreviewAdapter = localResearchPreviewAdapter ?? new LocalResearchPreviewAdapter();
         _spriteAuditPreviewAdapter = spriteAuditPreviewAdapter ?? new SpriteAuditPreviewAdapter();
         _petStatePreviewAdapter = petStatePreviewAdapter ?? new PetStatePreviewAdapter();
         _assetInventoryPreviewAdapter = assetInventoryPreviewAdapter ?? new AssetInventoryPreviewAdapter();
@@ -77,6 +81,8 @@ public sealed class PetTaskAdapterPreviewDispatcher
         {
             var family when string.Equals(family, LocalDocsToolFamily, StringComparison.OrdinalIgnoreCase) =>
                 _localDocsPreviewAdapter.BuildPreview(request, timestamp),
+            var family when string.Equals(family, LocalResearchToolFamily, StringComparison.OrdinalIgnoreCase) =>
+                _localResearchPreviewAdapter.BuildPreview(request, timestamp),
             var family when string.Equals(family, SpriteAuditToolFamily, StringComparison.OrdinalIgnoreCase) =>
                 _spriteAuditPreviewAdapter.BuildReport(request, timestamp),
             var family when string.Equals(family, PetStateToolFamily, StringComparison.OrdinalIgnoreCase) =>

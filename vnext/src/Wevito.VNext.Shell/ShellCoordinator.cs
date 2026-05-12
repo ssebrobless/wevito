@@ -471,7 +471,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         {
             PetHelperRole.SpriteReviewHelper => ["spriteAudit", "assetInventory", "proofCapture", "localDocs", "petState"],
             PetHelperRole.ChecklistHelper => ["codeReview", "codePatchPlan", "checklist", "buildProof", "localDocs", "basket", "petState"],
-            PetHelperRole.ResearchHelper => ["localDocs", "translateText", "audioAssist", "screenCapture", "assetInventory", "basket", "proofCapture", "petState"],
+            PetHelperRole.ResearchHelper => ["localDocs", "localResearch", "translateText", "audioAssist", "screenCapture", "assetInventory", "basket", "proofCapture", "petState"],
             _ => ["localDocs"]
         };
     }
@@ -481,6 +481,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         return
         [
             new ToolPolicy("local-docs-readonly", "localDocs", ToolAccessMode.ReadOnly, ToolRiskLevel.Low, ApprovalRequirement.None),
+            new ToolPolicy("local-research-readonly", "localResearch", ToolAccessMode.ReadOnly, ToolRiskLevel.Low, ApprovalRequirement.None),
             new ToolPolicy("sprite-audit-readonly", "spriteAudit", ToolAccessMode.ReadOnly, ToolRiskLevel.Low, ApprovalRequirement.None),
             new ToolPolicy("pet-state-readonly", "petState", ToolAccessMode.ReadOnly, ToolRiskLevel.Low, ApprovalRequirement.None),
             new ToolPolicy("asset-inventory-readonly", "assetInventory", ToolAccessMode.ReadOnly, ToolRiskLevel.Low, ApprovalRequirement.None),
@@ -1846,6 +1847,11 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         hydrated.TryAdd("webtools_visible", bool.FalseString);
         hydrated.TryAdd("pet_model_adapter_enabled", bool.FalseString);
         hydrated.TryAdd("pet_model_first_call_approved", bool.FalseString);
+        hydrated.TryAdd(ModelProviderModeService.ProviderModeSetting, "disabled");
+        hydrated.TryAdd(ModelProviderModeService.LocalProviderIdSetting, "deterministic-local");
+        hydrated.TryAdd(ModelProviderModeService.LocalProviderAvailableSetting, bool.FalseString);
+        hydrated.TryAdd(ModelProviderModeService.HostedProviderIdSetting, "none");
+        hydrated.TryAdd(ModelProviderModeService.HostedProviderApprovedSetting, bool.FalseString);
         hydrated.TryAdd(RuntimeSupervisorService.QuietModeSetting, bool.FalseString);
         hydrated.TryAdd(RuntimeSupervisorService.PetOnlyModeSetting, bool.FalseString);
         hydrated.TryAdd(RuntimeSupervisorService.BackgroundWorkAllowedSetting, bool.FalseString);

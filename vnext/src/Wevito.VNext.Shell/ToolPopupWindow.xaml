@@ -776,7 +776,7 @@
                     <TextBlock x:Name="PetTaskCapabilityText"
                                Margin="0,4,0,0"
                                automation:AutomationProperties.AutomationId="PetTaskCapabilityText"
-                               Text="Report-only tools: localDocs, spriteAudit, assetInventory, petState, codeReview, codePatchPlan. Approval-only tools: buildProof, translateText, audioAssist, screenCapture. Locked: model calls, sprite mutation, browser automation, recording, external audio boosters."
+                               Text="Report-only tools: localDocs, localResearch, spriteAudit, assetInventory, petState, codeReview, codePatchPlan. Approval-only tools: buildProof, translateText, audioAssist, screenCapture. Locked: hosted model calls, sprite mutation, browser automation, recording, external audio boosters."
                                Foreground="#FF9FB7C4"
                                FontSize="10"
                                TextWrapping="Wrap" />

@@ -42,6 +42,26 @@ public sealed class PetTaskAdapterPreviewDispatcherTests
     }
 
     [Fact]
+    public void BuildPreview_RoutesLocalResearchRequestsWithoutNetworkOrHostedAi()
+    {
+        var tempRoot = CreateTempRoot();
+        var docsRoot = Path.Combine(tempRoot, "docs");
+        var artifactRoot = Path.Combine(tempRoot, "vnext", "artifacts", "pet-tasks", "20260512-120000-local-research");
+        Directory.CreateDirectory(docsRoot);
+        var docPath = Path.Combine(docsRoot, "roadmap.md");
+        File.WriteAllText(docPath, "local first AI roadmap");
+
+        var result = _dispatcher.BuildPreview(BuildRequest("localResearch", TaskKind.Research, docsRoot, [docsRoot], artifactRoot));
+
+        Assert.Equal(TaskAdapterResultStatus.PreviewReady, result.Status);
+        Assert.Equal("localResearch", result.ToolFamily);
+        Assert.False(result.DidMutate);
+        Assert.Contains("No hosted AI or network fetch was used", result.PreviewSummary, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains(result.WrittenPaths ?? [], path => path.EndsWith("research-evidence-packet.json", StringComparison.OrdinalIgnoreCase));
+        Assert.Contains(result.WrittenPaths ?? [], path => path.EndsWith("run-summary.md", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Fact]
     public void BuildPreview_RoutesSpriteAuditRequests()
     {
         var tempRoot = CreateTempRoot();

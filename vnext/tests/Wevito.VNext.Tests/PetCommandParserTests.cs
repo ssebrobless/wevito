@@ -141,6 +141,18 @@ public sealed class PetCommandParserTests
     }
 
     [Fact]
+    public void Parse_ResearchCommandRoutesToLocalResearchAdapter()
+    {
+        var intent = _parser.Parse("research local AI options for Wevito", Helpers());
+
+        Assert.Equal(TaskIntentTargetMode.RouteToBestHelper, intent.TargetMode);
+        Assert.Equal(_nixId, intent.TargetPetId);
+        Assert.Equal(TaskKind.Research, intent.TaskKind);
+        Assert.Equal("localResearch", intent.RequestedToolFamily);
+        Assert.False(intent.NeedsApproval);
+    }
+
+    [Fact]
     public void Parse_AssetInventoryCommandRoutesToReadOnlyInventoryAdapter()
     {
         var intent = _parser.Parse("inventory assets for Wevito", Helpers());
@@ -251,6 +263,7 @@ public sealed class PetCommandParserTests
     }
 
     [Theory]
+    [InlineData("research local AI options", TaskKind.Research, "localResearch")]
     [InlineData("summarize the local docs", TaskKind.SummarizeDocs, "localDocs")]
     [InlineData("review goose baby female blue sprites", TaskKind.ReviewSprites, "spriteAudit")]
     [InlineData("inventory assets in sprites_runtime", TaskKind.InventoryAssets, "assetInventory")]
