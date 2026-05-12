@@ -1,0 +1,302 @@
+﻿2026-05-12T20:57:25.6967513+00:00 | shell | pid=11940 | startup-begin
+2026-05-12T20:57:25.7931605+00:00 | shell | pid=11940 | content-loaded path=C:\Users\fishe\.codex\worktrees\ab46\wevito\vnext\src\Wevito.VNext.Shell\bin\Debug\net8.0-windows10.0.19041.0\content species=10 environments=12
+2026-05-12T20:57:25.9287454+00:00 | audit-scenario | pid=11940 | path=C:\Users\fishe\.codex\worktrees\ab46\wevito\vnext\artifacts\pet-task-probes\20260512-165724-923-2613f6b2\scenario.json pets=0 mode=Pinned env=rat
+2026-05-12T20:57:25.9294337+00:00 | shell | pid=11940 | state-ready pinned=True pets=3 basket=0
+2026-05-12T20:57:26.1159303+00:00 | overlay-style | pid=11940 | window=Wevito Home Panel clickThrough=False noActivate=False handle=115411072
+2026-05-12T20:57:26.1524902+00:00 | overlay-style | pid=11940 | window=Wevito Roam Band clickThrough=True noActivate=True handle=2885262
+2026-05-12T20:57:26.1950876+00:00 | overlay-style | pid=11940 | window=Wevito Basket clickThrough=False noActivate=False handle=2557096
+2026-05-12T20:57:26.2043287+00:00 | shell | pid=11940 | broker-started pid=23316 pipe=wevito-vnext-11940
+2026-05-12T20:57:26.3427797+00:00 | shell | pid=11940 | broker-connected
+2026-05-12T20:57:26.4112477+00:00 | broker-event | pid=11940 | DesktopContextChanged
+2026-05-12T20:57:26.4269353+00:00 | desktop-context | pid=11940 | foreground=LeagueClientUx title=League of Legends shell=False fullscreen=False
+2026-05-12T20:57:26.4429804+00:00 | mode | pid=11940 | mode=Pinned pinned=True
+2026-05-12T20:57:26.4446518+00:00 | layout | pid=11940 | home=1232,110 660x910 tool=1372,10 520x420 roam=0,922 1920x118
+2026-05-12T20:57:26.4459994+00:00 | overlay-style | pid=11940 | window=Wevito Home Panel clickThrough=False noActivate=True handle=115411072
+2026-05-12T20:57:26.4464887+00:00 | overlay-style | pid=11940 | window=Wevito Basket clickThrough=True noActivate=True handle=2557096
+2026-05-12T20:57:26.4478104+00:00 | visibility | pid=11940 | window=ToolPopup visibility=Hidden
+2026-05-12T20:57:26.5369936+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,utility/storage_basket
+2026-05-12T20:57:26.5654737+00:00 | broker-event | pid=11940 | ForegroundChanged
+2026-05-12T20:57:26.5658368+00:00 | broker-event | pid=11940 | WorkAreaChanged
+2026-05-12T20:57:26.5707086+00:00 | overlay-regions | pid=11940 | HomePanel:1232,110,660,910:True|RoamBand:0,922,1920,118:False|ToolPopup:1372,10,520,420:False
+2026-05-12T20:57:26.5893551+00:00 | layout | pid=11940 | home=1232,110 660x910 tool=1372,10 520x420 roam=0,922 1920x118
+2026-05-12T20:57:26.5925334+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,utility/storage_basket
+2026-05-12T20:57:26.5983718+00:00 | shell | pid=11940 | startup-complete
+2026-05-12T20:57:26.6601636+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,utility/storage_basket
+2026-05-12T20:57:26.7124089+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,utility/storage_basket
+2026-05-12T20:57:26.7738257+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,utility/storage_basket
+2026-05-12T20:57:26.8434730+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,utility/storage_basket
+2026-05-12T20:57:26.8987530+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,utility/storage_basket
+2026-05-12T20:57:26.9614858+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,utility/storage_basket
+2026-05-12T20:57:27.0226903+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,utility/storage_basket
+2026-05-12T20:57:27.0853705+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,utility/storage_basket
+2026-05-12T20:57:27.1475833+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,utility/storage_basket
+2026-05-12T20:57:27.2100082+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,utility/storage_basket
+2026-05-12T20:57:27.2727136+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,utility/storage_basket
+2026-05-12T20:57:27.3341881+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,utility/storage_basket
+2026-05-12T20:57:27.3953815+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,utility/storage_basket
+2026-05-12T20:57:27.4432246+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,utility/storage_basket
+2026-05-12T20:57:27.5047555+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,utility/storage_basket
+2026-05-12T20:57:27.5508131+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,utility/storage_basket
+2026-05-12T20:57:27.5984700+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,utility/storage_basket
+2026-05-12T20:57:27.6429832+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,utility/storage_basket
+2026-05-12T20:57:27.6897511+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,utility/storage_basket
+2026-05-12T20:57:27.7362621+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,utility/storage_basket
+2026-05-12T20:57:27.7835250+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,utility/storage_basket
+2026-05-12T20:57:27.8283062+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,utility/storage_basket
+2026-05-12T20:57:27.8758892+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,utility/storage_basket
+2026-05-12T20:57:27.9247400+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:27.9677835+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:28.0292402+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:28.0764795+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:28.1230121+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:28.1701512+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:28.2169602+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:28.2775292+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:28.3550284+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:28.4167305+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:28.4791059+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:28.5404754+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:28.6035836+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:28.6629168+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:28.7249182+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:28.7872857+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:28.8489428+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:28.8950224+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:28.9558384+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:29.0022235+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:29.0486406+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:29.0949235+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:29.1408386+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:29.1869255+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:29.2336820+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:29.2795821+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:29.3259589+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:29.3863508+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:29.4499310+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:29.5100789+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:29.5714275+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:29.6324881+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:29.6952139+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:29.7573869+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:29.8197877+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:29.8802978+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:29.9274870+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:29.9729540+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:30.0189450+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:30.0647548+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:30.1113630+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:30.1588245+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:30.2042361+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:30.2506690+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:30.2978836+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:30.3445557+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:30.3922933+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:30.4393207+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:30.4857906+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:30.5307863+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:30.5782770+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:30.6246059+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:30.6702843+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:30.7166705+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:30.7643384+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:30.8104171+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:30.8573045+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:30.9033219+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:30.9495190+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:31.0139489+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:31.0732421+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:31.1358510+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:31.1417130+00:00 | ui-command | pid=11940 | toggle-webtools visible=True
+2026-05-12T20:57:31.1420675+00:00 | layout | pid=11940 | home=1232,110 660x910 tool=1372,10 520x420 roam=0,922 1920x118
+2026-05-12T20:57:31.1435042+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:31.2590277+00:00 | persistence | pid=11940 | saved pets=3 basket=0 pinned=True
+2026-05-12T20:57:31.2594220+00:00 | broker-event | pid=11940 | DesktopContextChanged
+2026-05-12T20:57:31.2597826+00:00 | desktop-context | pid=11940 | foreground=Wevito.VNext.Shell title=Wevito Home Panel shell=False fullscreen=False
+2026-05-12T20:57:31.2600501+00:00 | layout | pid=11940 | home=1232,110 660x910 tool=1372,10 520x420 roam=0,922 1920x118
+2026-05-12T20:57:31.2614540+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:31.2659705+00:00 | broker-event | pid=11940 | ForegroundChanged
+2026-05-12T20:57:31.2679332+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:31.3202940+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:31.3815287+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:31.4442784+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:31.4896713+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:31.5361264+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:31.5819024+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:31.6283198+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:31.6744450+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:31.7213640+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:31.7665217+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:31.8138424+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:31.8626600+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:31.9069900+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:31.9539294+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:32.0005193+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:32.0273696+00:00 | ui-command | pid=11940 | toggle-tool tool=helpers open=True pinned=True
+2026-05-12T20:57:32.0280193+00:00 | layout | pid=11940 | home=1232,110 660x910 tool=1372,10 520x420 roam=0,922 1920x118
+2026-05-12T20:57:32.0288180+00:00 | overlay-style | pid=11940 | window=Wevito Basket clickThrough=False noActivate=True handle=2557096
+2026-05-12T20:57:32.0292340+00:00 | visibility | pid=11940 | window=ToolPopup visibility=Visible
+2026-05-12T20:57:32.0308427+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:32.0455020+00:00 | persistence | pid=11940 | saved pets=3 basket=0 pinned=True
+2026-05-12T20:57:32.0616475+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:32.0770854+00:00 | overlay-regions | pid=11940 | HomePanel:1232,110,660,910:True|RoamBand:0,922,1920,118:False|ToolPopup:1372,10,520,420:True
+2026-05-12T20:57:32.0774835+00:00 | broker-event | pid=11940 | DesktopContextChanged
+2026-05-12T20:57:32.0778869+00:00 | desktop-context | pid=11940 | foreground=Wevito.VNext.Shell title=Wevito PET TASKS shell=False fullscreen=False
+2026-05-12T20:57:32.0782256+00:00 | layout | pid=11940 | home=1232,110 660x910 tool=1372,10 520x420 roam=0,922 1920x118
+2026-05-12T20:57:32.0799272+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:32.0841264+00:00 | broker-event | pid=11940 | ForegroundChanged
+2026-05-12T20:57:32.1076895+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:32.1545962+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:32.2002508+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:32.2472197+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:32.2932739+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:32.3400140+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:32.4012736+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:32.4630808+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:32.5238702+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:32.5854532+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:32.6327798+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:32.6958316+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:32.7577686+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:32.8197218+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:32.8667267+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:32.9129838+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:32.9588817+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:33.0061819+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:33.0530942+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:33.1000597+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:33.1623881+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:33.2070793+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:33.2535428+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:33.2993522+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:33.3458653+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:33.3918065+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:33.4382191+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:33.4835280+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:33.5298999+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:33.5765235+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:33.6221816+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:33.6690751+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:33.7161231+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:33.7628111+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:33.8090698+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:33.8709965+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:33.9332801+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:33.9951484+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:34.0563063+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:34.1179703+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:34.1810655+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:34.2433294+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:34.3057731+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:34.3679861+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:34.4291139+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:34.4753310+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:34.5227544+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:34.5691939+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:34.6166877+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:34.6624221+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:34.7089408+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:34.7547131+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:34.8020132+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:34.8480574+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:34.8944372+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:34.9408950+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:34.9870844+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:35.0331250+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:35.0792442+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:35.1250525+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:35.1712263+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:35.2171378+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:35.2636086+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:35.3092069+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:35.3569287+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:35.4041788+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:35.4505261+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:35.4977147+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:35.5436828+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:35.5911952+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:35.6375779+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:35.6839236+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:35.7446403+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:35.8064631+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:35.8691070+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:35.9314210+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:35.9926577+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:36.0548522+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:36.0898762+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:36.1365427+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:36.1839914+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:36.2399296+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:36.2853045+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:36.3322739+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:36.3780024+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:36.4249856+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:36.4708774+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:36.5149397+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:36.5645401+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:36.6250646+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:36.6715559+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:36.7211334+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:36.7636769+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:36.8238914+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:36.8848642+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:36.9461378+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:37.0089917+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:37.0712842+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:37.1359706+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:37.1967002+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:37.2576149+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:37.3027235+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:37.3491451+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:37.3909442+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:37.4403884+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:37.4877831+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:37.5340543+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:37.5800369+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:37.6271404+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:37.6479862+00:00 | feedback | pid=11940 | Draft ready: Scout prepared a safe task card.
+2026-05-12T20:57:37.6492030+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:37.6648500+00:00 | pet-command | pid=11940 | status=Draft kind=ReviewPetState policy=Allowed
+2026-05-12T20:57:37.6664583+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:37.6899099+00:00 | persistence | pid=11940 | saved pets=3 basket=0 pinned=True
+2026-05-12T20:57:37.6920479+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:37.7335750+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:37.7800375+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:37.8269976+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:37.8728486+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:37.9182185+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:37.9804888+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:38.0428411+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:38.1049513+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:38.1526532+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:38.2137307+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:38.2630239+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:38.3231896+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:38.3848653+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:38.4492637+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:38.5087759+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:38.5903641+00:00 | feedback | pid=11940 | Preview report ready: C:\Users\fishe\.codex\worktrees\ab46\wevito\vnext\artifacts\pet-tasks\20260512-205738-petstate-reviewpetstate\run-summary.md
+2026-05-12T20:57:38.5917318+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:38.5982012+00:00 | pet-command | pid=11940 | preview id=009a9cbe-97d2-43c6-bc4c-0e2f3bf15274 family=petState status=PreviewReady mutate=False audit=C:\Users\fishe\.codex\worktrees\ab46\wevito\vnext\artifacts\pet-tasks\20260512-205738-petstate-reviewpetstate\run-summary.md
+2026-05-12T20:57:38.5995937+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:38.6124316+00:00 | persistence | pid=11940 | saved pets=3 basket=0 pinned=True
+2026-05-12T20:57:38.6142542+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:38.6620519+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:38.7082098+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:38.7684538+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:38.8147674+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:38.8614115+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:38.9070589+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:38.9539173+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:38.9998895+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:39.0467299+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:39.0942502+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:39.1393384+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:39.1844309+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:39.2457385+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:39.3072408+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:39.3689865+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:39.4298860+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:39.4806173+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:39.5371343+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:39.5842887+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:39.6460012+00:00 | stage-props | pid=11940 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
