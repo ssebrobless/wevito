@@ -235,7 +235,17 @@ internal sealed class BrokerApplicationContext : ApplicationContext
             return;
         }
 
-        var region = _overlayRegions.FirstOrDefault(candidate => candidate.Interactive && Contains(candidate.Bounds, position));
+        OverlayRegion? region = null;
+        for (var index = _overlayRegions.Count - 1; index >= 0; index--)
+        {
+            var candidate = _overlayRegions[index];
+            if (candidate.Interactive && Contains(candidate.Bounds, position))
+            {
+                region = candidate;
+                break;
+            }
+        }
+
         if (region is null)
         {
             return;

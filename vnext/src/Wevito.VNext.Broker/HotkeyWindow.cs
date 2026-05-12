@@ -1,11 +1,13 @@
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using Wevito.VNext.Contracts;
 
 namespace Wevito.VNext.Broker;
 
 internal sealed class HotkeyWindow : NativeWindow, IDisposable
 {
     private const int WmHotKey = 0x0312;
+    private const uint ModAlt = 0x0001;
     private const uint ModControl = 0x0002;
     private const uint ModShift = 0x0004;
     private const int TogglePinnedId = 1;
@@ -51,10 +53,28 @@ internal sealed class HotkeyWindow : NativeWindow, IDisposable
 
     private void Register()
     {
-        _ = NativeMethods.RegisterHotKey(Handle, TogglePinnedId, ModControl | ModShift, (uint)Keys.P);
-        _ = NativeMethods.RegisterHotKey(Handle, CaptureBasketId, ModControl | ModShift, (uint)Keys.B);
-        _ = NativeMethods.RegisterHotKey(Handle, OpenBasketId, ModControl | ModShift, (uint)Keys.O);
-        _ = NativeMethods.RegisterHotKey(Handle, OpenDevToolsId, ModControl | ModShift, (uint)Keys.D);
+        RegisterHotkeyWithFallback(TogglePinnedId, "toggle-pinned", Keys.P);
+        RegisterHotkeyWithFallback(CaptureBasketId, "capture-basket", Keys.B);
+        RegisterHotkeyWithFallback(OpenBasketId, "open-basket", Keys.O);
+        RegisterHotkeyWithFallback(OpenDevToolsId, "open-dev-tools", Keys.D);
+    }
+
+    private void RegisterHotkeyWithFallback(int id, string actionId, Keys key)
+    {
+        if (TryRegisterHotkey(id, actionId, "Ctrl+Shift", ModControl | ModShift, key))
+        {
+            return;
+        }
+
+        _ = TryRegisterHotkey(id, actionId, "Ctrl+Alt", ModControl | ModAlt, key);
+    }
+
+    private bool TryRegisterHotkey(int id, string actionId, string label, uint modifiers, Keys key)
+    {
+        var registered = NativeMethods.RegisterHotKey(Handle, id, modifiers, (uint)key);
+        var error = registered ? 0 : Marshal.GetLastWin32Error();
+        TraceLog.Write("hotkey-register", $"action={actionId} keys={label}+{key} success={registered} error={error}");
+        return registered;
     }
 
     private void Unregister()

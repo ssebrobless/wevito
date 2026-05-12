@@ -235,6 +235,21 @@ function Invoke-GlobalHotkey {
     Start-Sleep -Milliseconds 700
 }
 
+function Resolve-WevitoHotkey {
+    param(
+        [string]$TracePath,
+        [string]$ActionId,
+        [string]$PrimaryKeys,
+        [string]$FallbackKeys
+    )
+
+    if ((Test-Path $TracePath) -and (Select-String -Path $TracePath -Pattern "hotkey-register .*action=$ActionId keys=Ctrl\+Alt.*success=True" -ErrorAction SilentlyContinue)) {
+        return $FallbackKeys
+    }
+
+    return $PrimaryKeys
+}
+
 function Invoke-LeftClickAt {
     param(
         [int]$X,
@@ -433,26 +448,29 @@ try {
     Start-Sleep -Milliseconds $StartupDelayMs
 
     $homeWindow = Get-WindowInfo -ProcessId $shellProcess.Id -Title "Wevito Home Panel"
+    $notepadProcess = Start-Process -FilePath "notepad.exe" -PassThru
+    Start-Sleep -Milliseconds 1000
+    $notepadWindow = Get-WindowInfo -ProcessId $notepadProcess.Id
+    [void](Set-WindowForeground -WindowInfo $notepadWindow)
     $foregroundAfterNotepad = Get-ForegroundProcessId
-    if ($foregroundAfterNotepad -eq $shellProcess.Id) {
-        $notepadProcess = Start-Process -FilePath "notepad.exe" -PassThru
-        Start-Sleep -Milliseconds 1000
-        $notepadWindow = Get-WindowInfo -ProcessId $notepadProcess.Id
-        [void](Set-WindowForeground -WindowInfo $notepadWindow)
-        $foregroundAfterNotepad = Get-ForegroundProcessId
-    }
 
     if ($foregroundAfterNotepad -eq $shellProcess.Id) {
         throw "Failed to establish a non-shell foreground app for the pinned probe."
     }
 
-    Invoke-GlobalHotkey -Keys "^+p"
+    $brokerTracePath = Join-Path $TraceDir "Wevito.VNext.Broker.trace.log"
+    $pinHotkey = Resolve-WevitoHotkey -TracePath $brokerTracePath -ActionId "toggle-pinned" -PrimaryKeys "^+p" -FallbackKeys "^%p"
+    $openBasketHotkey = Resolve-WevitoHotkey -TracePath $brokerTracePath -ActionId "open-basket" -PrimaryKeys "^+o" -FallbackKeys "^%o"
+
+    [void](Set-WindowForeground -WindowInfo $notepadWindow)
+    Invoke-GlobalHotkey -Keys $pinHotkey
     $foregroundAfterPin = Get-ForegroundProcessId
     $homeWindow = Get-WindowInfo -ProcessId $shellProcess.Id -Title "Wevito Home Panel"
 
     Set-ClipboardWithRetry -Value "https://openai.com/pinned-probe"
 
-    Invoke-GlobalHotkey -Keys "^+o"
+    [void](Set-WindowForeground -WindowInfo $notepadWindow)
+    Invoke-GlobalHotkey -Keys $openBasketHotkey
     $toolWindow = Get-WindowInfo -ProcessId $shellProcess.Id -Title "Wevito Basket"
     $pasteCenter = Get-AutomationElementCenter -WindowHandle $toolWindow.Handle -ProcessId $shellProcess.Id -AutomationId "PasteButton" -Name "PASTE"
     Invoke-LeftClickAt -X $pasteCenter.X -Y $pasteCenter.Y
@@ -461,7 +479,8 @@ try {
     $captureTriggered = Wait-ForTraceText -TracePath $shellTracePath -Pattern "ui-command \| .*capture-clipboard"
     $basketUpdated = Wait-ForTraceText -TracePath $shellTracePath -Pattern "basket \| .*count=1"
 
-    Invoke-GlobalHotkey -Keys "^+p"
+    [void](Set-WindowForeground -WindowInfo $notepadWindow)
+    Invoke-GlobalHotkey -Keys $pinHotkey
     $foregroundAfterRelease = Get-ForegroundProcessId
 
     $result = [ordered]@{

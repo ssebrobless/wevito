@@ -174,7 +174,11 @@ def main() -> None:
     args = parser.parse_args()
     resolve_animation_frames.prefer_authored = args.prefer_authored
 
-    species_ids = sorted(path.name for path in args.sprite_root.iterdir() if path.is_dir())
+    species_ids = sorted(
+        path.name
+        for path in args.sprite_root.iterdir()
+        if path.is_dir() and not path.name.startswith(("_", "."))
+    )
     args.output_root.mkdir(parents=True, exist_ok=True)
     outputs: list[Path] = []
     for species in species_ids:
