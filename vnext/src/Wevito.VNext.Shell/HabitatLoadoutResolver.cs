@@ -27,7 +27,7 @@ internal static class HabitatLoadoutResolver
     private static readonly string[] ReptileToyPoolB = ["rock_basking_spot", "moss_bed", "blanket_mat", "log_shelter"];
 
     private static readonly string[] GroomingPool = ["grooming_brush", "towel", "bandage_roll"];
-    private static readonly string[] BathPool = ["soap_bottle", "towel", "water_bowl"];
+    private static readonly string[] BathPool = ["soap_bottle", "towel"];
     private static readonly string[] MedicinePool = ["medicine_dropper", "pill_bottle", "bandage_roll"];
     private static readonly string[] DoctorPool = ["thermometer", "first_aid_kit"];
     private static readonly string[] EmergencyDoctorPool = ["first_aid_kit", "thermometer", "syringe"];
