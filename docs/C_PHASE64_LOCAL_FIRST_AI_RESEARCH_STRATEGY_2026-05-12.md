@@ -48,6 +48,8 @@ C-PHASE 64 shape
 
 ## Safety Boundaries
 
+These boundaries describe the C-PHASE 64 safety posture, not the final product ceiling. The app should eventually earn the right to use web research, approved local files, local tool execution, local learning, local training/tuning, and guarded code/asset mutation. C-PHASE 64 keeps those disabled because the trust rails must exist before the autonomy is turned on.
+
 This phase did not:
 
 - call a hosted model
@@ -60,6 +62,54 @@ This phase did not:
 - train or fine-tune a model
 
 Hosted providers remain a later explicit opt-in path only. Normal operation should continue moving toward `local_only`.
+
+## Current vs Eventual Capability Ladder
+
+```text
+Wevito autonomy ladder
+|
++-- C-PHASE 64 now
+|   +-- local provider mode contract exists
+|   +-- deterministic local adapter can preview
+|   +-- localResearch writes evidence packets
+|   +-- no network, no training, no mutation
+|   `-- hosted AI stays disabled
+|
++-- near term
+|   +-- schedule report-only work
+|   +-- promote reviewed examples into local memory/evals
+|   +-- run local evals that prove behavior improved
+|   +-- summarize what happened while always-on
+|   `-- remain preview-first
+|
++-- earned autonomy
+|   +-- fetch web sources through approved connectors
+|   +-- read approved local files and app state
+|   +-- run approved non-destructive tools
+|   +-- learn from reviewed outcomes
+|   +-- train/tune local models or routing policies
+|   `-- propose code/assets changes with backup/hash/rollback/proof
+|
+`-- target state
+    +-- Wevito is the AI runtime
+    +-- local models and local memory are the normal brain
+    +-- hosted AI is not required
+    +-- user can leave it running without losing control of the PC
+    `-- high-risk changes remain gated and reversible
+```
+
+## Capability Policy
+
+| Capability | C-PHASE 64 status | Eventual target | Required gate before enable |
+| --- | --- | --- | --- |
+| Web research | Disabled | App-owned research connector with citations/cache | User approval, source log, rate limits, privacy filter |
+| API keys | Not read | Allowed for non-AI services or optional cloud bootstrap only | Explicit provider config, visible purpose, no silent reads |
+| Hosted AI | Disabled | Optional accelerator, not runtime brain | Separate approval, consent notice, capability flag |
+| Local model use | Stubbed by deterministic adapter | Local inference runtime for normal helper tasks | Install check, offline proof, fallback behavior |
+| Local learning | Not training | Reviewed examples -> memory/evals -> local improvement | Human-reviewed labels, promotion report, rollback |
+| Local training/tuning | Disabled | Local-only tuning when useful and measurable | Dataset manifest, eval improvement, resource controls |
+| Asset/code mutation | Disabled | Guarded apply with proof | Dry run, exact scope, backup hashes, rollback drill, post-proof |
+| Background autonomy | Disabled | Quiet always-on preview/execution ladder | Supervisor policy, resource budget, visible activity history |
 
 ## Validation
 
@@ -93,4 +143,43 @@ scheduler rule
 +-- write evidence artifacts
 +-- never mutate without approval
 `-- summarize visible activity
+```
+
+## Reorganized Next Phases
+
+```text
+next path after C-PHASE 64
+|
++-- C-PHASE 65: scheduler preview
+|   `-- Wevito proposes useful work while obeying quiet/pet-only modes
+|
++-- C-PHASE 66: reviewed learning promotion
+|   `-- accepted Creative Learning Lab examples become local memory/eval data
+|
++-- C-PHASE 67: local learning/eval loop
+|   `-- prove behavior changes are measurable, local, reversible, and explainable
+|
++-- C-PHASE 68: self-improvement activity reports
+|   `-- always-on work becomes visible without pet task-completion animations
+|
++-- C-PHASE 69: independent assistant beta gate
+|   `-- decide whether limited autonomy is ready
+|
++-- C-PHASE 70: approved web research connector
+|   `-- enable web fetching only with citations, cache, privacy rules, and user control
+|
++-- C-PHASE 71: approved local file/tool access expansion
+|   `-- let pets inspect approved folders/tools without broad PC control
+|
++-- C-PHASE 72: local model runtime integration
+|   `-- connect a real local inference runtime while keeping hosted AI optional/off
+|
++-- C-PHASE 73: local training/tuning pipeline
+|   `-- train or tune local behavior only from reviewed datasets with eval gates
+|
++-- C-PHASE 74: guarded code/asset mutation execution
+|   `-- allow reversible changes through exact-scope proof packets
+|
+`-- C-PHASE 75: autonomous operations beta
+    `-- limited self-directed work with pause, budget, rollback, and daily report controls
 ```

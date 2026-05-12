@@ -90,6 +90,46 @@ independent loop
 
 Hosted models can still be useful during development or with explicit user approval, but they should not be required for the everyday pet-agent experience.
 
+## Capability Ladder
+
+The "no web, no training, no mutation" posture in the early phases is a safety sequence, not the desired end state. The desired end state is local-first autonomy: Wevito can eventually research, learn, train/tune local behavior, and safely change files through proof gates, but it should not depend on GPT, Claude, Gemini, Codex, or another hosted model as its brain.
+
+```text
+capability ladder
+|
++-- 1. safe preview
+|   +-- local deterministic adapters
+|   +-- report-only PET TASKS
+|   +-- no hidden execution
+|   `-- no network or mutation
+|
++-- 2. supervised autonomy
+|   +-- scheduler proposes work
+|   +-- reviewed examples enter memory/evals
+|   +-- local behavior changes become measurable
+|   `-- always-on summaries explain what happened
+|
++-- 3. connected local agent
+|   +-- approved web research with citations
+|   +-- approved local file/tool inspection
+|   +-- local model runtime for normal reasoning
+|   `-- hosted AI remains optional and off by default
+|
++-- 4. learning local agent
+|   +-- reviewed datasets
+|   +-- local embeddings/retrieval
+|   +-- local model/routing tuning
+|   `-- eval gates prove improvement before promotion
+|
+`-- 5. guarded self-improvement
+    +-- code/asset change proposals
+    +-- exact-scope dry runs
+    +-- backup/hash/rollback/post-proof
+    `-- user controls for higher-risk actions
+```
+
+This gives Wevito a real path toward being "the AI" itself while preserving the project rule that the desktop pet remains pleasant, quiet, and under user control.
+
 ## Phase Plan
 
 ### C-PHASE 63 - Always-On Runtime Supervisor And Quiet Mode
@@ -331,6 +371,172 @@ Stop gates:
 - Stop if user cannot easily pause the app.
 - Stop if resource usage is not measured.
 - Stop if any tool can run without visible history.
+
+### C-PHASE 70 - Approved Web Research Connector
+
+Goal: let Wevito fetch web sources through its own controlled connector instead of relying on Codex/browser handoffs.
+
+Scope:
+
+- Add a web research connector behind an explicit setting.
+- Require task-card approval before network access.
+- Save every fetched URL, timestamp, title, excerpt/hash, and citation label.
+- Cache source packets so repeated research can be audited.
+- Add privacy filters so local private content is not sent into external search queries by accident.
+- Keep hosted AI disabled; the connector fetches sources, it does not outsource reasoning.
+
+Likely files:
+
+```text
+vnext/src/Wevito.VNext.Core/WebResearchConnector.cs
+vnext/src/Wevito.VNext.Core/ResearchPlannerService.cs
+vnext/tests/Wevito.VNext.Tests/WebResearchConnectorTests.cs
+docs/C_PHASE70_APPROVED_WEB_RESEARCH_CONNECTOR_2026-05-12.md
+```
+
+Stop gates:
+
+- Stop if any network request happens before approval.
+- Stop if fetched sources are not written to an evidence packet.
+- Stop if private local text can silently enter a query.
+
+### C-PHASE 71 - Approved Local File And Tool Access Expansion
+
+Goal: let Wevito inspect approved folders, app state, and non-destructive local tools without broad PC control.
+
+Scope:
+
+- Add allowlisted local roots and denylisted paths.
+- Add tool-family permissions for read-only file inspection.
+- Add proof packets for local file reads and command previews.
+- Keep execution separated from preview.
+- Preserve quiet/pet-only mode rules.
+
+Likely files:
+
+```text
+vnext/src/Wevito.VNext.Core/LocalToolAccessPolicy.cs
+vnext/src/Wevito.VNext.Core/PetTaskAdapterPreviewDispatcher.cs
+vnext/tests/Wevito.VNext.Tests/LocalToolAccessPolicyTests.cs
+docs/C_PHASE71_APPROVED_LOCAL_FILE_TOOL_ACCESS_2026-05-12.md
+```
+
+Stop gates:
+
+- Stop if file access is not root-scoped.
+- Stop if destructive commands can execute.
+- Stop if task cards omit the accessed path list.
+
+### C-PHASE 72 - Local Model Runtime Integration
+
+Goal: connect a real local inference runtime so Wevito can reason without hosted AI.
+
+Scope:
+
+- Add a local runtime provider adapter behind `local_only`.
+- Detect installed/available local model runtime.
+- Keep deterministic fallback when no runtime exists.
+- Add no-network tests.
+- Record model id, model file/source, prompt/input hash, and output hash in evidence packets.
+
+Likely files:
+
+```text
+vnext/src/Wevito.VNext.Core/LocalModelRuntimeAdapter.cs
+vnext/src/Wevito.VNext.Core/ModelProviderMode.cs
+vnext/tests/Wevito.VNext.Tests/LocalModelRuntimeAdapterTests.cs
+docs/C_PHASE72_LOCAL_MODEL_RUNTIME_INTEGRATION_2026-05-12.md
+```
+
+Stop gates:
+
+- Stop if hosted AI becomes required.
+- Stop if local inference lacks artifact/provenance records.
+- Stop if the app cannot fall back cleanly when the runtime is unavailable.
+
+### C-PHASE 73 - Local Training And Tuning Pipeline
+
+Goal: allow Wevito to improve local behavior from reviewed data without uncontrolled training.
+
+Scope:
+
+- Convert promoted learning bundles into versioned datasets.
+- Add train/tune plan manifests.
+- Start with routing/config/retrieval tuning before model fine-tuning.
+- Add eval-before/eval-after gates.
+- Add rollback to previous local model/config.
+
+Likely files:
+
+```text
+vnext/src/Wevito.VNext.Core/LocalTrainingPlanService.cs
+vnext/src/Wevito.VNext.Core/LearningEvalService.cs
+vnext/tests/Wevito.VNext.Tests/LocalTrainingPlanServiceTests.cs
+docs/C_PHASE73_LOCAL_TRAINING_TUNING_PIPELINE_2026-05-12.md
+```
+
+Stop gates:
+
+- Stop if unreviewed data enters training.
+- Stop if evals do not show measurable improvement.
+- Stop if rollback cannot restore the prior local behavior state.
+
+### C-PHASE 74 - Guarded Code And Asset Mutation Execution
+
+Goal: let Wevito make reversible code or asset changes only through exact-scope proof packets.
+
+Scope:
+
+- Extend dry-run/apply/rollback services beyond sprite pilots.
+- Require exact file scopes.
+- Require backup hashes before mutation.
+- Require post-proof validation.
+- Require activity reports after any change.
+
+Likely files:
+
+```text
+vnext/src/Wevito.VNext.Core/GuardedMutationPlan.cs
+vnext/src/Wevito.VNext.Core/GuardedMutationService.cs
+vnext/tests/Wevito.VNext.Tests/GuardedMutationServiceTests.cs
+docs/C_PHASE74_GUARDED_CODE_ASSET_MUTATION_2026-05-12.md
+```
+
+Stop gates:
+
+- Stop if scope expands after approval.
+- Stop if rollback is not exact.
+- Stop if generated/changed assets lack provenance.
+
+### C-PHASE 75 - Autonomous Operations Beta
+
+Goal: decide whether Wevito can safely perform limited self-directed work while launched all day.
+
+Scope:
+
+- Long-running quiet-mode proof.
+- Local-only research proof.
+- Local learning proof.
+- Approved web research proof.
+- Guarded mutation dry-run proof.
+- User interrupt/pause proof.
+- Daily report proof.
+
+Required outcome:
+
+```text
+decision labels
+|
++-- enable_autonomous_beta
++-- keep_supervised_preview
+`-- pause_for_reliability_work
+```
+
+Stop gates:
+
+- Stop if the user cannot clearly see what Wevito is doing.
+- Stop if resource usage interferes with normal PC work.
+- Stop if any autonomous action lacks an artifact trail.
 
 ## Immediate Recommendation
 
