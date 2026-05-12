@@ -11,10 +11,10 @@ C-PHASE 62 closes the post-stable C-PHASE 54-61 plan and reorients the next road
 Wevito should become an independently functional always-on pet AI.
 |
 +-- not dependent on Codex as runtime brain
-+-- not dependent on Gemini/browser handoffs for normal operation
++-- not dependent on GPT/Claude/Gemini/browser handoffs for normal operation
 +-- safe to leave launched while the user uses the PC
-+-- able to propose, preview, and perform approved tasks
-+-- able to learn from reviewed local examples
++-- able to research, synthesize, plan, preview, and perform approved tasks
++-- able to learn from reviewed local examples without hosted AI as the backend
 `-- able to explain what it is doing without stealing focus
 ```
 
@@ -124,14 +124,15 @@ current independence
 +-- app owns live reasoning/model execution               no
 +-- app owns background autonomous scheduling             no
 +-- app owns self-learning/training loop                  no
-+-- app can improve itself without Codex/Gemini/Claude    no
++-- app can research and synthesize on its own            no
++-- app can improve itself without Codex/GPT/Claude/Gemini no
 `-- app can run quietly all day without interference       needs proof
 ```
 
 The next phase family should focus less on adding more tools and more on **owning the runtime loop**:
 
 ```text
-observe -> propose -> preview -> approve/deny -> execute if safe -> record evidence -> learn only from reviewed data
+observe -> research -> synthesize -> propose -> preview -> approve/deny -> execute if safe -> record evidence -> learn only from reviewed data
 ```
 
 ## Key Product Risks
@@ -139,8 +140,10 @@ observe -> propose -> preview -> approve/deny -> execute if safe -> record evide
 | Risk | Current Status | Required Fix |
 | --- | --- | --- |
 | Wevito depends on Codex for implementation work | True today | Build app-owned scheduler, provider layer, and local automation services. |
-| Live model calls are disabled | Safe but incomplete | Add explicit provider strategy with local/offline-first path and user-approved cloud fallback. |
-| Learning Lab exports examples but does not learn | Safe but incomplete | Add reviewed-promotion gate before memory/training use. |
+| Wevito cannot research/synthesize independently | Open | Add local-first research planner, source collection, citation/evidence store, summarizer, and reviewable research reports. |
+| Live model calls are disabled | Safe but incomplete | Add explicit local-first provider strategy; hosted AI remains optional and never required for normal operation. |
+| Learning Lab exports examples but does not learn | Safe but incomplete | Add reviewed-promotion gate before local memory/retrieval/eval improvement. |
+| No local learning loop exists yet | Open | Add no-network evals, local memory promotion, preference snapshots, and local model/config improvement reports. |
 | Always-on behavior is not proven | Open | Add quiet mode, resource budgets, focus/no-steal rules, and long-session proof. |
 | Optional animations remain fallback-only | Open visual gap | Continue separate visual pipeline with proof/rollback. |
 | Autonomous execution could become disruptive | Prevented by current gates | Keep preview-first until scheduler and user controls are proven. |
@@ -168,7 +171,7 @@ Created:
 docs/POST_CPHASE62_INDEPENDENT_AI_ROADMAP_2026-05-12.md
 ```
 
-This is the next plan seed. It should replace the completed C-PHASE 54-61 post-stable plan as the working roadmap for autonomy.
+This is the next plan seed. It should replace the completed C-PHASE 54-61 post-stable plan as the working roadmap for autonomy. The roadmap is local-first: Wevito can use hosted AI during development or explicit user-approved research, but the product goal is a pet-agent runtime that can research, synthesize, plan, report, retrieve memory, evaluate its own behavior, and improve from reviewed data without GPT, Claude, Gemini, Codex, or browser handoffs as backend dependencies.
 
 ## Recommendation
 

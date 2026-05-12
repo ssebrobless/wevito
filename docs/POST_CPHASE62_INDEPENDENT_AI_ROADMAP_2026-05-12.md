@@ -15,10 +15,11 @@ Wevito-owned AI runtime
 +-- user has one simple command entry
 +-- app can run quietly all day
 +-- app owns task scheduling and evidence logs
-+-- app can use local/offline intelligence where possible
-+-- cloud model calls are explicit opt-in only
++-- app can research, compare sources, and synthesize findings
++-- app uses local/offline intelligence by default
++-- hosted AI calls are optional bootstrap/research aids only
 +-- learning happens from reviewed local data
-`-- no Codex/Gemini/Claude/browser handoff required for normal operation
+`-- no Codex/GPT/Claude/Gemini/browser handoff required for normal operation
 ```
 
 ## Guiding Rules
@@ -29,6 +30,8 @@ rules
 +-- no hidden provider calls
 +-- no hidden training
 +-- no hidden memory promotion
++-- no hosted AI dependency for normal operation
++-- no Codex/GPT/Claude/Gemini runtime brain
 +-- no screen recording by default
 +-- no external audio/system control by default
 +-- no focus stealing
@@ -52,11 +55,11 @@ dependency ladder
 +-- next
 |   +-- Wevito owns local scheduler
 |   +-- Wevito owns local memory/retrieval
-|   +-- Wevito owns provider settings and consent
-|   `-- Wevito can call approved providers directly
+|   +-- Wevito owns local/offline provider settings
+|   `-- hosted providers stay disabled unless explicitly approved for a narrow task
 |
 +-- later
-|   +-- Wevito runs local/offline models for many tasks
+|   +-- Wevito runs local/offline models for normal helper tasks
 |   +-- Wevito promotes reviewed examples into memory/evals
 |   +-- Wevito proposes safe improvements itself
 |   `-- Codex is only a development tool, not a runtime dependency
@@ -65,8 +68,27 @@ dependency ladder
     +-- Wevito self-maintains within strict gates
     +-- user reviews higher-risk changes
     +-- local learning improves behavior over time
-    `-- external providers are optional accelerators
+    `-- external providers are optional accelerators, not required services
 ```
+
+## Local-First Independence Bar
+
+Wevito should be considered independently functional only when the core loop below works without Codex, GPT, Claude, Gemini, or another hosted model service.
+
+```text
+independent loop
+|
++-- observe local app/game/tool state
++-- retrieve local memory and reviewed examples
++-- collect source evidence through app-owned research tools
++-- classify task with app-owned rules or a local model
++-- synthesize findings into preview/report/proof artifact
++-- learn from approved user feedback
++-- improve local routing/evals/preferences
+`-- summarize what changed without contacting hosted AI
+```
+
+Hosted models can still be useful during development or with explicit user approval, but they should not be required for the everyday pet-agent experience.
 
 ## Phase Plan
 
@@ -109,9 +131,9 @@ Stop gates:
 - Stop if a task can steal focus.
 - Stop if the supervisor bypasses PET TASKS approval rules.
 
-### C-PHASE 64 - App-Owned Model Provider Strategy
+### C-PHASE 64 - Local-First App-Owned AI And Research Strategy
 
-Goal: remove Codex as the assumed reasoning runtime.
+Goal: remove Codex, GPT, Claude, Gemini, and browser handoffs as assumed reasoning runtimes.
 
 Scope:
 
@@ -120,17 +142,30 @@ Scope:
   - `local_only`
   - `approved_cloud`
 - Keep cloud off by default.
-- Add a local/offline model provider abstraction even if initially stubbed.
-- Document possible local providers separately from implementation.
+- Make `local_only` the first real target, not a future afterthought.
+- Add a local/offline model provider abstraction even if initially backed by deterministic heuristics.
+- Add a research planner abstraction that can collect source records and produce citation/evidence packets without needing a hosted model.
+- Add a synthesis contract for research reports:
+  - user question
+  - local memory used
+  - sources inspected
+  - claims extracted
+  - confidence/uncertainty
+  - next recommended action
+- Document possible local providers separately from implementation, including install/runtime requirements and how Wevito behaves when none are installed.
 - Do not make live calls unless explicitly approved.
+- Treat hosted providers as temporary bootstrap/research adapters, not as required product dependencies.
 
 Likely files:
 
 ```text
 vnext/src/Wevito.VNext.Core/ModelProviderMode.cs
 vnext/src/Wevito.VNext.Core/LocalModelAdapter.cs
+vnext/src/Wevito.VNext.Core/ResearchPlannerService.cs
+vnext/src/Wevito.VNext.Core/ResearchEvidencePacket.cs
 vnext/src/Wevito.VNext.Shell/ShellCoordinator.cs
 vnext/tests/Wevito.VNext.Tests/ModelProviderModeTests.cs
+vnext/tests/Wevito.VNext.Tests/ResearchPlannerServiceTests.cs
 docs/C_PHASE64_APP_OWNED_MODEL_PROVIDER_STRATEGY_2026-05-12.md
 ```
 
@@ -146,7 +181,9 @@ Stop gates:
 
 - Stop if the app reads credentials automatically.
 - Stop if a network call is made.
-- Stop if cloud provider selection becomes implicit.
+- Stop if cloud provider selection becomes implicit or required for normal PET TASKS.
+- Stop if `local_only` cannot produce a deterministic no-network preview.
+- Stop if research reports lack source/evidence records.
 
 ### C-PHASE 65 - Autonomous Task Scheduler Preview
 
@@ -190,6 +227,7 @@ Scope:
 - Promote `accept` rows only after explicit user approval.
 - Write promotion report.
 - Do not train a model yet.
+- Store promoted examples in a local, versioned dataset that can later power retrieval, routing, evals, and local model improvement.
 
 Likely files:
 
@@ -208,7 +246,7 @@ Stop gates:
 
 ### C-PHASE 67 - Local Learning And Evaluation Loop
 
-Goal: add measurable improvement without true uncontrolled training.
+Goal: add measurable local improvement without uncontrolled training or hosted AI dependency.
 
 Scope:
 
@@ -217,6 +255,8 @@ Scope:
 - Record before/after scores.
 - Prefer local embeddings and deterministic evals.
 - Produce "learning changed behavior" reports.
+- Add a no-network test mode that proves evals and learning reports run offline.
+- Separate memory/retrieval improvement, lightweight local model/config improvement, and future training/fine-tuning.
 
 Likely files:
 
@@ -231,6 +271,7 @@ Stop gates:
 - Stop if this becomes model fine-tuning.
 - Stop if evals require external providers.
 - Stop if results are not reproducible.
+- Stop if the app cannot explain what local data changed behavior.
 
 ### C-PHASE 68 - Self-Improvement Activity Report Loop
 
@@ -270,6 +311,7 @@ Scope:
 - Resource-budget proof.
 - Tool preview/execution history proof.
 - Learning promotion proof.
+- Offline/local-only proof.
 - Manual user acceptance checklist.
 
 Required outcome:
@@ -281,6 +323,8 @@ decision labels
 +-- keep_preview_only
 `-- pause_for_safety_work
 ```
+
+`enable_limited_autonomy` is only valid if Wevito can complete the core helper loop in `local_only` mode. If hosted AI is required, the correct decision is `keep_preview_only` or `pause_for_safety_work`.
 
 Stop gates:
 

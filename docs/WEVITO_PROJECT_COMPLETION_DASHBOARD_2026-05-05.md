@@ -25,7 +25,7 @@ Wevito full vision after C-PHASE 61
 Remaining to complete full expanded vision: ~13%
 ```
 
-The shipped desktop pet is stable. The post-stable C-PHASE 54-61 work improved safety, tool proofing, model consent posture, Sprite Workflow V2, and Creative Learning Lab. The remaining work now clusters around **independent always-on AI behavior**: Wevito should eventually run, observe, plan, learn from reviewed data, and use tools without needing Codex/Gemini/Claude/browser handoffs as permanent runtime dependencies.
+The shipped desktop pet is stable. The post-stable C-PHASE 54-61 work improved safety, tool proofing, model consent posture, Sprite Workflow V2, and Creative Learning Lab. The remaining work now clusters around **independent always-on AI behavior**: Wevito should eventually run, observe, research, synthesize, plan, learn from reviewed data, and use tools without needing Codex/GPT/Claude/Gemini/browser handoffs as permanent runtime dependencies.
 
 ## Current Release Baseline
 
@@ -69,7 +69,7 @@ Stable release evidence:
 | Coding helpers | Report/plan surfaces working | 78% | Approval-gated patch execution and clearer review artifacts. |
 | Sprite Workflow V2 | Compact workbench scaffolded | 78% | Add app-owned candidate review, local repair strategy, and non-Codex generation alternatives. |
 | Creative Learning Lab | Reviewed-example export surface | 78% | Add supervised promotion workflow; no automatic training until reviewed gates exist. |
-| Pet AI agents | Dormant safe foundation | 68% | Add local supervisor, first live-call decision, local model/offline strategy, and approved memory promotion. |
+| Pet AI agents | Dormant safe foundation | 68% | Add local supervisor, local-first AI/research loop, local model/offline strategy, and approved memory promotion. |
 | Always-on independence | Early foundation | 48% | Add low-interference runtime supervisor, local/offline model strategy, task scheduler, learning loop, resource policy. |
 
 ## Fresh Audit Snapshot
@@ -291,8 +291,9 @@ Priority: medium after the baseline lock and tool simplification.
 independent AI target
 |
 +-- must not require Codex as runtime brain
-+-- must not require Gemini/browser handoff for normal operation
-+-- should prefer app-owned local services and explicit provider settings
++-- must not require GPT/Claude/Gemini/browser handoff for normal operation
++-- must be able to research and synthesize through app-owned tools
++-- should prefer app-owned local services and local/offline provider settings
 +-- should keep pets visually as normal pets
 +-- should run quietly while user uses other apps
 +-- should explain what it is doing at any moment
@@ -317,7 +318,7 @@ What is missing before Wevito can be left running confidently:
 | Gap | Why It Matters | Next Direction |
 | --- | --- | --- |
 | Always-on runtime supervisor | The app needs to manage background work, quiet mode, focus, and resource budgets. | Add tray/supervisor state, pause/resume, fullscreen/game detection, CPU/memory guardrails. |
-| App-owned model/provider layer | Wevito should not rely on Codex/Claude/Gemini as the operating brain. | Add provider abstraction in Shell with local/offline-first option, explicit cloud fallback, and no hidden calls. |
+| App-owned AI/research layer | Wevito should not rely on Codex/GPT/Claude/Gemini as the operating brain. | Add local-first reasoning/research planner, source collector, citation store, synthesis reports, and local/offline provider mode. |
 | Autonomous task scheduler | PET TASKS currently reacts to user requests; it does not safely choose work over time. | Add a scheduler that proposes tasks, writes previews, and waits for approval where needed. |
 | Reviewed learning promotion | Creative Lab exports examples, but does not promote them into memory/training. | Add approval-gated promotion from reviewed bundles into pet memory or local eval datasets. |
 | Local/offline learning strategy | "Training" is not currently implemented. | Start with retrieval/memory/eval updates before true model fine-tuning; prefer local embeddings and small local models. |
@@ -336,11 +337,12 @@ post C-PHASE 62 autonomy plan seed
 |   +-- fullscreen/game detection policy
 |   `-- CPU/memory/task-rate budget
 |
-+-- C-PHASE 64: App-owned model provider strategy
++-- C-PHASE 64: Local-first app-owned AI/research strategy
 |   +-- local/offline-first provider interface
-|   +-- cloud providers remain explicit opt-in
-|   +-- no Codex runtime dependency
-|   +-- no browser/Gemini dependency for normal tasks
+|   +-- app-owned research planner and synthesis report contract
+|   +-- hosted providers remain explicit opt-in
+|   +-- no Codex/GPT/Claude/Gemini runtime dependency
+|   +-- no browser/Gemini handoff dependency for normal tasks
 |   `-- first-call proof remains user-approved
 |
 +-- C-PHASE 65: Autonomous task scheduler, preview only
