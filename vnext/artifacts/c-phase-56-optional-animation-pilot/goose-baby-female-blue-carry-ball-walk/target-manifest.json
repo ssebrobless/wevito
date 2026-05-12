@@ -1,0 +1,166 @@
+{
+  "schemaVersion": 1,
+  "generatedAtUtc": "2026-05-12T20:10:36.706689+00:00",
+  "phase": "C-PHASE 56",
+  "status": "report_only_candidate_found_not_applied",
+  "target": {
+    "species": "goose",
+    "age": "baby",
+    "gender": "female",
+    "color": "blue",
+    "family": "carry_ball_walk",
+    "expected_frame_count": 6,
+    "runtime_target_glob": "sprites_runtime/goose/baby/female/blue/carry_ball_walk_*.png",
+    "authored_target_glob": "sprites_authored_verified/goose/baby/female/blue/carry_ball_walk_*.png"
+  },
+  "familySpec": {
+    "id": "carry_ball_walk",
+    "displayName": "Carry Ball Walk",
+    "frameCount": 6,
+    "fallbackAnimations": [
+      "walk",
+      "idle"
+    ],
+    "propRequirement": "ball_attached_to_species_specific_hold_anchor",
+    "qualityGate": "walk motion faces travel direction and the carried ball does not slide or detach"
+  },
+  "ballPolicy": "runtime_overlay_only_not_baked_into_pngs",
+  "sourcePacket": "vnext/artifacts/animation-runs/20260505-goose-baby-female-blue-optional-expansion-review",
+  "sourceManifest": "vnext/artifacts/animation-runs/20260505-goose-baby-female-blue-optional-expansion-review/manifest.json",
+  "candidateFrameCount": 6,
+  "candidateFrames": [
+    {
+      "frame_index": 0,
+      "frame_id": "carry_ball_walk_00",
+      "path": "vnext/artifacts/animation-runs/20260505-goose-baby-female-blue-optional-expansion-review/candidate-frames/carry_ball_walk/carry_ball_walk_00.png",
+      "exists": true,
+      "sha256": "4b6c113c55d14592a2e29bbd8e5ce339c084daf9d1e98ff389ef03248ee6ba18",
+      "manifest_sha256": "4b6c113c55d14592a2e29bbd8e5ce339c084daf9d1e98ff389ef03248ee6ba18",
+      "sha256_matches_manifest": true,
+      "width": 80,
+      "height": 72,
+      "mode": "RGBA",
+      "source_path_from_prior_manifest": "sprites_runtime/goose/baby/female/blue/carry_ball_walk_00.png",
+      "source_exists_on_current_main": false,
+      "packet_copy": "vnext/artifacts/c-phase-56-optional-animation-pilot/goose-baby-female-blue-carry-ball-walk/candidate-frames/carry_ball_walk_00.png"
+    },
+    {
+      "frame_index": 1,
+      "frame_id": "carry_ball_walk_01",
+      "path": "vnext/artifacts/animation-runs/20260505-goose-baby-female-blue-optional-expansion-review/candidate-frames/carry_ball_walk/carry_ball_walk_01.png",
+      "exists": true,
+      "sha256": "0866fd671462ca006eb7a34a2321a609a7fade17ecf8f42f7910d2d2aaa93be5",
+      "manifest_sha256": "0866fd671462ca006eb7a34a2321a609a7fade17ecf8f42f7910d2d2aaa93be5",
+      "sha256_matches_manifest": true,
+      "width": 80,
+      "height": 72,
+      "mode": "RGBA",
+      "source_path_from_prior_manifest": "sprites_runtime/goose/baby/female/blue/carry_ball_walk_01.png",
+      "source_exists_on_current_main": false,
+      "packet_copy": "vnext/artifacts/c-phase-56-optional-animation-pilot/goose-baby-female-blue-carry-ball-walk/candidate-frames/carry_ball_walk_01.png"
+    },
+    {
+      "frame_index": 2,
+      "frame_id": "carry_ball_walk_02",
+      "path": "vnext/artifacts/animation-runs/20260505-goose-baby-female-blue-optional-expansion-review/candidate-frames/carry_ball_walk/carry_ball_walk_02.png",
+      "exists": true,
+      "sha256": "0ce8d962a97db0d7651318d59cadb2e47ead178044007324b53db00741f586e9",
+      "manifest_sha256": "0ce8d962a97db0d7651318d59cadb2e47ead178044007324b53db00741f586e9",
+      "sha256_matches_manifest": true,
+      "width": 80,
+      "height": 72,
+      "mode": "RGBA",
+      "source_path_from_prior_manifest": "sprites_runtime/goose/baby/female/blue/carry_ball_walk_02.png",
+      "source_exists_on_current_main": false,
+      "packet_copy": "vnext/artifacts/c-phase-56-optional-animation-pilot/goose-baby-female-blue-carry-ball-walk/candidate-frames/carry_ball_walk_02.png"
+    },
+    {
+      "frame_index": 3,
+      "frame_id": "carry_ball_walk_03",
+      "path": "vnext/artifacts/animation-runs/20260505-goose-baby-female-blue-optional-expansion-review/candidate-frames/carry_ball_walk/carry_ball_walk_03.png",
+      "exists": true,
+      "sha256": "db239085270b394ff4fd918c8f029fbe1a595d1c2a592fb66dbc9b038f41dd22",
+      "manifest_sha256": "db239085270b394ff4fd918c8f029fbe1a595d1c2a592fb66dbc9b038f41dd22",
+      "sha256_matches_manifest": true,
+      "width": 80,
+      "height": 73,
+      "mode": "RGBA",
+      "source_path_from_prior_manifest": "sprites_runtime/goose/baby/female/blue/carry_ball_walk_03.png",
+      "source_exists_on_current_main": false,
+      "packet_copy": "vnext/artifacts/c-phase-56-optional-animation-pilot/goose-baby-female-blue-carry-ball-walk/candidate-frames/carry_ball_walk_03.png"
+    },
+    {
+      "frame_index": 4,
+      "frame_id": "carry_ball_walk_04",
+      "path": "vnext/artifacts/animation-runs/20260505-goose-baby-female-blue-optional-expansion-review/candidate-frames/carry_ball_walk/carry_ball_walk_04.png",
+      "exists": true,
+      "sha256": "bf6b9db7e473c95154ea87dfad18d653b4ce3ac49e268b1c320066bbe004788d",
+      "manifest_sha256": "bf6b9db7e473c95154ea87dfad18d653b4ce3ac49e268b1c320066bbe004788d",
+      "sha256_matches_manifest": true,
+      "width": 80,
+      "height": 72,
+      "mode": "RGBA",
+      "source_path_from_prior_manifest": "sprites_runtime/goose/baby/female/blue/carry_ball_walk_04.png",
+      "source_exists_on_current_main": false,
+      "packet_copy": "vnext/artifacts/c-phase-56-optional-animation-pilot/goose-baby-female-blue-carry-ball-walk/candidate-frames/carry_ball_walk_04.png"
+    },
+    {
+      "frame_index": 5,
+      "frame_id": "carry_ball_walk_05",
+      "path": "vnext/artifacts/animation-runs/20260505-goose-baby-female-blue-optional-expansion-review/candidate-frames/carry_ball_walk/carry_ball_walk_05.png",
+      "exists": true,
+      "sha256": "878208e8e2f7b53b27c7004633e3894ebc7ed50b568934ac71c0f026d27d0a32",
+      "manifest_sha256": "878208e8e2f7b53b27c7004633e3894ebc7ed50b568934ac71c0f026d27d0a32",
+      "sha256_matches_manifest": true,
+      "width": 80,
+      "height": 72,
+      "mode": "RGBA",
+      "source_path_from_prior_manifest": "sprites_runtime/goose/baby/female/blue/carry_ball_walk_05.png",
+      "source_exists_on_current_main": false,
+      "packet_copy": "vnext/artifacts/c-phase-56-optional-animation-pilot/goose-baby-female-blue-carry-ball-walk/candidate-frames/carry_ball_walk_05.png"
+    }
+  ],
+  "runtimeTargetFrameCount": 0,
+  "authoredTargetFrameCount": 0,
+  "fallbackRuntimeFrames": {
+    "walk": [
+      "sprites_runtime/goose/baby/female/blue/walk_00.png",
+      "sprites_runtime/goose/baby/female/blue/walk_01.png",
+      "sprites_runtime/goose/baby/female/blue/walk_02.png",
+      "sprites_runtime/goose/baby/female/blue/walk_03.png",
+      "sprites_runtime/goose/baby/female/blue/walk_04.png",
+      "sprites_runtime/goose/baby/female/blue/walk_05.png"
+    ],
+    "idle": [
+      "sprites_runtime/goose/baby/female/blue/idle_00.png",
+      "sprites_runtime/goose/baby/female/blue/idle_01.png",
+      "sprites_runtime/goose/baby/female/blue/idle_02.png",
+      "sprites_runtime/goose/baby/female/blue/idle_03.png"
+    ]
+  },
+  "verification": {
+    "expectedFrameCountMatches": true,
+    "candidateHashesMatchPriorManifest": true,
+    "allCandidateFramesRgba": true,
+    "runtimeTargetCurrentlyMissing": true,
+    "authoredTargetCurrentlyMissing": true,
+    "priorManifestSourcePathsExistOnCurrentMain": false
+  },
+  "applyGate": {
+    "applyApproved": false,
+    "reason": "User approved preparing this pilot packet only. Runtime PNG mutation requires a separate explicit apply approval.",
+    "blockersBeforeApply": [
+      "visual review of candidate body poses",
+      "explicit user apply approval",
+      "dry-run replacement scope",
+      "backup/hash/rollback/post-proof plan"
+    ]
+  },
+  "outputs": {
+    "sourceRuntimeContactSheet": "vnext/artifacts/c-phase-56-optional-animation-pilot/goose-baby-female-blue-carry-ball-walk/source-runtime-contact-sheet.png",
+    "fallbackReferenceContactSheet": "vnext/artifacts/c-phase-56-optional-animation-pilot/goose-baby-female-blue-carry-ball-walk/fallback-reference-contact-sheet.png",
+    "targetManifest": "vnext/artifacts/c-phase-56-optional-animation-pilot/goose-baby-female-blue-carry-ball-walk/target-manifest.json",
+    "readme": "vnext/artifacts/c-phase-56-optional-animation-pilot/goose-baby-female-blue-carry-ball-walk/README.md",
+    "decisionNeeded": "vnext/artifacts/c-phase-56-optional-animation-pilot/goose-baby-female-blue-carry-ball-walk/decision-needed.md"
+  }
+}
