@@ -3,6 +3,7 @@ param(
     [string]$Configuration = "Release",
     [switch]$SkipAssetPrep,
     [switch]$SkipTests,
+    [switch]$AllowAssetPrepAfterStable,
     [int]$StepTimeoutSeconds = 0
 )
 
@@ -16,6 +17,7 @@ $GeneratePetRuntimeScript = Join-Path $ProjectRoot "tools\generate_runtime_pose_
 $CleanSharedScript = Join-Path $ProjectRoot "tools\clean_shared_sprite_assets.py"
 $CleanPetRuntimeScript = Join-Path $ProjectRoot "tools\clean_runtime_pet_frames.py"
 $ExtractStagePropsScript = Join-Path $ProjectRoot "tools\extract_stage_safe_props.py"
+$StableReleaseLock = Join-Path $ProjectRoot "vnext\content\stable_release_lock.json"
 $ArtifactsRoot = Join-Path $ProjectRoot "vnext\artifacts"
 $BrokerOut = Join-Path $ArtifactsRoot "broker"
 $ShellOut = Join-Path $ArtifactsRoot "shell"
@@ -152,6 +154,10 @@ if ($SkipAssetPrep) {
     }
 }
 else {
+    if ((Test-Path $StableReleaseLock) -and -not $AllowAssetPrepAfterStable) {
+        throw "Stable release lock is present. Re-run with -SkipAssetPrep, or pass -AllowAssetPrepAfterStable only in an approved asset-prep phase."
+    }
+
     Invoke-BuildStep -Name "Clean shared sprite assets" -FilePath "python" -Arguments @(
         $CleanSharedScript,
         "--source", (Join-Path $ProjectRoot "sprites"),

@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "stableTag": "v0.1.0-desktop",
+  "stableAsset": "WevitoDesktopPet-v0.1.0-desktop-win64.zip",
+  "stableSha256": "c12a61d0ddd55bfa611bc14480dd298584e2e9d3849ea8e01064beb71c4efacc",
+  "sourceRcTag": "v0.1.0-desktop-rc4",
+  "targetCommitish": "97285ad9887423fc42cc3b562087180ff0d8f90e",
+  "lockedRuntimeRoots": [
+    "sprites_runtime",
+    "sprites_shared_runtime"
+  ],
+  "closedGates": [
+    "live_model_calls",
+    "broad_sprite_mutation",
+    "visual_generation_import",
+    "asset_prep_regeneration",
+    "prop_anchor_edits",
+    "all_color_propagation",
+    "screen_recording",
+    "external_audio_booster_control",
+    "automatic_training_data_promotion"
+  ]
+}
