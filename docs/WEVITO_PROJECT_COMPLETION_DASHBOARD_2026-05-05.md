@@ -78,7 +78,7 @@ Primary C-PHASE 30 artifacts:
 - `docs/C_PHASE30_RELEASE_BLOCKER_2026-05-12.md`
 - `docs/WEVITO_USER_HELP_GUIDE_2026-05-05.md`
 
-Recommended decision: tag a vNext-only release candidate from the validated `-SkipAssetPrep` package, or defer the tag until Godot export is reworked to avoid importing thousands of individual runtime PNGs.
+Decision: tag `v0.1.0-vnext-rc1` as a vNext-only release candidate from the validated `-SkipAssetPrep` package, then defer Godot export hardening to the next focused phase.
 
 ## Remaining Work By Category
 
@@ -251,7 +251,7 @@ Main reason: this is exciting, but it only becomes trustworthy after artifacts, 
 
 ```text
 next best sequence
-|-- 1. decide C-PHASE 30 tag policy: vNext-only now or wait for Godot export
+|-- 1. tag v0.1.0-vnext-rc1 from main after PR #33 merges
 |-- 2. harden Godot export or move runtime sprites outside Godot import pressure
 |-- 3. let visual-side finish targeted sprite/animation QA
 |-- 4. finish action/animation/prop contract polish
@@ -269,6 +269,7 @@ Use these documents when updating this dashboard:
 
 - `docs/C_PHASE29_FINAL_QA_2026-05-11.md`
 - `docs/C_PHASE30_RELEASE_BLOCKER_2026-05-12.md`
+- `docs/C_PHASE30_VNEXT_RC_RELEASE_DECISION_2026-05-12.md`
 - `docs/WEVITO_USER_HELP_GUIDE_2026-05-05.md`
 - `docs/CLAUDE_FULL_WEVITO_IMPLEMENTATION_PLAN_2026-05-05.md`
 - `docs/CLAUDE_CODEX_MEDIUM_PHASE_PROMPTS_2026-05-05.md`

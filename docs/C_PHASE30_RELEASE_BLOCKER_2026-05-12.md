@@ -61,11 +61,11 @@ Before tagging a release, choose one of these paths:
 3. Refactor the Godot release package to reduce individual PNG import pressure, likely by packaging runtime sprites outside Godot's import pipeline or by moving to atlas/pack files.
 4. Re-run no-`SkipAssetPrep` or long Godot export only if the user explicitly accepts the runtime and packaging risk.
 
-Recommended default: option 1 for the first release candidate, then options 2 and 3 as follow-up hardening phases.
+Decision taken: option 1 for the first release candidate. Tag `v0.1.0-vnext-rc1` as a vNext-only release candidate, then handle options 2 and 3 as follow-up hardening phases.
 
 ## Not Done Yet
 
 - `tools\build-release.ps1` was run after hardening, but Godot export timed out.
 - `docs\WEVITO_USER_HELP_GUIDE_2026-05-05.md` was not created yet.
-- No release tag was created.
+- Release tag decision recorded in `docs/C_PHASE30_VNEXT_RC_RELEASE_DECISION_2026-05-12.md`; tag creation happens after this branch merges to `main`.
 - No live model call was made.
