@@ -311,20 +311,20 @@ public partial class ToolPopupWindow : Window
         if (state?.LastTaskCard is not { } card)
         {
             PetCommandResultPanel.Visibility = Visibility.Collapsed;
-            PetTaskNextActionText.Text = "Next: PREPARE creates a task card. PREVIEW writes a report. Only a few reviewed cards can RUN APPROVED.";
-            PetTaskResultPathText.Text = "Result: report path appears here after preview.";
+            PetTaskNextActionText.Text = "Next: prepare a card, then preview its report before anything can run.";
+            PetTaskResultPathText.Text = "Report: path appears here after preview.";
             return;
         }
 
         PetCommandResultPanel.Visibility = Visibility.Visible;
-        PetCommandAssignedText.Text = string.IsNullOrWhiteSpace(card.AssignedPetNameSnapshot)
-            ? $"Assigned: {card.Status}"
-            : $"Assigned: {card.AssignedPetNameSnapshot} ({card.Status})";
-        PetCommandTaskKindText.Text = $"Task: {card.Intent.TaskKind} / tool family: {card.ToolFamily}";
+        var helper = FormatQueuePetName(card);
+        var reportPath = string.IsNullOrWhiteSpace(card.AuditLogPath) ? "not written yet" : card.AuditLogPath;
+        PetCommandAssignedText.Text = $"Helper: {helper}";
+        PetCommandTaskKindText.Text = $"Family: {card.ToolFamily} | status: {card.Status} | task: {card.Intent.TaskKind}";
         PetCommandPolicyText.Text = state.LastPolicyDecision is null
-            ? "Policy: not evaluated"
-            : $"Policy: {state.LastPolicyDecision.Status} ({state.LastPolicyDecision.RiskLevel})";
-        PetCommandTimelineText.Text = $"Latest: {card.Timeline?.LastOrDefault() ?? "draft_created"}";
+            ? $"Report: {reportPath} | policy: not evaluated"
+            : $"Report: {reportPath} | policy: {state.LastPolicyDecision.Status} ({state.LastPolicyDecision.RiskLevel})";
+        PetCommandTimelineText.Text = $"Latest event: {card.Timeline?.LastOrDefault() ?? "draft_created"}";
         PetTaskNextActionText.Text = FormatNextAction(card);
         PetTaskResultPathText.Text = FormatResultPath(card);
     }
@@ -344,8 +344,9 @@ public partial class ToolPopupWindow : Window
             .Take(3)
             .Select(card =>
             {
-                var petName = string.IsNullOrWhiteSpace(card.AssignedPetNameSnapshot) ? "Unassigned" : card.AssignedPetNameSnapshot;
-                return $"{petName}: {card.Intent.TaskKind} ({card.Status})";
+                var petName = FormatQueuePetName(card);
+                var report = string.IsNullOrWhiteSpace(card.AuditLogPath) ? "no report" : "report ready";
+                return $"{petName} | {card.ToolFamily} | {card.Status} | {report}";
             });
 
         return $"Queue: {cards.Count} saved | draft {draftCount} | approval {approvalCount} | runnable {runnableCount} | blocked {blockedCount}\nLatest: {string.Join(" / ", latest)}";
@@ -385,10 +386,11 @@ public partial class ToolPopupWindow : Window
         _taskQueueRows = (cards ?? [])
             .Select(card => new PetTaskQueueRowItem(
                 card.Id,
-                $"{FormatQueuePetName(card)} - {card.Intent.TaskKind} - {card.Status}",
+                FormatQueueCardLabel(card),
                 card.ToolFamily,
                 card.Status,
                 card.Intent.RawText,
+                FormatNextAction(card),
                 CanRunReviewedTask(card),
                 card.AuditLogPath))
             .ToList();
@@ -407,6 +409,30 @@ public partial class ToolPopupWindow : Window
         return string.IsNullOrWhiteSpace(card.AssignedPetNameSnapshot)
             ? "Unassigned"
             : card.AssignedPetNameSnapshot;
+    }
+
+    private static string FormatQueueCardLabel(TaskCard card)
+    {
+        var report = string.IsNullOrWhiteSpace(card.AuditLogPath) ? "report: pending" : "report: ready";
+        return $"{FormatQueuePetName(card)} | {card.ToolFamily} | {card.Status} | {report} | {ShortNextAction(card)}";
+    }
+
+    private static string ShortNextAction(TaskCard card)
+    {
+        return card.Status switch
+        {
+            TaskCardStatus.Draft => "next: preview",
+            TaskCardStatus.WaitingForApproval => "next: approve",
+            TaskCardStatus.Approved => "next: preview",
+            TaskCardStatus.Reviewing when CanRunReviewedTask(card) => "next: run approved",
+            TaskCardStatus.Reviewing => "next: open report",
+            TaskCardStatus.Running => "next: wait",
+            TaskCardStatus.Done => "next: review result",
+            TaskCardStatus.Blocked => "next: revise",
+            TaskCardStatus.Cancelled => "next: new task",
+            TaskCardStatus.Failed => "next: inspect failure",
+            _ => $"next: {card.Status}"
+        };
     }
 
     private static string FormatHelper(IReadOnlyList<PetHelperProfile> helpers, int index)
@@ -1648,6 +1674,7 @@ internal sealed record PetTaskQueueRowItem(
     string ToolFamily,
     TaskCardStatus Status,
     string RawText,
+    string NextAllowedAction,
     bool CanExecute,
     string AuditLogPath);
 
