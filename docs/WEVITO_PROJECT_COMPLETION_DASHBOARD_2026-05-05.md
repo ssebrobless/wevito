@@ -13,10 +13,10 @@ Wevito full vision
 |-- habitat/items/care integration      #########-  ~86%
 |-- PET TASKS/tool hub                  ########--  ~82%
 |-- advanced helper/AI/ML systems       #######---  ~70%
-`-- final QA/release readiness          ########--  ~80%
+`-- final QA/release readiness          ########--  ~82%
 
-Total project completion: ~80%
-Remaining to complete full vision: ~20%
+Total project completion: ~81%
+Remaining to complete full vision: ~19%
 ```
 
 This estimate treats "everything done" as the expanded full Wevito vision: a working desktop pet game, clean sprites and animations, habitats, items, helper tools, screenshot/capture, translation, audio assist, coding helpers, Sprite Workflow V2, Creative Learning Lab, and pet-agent behavior.
@@ -42,7 +42,7 @@ If measuring only the basic playable pet-game foundation, Wevito is closer to 85
 | Sprite Workflow V2 | V2 apply/proof pattern exists | 76% | Expand from proven one-row pilots to broader guarded workflows. |
 | Creative Learning Lab | Planned with seams | 68% | Reviewed examples, preference memory, dataset/export dashboard, no uncontrolled training. |
 | Pet AI agents | Default-disabled model seam exists | 72% | Keep live calls gated; complete memory/vector and consent reviews later. |
-| Final release QA | C-PHASE 29 green | 80% | Complete C-PHASE 30 package/tag/release gate. |
+| Final release QA | vNext RC green; Godot export blocked | 82% | Decide whether first tag ships vNext-only or wait for Godot export hardening. |
 
 ## C-PHASE 29 Release-Candidate Update
 
@@ -60,6 +60,25 @@ final QA sweep
 Primary C-PHASE 29 artifact: `docs/C_PHASE29_FINAL_QA_2026-05-11.md`.
 
 Important release note: optional animation readiness still reports most optional targets as fallback-only. This is safe for the C-PHASE 29 release-candidate sweep because invalid optional art is zero, but it remains a visual/content completion item.
+
+## C-PHASE 30 Release Gate Update
+
+```text
+release gate
+|-- vNext Release build             PASS
+|-- vNext Release tests             PASS, 278/278
+|-- vNext Release publish           PASS with -SkipAssetPrep
+|-- user help guide                 DRAFTED
+|-- Godot desktop export            BLOCKED, importer/export timeout
+`-- release tag                     NOT CREATED
+```
+
+Primary C-PHASE 30 artifacts:
+
+- `docs/C_PHASE30_RELEASE_BLOCKER_2026-05-12.md`
+- `docs/WEVITO_USER_HELP_GUIDE_2026-05-05.md`
+
+Recommended decision: tag a vNext-only release candidate from the validated `-SkipAssetPrep` package, or defer the tag until Godot export is reworked to avoid importing thousands of individual runtime PNGs.
 
 ## Remaining Work By Category
 
@@ -232,16 +251,16 @@ Main reason: this is exciting, but it only becomes trustworthy after artifacts, 
 
 ```text
 next best sequence
-|-- 1. complete C-PHASE 30 final release/tag gate
-|-- 2. let visual-side finish targeted sprite/animation QA
-|-- 3. finish action/animation/prop contract polish
-|-- 4. implement staged fetch/drink/care proof flows
-|-- 5. map care/items/habitats into runtime UI
-|-- 6. add safe helper tools one at a time
-|-- 7. build Sprite Workflow V2 read-only workbench
-|-- 8. add controlled apply/proof/rollback gates
-|-- 9. add Creative Learning Lab reviewed-data surface
-`-- 10. run final in-game QA and release packaging
+|-- 1. decide C-PHASE 30 tag policy: vNext-only now or wait for Godot export
+|-- 2. harden Godot export or move runtime sprites outside Godot import pressure
+|-- 3. let visual-side finish targeted sprite/animation QA
+|-- 4. finish action/animation/prop contract polish
+|-- 5. implement staged fetch/drink/care proof flows
+|-- 6. map care/items/habitats into runtime UI
+|-- 7. add safe helper tools one at a time
+|-- 8. build Sprite Workflow V2 read-only workbench
+|-- 9. add controlled apply/proof/rollback gates
+`-- 10. add Creative Learning Lab reviewed-data surface
 ```
 
 ## Current Source-Of-Truth Docs
@@ -249,6 +268,8 @@ next best sequence
 Use these documents when updating this dashboard:
 
 - `docs/C_PHASE29_FINAL_QA_2026-05-11.md`
+- `docs/C_PHASE30_RELEASE_BLOCKER_2026-05-12.md`
+- `docs/WEVITO_USER_HELP_GUIDE_2026-05-05.md`
 - `docs/CLAUDE_FULL_WEVITO_IMPLEMENTATION_PLAN_2026-05-05.md`
 - `docs/CLAUDE_CODEX_MEDIUM_PHASE_PROMPTS_2026-05-05.md`
 - `docs/WEVITO_FULL_PROJECT_STATUS_AND_COMPLETION_ROADMAP_2026-05-05.md`

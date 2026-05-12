@@ -1,7 +1,8 @@
 param(
     [string]$Version = "dev",
     [string]$GodotPath = "",
-    [switch]$Debug
+    [switch]$Debug,
+    [int]$ExportTimeoutSeconds = 900
 )
 
 $ErrorActionPreference = "Stop"
@@ -69,6 +70,20 @@ function Ensure-WindowsTemplatesForVersion {
     Copy-Item -Path $fallbackDebug.FullName -Destination $expectedDebug -Force
     Copy-Item -Path $fallbackRelease.FullName -Destination $expectedRelease -Force
     Write-Host "Prepared export templates for Godot $TemplateVersion in $expectedDir"
+}
+
+function Join-ProcessArguments {
+    param([string[]]$Arguments)
+
+    ($Arguments | ForEach-Object {
+            $argument = [string]$_
+            if ($argument -match '[\s"]') {
+                '"' + $argument.Replace('"', '\"') + '"'
+            }
+            else {
+                $argument
+            }
+        }) -join " "
 }
 
 if (-not (Test-Path $BuildDir)) {
@@ -161,9 +176,45 @@ Write-Host "Preset: $PresetName"
 Write-Host "Output: $VersionedExe"
 
 $BuildStart = Get-Date
-$ExportOutput = & $ResolvedGodot --headless --path $ProjectRoot $ExportFlag $PresetName $VersionedExe 2>&1
-$ExportOutputText = ($ExportOutput | Out-String)
-$ExitCode = if ($null -eq $LASTEXITCODE) { 1 } else { [int]$LASTEXITCODE }
+$ExportStdOutPath = [System.IO.Path]::GetTempFileName()
+$ExportStdErrPath = [System.IO.Path]::GetTempFileName()
+$ExportArguments = Join-ProcessArguments -Arguments @("--headless", "--path", $ProjectRoot, $ExportFlag, $PresetName, $VersionedExe)
+try {
+    $ExportProcess = Start-Process -FilePath $ResolvedGodot -ArgumentList $ExportArguments -NoNewWindow -PassThru -RedirectStandardOutput $ExportStdOutPath -RedirectStandardError $ExportStdErrPath
+    $ExportCompleted = $ExportProcess.WaitForExit($ExportTimeoutSeconds * 1000)
+    if (-not $ExportCompleted) {
+        try {
+            $ExportProcess.Kill($true)
+        }
+        catch {
+            try {
+                $ExportProcess.Kill()
+            }
+            catch {
+            }
+        }
+
+        $ExportOutputText = @(
+            if (Test-Path $ExportStdOutPath) { Get-Content -Path $ExportStdOutPath -Raw -ErrorAction SilentlyContinue }
+            if (Test-Path $ExportStdErrPath) { Get-Content -Path $ExportStdErrPath -Raw -ErrorAction SilentlyContinue }
+        ) -join [Environment]::NewLine
+        if ($ExportOutputText.Trim() -ne "") {
+            Write-Host "Godot export output before timeout:" -ForegroundColor Yellow
+            Write-Host $ExportOutputText
+        }
+
+        throw "Godot export timed out after $ExportTimeoutSeconds seconds."
+    }
+
+    $ExitCode = $ExportProcess.ExitCode
+    $ExportOutputText = @(
+        if (Test-Path $ExportStdOutPath) { Get-Content -Path $ExportStdOutPath -Raw -ErrorAction SilentlyContinue }
+        if (Test-Path $ExportStdErrPath) { Get-Content -Path $ExportStdErrPath -Raw -ErrorAction SilentlyContinue }
+    ) -join [Environment]::NewLine
+}
+finally {
+    Remove-Item -Path $ExportStdOutPath, $ExportStdErrPath -Force -ErrorAction SilentlyContinue
+}
 if ($ExitCode -ne 0) {
     Write-Host "Note: Godot returned exit code $ExitCode, but export output was created successfully. Continuing." -ForegroundColor DarkYellow
 }
