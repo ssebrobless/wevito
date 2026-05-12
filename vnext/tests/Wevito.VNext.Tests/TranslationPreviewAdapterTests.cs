@@ -45,6 +45,8 @@ public sealed class TranslationPreviewAdapterTests
         var markdown = File.ReadAllText(Path.Combine(artifactRoot, "run-summary.md"));
         Assert.Contains("## Applicable Glossary Entries", markdown);
         Assert.Contains("`goose` -> `goose`", markdown);
+        Assert.Contains("DeepL only in the current executable path", markdown);
+        Assert.Contains("execution blocks instead of silently sending text to another provider", markdown);
     }
 
     [Fact]

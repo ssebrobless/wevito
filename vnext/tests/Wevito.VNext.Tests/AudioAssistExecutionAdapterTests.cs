@@ -32,6 +32,10 @@ public sealed class AudioAssistExecutionAdapterTests
         Assert.Equal(40, report.AfterStatus?.MasterVolumePercent);
         Assert.True(report.DidChangeAudio);
         Assert.False(report.DidMutateFiles);
+
+        var markdown = File.ReadAllText(Path.Combine(artifactRoot, "run-summary.md"));
+        Assert.Contains("normal Windows endpoint volume/mute only", markdown);
+        Assert.Contains("no booster, APO, driver, enhancer, or config file changes", markdown);
     }
 
     [Fact]

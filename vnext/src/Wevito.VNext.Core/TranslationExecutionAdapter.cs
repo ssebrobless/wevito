@@ -260,6 +260,7 @@ public sealed class TranslationExecutionAdapter
             "## Summary",
             "",
             $"- Provider: {report.Provider}",
+            "- Provider route: DeepL API via `DEEPL_API_KEY` or `DEEPL_AUTH_KEY`; no hidden provider fallback was used.",
             $"- Source language: {report.SourceLanguage}",
             $"- Target language: {report.TargetLanguage}",
             $"- Detected source language: {report.DetectedSourceLanguage}",

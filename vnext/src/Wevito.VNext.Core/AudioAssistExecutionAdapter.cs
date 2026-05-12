@@ -169,6 +169,7 @@ public sealed class AudioAssistExecutionAdapter
             $"- Requested volume: {FormatNullablePercent(report.RequestedVolumePercent)}",
             $"- Changed audio: {report.DidChangeAudio}",
             $"- Mutated files: {report.DidMutateFiles}",
+            "- Execution boundary: normal Windows endpoint volume/mute only; no booster, APO, driver, enhancer, or config file changes.",
             "",
             "## Before",
             "",

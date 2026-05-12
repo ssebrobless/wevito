@@ -40,7 +40,10 @@ public sealed class TranslationExecutionAdapterTests
         Assert.Contains("DeepL-Auth-Key", handler.AuthorizationHeader);
         Assert.Contains("\"target_lang\":\"ES\"", handler.RequestBody);
         Assert.Contains("__WEVITO_GLOSSARY_000__", handler.RequestBody);
-        Assert.DoesNotContain("test-key", File.ReadAllText(Path.Combine(artifactRoot, "run-summary.md")));
+        var markdown = File.ReadAllText(Path.Combine(artifactRoot, "run-summary.md"));
+        Assert.DoesNotContain("test-key", markdown);
+        Assert.Contains("DeepL API via `DEEPL_API_KEY` or `DEEPL_AUTH_KEY`", markdown);
+        Assert.Contains("no hidden provider fallback", markdown);
         Assert.Equal("Hola goose", File.ReadAllText(Path.Combine(artifactRoot, "translated-text.txt")));
 
         var report = JsonSerializer.Deserialize<TranslationExecutionReport>(

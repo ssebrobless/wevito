@@ -167,6 +167,8 @@ public sealed class AudioAssistPreviewAdapter
             $"- Inspected system audio: {report.DidInspectSystemAudio}",
             $"- Changed audio: {report.DidChangeAudio}",
             $"- Did mutate files: {report.DidMutate}",
+            "- Normal volume boundary: Wevito can only inspect or, after approval, change normal Windows endpoint volume/mute state.",
+            "- Boost boundary: Wevito will not install drivers, APOs, FxSound, Equalizer APO, or edit enhancer configs.",
             "",
             "## Capabilities",
             ""
