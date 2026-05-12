@@ -56,6 +56,7 @@ public enum TaskKind
     TranslateText,
     AudioAssist,
     ScreenCapture,
+    UpdatePetMemory,
     ExternalAction
 }
 

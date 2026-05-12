@@ -284,6 +284,21 @@ public sealed class PetCommandParser
                 ExpectedOutput: "No-mutation audio assist status report");
         }
 
+        if (normalized.Contains("remember") ||
+            normalized.Contains("learn this") ||
+            normalized.Contains("save preference") ||
+            normalized.Contains("store preference") ||
+            normalized.Contains("teach helper") ||
+            normalized.Contains("pet memory"))
+        {
+            return new Classification(
+                TaskKind.UpdatePetMemory,
+                "petMemory",
+                ToolRiskLevel.Medium,
+                NeedsApproval: true,
+                ExpectedOutput: "Approval-gated pet memory write preview");
+        }
+
         if (normalized.Contains("screenshot") ||
             normalized.Contains("screen shot") ||
             normalized.Contains("screen capture") ||
@@ -457,6 +472,9 @@ public sealed class PetCommandParser
             (PetHelperRole.ResearchHelper, TaskKind.TranslateText) => true,
             (PetHelperRole.ResearchHelper, TaskKind.AudioAssist) => true,
             (PetHelperRole.ResearchHelper, TaskKind.ScreenCapture) => true,
+            (PetHelperRole.ResearchHelper, TaskKind.UpdatePetMemory) => true,
+            (PetHelperRole.SpriteReviewHelper, TaskKind.UpdatePetMemory) => true,
+            (PetHelperRole.ChecklistHelper, TaskKind.UpdatePetMemory) => true,
             (PetHelperRole.ResearchHelper, TaskKind.SummarizeDocs) => true,
             (PetHelperRole.ChecklistHelper, TaskKind.ReviewCode) => true,
             (PetHelperRole.ChecklistHelper, TaskKind.PlanCodePatch) => true,

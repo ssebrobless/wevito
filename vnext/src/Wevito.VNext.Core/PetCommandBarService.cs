@@ -10,16 +10,18 @@ public sealed class PetCommandBarService
 
     private readonly PetCommandParser _parser;
     private readonly ToolPolicyEvaluator _policyEvaluator;
+    private readonly PetMemoryRouter? _memoryRouter;
 
     public PetCommandBarService()
         : this(new PetCommandParser(), new ToolPolicyEvaluator())
     {
     }
 
-    public PetCommandBarService(PetCommandParser parser, ToolPolicyEvaluator policyEvaluator)
+    public PetCommandBarService(PetCommandParser parser, ToolPolicyEvaluator policyEvaluator, PetMemoryRouter? memoryRouter = null)
     {
         _parser = parser;
         _policyEvaluator = policyEvaluator;
+        _memoryRouter = memoryRouter;
     }
 
     public PetCommandBarState BuildInitialState(
@@ -72,9 +74,21 @@ public sealed class PetCommandBarService
         var timestamp = nowUtc ?? DateTimeOffset.UtcNow;
         var activeHelpers = NormalizeActiveHelpers(helpers);
         var intent = _parser.Parse(inputText, activeHelpers, selectedPetId, timestamp);
+        var routingDecision = _memoryRouter?.Route(intent, activeHelpers, FindHelper(intent, activeHelpers));
+        if (routingDecision?.Helper is not null &&
+            intent.TargetMode == TaskIntentTargetMode.RouteToBestHelper &&
+            intent.RiskLevel != ToolRiskLevel.Blocked)
+        {
+            intent = intent with
+            {
+                TargetPetId = routingDecision.Helper.PetId,
+                TargetPetNameSnapshot = routingDecision.Helper.PetNameSnapshot
+            };
+        }
+
         var initialCard = _parser.CreateDraftTaskCard(intent, activeHelpers, timestamp);
         var decision = _policyEvaluator.Evaluate(intent, policies);
-        var card = ApplyPolicyDecision(initialCard, decision, timestamp);
+        var card = ApplyPolicyDecision(initialCard, decision, timestamp, routingDecision);
 
         return new PetCommandBarState(
             activeHelpers,
@@ -125,17 +139,35 @@ public sealed class PetCommandBarService
     {
         return role switch
         {
-            PetHelperRole.SpriteReviewHelper => ["spriteAudit", "assetInventory", "proofCapture", "localDocs", "petState"],
-            PetHelperRole.ChecklistHelper => ["codeReview", "codePatchPlan", "checklist", "localDocs", "basket", "petState", "buildProof"],
-            PetHelperRole.ResearchHelper => ["localDocs", "translateText", "audioAssist", "screenCapture", "assetInventory", "basket", "proofCapture", "petState"],
+            PetHelperRole.SpriteReviewHelper => ["spriteAudit", "assetInventory", "proofCapture", "localDocs", "petState", "petMemory"],
+            PetHelperRole.ChecklistHelper => ["codeReview", "codePatchPlan", "checklist", "localDocs", "basket", "petState", "buildProof", "petMemory"],
+            PetHelperRole.ResearchHelper => ["localDocs", "translateText", "audioAssist", "screenCapture", "assetInventory", "basket", "proofCapture", "petState", "petMemory"],
             _ => ["localDocs"]
         };
+    }
+
+    private static PetHelperProfile? FindHelper(TaskIntent intent, IReadOnlyList<PetHelperProfile> helpers)
+    {
+        if (intent.TargetPetId is not null)
+        {
+            var byId = helpers.FirstOrDefault(helper => helper.PetId == intent.TargetPetId.Value);
+            if (byId is not null)
+            {
+                return byId;
+            }
+        }
+
+        return string.IsNullOrWhiteSpace(intent.TargetPetNameSnapshot)
+            ? null
+            : helpers.FirstOrDefault(helper =>
+                string.Equals(helper.PetNameSnapshot, intent.TargetPetNameSnapshot, StringComparison.OrdinalIgnoreCase));
     }
 
     private static TaskCard ApplyPolicyDecision(
         TaskCard card,
         ToolPolicyDecision decision,
-        DateTimeOffset timestamp)
+        DateTimeOffset timestamp,
+        PetMemoryRoutingDecision? routingDecision = null)
     {
         var status = decision.Status switch
         {
@@ -151,6 +183,12 @@ public sealed class PetCommandBarService
             ToolPolicyDecisionStatus.ApprovalRequired => $"policy_waiting_for_approval: {decision.Reason}",
             _ => $"policy_allowed: {decision.Reason}"
         });
+        if (routingDecision is not null)
+        {
+            timeline.Add(routingDecision.UsedMemory
+                ? $"memory_routed: {routingDecision.Reason} score={routingDecision.Score:0.000}"
+                : $"memory_fallback: {routingDecision.Reason}");
+        }
 
         return card with
         {

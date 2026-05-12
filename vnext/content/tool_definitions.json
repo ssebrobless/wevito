@@ -43,5 +43,16 @@
         ]
       }
     ]
+  },
+  {
+    "id": "pet_memory",
+    "displayName": "Pet Memory",
+    "capacity": 0,
+    "defaultState": "off",
+    "requiresWriteApproval": true,
+    "storage": "%LOCALAPPDATA%/Wevito/memory/<pet-id>.db",
+    "schemaVersion": "1",
+    "vectorExtension": "sqlite-vec",
+    "fallbackWhenUnavailable": "disable-memory-routing"
   }
 ]
