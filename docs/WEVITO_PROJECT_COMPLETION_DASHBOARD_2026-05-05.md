@@ -343,6 +343,8 @@ next concrete plan seed
 
 Use these documents when creating the next concrete implementation plan:
 
+- `docs/POST_STABLE_FULL_VISION_IMPLEMENTATION_PLAN_2026-05-12.md`
+- `docs/CODEX_MEDIUM_POST_STABLE_PHASE_PROMPTS_2026-05-12.md`
 - `docs/C_PHASE52_STABLE_RELEASE_PROMOTION_2026-05-12.md`
 - `docs/C_PHASE53_PROJECT_PROGRESS_REPORT_2026-05-12.md`
 - `docs/C_PHASE50_RC4_MANUAL_PLAYER_QA_2026-05-12.md`
