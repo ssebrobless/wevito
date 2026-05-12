@@ -1812,7 +1812,7 @@ func _run_automation_suite():
 			fetch_pet.setup(active_pd)
 			var ball_target = fetch_pet.position + Vector2(80, 0)
 			var result = game_manager.perform_fetch_sequence(ball_target)
-			await get_tree().create_timer(5.4).timeout
+			await get_tree().create_timer(7.4).timeout
 			fetch_ok = bool(result.get("accepted", false)) and not fetch_pet.is_fetch_sequence_active() and fetch_pet.current_animation in ["happy", "idle"]
 			fetch_details = "accepted=%s active=%s animation=%s" % [
 				str(result.get("accepted", false)),
@@ -1820,6 +1820,21 @@ func _run_automation_suite():
 				fetch_pet.current_animation
 			]
 		_automation_assert(checks, "forced_fetch_sequence_completes", fetch_ok, fetch_details)
+
+	active_pd = game_manager.get_active_pet_data()
+	if active_pd:
+		active_pd.hunger = 40.0
+		active_pd.hydration = 35.0
+		active_pd.happiness = 30.0
+		active_pd.energy = 45.0
+		active_pd.health = 70.0
+		active_pd.cleanliness = 32.0
+		active_pd.affection = 28.0
+		active_pd.grooming = 24.0
+		active_pd.fitness = 22.0
+		active_pd.water_bowl_level = 100.0
+		active_pd.conditions.clear()
+	_on_stats_updated()
 
 	var slots = _get_environment_slot_rects(float(get_window().size.x), float(get_window().size.y), game_manager.get_pet_count())
 	_show_action_tab("feed")
