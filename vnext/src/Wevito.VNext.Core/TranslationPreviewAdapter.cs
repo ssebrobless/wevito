@@ -154,6 +154,8 @@ public sealed class TranslationPreviewAdapter
             $"- Preferred provider: {report.PreferredProvider}",
             "- Provider called: false",
             "- Did mutate files: false",
+            "- Execution provider route: DeepL only in the current executable path; LibreTranslate is surfaced as provider status/self-hosted planning, not automatic execution fallback.",
+            "- Fallback policy: if DeepL credentials are missing, execution blocks instead of silently sending text to another provider.",
             "",
             "## Applicable Glossary Entries",
             ""

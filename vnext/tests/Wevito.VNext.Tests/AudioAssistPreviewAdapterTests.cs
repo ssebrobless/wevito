@@ -43,6 +43,10 @@ public sealed class AudioAssistPreviewAdapterTests
         Assert.Contains(report.Capabilities, capability => capability.ActionKind == AudioAssistActionKind.BoostGuide && capability.Status == AudioAssistCapabilityStatus.Available);
         Assert.Contains(report.Capabilities, capability => capability.ActionKind == AudioAssistActionKind.InspectVolume && capability.Status == AudioAssistCapabilityStatus.Available);
         Assert.Contains(report.Capabilities, capability => capability.ActionKind == AudioAssistActionKind.SetVolume && capability.ApprovalRequirement == ApprovalRequirement.BeforeExecution);
+
+        var markdown = File.ReadAllText(Path.Combine(artifactRoot, "run-summary.md"));
+        Assert.Contains("normal Windows endpoint volume/mute state", markdown);
+        Assert.Contains("will not install drivers", markdown);
     }
 
     [Fact]
