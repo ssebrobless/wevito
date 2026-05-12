@@ -1807,13 +1807,15 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         return defaultValue;
     }
 
-    private static IReadOnlyDictionary<string, string> ApplyDefaultSettings(IReadOnlyDictionary<string, string> settings)
+    internal static IReadOnlyDictionary<string, string> ApplyDefaultSettings(IReadOnlyDictionary<string, string> settings)
     {
         var hydrated = new Dictionary<string, string>(settings, StringComparer.OrdinalIgnoreCase);
         hydrated.TryAdd("compact_hud", bool.FalseString);
         hydrated.TryAdd("show_pet_names", bool.FalseString);
         hydrated.TryAdd("show_status_summary", bool.TrueString);
         hydrated.TryAdd("webtools_visible", bool.FalseString);
+        hydrated.TryAdd("pet_model_adapter_enabled", bool.FalseString);
+        hydrated.TryAdd("pet_model_first_call_approved", bool.FalseString);
         return hydrated;
     }
 
