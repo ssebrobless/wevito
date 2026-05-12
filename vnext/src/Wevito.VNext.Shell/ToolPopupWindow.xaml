@@ -630,11 +630,11 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <StackPanel>
-                            <TextBlock Text="Ask your pets"
+                            <TextBlock Text="Ask your pets (safe reports)"
                                        Foreground="#FFF0F4F5"
                                        FontSize="13"
                                        FontWeight="SemiBold" />
-                            <TextBlock Text="One request in, one safe report out."
+                            <TextBlock Text="Prepare - preview report - run only if explicitly approved."
                                        Foreground="#FF9FB7C4"
                                        FontSize="10" />
                         </StackPanel>
@@ -659,7 +659,7 @@
                                  CaretBrush="#FFF0F4F5"
                                  automation:AutomationProperties.AutomationId="PetCommandTextBox"
                                  TextWrapping="Wrap"
-                                 ToolTip="Example: @Scout summarize the sprite docs" />
+                                 ToolTip="Example: summarize the local docs" />
                         <Button x:Name="PetCommandSubmitButton"
                                 Grid.Column="1"
                                 Margin="8,0,0,0"
@@ -672,7 +672,7 @@
                     <TextBlock x:Name="PetTaskCapabilityText"
                                Margin="0,4,0,0"
                                automation:AutomationProperties.AutomationId="PetTaskCapabilityText"
-                              Text="Preview-ready: spriteAudit, assetInventory, codeReview, codePatchPlan, buildProof plans, translateText preview, audioAssist status, screenCapture preview, petState, localDocs. Approval-gated: build/proof execution, translation provider calls, normal audio volume/mute changes, screenshots, Wevito-window proof clips. Locked: sprite import, generation, PNG mutation, prop anchors, browser automation, region/desktop recording, audio boosters/drivers/APOs."
+                              Text="Safe now: localDocs, spriteAudit, assetInventory, petState, codeReview, and codePatchPlan create reports only. Approval-gated: buildProof, translateText provider calls, audioAssist normal volume/mute changes, and screenCapture screenshots. Locked: sprite import/generation/PNG mutation, prop anchors, browser automation, desktop/region recording, audio boosters/drivers/APOs, and live model calls."
                                Foreground="#FF9FB7C4"
                                FontSize="10"
                                TextWrapping="Wrap" />
@@ -781,7 +781,7 @@
                                        Foreground="#FFE1D6A8"
                                        FontSize="10"
                                        TextWrapping="Wrap"
-                                       Text="Next: prepare a task, then preview a report before anything can run." />
+                                       Text="Next: PREPARE creates a task card. PREVIEW writes a report. Only a few reviewed cards can RUN APPROVED." />
                             <TextBlock Text="Result"
                                        Margin="0,5,0,0"
                                        Foreground="#FFF0F4F5"
@@ -793,7 +793,7 @@
                                        Foreground="#FFBFE7FF"
                                        FontSize="10"
                                        TextWrapping="Wrap"
-                                       Text="Result: preview report path appears here." />
+                                       Text="Result: report path appears here after preview." />
                             <UniformGrid Margin="0,5,0,0"
                                          Columns="3">
                                 <Button x:Name="PetTaskOpenReportButton"
@@ -876,7 +876,7 @@
                                         Padding="8,4"
                                         Style="{StaticResource PopupButtonStyle}"
                                         automation:AutomationProperties.AutomationId="PetTaskExecuteButton"
-                                        Content="RUN"
+                                        Content="RUN APPROVED"
                                         Click="PetTaskExecuteButton_OnClick" />
                             </Grid>
                         </StackPanel>
@@ -886,7 +886,7 @@
                                Foreground="#FFE1D6A8"
                                FontSize="10"
                                TextWrapping="Wrap"
-                               Text="Safety: reports only. PET TASKS does not import, generate, mutate sprites, run proofs, or control the PC from this surface yet." />
+                               Text="Safety: PET TASKS is report-first. Most cards cannot run. Approved execution is limited to the small allowlist shown above and never imports/generates/mutates sprites from this surface." />
                 </StackPanel>
 
                 <ScrollViewer x:Name="DevPanel"
