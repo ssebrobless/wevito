@@ -2,110 +2,118 @@
 
 Last updated: 2026-05-12
 
-Purpose: living project dashboard for tracking Wevito's game, visual, tool, helper-agent, and release readiness work. Update this markdown file as phases complete, then regenerate the PDF reference copy.
+Purpose: living project dashboard for tracking Wevito's game, visual, tool, helper-agent, and release readiness work. This file should stay as the quick percentage dashboard; deeper evidence lives in the phase reports listed below.
 
 ## Current Overall Estimate
 
 ```text
-Wevito full vision
-|-- playable pet game foundation        #########-  ~88%
-|-- visual/sprite asset lane            ########--  ~78%
-|-- habitat/items/care integration      #########-  ~88%
+Wevito full vision after stable v0.1.0
+|-- stable desktop release              ########## 100%
+|-- playable pet game foundation        #########-  ~93%
+|-- release/build/QA infrastructure     #########-  ~95%
+|-- runtime sprite structure/contract   #########-  ~92%
+|-- visual/content quality full vision  #######---  ~72%
+|-- optional action animation coverage  #---------  ~8%
+|-- habitat/items/care integration      ########--  ~84%
 |-- PET TASKS/tool hub                  ########--  ~82%
-|-- advanced helper/AI/ML systems       #######---  ~70%
-`-- final QA/release readiness          #########-  ~90%
+|-- screenshot/translation/audio tools  #######---  ~74%
+|-- advanced helper/AI/ML systems       ######----  ~60%
+|-- Sprite Workflow V2 / Creative Lab   ######----  ~62%
+`-- full expanded Wevito vision         ########--  ~84%
 
-Total project completion: ~84%
-Remaining to complete full vision: ~16%
+Remaining to complete full expanded vision: ~16%
 ```
 
-This estimate treats "everything done" as the expanded full Wevito vision: a working desktop pet game, clean sprites and animations, habitats, items, helper tools, screenshot/capture, translation, audio assist, coding helpers, Sprite Workflow V2, Creative Learning Lab, and pet-agent behavior.
+The basic shipped desktop pet is complete enough for stable `v0.1.0`. The remaining work belongs to the expanded Wevito vision: richer optional animations, source-faithful visual cleanup, safer and simpler tool execution, AI-helper consent/memory, Sprite Workflow V2, and the Creative Learning Lab.
 
-If measuring only the basic playable pet-game foundation, Wevito is closer to 90%. The remaining gap is mostly manual player-facing QA, visual/content polish, optional animation coverage, and deliberately gated AI/model/tool execution.
+## Current Release Baseline
+
+```text
+stable release
+|
++-- tag: v0.1.0-desktop
++-- release: https://github.com/ssebrobless/wevito/releases/tag/v0.1.0-desktop
++-- asset: WevitoDesktopPet-v0.1.0-desktop-win64.zip
++-- sha256: c12a61d0ddd55bfa611bc14480dd298584e2e9d3849ea8e01064beb71c4efacc
++-- source candidate: v0.1.0-desktop-rc4
++-- target commit: 97285ad9887423fc42cc3b562087180ff0d8f90e
+`-- status: stable shipped
+```
+
+Stable release evidence:
+
+- `docs/C_PHASE49_RC4_PACKAGE_AND_CLEAN_VALIDATION_2026-05-12.md`
+- `docs/C_PHASE50_RC4_MANUAL_PLAYER_QA_2026-05-12.md`
+- `docs/C_PHASE52_STABLE_RELEASE_PROMOTION_2026-05-12.md`
+- `docs/C_PHASE53_PROJECT_PROGRESS_REPORT_2026-05-12.md`
 
 ## Area Status
 
 | Area | Status | Done | What Remains |
 | --- | --- | ---: | --- |
-| Git/build baseline | Public RC3 green | 98% | Keep `main` clean, avoid asset prep unless intentionally approved, finish manual QA before stable tag. |
-| Core pet sim | Strong foundation | 88% | Continue long-run balance tuning, visible care outcomes, and save/load edge proof. |
-| Game interactions | Functional foundation | 82% | Fetch/drink release scenarios pass; finish richer care behavior and manual UX proof. |
-| Sprites/visuals | Runtime contract green, content still active | 78% | Final in-motion QA, optional animations, no artifacts, no boxing/shrink-grow, final proof sweeps. |
-| Color variants | Mostly green | 85% | Only targeted review/fixes, not broad regeneration. |
-| Care/medicine/items | Mapped into tool/game plans | 72% | Confirm readability in runtime UI and remove stale expectations. |
-| Habitat/environment | Manifest-backed and proofed | 90% | Richer enter/perch/hide/use behavior and final visual polish. |
-| Overlay UI | Functional and resilient | 82% | Continue simplifying PET TASKS/task-card UX without replacing pet overlay. |
-| PET TASKS/tool hub | Probe-green seed exists | 84% | More artifact buttons, clearer reports, and approval-gated execution polish. |
-| Screenshot/capture tools | Probe and capture pass | 76% | Short proof clips and broader capture UX remain later work. |
-| Translation/audio tools | Implemented behind safety posture | 74% | Provider polish, safe Windows volume UX, and external booster handoff. |
-| Coding helpers | Report/plan surfaces working | 78% | Keep mutation approval-gated; add richer patch-review output later. |
-| Sprite Workflow V2 | V2 apply/proof pattern exists | 76% | Expand from proven one-row pilots to broader guarded workflows. |
-| Creative Learning Lab | Planned with seams | 68% | Reviewed examples, preference memory, dataset/export dashboard, no uncontrolled training. |
-| Pet AI agents | Default-disabled model seam exists | 72% | Keep live calls gated; complete memory/vector and consent reviews later. |
-| Final release QA | Public RC3 clean validation green | 90% | Run manual player-facing QA, fix focused findings, then decide stable release promotion. |
+| Stable desktop release | Shipped | 100% | Protect the shipped baseline; future changes should be phased and proven. |
+| Git/build baseline | Green | 98% | Keep `main` clean; use PRs and avoid accidental asset-prep regeneration. |
+| Core pet sim | Strong foundation | 93% | Long-run balance, richer personality development, visible care outcomes, aging/death/ghost depth. |
+| Game interactions | Stable functional set | 88% | More species-specific action readings and richer toy/care behavior. |
+| Runtime sprite contract | Structurally green | 92% | Preserve 0 mixed-canvas/missing/invalid rows while improving source/provenance depth. |
+| Sprites/visual quality | Stable-safe, not final vision | 72% | Final in-motion QA, optional animations, authored-source completion, no artifact regressions. |
+| Optional action animations | Mostly fallback-only | 8% | 2516/2520 optional targets remain fallback-only; expand with proof/rollback gates. |
+| Color variants | Structurally present | 85% | Targeted color QA only; no broad all-color mutation without proof plan. |
+| Care/medicine/items | Mapped and usable | 84% | Runtime readability polish and more visible care-state feedback. |
+| Habitat/environment | Manifest-backed and proofed | 88% | Richer per-species enter/perch/hide/use behavior and final composition polish. |
+| Overlay UI | Functional and resilient | 84% | Continue simplifying PET TASKS/task-card UX without replacing the pet overlay. |
+| PET TASKS/tool hub | Report/preview foundation | 82% | Simpler one-entry task flow, richer artifact buttons, adapter proof packets. |
+| Screenshot/capture tools | Implemented cautiously | 74% | More proof packets; keep screen recording gated. |
+| Translation/audio tools | Implemented behind safety posture | 74% | Provider clarity, safe Windows volume UX, no hidden third-party booster control. |
+| Coding helpers | Report/plan surfaces working | 78% | Approval-gated patch execution and clearer review artifacts. |
+| Sprite Workflow V2 | Pattern exists, product incomplete | 62% | Compact single-row workbench, source/runtime/candidate/proof lanes, provenance manifests. |
+| Creative Learning Lab | Planned with seams | 62% | Reviewed examples, preference snapshots, exportable learning packs, no uncontrolled training. |
+| Pet AI agents | Dormant safe foundation | 60% | Disabled-by-default model flag, consent UI, fake-adapter proof, then first-call approval. |
 
-## C-PHASE 29 Release-Candidate Update
+## Fresh Audit Snapshot
 
-```text
-final QA sweep
-|-- build/test/publish             PASS
-|-- runtime canvas contract        PASS, 0 mixed rows
-|-- sprite contract audit          PASS, 0 errors
-|-- optional readiness             PASS, 0 invalid optional art
-|-- PET TASKS probes               PASS
-|-- pinned overlay foreground test PASS
-`-- visual capture                 PASS
-```
-
-Primary C-PHASE 29 artifact: `docs/C_PHASE29_FINAL_QA_2026-05-11.md`.
-
-Important release note: optional animation readiness still reports most optional targets as fallback-only. This is safe for the C-PHASE 29 release-candidate sweep because invalid optional art is zero, but it remains a visual/content completion item.
-
-## C-PHASE 30 Release Gate Update
+From `docs/C_PHASE53_PROJECT_PROGRESS_REPORT_2026-05-12.md`:
 
 ```text
-release gate
-|-- vNext Release build             PASS
-|-- vNext Release tests             PASS, 278/278
-|-- vNext Release publish           PASS with -SkipAssetPrep
-|-- user help guide                 DRAFTED
-|-- Godot desktop export            BLOCKED, importer/export timeout
-`-- release tag                     NOT CREATED
+verification
+|
++-- dotnet build                         PASS, 0 warnings/errors
++-- dotnet test                          PASS, 280/280
++-- vNext publish -SkipAssetPrep         PASS
++-- stable release download/hash         PASS
++-- runtime mixed-canvas audit           PASS
++-- sprite source/runtime contract audit PASS
+`-- optional readiness audit             PASS with fallback-only caveat
 ```
 
-Primary C-PHASE 30 artifacts:
+Runtime sprite contract:
 
-- `docs/C_PHASE30_RELEASE_BLOCKER_2026-05-12.md`
-- `docs/WEVITO_USER_HELP_GUIDE_2026-05-05.md`
+| Metric | Value |
+| --- | ---: |
+| Checked sequences | 2880 |
+| Checked frames | 10800 |
+| Mixed-canvas sequences | 0 |
+| Missing/count mismatch sequences | 0 |
+| Invalid/non-alpha PNG frames | 0 |
+| Runtime variant dirs found / expected | 360 / 360 |
+| Runtime frames found / expected | 10818 / 10800 |
 
-Historical decision: tag `v0.1.0-vnext-rc1` as a vNext-only release candidate from the validated `-SkipAssetPrep` package, then defer Godot export hardening to the next focused phase.
+Optional animation state:
 
-This was superseded by the later desktop RC line below.
+| Metric | Value |
+| --- | ---: |
+| Optional targets | 2520 |
+| Authored complete | 0 |
+| Runtime-only complete | 4 |
+| Fallback-only pending | 2516 |
+| Invalid optional art | 0 |
+| Errors | 0 |
 
-## C-PHASE 35-38 Desktop RC Update
+Important interpretation:
 
-```text
-desktop RC line
-|-- RC1              SUPERSEDED, missing-script packaging issue
-|-- RC2              SUPERSEDED, fetch visual-completion issue
-`-- RC3              CURRENT VALIDATED BASELINE
-    |-- clean download               PASS
-    |-- bundle structure             PASS
-    |-- full automation              PASS
-    |-- drink forced scenario        PASS
-    |-- fetch forced scenario        PASS
-    `-- app-rendered goose proof     PASS
-```
-
-Primary artifacts:
-
-- `docs/C_PHASE35_MANUAL_RC_QA_AND_RC2_FIX_2026-05-12.md`
-- `docs/C_PHASE36_RC2_CLEAN_SMOKE_2026-05-12.md`
-- `docs/C_PHASE37_RELEASE_FACING_QA_2026-05-12.md`
-- `docs/C_PHASE38_RC3_CLEAN_VALIDATION_2026-05-12.md`
-- `docs/C_PHASE39_RELEASE_QA_AND_PRODUCT_POLISH_BACKLOG_2026-05-12.md`
-
-Current release recommendation: keep `v0.1.0-desktop-rc3` as the validated prerelease baseline, run the C-PHASE 40 manual player-facing QA packet, then decide whether to promote the current RC, publish a later RC, or hold for fixes.
+- The stable game is safe to ship and structurally sound.
+- The biggest visible gap is content depth, especially optional/action-specific animation families.
+- The biggest tool/AI gap is safe enablement, not raw code existence.
 
 ## Remaining Work By Category
 
@@ -113,200 +121,244 @@ Current release recommendation: keep `v0.1.0-desktop-rc3` as the validated prere
 
 ```text
 game core
-|-- simulation
+|-- keep stable
+|   |-- desktop overlay
+|   |-- three-pet loop
+|   |-- care/action/save/recovery flows
+|   `-- packaged release proof
+|
+|-- deepen next
 |   |-- personality development
 |   |-- needs/drives/emotions
 |   |-- affection/relationships
-|   |-- health/body condition
+|   |-- body condition
 |   |-- aging/death/ghost state
-|   `-- save/load migrations
+|   `-- long-run balance/lived-quality tuning
 |
-|-- interactions
-|   |-- feeding
-|   |-- drinking
-|   |-- medicine/care
-|   |-- bathing/grooming
-|   |-- sleep/rest
-|   `-- ball play/fetch sequence
-|
-`-- proof
+`-- prove continuously
     |-- forced dev scenarios
-    |-- UI/control verification
-    `-- in-game interaction sweeps
+    |-- packaged proof runs
+    `-- user-facing play sweeps
 ```
 
-Priority: high.
-
-Main reason: this is the actual game spine. Visuals and tools become easier to validate once pet behavior is deterministic and visibly connected to actions.
+Priority: high, but changes should be incremental because the stable release is now protected.
 
 ### Visuals And Animation
 
 ```text
 visual lane
-|-- keep
-|   |-- current color folder coverage
-|   |-- cleaned shared assets
-|   |-- runtime overlay prop contract
-|   `-- visual-side review discipline
+|-- current strength
+|   |-- runtime contract green
+|   |-- 360 runtime variant folders present
+|   |-- base required frames valid
+|   `-- visual-side cleanup discipline exists
 |
-|-- finish
-|   |-- final in-motion sprite QA
-|   |-- optional ball animations
-|   |-- snake/frog/bird motion quality
-|   |-- size consistency
-|   |-- no fake PNG backgrounds
-|   |-- no holes/noise/edge residue
-|   `-- final color variant acceptance
+|-- biggest gap
+|   |-- optional drink/play/hold/carry/pickup/drop families
+|   |-- authored-source coverage
+|   |-- in-motion quality sweeps
+|   |-- no boxing/shrink-grow regressions
+|   |-- no fake backgrounds/holes/noise
+|   `-- species-specific movement believability
 |
-`-- defer until base quality is stable
-    |-- ghost variants
-    |-- fat/skinny variants
-    `-- broad new generation
+`-- next rule
+    `-- source/provenance/contact-sheet/proof before broad mutation
 ```
 
-Priority: high, coordinated with visual-side.
-
-Main reason: sprite quality is the most visible product risk. Runtime contracts are green, but final in-motion visual proof still matters.
+Priority: high. This is the most visible difference between stable `v0.1.0` and the ideal Wevito vision.
 
 ### Habitat, Items, And Environment
 
 ```text
 world/content
-|-- care/medicine mapping
-|-- food/water/toy mapping
-|-- egg lifecycle assets
-|-- habitat object loadouts
-|-- runtime interaction anchors
-|-- depth bands and occlusion
-|-- contact shadows
-`-- stale asset reference cleanup
+|-- already working
+|   |-- habitat loadout manifest
+|   |-- contact shadows
+|   |-- depth/placement proof
+|   |-- care/item/habitat mapping
+|   `-- stable proof path
+|
+`-- still wanted
+    |-- richer species interactions with habitat objects
+    |-- enter/perch/hide/use behavior
+    |-- stronger care-state visual response
+    `-- final stale-reference cleanup
 ```
 
 Priority: medium-high.
 
-Main reason: this turns Wevito from "pets on a screen" into pets that live in a readable world.
-
-### Overlay UI And Tool Hub
+### Overlay UI And PET TASKS
 
 ```text
 overlay/tool hub
-|-- overlay remains home
-|-- summoned tool surfaces
-|-- PET TASKS command bar
-|-- three helper pets
-|-- task cards
-|-- result cards
-|-- artifact buttons
-|-- report-only labels first
-`-- approval gates before execution
+|-- current shape
+|   |-- PET TASKS command path
+|   |-- report/preview language
+|   |-- approval-gated posture
+|   |-- three helper pets concept
+|   `-- tool surfaces exist
+|
+`-- simplify next
+    |-- one text bar entry point
+    |-- clearer helper routing
+    |-- simpler result cards
+    |-- artifact buttons
+    |-- less dev-dashboard feeling
+    `-- no new dangerous execution by default
 ```
 
-Priority: high for code-side.
-
-Main reason: this is the bridge between the pet sim and the powerful helper-tool fantasy. It must stay simple and should not hijack the user's foreground app.
+Priority: high for usability.
 
 ### Helper Tools
 
 ```text
 helper tools
-|-- safe/report-only first
+|-- report/preview foundation
 |   |-- localDocs
 |   |-- spriteAudit
 |   |-- assetInventory
 |   |-- petState
 |   |-- codeReview
-|   `-- codePatchPlan
-|
-|-- approval-gated next
+|   |-- codePatchPlan
 |   |-- buildProof
-|   |-- Wevito-window screenshot
-|   |-- selected-region screenshot
-|   |-- translation execution
-|   `-- safe Windows volume control
+|   |-- translateText
+|   |-- audioAssist
+|   `-- screenCapture
 |
-`-- later / high-risk
+|-- proof next
+|   |-- adapter-specific proof packets
+|   |-- stable artifact references
+|   |-- clear provider labels
+|   `-- approval states visible to user
+|
+`-- still gated
     |-- screen recording
-    |-- browser automation
-    |-- external audio boosters
+    |-- external audio booster control
+    |-- live model calls
     |-- sprite generation/import
     `-- mutation/apply workflows
 ```
 
 Priority: medium-high.
 
-Main reason: tools make Wevito meaningfully useful beyond a game, but unsafe automation too early would create chaos.
-
 ### Sprite Workflow V2
 
 ```text
 Sprite Workflow V2
-|-- one selected row visible at a time
-|-- source/runtime/candidate/proof strips
-|-- validator findings
-|-- provenance and hashes
-|-- no-mutation preview mode
-|-- one-row apply plan
-|-- backup-before-apply
-|-- exact rollback
-`-- post-apply proof packet
+|-- desired product shape
+|   |-- compact single selected row
+|   |-- source/runtime/candidate/proof lanes
+|   |-- validator findings
+|   |-- provenance and hashes
+|   |-- no-mutation preview mode
+|   |-- backup-before-apply
+|   |-- exact rollback
+|   `-- post-apply proof packet
+|
+`-- current caution
+    `-- do not rebuild the old confusing scrolling workflow
 ```
 
 Priority: medium.
-
-Main reason: this should eventually replace the confusing external sprite workflow experience, but it should start read-only and compact.
 
 ### Creative Learning Lab And AI Agents
 
 ```text
 AI/helper-agent lane
-|-- exactly three active helper pets
-|-- names/roles assigned by user
-|-- task bar accepts natural language
-|-- pet personality affects presentation, not permissions
-|-- reviewed examples become learning data
-|-- preference snapshots
-|-- artifact-backed memory
-|-- local/vector search later
-`-- no uncontrolled self-training
+|-- safe foundation
+|   |-- exactly three helper pets
+|   |-- roles/personality separate from permissions
+|   |-- Core model adapter seam
+|   |-- allowlist/consent tests
+|   `-- live calls disabled
+|
+`-- next requirements
+    |-- disabled-by-default model setting
+    |-- first-call consent UI
+    |-- fake-adapter proof
+    |-- reviewed examples only
+    |-- local preference snapshots
+    |-- exportable learning packs
+    `-- no uncontrolled self-training
 ```
 
-Priority: medium-low until tool foundations are stable.
-
-Main reason: this is exciting, but it only becomes trustworthy after artifacts, permissions, and rollback rules are solid.
+Priority: medium after the baseline lock and tool simplification.
 
 ## Recommended Execution Order
 
 ```text
-next best sequence
-|-- 1. tag v0.1.0-vnext-rc1 from main after PR #33 merges
-|-- 2. harden Godot export or move runtime sprites outside Godot import pressure
-|-- 3. let visual-side finish targeted sprite/animation QA
-|-- 4. finish action/animation/prop contract polish
-|-- 5. implement staged fetch/drink/care proof flows
-|-- 6. map care/items/habitats into runtime UI
-|-- 7. add safe helper tools one at a time
-|-- 8. build Sprite Workflow V2 read-only workbench
-|-- 9. add controlled apply/proof/rollback gates
-`-- 10. add Creative Learning Lab reviewed-data surface
+next concrete plan seed
+|
++-- C-PHASE 54: Post-stable baseline lock and asset-prep safety
+|   +-- record stable release/hash/checks in a short lock packet
+|   +-- add/confirm guardrails around asset-prep regeneration
+|   +-- make accidental runtime sprite churn harder
+|   `-- keep this phase non-visual and deterministic
+|
++-- C-PHASE 55: Visual/source-of-truth recovery plan
+|   +-- reconcile authored coverage vs runtime coverage
+|   +-- identify source boards needed for care/expression
+|   +-- choose contact-sheet review order
+|   `-- no broad mutation yet
+|
++-- C-PHASE 56: Optional animation pilot expansion
+|   +-- pick one small target lane
+|   +-- produce source/candidate/proof artifacts
+|   +-- apply with backup/hash/rollback
+|   `-- scale only after the pilot is pleasant
+|
++-- C-PHASE 57: Tool hub simplification pass
+|   +-- one text bar
+|   +-- clear helper routing
+|   +-- simpler task/result cards
+|   `-- no new risky execution
+|
++-- C-PHASE 58: Adapter proof packets
+|   +-- screenshot
+|   +-- translation
+|   +-- audio assist
+|   +-- codeReview/codePatchPlan
+|   `-- buildProof
+|
++-- C-PHASE 59: Model capability flag and consent UI
+|   +-- disabled by default
+|   +-- fake adapter validation
+|   +-- first-call copy
+|   `-- still no live call until approved
+|
++-- C-PHASE 60: Sprite Workflow V2 compact workbench
+|   +-- report-only first
+|   +-- source/runtime/candidate/proof lanes
+|   +-- provenance manifest
+|   `-- no hidden app scrolling maze
+|
+`-- C-PHASE 61: Creative Learning Lab seed
+    +-- reviewed examples only
+    +-- local preference snapshots
+    +-- exportable learning packs
+    `-- no uncontrolled training
 ```
 
 ## Current Source-Of-Truth Docs
 
-Use these documents when updating this dashboard:
+Use these documents when creating the next concrete implementation plan:
 
-- `docs/C_PHASE29_FINAL_QA_2026-05-11.md`
-- `docs/C_PHASE30_RELEASE_BLOCKER_2026-05-12.md`
-- `docs/C_PHASE30_VNEXT_RC_RELEASE_DECISION_2026-05-12.md`
-- `docs/WEVITO_USER_HELP_GUIDE_2026-05-05.md`
-- `docs/CLAUDE_FULL_WEVITO_IMPLEMENTATION_PLAN_2026-05-05.md`
-- `docs/CLAUDE_CODEX_MEDIUM_PHASE_PROMPTS_2026-05-05.md`
-- `docs/WEVITO_FULL_PROJECT_STATUS_AND_COMPLETION_ROADMAP_2026-05-05.md`
+- `docs/C_PHASE52_STABLE_RELEASE_PROMOTION_2026-05-12.md`
+- `docs/C_PHASE53_PROJECT_PROGRESS_REPORT_2026-05-12.md`
+- `docs/C_PHASE50_RC4_MANUAL_PLAYER_QA_2026-05-12.md`
+- `docs/C_PHASE49_RC4_PACKAGE_AND_CLEAN_VALIDATION_2026-05-12.md`
+- `docs/C_PHASE46_AI_HELPER_GATE_REVIEW_2026-05-12.md`
+- `docs/C_PHASE45_TRANSLATION_AUDIO_PROVIDER_POLISH_2026-05-12.md`
+- `docs/C_PHASE44_SCREEN_CAPTURE_UX_PROOF_2026-05-12.md`
+- `docs/C_PHASE43_CARE_ITEM_HABITAT_MAPPING_2026-05-12.md`
+- `docs/C_PHASE42_PET_TASKS_UX_CLARITY_2026-05-12.md`
 - `docs/WEVITO_VISUAL_COMPLETION_TRACKER_2026-05-05.md`
 - `docs/WEVITO_VISUAL_STATUS_DASHBOARD_2026-05-05.md`
 - `docs/WEVITO_TOOL_AGENT_UI_MASTER_PLAN_2026-05-05.md`
 - `docs/WEVITO_PET_HELPER_FUNCTIONS_ROADMAP_2026-05-05.md`
 - `docs/WEVITO_OVERLAY_FIRST_IMPLEMENTATION_ROADMAP_2026-05-05.md`
 - `docs/CODE_SIDE_DEEP_REVIEW_AND_AGENT_TOOLS_PLAN_2026-05-05.md`
+- `SPRITE_PIPELINE_KIT/README.md`
 
 ## Update Workflow
 
@@ -330,4 +382,4 @@ docs/WEVITO_PROJECT_COMPLETION_DASHBOARD_2026-05-05.pdf
 docs/WEVITO_PROJECT_COMPLETION_DASHBOARD_PACKET_2026-05-05.pdf
 ```
 
-5. If the dashboard becomes materially outdated, create a new dated copy instead of overwriting historical context.
+5. If the dashboard becomes materially outdated again, update this living file and cite the newest phase reports rather than relying on older RC-era context.
