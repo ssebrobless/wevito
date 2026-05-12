@@ -31,6 +31,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private readonly PetCommandBarService _petCommandBarService = new();
     private readonly PetTaskCardQueueService _petTaskCardQueueService = new();
     private readonly PetTaskAdapterPreviewDispatcher _petTaskAdapterPreviewDispatcher = new();
+    private readonly RuntimeSupervisorService _runtimeSupervisorService = new();
     private readonly TranslationExecutionAdapter _translationExecutionAdapter = new();
     private readonly AudioAssistExecutionAdapter _audioAssistExecutionAdapter = new();
     private readonly BuildProofExecutionAdapter _buildProofExecutionAdapter = new();
@@ -341,12 +342,19 @@ internal sealed class ShellCoordinator : IAsyncDisposable
 
         OverlayWindowStyler.Apply(_homeWindow, passive, passive || pinned);
         OverlayWindowStyler.Apply(_roamBandWindow, true, true);
+        var supervisorStatus = _runtimeSupervisorService.Evaluate(
+            _state.SettingsSnapshot,
+            _desktopContext,
+            isUserInitiatedToolOpen: _state.ActiveTool.IsOpen);
+
         OverlayWindowStyler.Apply(_toolPopupWindow, passive || !_state.ActiveTool.IsOpen, passive || pinned);
 
         _homeWindow.SetHudVisible(!passive, GetSettingBool("compact_hud"));
         _homeWindow.SetDevToolsVisible(_devToolsEnabled && !passive);
         SetWindowVisibility(_roamBandWindow, Visibility.Visible, "RoamBand");
-        SetWindowVisibility(_toolPopupWindow, _state.ActiveTool.IsOpen && !passive ? Visibility.Visible : Visibility.Hidden, "ToolPopup");
+        var settingsToolOpen = string.Equals(_state.ActiveTool.ToolId, "settings", StringComparison.OrdinalIgnoreCase);
+        var toolWindowAllowed = supervisorStatus.ToolWindowAllowed || settingsToolOpen;
+        SetWindowVisibility(_toolPopupWindow, _state.ActiveTool.IsOpen && !passive && toolWindowAllowed ? Visibility.Visible : Visibility.Hidden, "ToolPopup");
     }
 
     private void Render()
@@ -367,7 +375,11 @@ internal sealed class ShellCoordinator : IAsyncDisposable
 
         _homeWindow.Render(_state, environment, _feedbackText, _assetService, needSnapshot, aggregateStatuses, actionEnabled, habitatLoadout);
         _roamBandWindow.Render(_state, _assetService);
-        _toolPopupWindow.Render(_state, _content, habitatLoadout, _assetService, _devToolsEnabled, petCommandBarState);
+        var supervisorStatus = _runtimeSupervisorService.Evaluate(
+            _state.SettingsSnapshot,
+            _desktopContext,
+            isUserInitiatedToolOpen: _state.ActiveTool.IsOpen);
+        _toolPopupWindow.Render(_state, _content, habitatLoadout, _assetService, _devToolsEnabled, petCommandBarState, supervisorStatus);
     }
 
     private PetCommandBarState EnsurePetCommandBarState(IReadOnlyList<PetActor> pets, IReadOnlyList<TaskCard>? taskCards)
@@ -728,6 +740,15 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             return;
         }
 
+        var supervisorStatus = _runtimeSupervisorService.Evaluate(_state.SettingsSnapshot, _desktopContext, isUserInitiatedToolOpen: true);
+        if (!_runtimeSupervisorService.CanStartUserInitiatedWork(supervisorStatus, out var supervisorReason))
+        {
+            SetFeedback(supervisorReason);
+            TraceLog.Write("runtime-supervisor", $"preview-blocked id={cardId} reason={supervisorReason}");
+            Render();
+            return;
+        }
+
         var card = (_state.TaskCards ?? []).FirstOrDefault(candidate => candidate.Id == cardId);
         if (card is null)
         {
@@ -789,6 +810,15 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     {
         if (_state is null)
         {
+            return;
+        }
+
+        var supervisorStatus = _runtimeSupervisorService.Evaluate(_state.SettingsSnapshot, _desktopContext, isUserInitiatedToolOpen: true);
+        if (!_runtimeSupervisorService.CanStartUserInitiatedWork(supervisorStatus, out var supervisorReason))
+        {
+            SetFeedback(supervisorReason);
+            TraceLog.Write("runtime-supervisor", $"execute-blocked id={cardId} reason={supervisorReason}");
+            Render();
             return;
         }
 
@@ -1816,6 +1846,14 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         hydrated.TryAdd("webtools_visible", bool.FalseString);
         hydrated.TryAdd("pet_model_adapter_enabled", bool.FalseString);
         hydrated.TryAdd("pet_model_first_call_approved", bool.FalseString);
+        hydrated.TryAdd(RuntimeSupervisorService.QuietModeSetting, bool.FalseString);
+        hydrated.TryAdd(RuntimeSupervisorService.PetOnlyModeSetting, bool.FalseString);
+        hydrated.TryAdd(RuntimeSupervisorService.BackgroundWorkAllowedSetting, bool.FalseString);
+        hydrated.TryAdd(RuntimeSupervisorService.NoFocusStealSetting, bool.TrueString);
+        hydrated.TryAdd(RuntimeSupervisorService.AutoQuietFullscreenSetting, bool.TrueString);
+        hydrated.TryAdd(RuntimeSupervisorService.MaxBackgroundTasksPerHourSetting, "4");
+        hydrated.TryAdd(RuntimeSupervisorService.CpuBudgetPercentSetting, "20");
+        hydrated.TryAdd(RuntimeSupervisorService.MemoryBudgetMbSetting, "512");
         return hydrated;
     }
 
