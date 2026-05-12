@@ -30,6 +30,11 @@ public sealed class ScreenCaptureExecutionAdapterTests
         Assert.Equal("Wevito Home Panel", root.GetProperty("targetWindowTitle").GetString());
         Assert.True(root.GetProperty("indicatorVisible").GetBoolean());
         Assert.Equal("fake backend", root.GetProperty("redactionState").GetString());
+
+        var summary = File.ReadAllText(Path.Combine(artifactRoot, "run-summary.md"));
+        Assert.Contains("live Windows capture artifact", summary, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("local artifact only", summary, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("not a recording", summary, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
