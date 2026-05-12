@@ -250,6 +250,27 @@ public sealed class PetCommandParserTests
         Assert.False(intent.NeedsApproval);
     }
 
+    [Theory]
+    [InlineData("summarize the local docs", TaskKind.SummarizeDocs, "localDocs")]
+    [InlineData("review goose baby female blue sprites", TaskKind.ReviewSprites, "spriteAudit")]
+    [InlineData("inventory assets in sprites_runtime", TaskKind.InventoryAssets, "assetInventory")]
+    [InlineData("review pet state", TaskKind.ReviewPetState, "petState")]
+    [InlineData("review the code in Wevito.VNext.Core", TaskKind.ReviewCode, "codeReview")]
+    [InlineData("plan a code fix in vnext", TaskKind.PlanCodePatch, "codePatchPlan")]
+    public void Parse_Phase57ProbeTextsRouteWithoutTestOnlyPetNames(
+        string taskText,
+        TaskKind expectedTaskKind,
+        string expectedToolFamily)
+    {
+        var intent = _parser.Parse(taskText, Helpers());
+
+        Assert.Equal(TaskIntentTargetMode.RouteToBestHelper, intent.TargetMode);
+        Assert.NotNull(intent.TargetPetId);
+        Assert.Equal(expectedTaskKind, intent.TaskKind);
+        Assert.Equal(expectedToolFamily, intent.RequestedToolFamily);
+        Assert.False(intent.NeedsApproval);
+    }
+
     [Fact]
     public void Parse_LocalDocsExtractsQuotedWindowsPathTarget()
     {

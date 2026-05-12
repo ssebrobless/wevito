@@ -630,11 +630,11 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <StackPanel>
-                            <TextBlock Text="Ask your pets (safe reports)"
+                            <TextBlock Text="PET TASKS command bar"
                                        Foreground="#FFF0F4F5"
                                        FontSize="13"
                                        FontWeight="SemiBold" />
-                            <TextBlock Text="Prepare - preview report - run only if explicitly approved."
+                            <TextBlock Text="Type one request. A helper pet prepares a safe task card first."
                                        Foreground="#FF9FB7C4"
                                        FontSize="10" />
                         </StackPanel>
@@ -666,13 +666,13 @@
                                 Padding="10,5"
                                 Style="{StaticResource PopupButtonStyle}"
                                 automation:AutomationProperties.AutomationId="PetCommandSubmitButton"
-                                Content="PREPARE"
+                                Content="PREPARE CARD"
                                 Click="PetCommandSubmitButton_OnClick" />
                     </Grid>
                     <TextBlock x:Name="PetTaskCapabilityText"
                                Margin="0,4,0,0"
                                automation:AutomationProperties.AutomationId="PetTaskCapabilityText"
-                              Text="Safe now: localDocs, spriteAudit, assetInventory, petState, codeReview, and codePatchPlan create reports only. Approval-gated: buildProof, translateText provider calls, audioAssist normal volume/mute changes, and screenCapture screenshots. Locked: sprite import/generation/PNG mutation, prop anchors, browser automation, desktop/region recording, audio boosters/drivers/APOs, and live model calls."
+                               Text="Report-only tools: localDocs, spriteAudit, assetInventory, petState, codeReview, codePatchPlan. Approval-only tools: buildProof, translateText, audioAssist, screenCapture. Locked: model calls, sprite mutation, browser automation, recording, external audio boosters."
                                Foreground="#FF9FB7C4"
                                FontSize="10"
                                TextWrapping="Wrap" />
@@ -742,7 +742,7 @@
                             CornerRadius="12"
                             Padding="7">
                         <StackPanel>
-                            <TextBlock Text="Current task"
+                            <TextBlock Text="Selected task card"
                                        Foreground="#FFF0F4F5"
                                        FontSize="11"
                                        FontWeight="SemiBold" />
@@ -781,8 +781,8 @@
                                        Foreground="#FFE1D6A8"
                                        FontSize="10"
                                        TextWrapping="Wrap"
-                                       Text="Next: PREPARE creates a task card. PREVIEW writes a report. Only a few reviewed cards can RUN APPROVED." />
-                            <TextBlock Text="Result"
+                                       Text="Next: prepare a card, then preview its report before anything can run." />
+                            <TextBlock Text="Report artifact"
                                        Margin="0,5,0,0"
                                        Foreground="#FFF0F4F5"
                                        FontSize="10"
@@ -793,7 +793,7 @@
                                        Foreground="#FFBFE7FF"
                                        FontSize="10"
                                        TextWrapping="Wrap"
-                                       Text="Result: report path appears here after preview." />
+                                       Text="Report: path appears here after preview." />
                             <UniformGrid Margin="0,5,0,0"
                                          Columns="3">
                                 <Button x:Name="PetTaskOpenReportButton"
@@ -820,7 +820,7 @@
                                         IsEnabled="False"
                                         Click="PetTaskOpenFolderButton_OnClick" />
                             </UniformGrid>
-                            <TextBlock Text="Timeline"
+                            <TextBlock Text="Task cards"
                                        Margin="0,5,0,0"
                                        Foreground="#FFF0F4F5"
                                        FontSize="10"
