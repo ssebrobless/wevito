@@ -14,6 +14,7 @@ public sealed class PetTaskAdapterPreviewDispatcher
     private const string TranslateTextToolFamily = "translateText";
     private const string AudioAssistToolFamily = "audioAssist";
     private const string ScreenCaptureToolFamily = "screenCapture";
+    private const string PetMemoryToolFamily = "petMemory";
 
     private readonly LocalDocsPreviewAdapter _localDocsPreviewAdapter;
     private readonly SpriteAuditPreviewAdapter _spriteAuditPreviewAdapter;
@@ -26,6 +27,7 @@ public sealed class PetTaskAdapterPreviewDispatcher
     private readonly AudioAssistPreviewAdapter _audioAssistPreviewAdapter;
     private readonly AudioBoostHandoffAdapter _audioBoostHandoffAdapter;
     private readonly ScreenCapturePreviewAdapter _screenCapturePreviewAdapter;
+    private readonly PetMemoryPreviewAdapter _petMemoryPreviewAdapter;
 
     public PetTaskAdapterPreviewDispatcher(
         LocalDocsPreviewAdapter? localDocsPreviewAdapter = null,
@@ -38,7 +40,8 @@ public sealed class PetTaskAdapterPreviewDispatcher
         TranslationPreviewAdapter? translationPreviewAdapter = null,
         AudioAssistPreviewAdapter? audioAssistPreviewAdapter = null,
         AudioBoostHandoffAdapter? audioBoostHandoffAdapter = null,
-        ScreenCapturePreviewAdapter? screenCapturePreviewAdapter = null)
+        ScreenCapturePreviewAdapter? screenCapturePreviewAdapter = null,
+        PetMemoryPreviewAdapter? petMemoryPreviewAdapter = null)
     {
         _localDocsPreviewAdapter = localDocsPreviewAdapter ?? new LocalDocsPreviewAdapter();
         _spriteAuditPreviewAdapter = spriteAuditPreviewAdapter ?? new SpriteAuditPreviewAdapter();
@@ -51,6 +54,7 @@ public sealed class PetTaskAdapterPreviewDispatcher
         _audioAssistPreviewAdapter = audioAssistPreviewAdapter ?? new AudioAssistPreviewAdapter();
         _audioBoostHandoffAdapter = audioBoostHandoffAdapter ?? new AudioBoostHandoffAdapter();
         _screenCapturePreviewAdapter = screenCapturePreviewAdapter ?? new ScreenCapturePreviewAdapter();
+        _petMemoryPreviewAdapter = petMemoryPreviewAdapter ?? new PetMemoryPreviewAdapter();
     }
 
     public TaskAdapterResult BuildPreview(
@@ -93,6 +97,8 @@ public sealed class PetTaskAdapterPreviewDispatcher
                     : _audioAssistPreviewAdapter.BuildStatusReport(request, timestamp),
             var family when string.Equals(family, ScreenCaptureToolFamily, StringComparison.OrdinalIgnoreCase) =>
                 _screenCapturePreviewAdapter.BuildPreview(request, timestamp),
+            var family when string.Equals(family, PetMemoryToolFamily, StringComparison.OrdinalIgnoreCase) =>
+                _petMemoryPreviewAdapter.BuildPreview(request, timestamp),
             _ => Block(request, ResolveResultFamily(policyFamily, intentFamily), $"No PET TASKS dry-run preview adapter is registered for tool family '{policyFamily}'.", timestamp)
         };
     }
