@@ -10,6 +10,8 @@ namespace Wevito.VNext.Shell;
 
 public partial class SpriteWorkflowV2Window : Window
 {
+    internal const int QueueDisplayLimit = 120;
+
     private readonly SpriteWorkflowManifestReader _manifestReader = new();
     private readonly SpriteWorkflowContactSheetGenerator _contactSheetGenerator = new();
     private readonly SpriteWorkflowCandidateImporter _candidateImporter = new();
@@ -84,6 +86,7 @@ public partial class SpriteWorkflowV2Window : Window
         DryRunApplyButton.IsEnabled = true;
         CandidateStripImage.Source = GenerateCandidateSheetImage(_selectedRow, result.Manifest);
         CandidatePlaceholderText.Text = "";
+        ProofLaneText.Text = "Candidate imported. Next gate: dry-run apply must prove exact one-row mutation scope.";
         ProvenanceTextBox.Text = BuildProvenance(_selectedRow) +
                                  Environment.NewLine +
                                  $"[Candidate import]{Environment.NewLine}folder: {result.CandidateFolder}{Environment.NewLine}manifest: {result.ManifestPath}";
@@ -113,6 +116,9 @@ public partial class SpriteWorkflowV2Window : Window
         DryRunPreviewTextBox.Text = result.Succeeded && result.Manifest is not null
             ? BuildDryRunPreview(result.Manifest, result.ManifestPath)
             : result.Message;
+        ProofLaneText.Text = result.Succeeded && result.Manifest is not null && HasExactMutationScope(_selectedRow, result.Manifest)
+            ? "Dry-run passed. Apply remains locked until the exact row id is typed."
+            : "Dry-run did not prove exact mutation scope. Apply remains disabled.";
         RefreshApplyButtons();
     }
 
@@ -133,6 +139,9 @@ public partial class SpriteWorkflowV2Window : Window
         DryRunPreviewTextBox.Text = result.Message + (result.Succeeded ? $"{Environment.NewLine}apply log: {result.ApplyLogPath}" : "");
         _lastApplyManifest = result.Manifest;
         RollbackButton.IsEnabled = result.Succeeded;
+        ProofLaneText.Text = result.Succeeded
+            ? "Applied one exact row with backup. Rollback is available."
+            : "Apply failed. Runtime should remain protected by the service guards.";
         RefreshApplyButtons();
     }
 
@@ -149,6 +158,7 @@ public partial class SpriteWorkflowV2Window : Window
         if (result.Succeeded)
         {
             RollbackButton.IsEnabled = false;
+            ProofLaneText.Text = "Rollback succeeded. Runtime row restored from backup.";
         }
     }
 
@@ -163,10 +173,13 @@ public partial class SpriteWorkflowV2Window : Window
         var rows = _snapshot.Rows
             .Where(row => string.IsNullOrWhiteSpace(filter) ||
                           row.RowId.Contains(filter, StringComparison.OrdinalIgnoreCase))
-            .Take(500)
+            .Take(QueueDisplayLimit)
             .Select(row => new SpriteWorkflowQueueRowViewModel(row))
             .ToList();
         QueueListBox.ItemsSource = rows;
+        QueueSummaryText.Text = string.IsNullOrWhiteSpace(filter)
+            ? $"Showing {rows.Count} of {_snapshot.Rows.Count} rows. Filter to narrow the queue."
+            : $"Showing {rows.Count} filtered rows. Queue display is capped at {QueueDisplayLimit}.";
         if (rows.Count > 0 && QueueListBox.SelectedIndex < 0)
         {
             QueueListBox.SelectedIndex = 0;
@@ -181,15 +194,17 @@ public partial class SpriteWorkflowV2Window : Window
         _lastApplyManifest = null;
         SelectedRowHeaderText.Text = row.RowId;
         SelectedRowSubheaderText.Text = "Candidate import writes only to sprites_authored/.candidates. Dry-run apply writes a plan only.";
+        SelectedTargetSummaryText.Text = BuildTargetSummary(row);
         FindingsTextBox.Text = string.Join(Environment.NewLine, row.Findings.Select(finding => "- " + finding));
         ProvenanceTextBox.Text = BuildProvenance(row);
-        DryRunPreviewTextBox.Text = "";
+        DryRunPreviewTextBox.Text = "Report only / no mutation yet. Import a candidate to begin the gated apply path.";
         DryRunApplyButton.IsEnabled = false;
         ApplyButton.IsEnabled = false;
         RollbackButton.IsEnabled = false;
         ApplyConfirmationTextBox.Text = "";
         CandidateStripImage.Source = null;
         CandidatePlaceholderText.Text = "No candidate imported yet";
+        ProofLaneText.Text = "Report only / no mutation yet. Import candidate, dry-run, type exact row id, then apply one exact row.";
 
         SourceStripImage.Source = GenerateSheetImage(row, SpriteWorkflowRootKind.AuthoredVerified) ??
                                   GenerateSheetImage(row, SpriteWorkflowRootKind.Authored);
@@ -198,13 +213,66 @@ public partial class SpriteWorkflowV2Window : Window
 
     private void RefreshApplyButtons()
     {
-        var rowMatches = _selectedRow is not null && IsApplyConfirmationMatch(ApplyConfirmationTextBox.Text, _selectedRow.RowId);
-        ApplyButton.IsEnabled = rowMatches && _lastDryRunManifest is not null && _lastApplyManifest is null;
+        ApplyButton.IsEnabled = CanEnableApply(
+            ApplyConfirmationTextBox.Text,
+            _selectedRow,
+            _lastCandidateImport,
+            _lastDryRunManifest,
+            _lastApplyManifest);
     }
 
     public static bool IsApplyConfirmationMatch(string typedText, string rowId)
     {
         return string.Equals(typedText.Trim(), rowId, StringComparison.Ordinal);
+    }
+
+    public static string BuildTargetSummary(SpriteWorkflowQueueRow row)
+    {
+        var expectedFrames = row.Evidence
+            .Where(item => item.RootKind is SpriteWorkflowRootKind.Runtime or SpriteWorkflowRootKind.AuthoredVerified or SpriteWorkflowRootKind.Authored)
+            .Select(item => item.Frames.Count)
+            .DefaultIfEmpty(0)
+            .Max();
+        var status = row.Findings.Count == 0 ? "clean" : $"{row.Findings.Count} finding(s)";
+        return $"{row.Key.Species} | {FormatAge(row.Key.AgeStage)} | {FormatGender(row.Key.Gender)} | {row.Key.ColorVariant} | {row.Key.Family} | {expectedFrames} expected frame(s) | {status}";
+    }
+
+    public static bool CanEnableApply(
+        string typedText,
+        SpriteWorkflowQueueRow? selectedRow,
+        SpriteWorkflowCandidateImportManifest? candidateImport,
+        SpriteWorkflowDryRunApplyManifest? dryRun,
+        SpriteWorkflowApplyManifest? apply)
+    {
+        return selectedRow is not null &&
+               candidateImport is not null &&
+               dryRun is not null &&
+               apply is null &&
+               Equals(candidateImport.Target, selectedRow.Key) &&
+               IsApplyConfirmationMatch(typedText, selectedRow.RowId) &&
+               HasExactMutationScope(selectedRow, dryRun);
+    }
+
+    public static bool HasExactMutationScope(SpriteWorkflowQueueRow? selectedRow, SpriteWorkflowDryRunApplyManifest? dryRun)
+    {
+        if (selectedRow is null || dryRun is null || dryRun.Changes.Count == 0 || !dryRun.WouldMutateRuntime)
+        {
+            return false;
+        }
+
+        if (!Equals(selectedRow.Key, dryRun.Target))
+        {
+            return false;
+        }
+
+        var runtimeRowFolder = Path.GetFullPath(dryRun.RuntimeRowFolder);
+        return dryRun.Changes.All(change =>
+            change.WouldOverwriteRuntime &&
+            !string.IsNullOrWhiteSpace(change.CurrentRuntimeBlake3) &&
+            !string.IsNullOrWhiteSpace(change.CandidateBlake3) &&
+            change.FrameId.StartsWith(selectedRow.Key.Family + "_", StringComparison.OrdinalIgnoreCase) &&
+            IsPathUnderRoot(change.RuntimePath, runtimeRowFolder) &&
+            IsPathUnderRoot(change.BackupPath, Path.GetFullPath(dryRun.PlannedBackupFolder)));
     }
 
     private BitmapImage? GenerateSheetImage(SpriteWorkflowQueueRow row, SpriteWorkflowRootKind rootKind)
@@ -311,6 +379,23 @@ public partial class SpriteWorkflowV2Window : Window
     private static string ShortHash(string hash)
     {
         return string.IsNullOrWhiteSpace(hash) ? "missing" : hash[..Math.Min(10, hash.Length)];
+    }
+
+    private static string FormatAge(PetAgeStage ageStage)
+    {
+        return ageStage.ToString().ToLowerInvariant();
+    }
+
+    private static string FormatGender(PetGender gender)
+    {
+        return gender.ToString().ToLowerInvariant();
+    }
+
+    private static bool IsPathUnderRoot(string path, string root)
+    {
+        var fullPath = Path.GetFullPath(path);
+        var fullRoot = Path.GetFullPath(root).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar) + Path.DirectorySeparatorChar;
+        return fullPath.StartsWith(fullRoot, StringComparison.OrdinalIgnoreCase);
     }
 
     private sealed class SpriteWorkflowQueueRowViewModel

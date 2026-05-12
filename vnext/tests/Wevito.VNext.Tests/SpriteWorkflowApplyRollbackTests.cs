@@ -99,6 +99,55 @@ public sealed class SpriteWorkflowApplyRollbackTests
         Assert.False(SpriteWorkflowV2Window.IsApplyConfirmationMatch("GOOSE/baby/female/blue/hold_ball", rowId));
     }
 
+    [Fact]
+    public void CompactWorkbench_ApplyGateRequiresCandidateDryRunExactRowAndExactScope()
+    {
+        var fixture = CreateFixture();
+        var row = BuildQueueRow(fixture.Target, fixture.Root);
+        var import = new SpriteWorkflowCandidateImportManifest(
+            "1",
+            fixture.Target,
+            fixture.CandidateFolder,
+            fixture.CandidateFolder,
+            [],
+            DateTimeOffset.Parse("2026-05-07T00:00:00Z"));
+        var dryRun = CreateDryRun(fixture.Root, fixture.Target, fixture.CandidateFolder);
+
+        Assert.False(SpriteWorkflowV2Window.CanEnableApply(row.RowId, row, null, dryRun, null));
+        Assert.False(SpriteWorkflowV2Window.CanEnableApply(row.RowId, row, import, null, null));
+        Assert.False(SpriteWorkflowV2Window.CanEnableApply("snake/adult/female/violet/hold_ball", row, import, dryRun, null));
+        Assert.True(SpriteWorkflowV2Window.CanEnableApply(row.RowId, row, import, dryRun, null));
+    }
+
+    [Fact]
+    public void CompactWorkbench_RejectsDryRunThatWouldAddFramesOutsideExactScope()
+    {
+        var fixture = CreateFixture();
+        var row = BuildQueueRow(fixture.Target, fixture.Root);
+        var dryRun = CreateDryRun(fixture.Root, fixture.Target, fixture.CandidateFolder);
+        var unsafeChange = dryRun.Changes[0] with
+        {
+            RuntimePath = Path.Combine(fixture.Root, "sprites_runtime", "snake", "adult", "female", "violet", "walk_00.png"),
+            WouldOverwriteRuntime = false
+        };
+        var unsafeManifest = dryRun with { Changes = [unsafeChange] };
+
+        Assert.False(SpriteWorkflowV2Window.HasExactMutationScope(row, unsafeManifest));
+    }
+
+    [Fact]
+    public void CompactWorkbench_TargetSummaryUsesConcreteRowFields()
+    {
+        var fixture = CreateFixture();
+        var row = BuildQueueRow(fixture.Target, fixture.Root, findings: ["Runtime: mixed frame geometry."]);
+
+        var summary = SpriteWorkflowV2Window.BuildTargetSummary(row);
+
+        Assert.Contains("snake | adult | female | violet | drop_ball", summary);
+        Assert.Contains("1 expected frame(s)", summary);
+        Assert.Contains("1 finding(s)", summary);
+    }
+
     private static (string Root, SpriteRowKey Target, string CandidateFolder) CreateFixture()
     {
         var root = Path.Combine(Path.GetTempPath(), "wevito-sprite-workflow-apply-tests", Guid.NewGuid().ToString("N"));
@@ -119,6 +168,29 @@ public sealed class SpriteWorkflowApplyRollbackTests
                 Path.Combine(root, "vnext", "artifacts", "dryrun"),
                 DateTimeOffset.Parse("2026-05-07T00:00:01Z")))
             .Manifest!;
+    }
+
+    private static SpriteWorkflowQueueRow BuildQueueRow(SpriteRowKey target, string root, IReadOnlyList<string>? findings = null)
+    {
+        var runtimePath = Path.Combine(root, "sprites_runtime", target.Species, "adult", "female", target.ColorVariant, $"{target.Family}_00.png");
+        return new SpriteWorkflowQueueRow(
+            target,
+            $"{target.Species}/adult/female/{target.ColorVariant}/{target.Family}",
+            [
+                new SpriteWorkflowRowEvidence(
+                    SpriteWorkflowRootKind.Runtime,
+                    Path.Combine(root, "sprites_runtime"),
+                    [
+                        new SpriteWorkflowFrameEntry(
+                            SpriteWorkflowRootKind.Runtime,
+                            $"{target.Family}_00",
+                            $"{target.Species}/adult/female/{target.ColorVariant}/{target.Family}_00.png",
+                            runtimePath,
+                            "runtimehash",
+                            new SpriteFrameGeometry(24, 24))
+                    ])
+            ],
+            findings ?? []);
     }
 
     private static void WritePng(string path, SKColor color)
