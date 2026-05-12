@@ -219,6 +219,11 @@ func _load_texture(path: String) -> Texture2D:
 		return null
 	var lower_path = path.to_lower()
 	var absolute_path = ProjectSettings.globalize_path(path)
+	var external_path = _external_asset_path(path)
+	if external_path != "" and FileAccess.file_exists(external_path):
+		var external_image = Image.new()
+		if external_image.load(external_path) == OK:
+			return ImageTexture.create_from_image(external_image)
 	if not OS.has_feature("editor"):
 		var packed_resource = load(path)
 		if packed_resource is Texture2D:
@@ -238,7 +243,21 @@ func _load_texture(path: String) -> Texture2D:
 	return null
 
 func _resource_or_file_exists(path: String) -> bool:
-	return ResourceLoader.exists(path) or FileAccess.file_exists(ProjectSettings.globalize_path(path))
+	var external_path = _external_asset_path(path)
+	return ResourceLoader.exists(path) or FileAccess.file_exists(ProjectSettings.globalize_path(path)) or (external_path != "" and FileAccess.file_exists(external_path))
+
+func _external_asset_path(path: String) -> String:
+	if OS.has_feature("editor") or not path.begins_with("res://"):
+		return ""
+	var relative_path = path.trim_prefix("res://")
+	var executable_dir = OS.get_executable_path().get_base_dir()
+	if executable_dir == "":
+		return ""
+	for root in [executable_dir.path_join("assets"), executable_dir]:
+		var candidate = root.path_join(relative_path)
+		if FileAccess.file_exists(candidate):
+			return candidate
+	return ""
 
 func _resolve_shared_sprite_path(relative_path: String) -> String:
 	for root in SHARED_SPRITE_ROOTS:
@@ -278,7 +297,7 @@ func load_sprites():
 		# Try loading frames until we hit one that doesn't exist
 		for frame in range(20):  # Max 20 frames safety limit
 			var frame_path = base_path + anim + "_%02d.png" % frame
-			if ResourceLoader.exists(frame_path):
+			if _resource_or_file_exists(frame_path):
 				var tex = _load_texture(frame_path)
 				if tex:
 					_sprites[anim].append(tex)

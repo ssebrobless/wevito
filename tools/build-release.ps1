@@ -2,7 +2,9 @@ param(
     [string]$Version = "dev",
     [string]$GodotPath = "",
     [switch]$Debug,
-    [int]$ExportTimeoutSeconds = 900
+    [int]$ExportTimeoutSeconds = 900,
+    [switch]$NoStagingProject,
+    [switch]$KeepExportStaging
 )
 
 $ErrorActionPreference = "Stop"
@@ -97,6 +99,89 @@ if ($Version -eq "dev") {
 $VersionedExe = Join-Path $BuildDir ("{0}-v{1}-win64.exe" -f $AppExeBase, $Version)
 $LatestExe = Join-Path $BuildDir ("{0}-latest-win64.exe" -f $AppExeBase)
 $BuildInfo = Join-Path $BuildDir "last-build.txt"
+$ExternalAssetsDir = Join-Path $BuildDir "assets"
+$BundleName = "{0}-v{1}-win64" -f $AppExeBase, $Version
+$BundleDir = Join-Path $BuildDir $BundleName
+$BundleZip = Join-Path $BuildDir ("{0}.zip" -f $BundleName)
+$LatestBundleZip = Join-Path $BuildDir ("{0}-latest-win64.zip" -f $AppExeBase)
+
+function Copy-DirectoryClean {
+    param(
+        [string]$Source,
+        [string]$Destination,
+        [switch]$AllowOutsideBuildDir
+    )
+
+    if (-not (Test-Path $Source)) {
+        throw "Missing required package source: $Source"
+    }
+
+    $resolvedBuildDir = [System.IO.Path]::GetFullPath($BuildDir)
+    $resolvedDestination = [System.IO.Path]::GetFullPath($Destination)
+    if (-not $AllowOutsideBuildDir -and -not $resolvedDestination.StartsWith($resolvedBuildDir, [System.StringComparison]::OrdinalIgnoreCase)) {
+        throw "Refusing to clean destination outside build directory: $Destination"
+    }
+
+    if (Test-Path $Destination) {
+        Remove-Item -LiteralPath $Destination -Recurse -Force
+    }
+
+    $parent = Split-Path -Parent $Destination
+    if (-not (Test-Path $parent)) {
+        New-Item -ItemType Directory -Path $parent | Out-Null
+    }
+    Copy-Item -Path $Source -Destination $Destination -Recurse -Force
+}
+
+function Copy-ReleasePackageAssets {
+    $assetMappings = @(
+        @{ Source = Join-Path $ProjectRoot "sprites_runtime"; Destination = Join-Path $ExternalAssetsDir "sprites_runtime" },
+        @{ Source = Join-Path $ProjectRoot "sprites_shared_runtime"; Destination = Join-Path $ExternalAssetsDir "sprites_shared_runtime" },
+        @{ Source = Join-Path $ProjectRoot "sprites\egg"; Destination = Join-Path $ExternalAssetsDir "sprites\egg" },
+        @{ Source = Join-Path $ProjectRoot "vnext\content"; Destination = Join-Path $ExternalAssetsDir "vnext\content" }
+    )
+
+    foreach ($mapping in $assetMappings) {
+        Copy-DirectoryClean -Source $mapping.Source -Destination $mapping.Destination
+    }
+
+    Get-ChildItem -Path $ExternalAssetsDir -Filter "*.import" -Recurse -File -ErrorAction SilentlyContinue |
+        Remove-Item -Force
+    Get-ChildItem -Path $ExternalAssetsDir -Directory -Force -Recurse -ErrorAction SilentlyContinue |
+        Where-Object { $_.Name -eq ".staging" } |
+        Remove-Item -Recurse -Force
+}
+
+function New-ReleaseBundle {
+    param(
+        [string]$ExecutablePath,
+        [string]$DesktopBridgePath
+    )
+
+    Copy-DirectoryClean -Source $ExternalAssetsDir -Destination (Join-Path $BundleDir "assets")
+    Copy-Item -Path $ExecutablePath -Destination (Join-Path $BundleDir "WevitoDesktopPet.exe") -Force
+    Copy-Item -Path $DesktopBridgePath -Destination (Join-Path $BundleDir "WevitoDesktopBridge.exe") -Force
+
+    if (Test-Path $BundleZip) {
+        Remove-Item -LiteralPath $BundleZip -Force
+    }
+    Compress-Archive -Path (Join-Path $BundleDir "*") -DestinationPath $BundleZip -Force
+    Copy-Item -Path $BundleZip -Destination $LatestBundleZip -Force
+}
+
+function New-GodotExportStagingProject {
+    $stageRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("wevito-godot-export-" + [System.Guid]::NewGuid().ToString("N"))
+    New-Item -ItemType Directory -Path $stageRoot | Out-Null
+
+    Copy-Item -Path (Join-Path $ProjectRoot "project.godot") -Destination (Join-Path $stageRoot "project.godot") -Force
+    Copy-Item -Path (Join-Path $ProjectRoot "export_presets.cfg") -Destination (Join-Path $stageRoot "export_presets.cfg") -Force
+    Copy-Item -Path (Join-Path $ProjectRoot "icon.svg") -Destination (Join-Path $stageRoot "icon.svg") -Force
+    Copy-DirectoryClean -Source (Join-Path $ProjectRoot "scripts") -Destination (Join-Path $stageRoot "scripts") -AllowOutsideBuildDir
+    Copy-DirectoryClean -Source (Join-Path $ProjectRoot "scenes") -Destination (Join-Path $stageRoot "scenes") -AllowOutsideBuildDir
+    Copy-DirectoryClean -Source (Join-Path $ProjectRoot "vnext\content") -Destination (Join-Path $stageRoot "vnext\content") -AllowOutsideBuildDir
+
+    return $stageRoot
+}
 
 $PresetFile = Join-Path $ProjectRoot "export_presets.cfg"
 if (-not (Test-Path $PresetFile)) {
@@ -178,7 +263,14 @@ Write-Host "Output: $VersionedExe"
 $BuildStart = Get-Date
 $ExportStdOutPath = [System.IO.Path]::GetTempFileName()
 $ExportStdErrPath = [System.IO.Path]::GetTempFileName()
-$ExportArguments = Join-ProcessArguments -Arguments @("--headless", "--path", $ProjectRoot, $ExportFlag, $PresetName, $VersionedExe)
+$ExportProjectRoot = $ProjectRoot
+$ExportStageRoot = ""
+if (-not $NoStagingProject) {
+    $ExportStageRoot = New-GodotExportStagingProject
+    $ExportProjectRoot = $ExportStageRoot
+    Write-Host "Using lean Godot export staging project: $ExportStageRoot"
+}
+$ExportArguments = Join-ProcessArguments -Arguments @("--headless", "--path", $ExportProjectRoot, $ExportFlag, $PresetName, $VersionedExe)
 try {
     $ExportProcess = Start-Process -FilePath $ResolvedGodot -ArgumentList $ExportArguments -NoNewWindow -PassThru -RedirectStandardOutput $ExportStdOutPath -RedirectStandardError $ExportStdErrPath
     $ExportCompleted = $ExportProcess.WaitForExit($ExportTimeoutSeconds * 1000)
@@ -206,7 +298,8 @@ try {
         throw "Godot export timed out after $ExportTimeoutSeconds seconds."
     }
 
-    $ExitCode = $ExportProcess.ExitCode
+    $ExportProcess.Refresh()
+    $ExitCode = if ($null -ne $ExportProcess.ExitCode) { [int]$ExportProcess.ExitCode } else { 0 }
     $ExportOutputText = @(
         if (Test-Path $ExportStdOutPath) { Get-Content -Path $ExportStdOutPath -Raw -ErrorAction SilentlyContinue }
         if (Test-Path $ExportStdErrPath) { Get-Content -Path $ExportStdErrPath -Raw -ErrorAction SilentlyContinue }
@@ -214,6 +307,9 @@ try {
 }
 finally {
     Remove-Item -Path $ExportStdOutPath, $ExportStdErrPath -Force -ErrorAction SilentlyContinue
+    if ($ExportStageRoot -ne "" -and -not $KeepExportStaging -and (Test-Path $ExportStageRoot)) {
+        Remove-Item -LiteralPath $ExportStageRoot -Recurse -Force -ErrorAction SilentlyContinue
+    }
 }
 if ($ExitCode -ne 0) {
     Write-Host "Note: Godot returned exit code $ExitCode, but export output was created successfully. Continuing." -ForegroundColor DarkYellow
@@ -286,6 +382,8 @@ catch {
 
 $BuildHelperTarget = Join-Path $BuildDir "WevitoDesktopBridge.exe"
 Copy-Item -Path $HelperExe -Destination $BuildHelperTarget -Force
+Copy-ReleasePackageAssets
+New-ReleaseBundle -ExecutablePath $ResolvedOutput -DesktopBridgePath $BuildHelperTarget
 
 $BuildType = if ($Debug) { "debug" } else { "release" }
 @(
@@ -295,10 +393,17 @@ $BuildType = if ($Debug) { "debug" } else { "release" }
     "godot=$ResolvedGodot",
     "output=$ResolvedOutput",
     "latest_available=$LatestAvailable",
-    "desktop_bridge=$BuildHelperTarget"
+    "desktop_bridge=$BuildHelperTarget",
+    "external_assets=$ExternalAssetsDir",
+    "bundle_dir=$BundleDir",
+    "bundle_zip=$BundleZip",
+    "latest_bundle_zip=$LatestBundleZip",
+    "export_staging_project=$(-not $NoStagingProject)"
 ) | Set-Content -Path $BuildInfo -Encoding UTF8
 
 Write-Host ""
 Write-Host "Build complete:"
 Write-Host "- $ResolvedOutput"
 Write-Host "- $LatestAvailable"
+Write-Host "- $ExternalAssetsDir"
+Write-Host "- $BundleZip"
