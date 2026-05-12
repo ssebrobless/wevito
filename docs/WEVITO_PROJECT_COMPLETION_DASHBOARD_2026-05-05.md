@@ -1,6 +1,6 @@
 # Wevito Project Completion Dashboard
 
-Last updated: 2026-05-11
+Last updated: 2026-05-12
 
 Purpose: living project dashboard for tracking Wevito's game, visual, tool, helper-agent, and release readiness work. Update this markdown file as phases complete, then regenerate the PDF reference copy.
 
@@ -8,32 +8,32 @@ Purpose: living project dashboard for tracking Wevito's game, visual, tool, help
 
 ```text
 Wevito full vision
-|-- playable pet game foundation        ########--  ~84%
+|-- playable pet game foundation        #########-  ~88%
 |-- visual/sprite asset lane            ########--  ~78%
-|-- habitat/items/care integration      #########-  ~86%
+|-- habitat/items/care integration      #########-  ~88%
 |-- PET TASKS/tool hub                  ########--  ~82%
 |-- advanced helper/AI/ML systems       #######---  ~70%
-`-- final QA/release readiness          ########--  ~82%
+`-- final QA/release readiness          #########-  ~90%
 
-Total project completion: ~81%
-Remaining to complete full vision: ~19%
+Total project completion: ~84%
+Remaining to complete full vision: ~16%
 ```
 
 This estimate treats "everything done" as the expanded full Wevito vision: a working desktop pet game, clean sprites and animations, habitats, items, helper tools, screenshot/capture, translation, audio assist, coding helpers, Sprite Workflow V2, Creative Learning Lab, and pet-agent behavior.
 
-If measuring only the basic playable pet-game foundation, Wevito is closer to 85-90%. The remaining gap is mostly polish, final packaging, optional animation coverage, and deliberately gated AI/model/tool execution.
+If measuring only the basic playable pet-game foundation, Wevito is closer to 90%. The remaining gap is mostly manual player-facing QA, visual/content polish, optional animation coverage, and deliberately gated AI/model/tool execution.
 
 ## Area Status
 
 | Area | Status | Done | What Remains |
 | --- | --- | ---: | --- |
-| Git/build baseline | Release-candidate green | 96% | Keep `main` clean, avoid asset prep unless intentionally approved, finish final package/tag gate. |
-| Core pet sim | Strong foundation | 86% | Continue long-run balance tuning, visible care outcomes, and save/load edge proof. |
-| Game interactions | Functional foundation | 78% | Finish richer fetch/drink/care behavior and forced scenario coverage. |
+| Git/build baseline | Public RC3 green | 98% | Keep `main` clean, avoid asset prep unless intentionally approved, finish manual QA before stable tag. |
+| Core pet sim | Strong foundation | 88% | Continue long-run balance tuning, visible care outcomes, and save/load edge proof. |
+| Game interactions | Functional foundation | 82% | Fetch/drink release scenarios pass; finish richer care behavior and manual UX proof. |
 | Sprites/visuals | Runtime contract green, content still active | 78% | Final in-motion QA, optional animations, no artifacts, no boxing/shrink-grow, final proof sweeps. |
 | Color variants | Mostly green | 85% | Only targeted review/fixes, not broad regeneration. |
 | Care/medicine/items | Mapped into tool/game plans | 72% | Confirm readability in runtime UI and remove stale expectations. |
-| Habitat/environment | Manifest-backed and proofed | 88% | Richer enter/perch/hide/use behavior and final visual polish. |
+| Habitat/environment | Manifest-backed and proofed | 90% | Richer enter/perch/hide/use behavior and final visual polish. |
 | Overlay UI | Functional and resilient | 82% | Continue simplifying PET TASKS/task-card UX without replacing pet overlay. |
 | PET TASKS/tool hub | Probe-green seed exists | 84% | More artifact buttons, clearer reports, and approval-gated execution polish. |
 | Screenshot/capture tools | Probe and capture pass | 76% | Short proof clips and broader capture UX remain later work. |
@@ -42,7 +42,7 @@ If measuring only the basic playable pet-game foundation, Wevito is closer to 85
 | Sprite Workflow V2 | V2 apply/proof pattern exists | 76% | Expand from proven one-row pilots to broader guarded workflows. |
 | Creative Learning Lab | Planned with seams | 68% | Reviewed examples, preference memory, dataset/export dashboard, no uncontrolled training. |
 | Pet AI agents | Default-disabled model seam exists | 72% | Keep live calls gated; complete memory/vector and consent reviews later. |
-| Final release QA | vNext RC green; Godot export blocked | 82% | Decide whether first tag ships vNext-only or wait for Godot export hardening. |
+| Final release QA | Public RC3 clean validation green | 90% | Run manual player-facing QA, fix focused findings, then decide stable release promotion. |
 
 ## C-PHASE 29 Release-Candidate Update
 
@@ -78,7 +78,34 @@ Primary C-PHASE 30 artifacts:
 - `docs/C_PHASE30_RELEASE_BLOCKER_2026-05-12.md`
 - `docs/WEVITO_USER_HELP_GUIDE_2026-05-05.md`
 
-Decision: tag `v0.1.0-vnext-rc1` as a vNext-only release candidate from the validated `-SkipAssetPrep` package, then defer Godot export hardening to the next focused phase.
+Historical decision: tag `v0.1.0-vnext-rc1` as a vNext-only release candidate from the validated `-SkipAssetPrep` package, then defer Godot export hardening to the next focused phase.
+
+This was superseded by the later desktop RC line below.
+
+## C-PHASE 35-38 Desktop RC Update
+
+```text
+desktop RC line
+|-- RC1              SUPERSEDED, missing-script packaging issue
+|-- RC2              SUPERSEDED, fetch visual-completion issue
+`-- RC3              CURRENT VALIDATED BASELINE
+    |-- clean download               PASS
+    |-- bundle structure             PASS
+    |-- full automation              PASS
+    |-- drink forced scenario        PASS
+    |-- fetch forced scenario        PASS
+    `-- app-rendered goose proof     PASS
+```
+
+Primary artifacts:
+
+- `docs/C_PHASE35_MANUAL_RC_QA_AND_RC2_FIX_2026-05-12.md`
+- `docs/C_PHASE36_RC2_CLEAN_SMOKE_2026-05-12.md`
+- `docs/C_PHASE37_RELEASE_FACING_QA_2026-05-12.md`
+- `docs/C_PHASE38_RC3_CLEAN_VALIDATION_2026-05-12.md`
+- `docs/C_PHASE39_RELEASE_QA_AND_PRODUCT_POLISH_BACKLOG_2026-05-12.md`
+
+Current release recommendation: keep `v0.1.0-desktop-rc3` as the validated prerelease baseline, run the C-PHASE 40 manual player-facing QA packet, then decide whether to promote the current RC, publish a later RC, or hold for fixes.
 
 ## Remaining Work By Category
 
