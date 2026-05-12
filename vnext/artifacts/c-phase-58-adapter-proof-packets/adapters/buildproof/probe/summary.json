@@ -1,0 +1,28 @@
+﻿{
+    "captured_at":  "2026-05-12T16:58:28",
+    "output_dir":  "C:\\Users\\fishe\\.codex\\worktrees\\ab46\\wevito\\vnext\\artifacts\\pet-task-probes\\20260512-165812-673-15487d30",
+    "layout_screenshot_path":  "",
+    "trace":  "C:\\Users\\fishe\\.codex\\worktrees\\ab46\\wevito\\vnext\\artifacts\\pet-task-probes\\20260512-165812-673-15487d30\\trace\\Wevito.VNext.Shell.trace.log",
+    "audit_path":  "C:\\Users\\fishe\\.codex\\worktrees\\ab46\\wevito\\vnext\\artifacts\\pet-tasks\\20260512-205827-buildproof-buildproof\\run-summary.md",
+    "task_text":  "run a build proof",
+    "expected_tool_family":  "buildProof",
+    "approve_before_preview":  true,
+    "expect_execute_enabled_after_preview":  false,
+    "execute_enabled_after_preview":  null,
+    "expect_artifact_file_created":  "",
+    "execution_audit_path":  "",
+    "expected_artifact_path":  "",
+    "wellbeing_text":  "Wellbeing: Rat 1: Watch / SelfMaintenance / Relief | bright / Crow 2: Watch / SelfMaintenance / Relief | bright / Fox 3: Watch / SelfMaintenance / Relief | bright",
+    "capability_text":  "Report-only tools: localDocs, spriteAudit, assetInventory, petState, codeReview, codePatchPlan. Approval-only tools: buildProof, translateText, audioAssist, screenCapture. Locked: model calls, sprite mutation, browser automation, recording, external audio boosters.",
+    "next_action_text":  "Next: prepare a card, then preview its report before anything can run.",
+    "post_preview_next_action_text":  "Next: open the artifact/report. Most reviewed cards are report-only and cannot run.",
+    "result_path_text":  "Report: path appears here after preview.",
+    "post_preview_result_path_text":  "Report: C:\\Users\\fishe\\.codex\\worktrees\\ab46\\wevito\\vnext\\artifacts\\pet-tasks\\20260512-205827-buildproof-buildproof\\run-summary.md",
+    "target_rows_checked":  [
+                                "C:\\Users\\fishe\\.codex\\worktrees\\ab46\\wevito\\sprites_runtime\\goose\\baby\\female\\blue",
+                                "C:\\Users\\fishe\\.codex\\worktrees\\ab46\\wevito\\vnext\\src\\Wevito.VNext.Shell\\bin\\Debug\\net8.0-windows10.0.19041.0\\sprites_runtime\\goose\\baby\\female\\blue"
+                            ],
+    "target_hash_check_skipped":  false,
+    "target_hashes_unchanged":  true,
+    "shell_alive":  true
+}

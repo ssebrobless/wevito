@@ -1,0 +1,561 @@
+﻿2026-05-12T20:57:57.5745073+00:00 | shell | pid=2544 | startup-begin
+2026-05-12T20:57:57.6720105+00:00 | shell | pid=2544 | content-loaded path=C:\Users\fishe\.codex\worktrees\ab46\wevito\vnext\src\Wevito.VNext.Shell\bin\Debug\net8.0-windows10.0.19041.0\content species=10 environments=12
+2026-05-12T20:57:57.8074856+00:00 | audit-scenario | pid=2544 | path=C:\Users\fishe\.codex\worktrees\ab46\wevito\vnext\artifacts\pet-task-probes\20260512-165756-770-ce3e0cf6\scenario.json pets=0 mode=Pinned env=rat
+2026-05-12T20:57:57.8082337+00:00 | shell | pid=2544 | state-ready pinned=True pets=3 basket=0
+2026-05-12T20:57:57.9944258+00:00 | overlay-style | pid=2544 | window=Wevito Home Panel clickThrough=False noActivate=False handle=3344390
+2026-05-12T20:57:58.0325173+00:00 | overlay-style | pid=2544 | window=Wevito Roam Band clickThrough=True noActivate=True handle=65079004
+2026-05-12T20:57:58.0756642+00:00 | overlay-style | pid=2544 | window=Wevito Basket clickThrough=False noActivate=False handle=3016334
+2026-05-12T20:57:58.0863285+00:00 | shell | pid=2544 | broker-started pid=3452 pipe=wevito-vnext-2544
+2026-05-12T20:57:58.2191442+00:00 | shell | pid=2544 | broker-connected
+2026-05-12T20:57:58.2925436+00:00 | broker-event | pid=2544 | DesktopContextChanged
+2026-05-12T20:57:58.3084291+00:00 | desktop-context | pid=2544 | foreground=LeagueClientUx title=League of Legends shell=False fullscreen=False
+2026-05-12T20:57:58.3267029+00:00 | mode | pid=2544 | mode=Pinned pinned=True
+2026-05-12T20:57:58.3283510+00:00 | layout | pid=2544 | home=1232,110 660x910 tool=1372,10 520x420 roam=0,922 1920x118
+2026-05-12T20:57:58.3296549+00:00 | overlay-style | pid=2544 | window=Wevito Home Panel clickThrough=False noActivate=True handle=3344390
+2026-05-12T20:57:58.3301715+00:00 | overlay-style | pid=2544 | window=Wevito Basket clickThrough=True noActivate=True handle=3016334
+2026-05-12T20:57:58.3315007+00:00 | visibility | pid=2544 | window=ToolPopup visibility=Hidden
+2026-05-12T20:57:58.3806374+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:57:58.4139894+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,utility/storage_basket
+2026-05-12T20:57:58.4429561+00:00 | broker-event | pid=2544 | ForegroundChanged
+2026-05-12T20:57:58.4432629+00:00 | broker-event | pid=2544 | WorkAreaChanged
+2026-05-12T20:57:58.4484359+00:00 | overlay-regions | pid=2544 | HomePanel:1232,110,660,910:True|RoamBand:0,922,1920,118:False|ToolPopup:1372,10,520,420:False
+2026-05-12T20:57:58.4695097+00:00 | layout | pid=2544 | home=1232,110 660x910 tool=1372,10 520x420 roam=0,922 1920x118
+2026-05-12T20:57:58.4711737+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:57:58.4731923+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,utility/storage_basket
+2026-05-12T20:57:58.4786690+00:00 | shell | pid=2544 | startup-complete
+2026-05-12T20:57:58.5362991+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:57:58.5376520+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,utility/storage_basket
+2026-05-12T20:57:58.6045151+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:57:58.6059977+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,utility/storage_basket
+2026-05-12T20:57:58.6647404+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:57:58.6660817+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,utility/storage_basket
+2026-05-12T20:57:58.7260318+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:57:58.7273589+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,utility/storage_basket
+2026-05-12T20:57:58.7874319+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:57:58.7887308+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,utility/storage_basket
+2026-05-12T20:57:58.8497989+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:57:58.8526784+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,utility/storage_basket
+2026-05-12T20:57:58.9100057+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:57:58.9116558+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,utility/storage_basket
+2026-05-12T20:57:58.9722318+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:57:58.9739052+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,utility/storage_basket
+2026-05-12T20:57:59.0360736+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:57:59.0379770+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,utility/storage_basket
+2026-05-12T20:57:59.0982194+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:57:59.1002045+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,utility/storage_basket
+2026-05-12T20:57:59.1598243+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:57:59.1617610+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,utility/storage_basket
+2026-05-12T20:57:59.2212423+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:57:59.2232686+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,utility/storage_basket
+2026-05-12T20:57:59.2672141+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:57:59.2691105+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,utility/storage_basket
+2026-05-12T20:57:59.3126281+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:57:59.3145497+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,utility/storage_basket
+2026-05-12T20:57:59.3588339+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:57:59.3604420+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,utility/storage_basket
+2026-05-12T20:57:59.4051031+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:57:59.4066864+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,utility/storage_basket
+2026-05-12T20:57:59.4517632+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:57:59.4535313+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,utility/storage_basket
+2026-05-12T20:57:59.4987853+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:57:59.5006156+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,utility/storage_basket
+2026-05-12T20:57:59.5443075+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:57:59.5459793+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,utility/storage_basket
+2026-05-12T20:57:59.5910552+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:57:59.5928769+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,utility/storage_basket
+2026-05-12T20:57:59.6370749+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:57:59.6388304+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,utility/storage_basket
+2026-05-12T20:57:59.6979698+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:57:59.6995622+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,utility/storage_basket
+2026-05-12T20:57:59.7592620+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:57:59.7608648+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,utility/storage_basket
+2026-05-12T20:57:59.8218721+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:57:59.8244433+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:59.8831063+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:57:59.8847590+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:57:59.9444166+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:57:59.9462515+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:00.0055110+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:00.0074763+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:00.0665227+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:00.0683669+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:00.1283994+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:00.1300455+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:00.1748364+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:00.1764153+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:00.2241440+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:00.2257107+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:00.2835796+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:00.2854501+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:00.3292995+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:00.3308869+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:00.3764970+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:00.3783608+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:00.4235598+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:00.4252371+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:00.4708455+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:00.4726144+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:00.5173102+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:00.5188480+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:00.5631758+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:00.5648978+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:00.6100413+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:00.6120824+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:00.6559710+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:00.6576203+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:00.7030906+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:00.7066380+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:00.7504589+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:00.7524895+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:00.7966763+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:00.7983230+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:00.8440404+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:00.8456133+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:00.8902517+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:00.8918807+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:00.9368968+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:00.9388784+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:00.9833630+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:00.9849311+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:01.0295617+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:01.0310900+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:01.0758788+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:01.0775628+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:01.1216335+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:01.1231208+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:01.1681487+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:01.1695908+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:01.2297295+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:01.2310740+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:01.2912080+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:01.2926684+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:01.3540827+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:01.3553559+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:01.4159281+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:01.4173472+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:01.4780788+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:01.4796525+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:01.5398758+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:01.5407643+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:01.6016624+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:01.6025708+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:01.6641920+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:01.6651314+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:01.7257067+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:01.7264822+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:01.7873160+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:01.7881431+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:01.8507715+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:01.8516197+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:01.9116180+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:01.9124748+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:01.9577602+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:01.9587272+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:02.0045895+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:02.0054548+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:02.0517333+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:02.0526372+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:02.0987562+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:02.0995539+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:02.1448304+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:02.1456591+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:02.1912433+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:02.1920263+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:02.2380879+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:02.2388651+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:02.2855042+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:02.2863253+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:02.3308799+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:02.3316971+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:02.3772339+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:02.3780119+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:02.4238254+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:02.4247293+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:02.4700267+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:02.4707875+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:02.5161089+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:02.5168149+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:02.5623066+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:02.5632599+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:02.6087694+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:02.6095388+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:02.6560115+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:02.6567722+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:02.7009715+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:02.7018942+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:02.7473232+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:02.7480596+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:02.7959477+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:02.7966947+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:02.8406342+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:02.8415558+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:02.8865113+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:02.8872685+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:02.9339416+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:02.9347296+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:02.9806761+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:02.9814967+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:03.0270290+00:00 | ui-command | pid=2544 | toggle-webtools visible=True
+2026-05-12T20:58:03.0273334+00:00 | layout | pid=2544 | home=1232,110 660x910 tool=1372,10 520x420 roam=0,922 1920x118
+2026-05-12T20:58:03.0282874+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:03.0291908+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:03.1384195+00:00 | persistence | pid=2544 | saved pets=3 basket=0 pinned=True
+2026-05-12T20:58:03.1387338+00:00 | broker-event | pid=2544 | DesktopContextChanged
+2026-05-12T20:58:03.1391048+00:00 | desktop-context | pid=2544 | foreground=Wevito.VNext.Shell title=Wevito Home Panel shell=False fullscreen=False
+2026-05-12T20:58:03.1393577+00:00 | layout | pid=2544 | home=1232,110 660x910 tool=1372,10 520x420 roam=0,922 1920x118
+2026-05-12T20:58:03.1402348+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:03.1409735+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:03.1444552+00:00 | broker-event | pid=2544 | ForegroundChanged
+2026-05-12T20:58:03.1455321+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:03.1462556+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:03.2136789+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:03.2144524+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:03.2754311+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:03.2761743+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:03.3372861+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:03.3380563+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:03.3987774+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:03.3996096+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:03.4601256+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:03.4609149+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:03.5220378+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:03.5228109+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:03.5678286+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:03.5686258+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:03.6152976+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:03.6160479+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:03.6612814+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:03.6621733+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:03.7075895+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:03.7105286+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:03.7544821+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:03.7552210+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:03.8009107+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:03.8019109+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:03.8470665+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:03.8479061+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:03.8940888+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:03.8948768+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:03.9191774+00:00 | ui-command | pid=2544 | toggle-tool tool=helpers open=True pinned=True
+2026-05-12T20:58:03.9198455+00:00 | layout | pid=2544 | home=1232,110 660x910 tool=1372,10 520x420 roam=0,922 1920x118
+2026-05-12T20:58:03.9205015+00:00 | overlay-style | pid=2544 | window=Wevito Basket clickThrough=False noActivate=True handle=3016334
+2026-05-12T20:58:03.9208260+00:00 | visibility | pid=2544 | window=ToolPopup visibility=Visible
+2026-05-12T20:58:03.9216848+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:03.9224435+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:03.9414462+00:00 | persistence | pid=2544 | saved pets=3 basket=0 pinned=True
+2026-05-12T20:58:03.9569219+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:03.9576900+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:03.9688403+00:00 | broker-event | pid=2544 | DesktopContextChanged
+2026-05-12T20:58:03.9691553+00:00 | desktop-context | pid=2544 | foreground=Wevito.VNext.Shell title=Wevito PET TASKS shell=False fullscreen=False
+2026-05-12T20:58:03.9694045+00:00 | layout | pid=2544 | home=1232,110 660x910 tool=1372,10 520x420 roam=0,922 1920x118
+2026-05-12T20:58:03.9702434+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:03.9710160+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:03.9773934+00:00 | broker-event | pid=2544 | ForegroundChanged
+2026-05-12T20:58:03.9867520+00:00 | overlay-regions | pid=2544 | HomePanel:1232,110,660,910:True|RoamBand:0,922,1920,118:False|ToolPopup:1372,10,520,420:True
+2026-05-12T20:58:03.9872938+00:00 | overlay-regions | pid=2544 | HomePanel:1232,110,660,910:True|RoamBand:0,922,1920,118:False|ToolPopup:1372,10,520,420:True
+2026-05-12T20:58:04.0028257+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:04.0036263+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:04.0493073+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:04.0501902+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:04.0964231+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:04.0972087+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:04.1419167+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:04.1427029+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:04.1879451+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:04.1889578+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:04.2344059+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:04.2351953+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:04.2814989+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:04.2822756+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:04.3263722+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:04.3272126+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:04.3731223+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:04.3738062+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:04.4209472+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:04.4217884+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:04.4656326+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:04.4664368+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:04.5120773+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:04.5128836+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:04.5727148+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:04.5734830+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:04.6340773+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:04.6349273+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:04.6955762+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:04.6963369+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:04.7573212+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:04.7583395+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:04.8175696+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:04.8182860+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:04.8634993+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:04.8642108+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:04.9093950+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:04.9102051+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:04.9557935+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:04.9565843+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:05.0020437+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:05.0028306+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:05.0475429+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:05.0482382+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:05.0940074+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:05.0947518+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:05.1400040+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:05.1408307+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:05.1857767+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:05.1865980+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:05.2317133+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:05.2325903+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:05.2787748+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:05.2796320+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:05.3244673+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:05.3253336+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:05.3852849+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:05.3861968+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:05.4482296+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:05.4491205+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:05.4967955+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:05.4976263+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:05.5569261+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:05.5577705+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:05.6106329+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:05.6115139+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:05.6661877+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:05.6672586+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:05.7221271+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:05.7232521+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:05.7628133+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:05.7636701+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:05.8158815+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:05.8167728+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:05.8595023+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:05.8603507+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:05.9156342+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:05.9164694+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:05.9664004+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:05.9673171+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:06.0216590+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:06.0225524+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:06.0681444+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:06.0689337+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:06.1144860+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:06.1152348+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:06.1616481+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:06.1625604+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:06.2072389+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:06.2080317+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:06.2537297+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:06.2545728+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:06.3006054+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:06.3014440+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:06.3465382+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:06.3474886+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:06.3941160+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:06.3950171+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:06.4385068+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:06.4393905+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:06.4851719+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:06.4859400+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:06.5315435+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:06.5324907+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:06.5775792+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:06.5784507+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:06.6238400+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:06.6246221+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:06.6702830+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:06.6710474+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:06.7167457+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:06.7175111+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:06.7625514+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:06.7633245+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:06.8084670+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:06.8091924+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:06.8558004+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:06.8564670+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:06.9025724+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:06.9034872+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:06.9508509+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:06.9518629+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:07.0088298+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:07.0096173+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:07.0707331+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:07.0715446+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:07.1336032+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:07.1343303+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:07.1943391+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:07.1950990+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:07.2418289+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:07.2425478+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:07.3030314+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:07.3037512+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:07.3506675+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:07.3513869+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:07.4128332+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:07.4135354+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:07.4581840+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:07.4590399+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:07.5045864+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:07.5052888+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:07.5515220+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:07.5522415+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:07.5981147+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:07.5989161+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:07.6441967+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:07.6448458+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:07.6907161+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:07.6914052+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:07.7380750+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:07.7388063+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:07.7833892+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:07.7840770+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:07.8297283+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:07.8304297+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:07.8772252+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:07.8780209+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:07.9235249+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:07.9242751+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:07.9694688+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:07.9701531+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:08.0116157+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:08.0123630+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:08.0590053+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:08.0596990+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:08.1049425+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:08.1056657+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:08.1542143+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:08.1549873+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:08.2012660+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:08.2022919+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:08.2490360+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:08.2496826+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:08.2941022+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:08.2948039+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:08.3418013+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:08.3425216+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:08.3864145+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:08.3871183+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:08.4333101+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:08.4340683+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:08.4960061+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:08.4966584+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:08.5431674+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:08.5439634+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:08.6038294+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:08.6079184+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:08.6666993+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:08.6674589+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:08.7275560+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:08.7282406+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:08.7859138+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:08.7866890+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:08.8357823+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:08.8365272+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:08.8965381+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:08.8972860+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:08.9423403+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:08.9429947+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:08.9888035+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:08.9894400+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:09.0346605+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:09.0353858+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:09.0770010+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:09.0777747+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:09.1279923+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:09.1286986+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:09.1701862+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:09.1708304+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:09.2211838+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:09.2218800+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:09.2685272+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:09.2691850+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:09.3149818+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:09.3157299+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:09.3624088+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:09.3631431+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:09.4089781+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:09.4096551+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:09.4560413+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:09.4567026+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:09.5009976+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:09.5018020+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:09.5654562+00:00 | feedback | pid=2544 | Draft ready: Builder prepared a safe task card.
+2026-05-12T20:58:09.5663205+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:09.5670171+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:09.5841164+00:00 | pet-command | pid=2544 | status=Draft kind=PlanCodePatch policy=Allowed
+2026-05-12T20:58:09.5856308+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:09.5865085+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:09.6101237+00:00 | persistence | pid=2544 | saved pets=3 basket=0 pinned=True
+2026-05-12T20:58:09.6114378+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:09.6122288+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:09.6566101+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:09.6573637+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:09.7036082+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:09.7043534+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:09.7489339+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:09.7496885+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:09.7948017+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:09.7955532+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:09.8418078+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:09.8426255+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:09.8867836+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:09.8876395+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:09.9485088+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:09.9493088+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:10.0107219+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:10.0114748+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:10.0722861+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:10.0730380+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:10.1344044+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:10.1351315+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:10.1955560+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:10.1964123+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:10.2571252+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:10.2579525+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:10.3203937+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:10.3213035+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:10.3819914+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:10.3828213+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:10.4336855+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:10.4344294+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:10.6270998+00:00 | feedback | pid=2544 | Preview report ready: C:\Users\fishe\.codex\worktrees\ab46\wevito\vnext\artifacts\pet-tasks\20260512-205810-codepatchplan-plancodepatch\run-summary.md
+2026-05-12T20:58:10.6279349+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:10.6286895+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:10.6347718+00:00 | pet-command | pid=2544 | preview id=61c49304-3e58-4645-8637-2fe51994ac08 family=codePatchPlan status=PreviewReady mutate=False audit=C:\Users\fishe\.codex\worktrees\ab46\wevito\vnext\artifacts\pet-tasks\20260512-205810-codepatchplan-plancodepatch\run-summary.md
+2026-05-12T20:58:10.6356126+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:10.6363721+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:10.6524748+00:00 | persistence | pid=2544 | saved pets=3 basket=0 pinned=True
+2026-05-12T20:58:10.6539385+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:10.6546682+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:10.7075739+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:10.7083191+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:10.7542815+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:10.7549626+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:10.8007897+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:10.8017551+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:10.8466057+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:10.8472806+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:10.8926668+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:10.8934626+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:10.9379704+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:10.9387612+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:10.9838843+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:10.9845902+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:11.0297448+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:11.0306112+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:11.0759724+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:11.0766659+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:11.1229420+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:11.1238033+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:11.1698443+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:11.1705816+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:11.2164010+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:11.2171752+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:11.2618243+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:11.2626286+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:11.3089425+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:11.3096105+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:11.3704023+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:11.3711611+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:11.4315284+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:11.4324770+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket
+2026-05-12T20:58:11.4934580+00:00 | shared-asset | pid=2544 | cleaned items\containers\water_bowl.png => C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_shared_runtime\items\containers\water_bowl.png
+2026-05-12T20:58:11.4942391+00:00 | stage-props | pid=2544 | rat:toys_b/crate_hideout,food_omnivore/snack_bowl,utility/storage_basket

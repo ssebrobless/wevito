@@ -1,0 +1,10 @@
+﻿{
+    "mode":  "Pinned",
+    "clearBasket":  true,
+    "settingsSnapshot":  {
+                             "compact_hud":  "False",
+                             "show_pet_names":  "False",
+                             "show_status_summary":  "True",
+                             "webtools_visible":  "False"
+                         }
+}
