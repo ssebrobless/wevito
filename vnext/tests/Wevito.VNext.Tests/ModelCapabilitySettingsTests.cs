@@ -16,6 +16,21 @@ public sealed class ModelCapabilitySettingsTests
     }
 
     [Fact]
+    public void ApplyDefaultSettings_InitializesRuntimeSupervisorSafely()
+    {
+        var settings = ShellCoordinator.ApplyDefaultSettings(new Dictionary<string, string>());
+
+        Assert.Equal(bool.FalseString, settings[RuntimeSupervisorService.QuietModeSetting]);
+        Assert.Equal(bool.FalseString, settings[RuntimeSupervisorService.PetOnlyModeSetting]);
+        Assert.Equal(bool.FalseString, settings[RuntimeSupervisorService.BackgroundWorkAllowedSetting]);
+        Assert.Equal(bool.TrueString, settings[RuntimeSupervisorService.NoFocusStealSetting]);
+        Assert.Equal(bool.TrueString, settings[RuntimeSupervisorService.AutoQuietFullscreenSetting]);
+        Assert.Equal("4", settings[RuntimeSupervisorService.MaxBackgroundTasksPerHourSetting]);
+        Assert.Equal("20", settings[RuntimeSupervisorService.CpuBudgetPercentSetting]);
+        Assert.Equal("512", settings[RuntimeSupervisorService.MemoryBudgetMbSetting]);
+    }
+
+    [Fact]
     public void ApplyDefaultSettings_PreservesExplicitModelCapabilityChoices()
     {
         var settings = ShellCoordinator.ApplyDefaultSettings(new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)

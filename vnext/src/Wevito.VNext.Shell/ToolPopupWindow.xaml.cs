@@ -76,7 +76,14 @@ public partial class ToolPopupWindow : Window
 
     public long WindowHandle => new WindowInteropHelper(this).Handle.ToInt64();
 
-    internal void Render(CompanionState state, GameContent content, HabitatLoadout habitatLoadout, SpriteAssetService assetService, bool devToolsEnabled, PetCommandBarState? petCommandState = null)
+    internal void Render(
+        CompanionState state,
+        GameContent content,
+        HabitatLoadout habitatLoadout,
+        SpriteAssetService assetService,
+        bool devToolsEnabled,
+        PetCommandBarState? petCommandState = null,
+        RuntimeSupervisorStatus? runtimeSupervisorStatus = null)
     {
         var toolId = string.IsNullOrWhiteSpace(state.ActiveTool.ToolId) ? "basket" : state.ActiveTool.ToolId;
         var showingBasket = string.Equals(toolId, "basket", StringComparison.OrdinalIgnoreCase);
@@ -150,6 +157,12 @@ public partial class ToolPopupWindow : Window
         CompactHudCheckBox.IsChecked = GetSettingBool(state, "compact_hud");
         ShowPetNamesCheckBox.IsChecked = GetSettingBool(state, "show_pet_names");
         ShowStatusSummaryCheckBox.IsChecked = GetSettingBool(state, "show_status_summary", true);
+        RuntimeQuietModeCheckBox.IsChecked = GetSettingBool(state, RuntimeSupervisorService.QuietModeSetting);
+        RuntimePetOnlyModeCheckBox.IsChecked = GetSettingBool(state, RuntimeSupervisorService.PetOnlyModeSetting);
+        RuntimeBackgroundWorkAllowedCheckBox.IsChecked = GetSettingBool(state, RuntimeSupervisorService.BackgroundWorkAllowedSetting);
+        RuntimeNoFocusStealCheckBox.IsChecked = GetSettingBool(state, RuntimeSupervisorService.NoFocusStealSetting, true);
+        RuntimeAutoQuietFullscreenCheckBox.IsChecked = GetSettingBool(state, RuntimeSupervisorService.AutoQuietFullscreenSetting, true);
+        RuntimeSupervisorStatusText.Text = runtimeSupervisorStatus?.UserStatus ?? "Runtime supervisor: waiting for shell state.";
         var modelEnabled = GetSettingBool(state, "pet_model_adapter_enabled");
         var modelFirstCallApproved = GetSettingBool(state, "pet_model_first_call_approved");
         PetModelAdapterEnabledCheckBox.IsChecked = modelEnabled;
@@ -232,6 +245,11 @@ public partial class ToolPopupWindow : Window
             if (TryToggleCheckBox(CompactHudCheckBox, localPoint)) { return true; }
             if (TryToggleCheckBox(ShowPetNamesCheckBox, localPoint)) { return true; }
             if (TryToggleCheckBox(ShowStatusSummaryCheckBox, localPoint)) { return true; }
+            if (TryToggleCheckBox(RuntimeQuietModeCheckBox, localPoint)) { return true; }
+            if (TryToggleCheckBox(RuntimePetOnlyModeCheckBox, localPoint)) { return true; }
+            if (TryToggleCheckBox(RuntimeBackgroundWorkAllowedCheckBox, localPoint)) { return true; }
+            if (TryToggleCheckBox(RuntimeNoFocusStealCheckBox, localPoint)) { return true; }
+            if (TryToggleCheckBox(RuntimeAutoQuietFullscreenCheckBox, localPoint)) { return true; }
             if (TryToggleCheckBox(PetModelAdapterEnabledCheckBox, localPoint)) { return true; }
             if (await TryInvokeButtonAsync(PetModelFirstCallConsentButton, localPoint, () =>
                 {
@@ -846,6 +864,31 @@ public partial class ToolPopupWindow : Window
     private void ShowStatusSummaryCheckBox_OnChanged(object sender, RoutedEventArgs e)
     {
         PublishSetting("show_status_summary", ShowStatusSummaryCheckBox.IsChecked != false);
+    }
+
+    private void RuntimeQuietModeCheckBox_OnChanged(object sender, RoutedEventArgs e)
+    {
+        PublishSetting(RuntimeSupervisorService.QuietModeSetting, RuntimeQuietModeCheckBox.IsChecked == true);
+    }
+
+    private void RuntimePetOnlyModeCheckBox_OnChanged(object sender, RoutedEventArgs e)
+    {
+        PublishSetting(RuntimeSupervisorService.PetOnlyModeSetting, RuntimePetOnlyModeCheckBox.IsChecked == true);
+    }
+
+    private void RuntimeBackgroundWorkAllowedCheckBox_OnChanged(object sender, RoutedEventArgs e)
+    {
+        PublishSetting(RuntimeSupervisorService.BackgroundWorkAllowedSetting, RuntimeBackgroundWorkAllowedCheckBox.IsChecked == true);
+    }
+
+    private void RuntimeNoFocusStealCheckBox_OnChanged(object sender, RoutedEventArgs e)
+    {
+        PublishSetting(RuntimeSupervisorService.NoFocusStealSetting, RuntimeNoFocusStealCheckBox.IsChecked != false);
+    }
+
+    private void RuntimeAutoQuietFullscreenCheckBox_OnChanged(object sender, RoutedEventArgs e)
+    {
+        PublishSetting(RuntimeSupervisorService.AutoQuietFullscreenSetting, RuntimeAutoQuietFullscreenCheckBox.IsChecked != false);
     }
 
     private void PetModelAdapterEnabledCheckBox_OnChanged(object sender, RoutedEventArgs e)
