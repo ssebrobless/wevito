@@ -22,7 +22,8 @@ const EXPANDED_OPTIONAL_ANIMATIONS := [
 	"carry_ball_walk",
 	"carry_ball_run",
 	"pickup_ball",
-	"drop_ball"
+	"drop_ball",
+	"ghost"
 ]
 const ACTION_ANIMATION_FALLBACKS := {
 	"feed": ["eat", "idle"],
@@ -298,7 +299,11 @@ func _create_placeholder_sprite():
 	sprite.self_modulate = Color.WHITE
 
 func _process(delta):
-	if pet_data == null or pet_data.is_dead:
+	if pet_data == null:
+		return
+
+	if pet_data.is_dead:
+		_update_death_visual(delta)
 		return
 
 	if pet_data.is_hatching:
@@ -489,12 +494,38 @@ func update_sprite():
 		sprite.self_modulate = _egg_tint()
 		return
 
-	sprite.self_modulate = Color.WHITE
+	sprite.self_modulate = _lifecycle_tint()
 	var frames = _sprites.get(current_animation, [])
 	if frames.size() > 0:
 		var frame_idx = animation_frame % frames.size()
 		if frame_idx < frames.size():
 			sprite.texture = frames[frame_idx]
+
+func _lifecycle_tint() -> Color:
+	if pet_data == null:
+		return Color.WHITE
+	if pet_data.is_ghost:
+		return Color(0.72, 0.88, 1.0, 0.52)
+	if pet_data.is_dead:
+		return Color(0.62, 0.62, 0.68, 0.62)
+	if pet_data.stage == 4:
+		return Color(0.84, 0.84, 0.82, 1.0)
+	return Color.WHITE
+
+func _update_death_visual(delta: float):
+	if pet_data == null:
+		return
+	pet_data.death_elapsed_sec += delta
+	if pet_data.death_elapsed_sec < 2.5:
+		current_animation = _first_available_animation(["sad", "idle"])
+	else:
+		pet_data.is_ghost = true
+		current_animation = _first_available_animation(["ghost", "idle"])
+	animation_timer += delta
+	if animation_timer >= animation_speed:
+		animation_timer = 0
+		animation_frame = (animation_frame + 1) % get_frame_count()
+	update_sprite()
 
 func get_frame_count() -> int:
 	if pet_data and pet_data.is_hatching and _egg_frames.size() > 0:

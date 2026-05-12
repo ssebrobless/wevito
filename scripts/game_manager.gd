@@ -516,30 +516,45 @@ func check_death(pet_index: int):
 		return
 	
 	var pd = pet_datas[pet_index]
+	if pd == null or pd.is_dead:
+		return
 	
 	# Death from health
 	if pd.health <= 0:
-		pd.is_dead = true
-		pd.age_at_death = pd.age_minutes
-		# Store sprite info for In Memoriam
-		if pets.size() > pet_index and pets[pet_index] != null:
-			var pet = pets[pet_index]
-			pd.death_sprite_path = pet.get_current_sprite_path()
-		_add_to_in_memoriam(pd)
-		pet_died.emit(pd)
+		_mark_pet_dead(pet_index)
 		return
 	
 	# Death from starvation
 	if pd.hunger <= 0:
 		pd.health = 0
-		pd.is_dead = true
-		pd.age_at_death = pd.age_minutes
-		if pets.size() > pet_index and pets[pet_index] != null:
-			var pet = pets[pet_index]
-			pd.death_sprite_path = pet.get_current_sprite_path()
-		_add_to_in_memoriam(pd)
-		pet_died.emit(pd)
+		_mark_pet_dead(pet_index)
 		return
+
+	# Death from dehydration
+	if pd.hydration <= 0:
+		pd.health = 0
+		_mark_pet_dead(pet_index)
+		return
+
+func _mark_pet_dead(pet_index: int):
+	if pet_index >= pet_datas.size():
+		return
+	var pd = pet_datas[pet_index]
+	if pd == null:
+		return
+	pd.is_dead = true
+	pd.is_ghost = false
+	pd.death_elapsed_sec = 0.0
+	pd.age_at_death = pd.age_minutes
+	pd.memorial_object_id = "memorial_object"
+	pd.memorial_position = pd.position
+	pd.memorial_expires_at = int(Time.get_unix_time_from_system()) + 86400
+	# Store sprite info for In Memoriam.
+	if pets.size() > pet_index and pets[pet_index] != null:
+		var pet = pets[pet_index]
+		pd.death_sprite_path = pet.get_current_sprite_path()
+	_add_to_in_memoriam(pd)
+	pet_died.emit(pd)
 
 func _add_to_in_memoriam(pd: PetData):
 	in_memoriam.append(pd)
