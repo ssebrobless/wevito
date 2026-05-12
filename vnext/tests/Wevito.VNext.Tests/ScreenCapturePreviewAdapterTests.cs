@@ -29,6 +29,10 @@ public sealed class ScreenCapturePreviewAdapterTests
         Assert.False(report.DidMutate);
         Assert.Contains(report.Capabilities, capability => capability.ActionKind == ScreenCaptureActionKind.WindowScreenshot && capability.ApprovalRequirement == ApprovalRequirement.BeforeExecution);
         Assert.Contains(report.Capabilities, capability => capability.ActionKind == ScreenCaptureActionKind.ScreenRecording && capability.Status == ScreenCaptureCapabilityStatus.ApprovalRequired);
+
+        var markdown = File.ReadAllText(Path.Combine(artifactRoot, "run-summary.md"));
+        Assert.Contains("offline preview report only", markdown, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("preview mode never records", markdown, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]

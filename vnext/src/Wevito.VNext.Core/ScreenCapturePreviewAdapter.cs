@@ -161,9 +161,12 @@ public sealed class ScreenCapturePreviewAdapter
             "## Summary",
             "",
             $"- {report.RequestedCaptureSummary}",
+            "- Proof surface: offline preview report only; this is not a packaged/live capture proof.",
             $"- Captured screen: {report.DidCaptureScreen}",
             $"- Recorded screen: {report.DidRecordScreen}",
             $"- Did mutate files: {report.DidMutate}",
+            "- Approval gate: RUN APPROVED is required before any screenshot artifact can be created.",
+            "- Recording gate: short no-audio Wevito-window clips stay separately approval-gated; preview mode never records.",
             "",
             "## Capabilities",
             ""
