@@ -98,4 +98,48 @@ public sealed class PetMemoryWriteGateTests
         Assert.Contains("gated", result.PreviewSummary, StringComparison.OrdinalIgnoreCase);
         Assert.Contains(result.WrittenPaths ?? [], path => path.EndsWith("pet-memory-preview-report.json", StringComparison.OrdinalIgnoreCase));
     }
+
+    [Fact]
+    public void LearningLabExport_DoesNotPromoteLabelsIntoPetMemory()
+    {
+        var root = Path.Combine(Path.GetTempPath(), "wevito-learning-lab-memory-gate-tests", Guid.NewGuid().ToString("N"));
+        var memoryRoot = Path.Combine(root, "memory");
+        var petId = Guid.Parse("11111111-1111-1111-1111-111111111111");
+        var memoryStore = new PetMemoryStore(memoryRoot);
+        var artifact = new LearningLabArtifactRecord(
+            "summary.md",
+            "vnext/artifacts/visual-review",
+            "vnext/artifacts/visual-review/run/summary.md",
+            Path.Combine(root, "vnext", "artifacts", "visual-review", "run", "summary.md"),
+            "summary.md",
+            ".md",
+            "visual-review",
+            "summary",
+            "review-needed",
+            "goose/baby/female/blue/hold_ball",
+            "markdown",
+            DateTimeOffset.Parse("2026-05-07T00:00:00Z"));
+        var index = new LearningLabArtifactIndex(
+            "1",
+            root,
+            DateTimeOffset.Parse("2026-05-07T00:00:00Z"),
+            new LearningLabMetrics(1, 0, 0, 0, 0, 1, 0),
+            [artifact]);
+
+        var export = new LearningLabBundleService().ExportReviewedBundle(new LearningLabReviewedBundleExportRequest(
+            new LearningLabBundleRequest(
+                index,
+                new Dictionary<string, LearningLabLabelRecord>(StringComparer.OrdinalIgnoreCase)
+                {
+                    [artifact.AbsolutePath] = new LearningLabLabelRecord(1, artifact.AbsolutePath, "accept", "tester", "clean example", DateTimeOffset.Parse("2026-05-07T00:00:00Z"), 1)
+                },
+                "visual eval reference",
+                RollbackPathKnown: true),
+            Path.Combine(root, "vnext", "artifacts", "creative-learning-lab"),
+            DateTimeOffset.Parse("2026-05-07T00:00:01Z")));
+
+        Assert.True(export.Succeeded);
+        Assert.False(File.Exists(memoryStore.ResolveDatabasePath(petId)));
+        Assert.Contains("not promoted into pet memory", File.ReadAllText(export.SummaryPath), StringComparison.OrdinalIgnoreCase);
+    }
 }

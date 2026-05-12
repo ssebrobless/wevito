@@ -52,8 +52,8 @@ public partial class CreativeLearningLabWindow : Window
             var bundle = _bundleService.Evaluate(new LearningLabBundleRequest(
                 _index,
                 _labels,
-                IntendedUse: "",
-                RollbackPathKnown: false));
+                IntendedUse: BundleIntendedUseTextBox.Text.Trim(),
+                RollbackPathKnown: true));
 
             RawMetricText.Text = _index.Metrics.Raw.ToString();
             CleanedMetricText.Text = _index.Metrics.Cleaned.ToString();
@@ -66,7 +66,8 @@ public partial class CreativeLearningLabWindow : Window
                 ? "No visual-review or animation-run markdown/JSON artifacts found yet."
                 : $"{_index.Artifacts.Count} read-only artifacts indexed from visual-review and animation-runs.";
             ArtifactListView.ItemsSource = rows.Take(500).ToList();
-            StatusText.Text = $"Read-only index refreshed {DateTimeOffset.Now:t}. Nothing is labeled, exported, trained, or mutated.";
+            ExportReviewedBundleButton.IsEnabled = bundle.IsReady;
+            StatusText.Text = $"Reviewed index refreshed {DateTimeOffset.Now:t}. Nothing trains automatically.";
         }
         catch (Exception ex)
         {
@@ -107,6 +108,30 @@ public partial class CreativeLearningLabWindow : Window
         RefreshIndex();
     }
 
+    private void ExportReviewedBundleButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (_index is null)
+        {
+            StatusText.Text = "Refresh the reviewed-example index before exporting.";
+            return;
+        }
+
+        var outputRoot = Path.Combine(_repoRoot, "vnext", "artifacts", "creative-learning-lab");
+        var result = _bundleService.ExportReviewedBundle(new LearningLabReviewedBundleExportRequest(
+            new LearningLabBundleRequest(
+                _index,
+                _labels,
+                BundleIntendedUseTextBox.Text.Trim(),
+                RollbackPathKnown: true),
+            outputRoot,
+            DateTimeOffset.UtcNow));
+
+        BundleGateText.Text = BuildBundleGateText(result.Gate);
+        StatusText.Text = result.Succeeded
+            ? $"Exported reviewed bundle: {result.BundleFolder}. No training or binary asset copy occurred."
+            : $"Reviewed bundle export blocked: {result.Message}";
+    }
+
     private string ResolveLabel(LearningLabArtifactRecord artifact)
     {
         return _labels.TryGetValue(Path.GetFullPath(artifact.AbsolutePath), out var label)
@@ -123,7 +148,7 @@ public partial class CreativeLearningLabWindow : Window
 
     private static string BuildBundleGateText(LearningLabBundleGateResult bundle)
     {
-        return $"Accepted: {bundle.AcceptedCount} | Rejected: {bundle.RejectedCount} | Waiting: {bundle.WaitingCount}\n" +
+        return $"Accepted: {bundle.AcceptedCount} | Rejected: {bundle.RejectedCount} | Blocked: {bundle.BlockedCount} | Waiting: {bundle.WaitingCount}\n" +
                string.Join("\n", bundle.Reasons.Select(reason => "- " + reason));
     }
 

@@ -43,7 +43,7 @@
                            Margin="0,4,0,0"
                            FontSize="13"
                            Foreground="#B9D7D2"
-                           Text="Read-only review dashboard. Nothing is labeled, exported, trained, or mutated." />
+                           Text="Reviewed examples are saved locally. Nothing trains automatically." />
             </StackPanel>
             <Button DockPanel.Dock="Right"
                     Width="110"
@@ -145,6 +145,22 @@
                                    Foreground="#A7C5C4"
                                    TextWrapping="Wrap"
                                    Text="Waiting for Phase 25 labels. Bundles require provenance, human decisions, intended use, and rollback/deprecation notes." />
+                        <TextBox x:Name="BundleIntendedUseTextBox"
+                                 Margin="0,10,0,8"
+                                 Height="52"
+                                 TextWrapping="Wrap"
+                                 AcceptsReturn="True"
+                                 automation:AutomationProperties.AutomationId="LearningLabBundleIntendedUseTextBox"
+                                 Text="reviewed local examples for future visual QA planning" />
+                        <Button x:Name="ExportReviewedBundleButton"
+                                Height="32"
+                                Background="#2D4A52"
+                                BorderBrush="#6EA0A0"
+                                Foreground="#F3F7F4"
+                                FontWeight="SemiBold"
+                                automation:AutomationProperties.AutomationId="LearningLabExportReviewedBundleButton"
+                                Content="Export Reviewed Bundle"
+                                Click="ExportReviewedBundleButton_OnClick" />
                     </StackPanel>
                 </Border>
 

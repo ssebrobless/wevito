@@ -172,6 +172,11 @@ public sealed class LearningLabLabelStore
         {
             throw new ArgumentOutOfRangeException(nameof(input), $"Unsupported label: {input.Label}");
         }
+
+        if (string.IsNullOrWhiteSpace(input.Reviewer))
+        {
+            throw new ArgumentException("Reviewer is required.", nameof(input));
+        }
     }
 
     private static LearningLabLabelRecord ReadRecord(SqliteDataReader reader)
