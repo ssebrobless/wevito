@@ -29,6 +29,11 @@ public sealed record PetMemoryStoreStatus(
     string Message,
     int EmbeddingDimensions = HashingTextEmbeddingService.DefaultDimensions);
 
+public sealed record RerankHeadApplicationResult(
+    bool Succeeded,
+    IReadOnlyList<PetMemorySearchResult> Results,
+    string Message);
+
 public interface ITextEmbeddingService
 {
     int Dimensions { get; }
@@ -224,6 +229,16 @@ public sealed class PetMemoryStore
         }
 
         return SearchInProcess(connection, queryEmbedding, kind, topK);
+    }
+
+    public RerankHeadApplicationResult ApplyRerankHead(Guid petId, string query, RerankHead rerankHead, string requestedToolFamily, int topK = 3)
+    {
+        var results = Search(petId, query, kind: "", topK: Math.Max(1, topK) * 2)
+            .OrderByDescending(result => rerankHead.Score(result, requestedToolFamily))
+            .ThenBy(result => result.Example.Id)
+            .Take(Math.Max(1, topK))
+            .ToList();
+        return new RerankHeadApplicationResult(true, results, $"Applied rerank head {rerankHead.HeadId} in-process.");
     }
 
     public string ResolveDatabasePath(Guid petId)

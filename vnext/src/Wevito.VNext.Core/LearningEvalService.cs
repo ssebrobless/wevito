@@ -100,6 +100,22 @@ public sealed class LearningEvalService
                 : "Learning eval completed and baseline was promoted.");
     }
 
+    public static LearningEvalComparison EvaluateAgainst(
+        LearningEvalMetrics candidate,
+        LearningEvalMetrics baseline,
+        double regressionTolerance = 0.02)
+    {
+        var regression = IsRegression(candidate, baseline, regressionTolerance);
+        return new LearningEvalComparison(
+            candidate,
+            baseline,
+            regressionTolerance,
+            regression,
+            regression
+                ? "Candidate metrics regressed beyond tolerance."
+                : "Candidate metrics are within tolerance.");
+    }
+
     private LearningEvalMetrics ComputeMetrics(IReadOnlyList<LearningEvalExample> examples)
     {
         var exampleEmbeddings = examples
