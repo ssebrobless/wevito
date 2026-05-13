@@ -9,6 +9,7 @@ public sealed class PetSimulationEngine
     private const double AgingThresholdMinutes = 480;
     private const double DeathToGhostTransitionSeconds = 2.5;
     private const double MemorialLifetimeDays = 1;
+    private const double CareDeltaSecondsToMinutes = 1.0 / 60.0;
     private static readonly IReadOnlyDictionary<FetchStage, double> FetchStageDurations = new Dictionary<FetchStage, double>
     {
         [FetchStage.MoveToBall] = 2.4,
@@ -39,7 +40,11 @@ public sealed class PetSimulationEngine
 
     public IReadOnlyList<PetActor> CreateDefaultPets(GameContent content)
     {
-        var selected = content.Species.Take(3).ToArray();
+        var speciesPool = content.Species.ToArray();
+        var selected = speciesPool
+            .OrderBy(species => StarterRosterScore(species.Id))
+            .Take(3)
+            .ToArray();
         var pets = new List<PetActor>();
         var preferredStarterColors = new[] { "violet", "orange", "yellow" };
         var preferredStarterAges = new[] { PetAgeStage.Adult, PetAgeStage.Teen, PetAgeStage.Adult };
@@ -233,7 +238,9 @@ public sealed class PetSimulationEngine
             var normalized = NormalizePet(pet);
             if (normalized.IsDead)
             {
-                updated.Add(RefreshPresentationState(UpdateDeadLifecycle(normalized, now), mode, now));
+                var dead = RefreshDerivedValues(UpdateDeadLifecycle(normalized, now));
+                var roamingGhost = MoveWithinRoamBand(dead, roamBandBounds, now, deltaSeconds);
+                updated.Add(RefreshPresentationState(roamingGhost, mode, now));
                 continue;
             }
 
@@ -245,7 +252,9 @@ public sealed class PetSimulationEngine
             var lifecycle = ApplyDeathIfNeeded(aged, now);
             if (lifecycle.IsDead)
             {
-                updated.Add(RefreshPresentationState(RefreshDerivedValues(lifecycle), mode, now));
+                var dead = RefreshDerivedValues(lifecycle);
+                var roamingGhost = MoveWithinRoamBand(dead, roamBandBounds, now, deltaSeconds);
+                updated.Add(RefreshPresentationState(roamingGhost, mode, now));
                 continue;
             }
 
@@ -361,7 +370,8 @@ public sealed class PetSimulationEngine
 
     public IReadOnlyDictionary<string, double> BuildAverageNeedSnapshot(IReadOnlyList<PetActor> pets)
     {
-        if (pets.Count == 0)
+        var livingPets = pets.Where(pet => !pet.IsDead).ToList();
+        if (livingPets.Count == 0)
         {
             return new Dictionary<string, double>
             {
@@ -378,20 +388,21 @@ public sealed class PetSimulationEngine
 
         return new Dictionary<string, double>
         {
-            ["hunger"] = pets.Average(pet => pet.Hunger),
-            ["thirst"] = pets.Average(pet => pet.Thirst),
-            ["energy"] = pets.Average(pet => pet.Energy),
-            ["cleanliness"] = pets.Average(pet => pet.Cleanliness),
-            ["affection"] = pets.Average(pet => pet.Affection),
-            ["comfort"] = pets.Average(pet => pet.Comfort),
-            ["health"] = pets.Average(pet => pet.Health),
-            ["fitness"] = pets.Average(pet => pet.Fitness)
+            ["hunger"] = livingPets.Average(pet => pet.Hunger),
+            ["thirst"] = livingPets.Average(pet => pet.Thirst),
+            ["energy"] = livingPets.Average(pet => pet.Energy),
+            ["cleanliness"] = livingPets.Average(pet => pet.Cleanliness),
+            ["affection"] = livingPets.Average(pet => pet.Affection),
+            ["comfort"] = livingPets.Average(pet => pet.Comfort),
+            ["health"] = livingPets.Average(pet => pet.Health),
+            ["fitness"] = livingPets.Average(pet => pet.Fitness)
         };
     }
 
     public IReadOnlyList<PetStatusType> BuildAggregateStatuses(IReadOnlyList<PetActor> pets)
     {
         return pets
+            .Where(pet => !pet.IsDead)
             .SelectMany(pet => pet.ActiveStatuses ?? [])
             .Distinct()
             .OrderBy(status => status.ToString(), StringComparer.Ordinal)
@@ -504,6 +515,7 @@ public sealed class PetSimulationEngine
 
     private PetActor TickVitals(PetActor pet, CompanionMode mode, double deltaSeconds)
     {
+        var careDelta = deltaSeconds * CareDeltaSecondsToMinutes;
         var personality = pet.Personality ?? new PetPersonalityProfile();
         var elderFactor = pet.BiologicalAgeMinutes >= AgingThresholdMinutes ? 1.12 : 1.0;
         var passiveFactor = mode == CompanionMode.Passive ? 1.18 : 0.88;
@@ -517,51 +529,51 @@ public sealed class PetSimulationEngine
         var comfortDelta = comfortBaseDelta + Math.Max(-0.15, personality.CuddleNeed / 700.0);
         var fitnessDelta = mode == CompanionMode.Passive ? 0.45 : -0.18;
 
-        var hunger = Clamp(pet.Hunger - deltaSeconds * hungerDecay);
-        var thirst = Clamp(pet.Thirst - deltaSeconds * thirstDecay);
-        var energy = Clamp(pet.Energy - deltaSeconds * energyDecay);
-        var cleanliness = Clamp(pet.Cleanliness - deltaSeconds * cleanlinessDecay);
-        var affection = Clamp(pet.Affection - deltaSeconds * affectionDecay);
-        var comfort = Clamp(pet.Comfort + deltaSeconds * comfortDelta);
-        var fitness = Clamp(pet.Fitness + deltaSeconds * fitnessDelta);
+        var hunger = Clamp(pet.Hunger - careDelta * hungerDecay);
+        var thirst = Clamp(pet.Thirst - careDelta * thirstDecay);
+        var energy = Clamp(pet.Energy - careDelta * energyDecay);
+        var cleanliness = Clamp(pet.Cleanliness - careDelta * cleanlinessDecay);
+        var affection = Clamp(pet.Affection - careDelta * affectionDecay);
+        var comfort = Clamp(pet.Comfort + careDelta * comfortDelta);
+        var fitness = Clamp(pet.Fitness + careDelta * fitnessDelta);
 
         if (energy < 18 || HasCondition(pet, "injury") || HasCondition(pet, "jointPain"))
         {
-            fitness = Clamp(fitness - deltaSeconds * 0.55);
+            fitness = Clamp(fitness - careDelta * 0.55);
         }
 
         var healthDelta = 0.0;
         if (hunger < 22)
         {
-            healthDelta -= 1.2 * deltaSeconds;
+            healthDelta -= 1.2 * careDelta;
         }
 
         if (thirst < 20)
         {
-            healthDelta -= 1.6 * deltaSeconds;
+            healthDelta -= 1.6 * careDelta;
         }
 
         if (cleanliness < 24)
         {
-            healthDelta -= 0.9 * deltaSeconds;
+            healthDelta -= 0.9 * careDelta;
         }
 
         if (energy < 18)
         {
-            healthDelta -= 0.8 * deltaSeconds;
+            healthDelta -= 0.8 * careDelta;
         }
 
         if (fitness < 20)
         {
-            healthDelta -= 0.55 * deltaSeconds;
+            healthDelta -= 0.55 * careDelta;
         }
 
         if (comfort > 70 && hunger > 55 && thirst > 55)
         {
-            healthDelta += 0.35 * deltaSeconds;
+            healthDelta += 0.35 * careDelta;
         }
 
-        healthDelta -= CalculateConditionHealthPenalty(pet.ActiveConditions ?? []) * deltaSeconds;
+        healthDelta -= CalculateConditionHealthPenalty(pet.ActiveConditions ?? []) * careDelta;
 
         return pet with
         {
@@ -578,6 +590,7 @@ public sealed class PetSimulationEngine
 
     private PetActor UpdateHabitProfile(PetActor pet, CompanionMode mode, double deltaSeconds)
     {
+        var careDelta = deltaSeconds * CareDeltaSecondsToMinutes;
         var habits = pet.HabitProfile ?? new PetHabitProfile();
         var careAverage = (pet.Hunger + pet.Thirst + pet.Cleanliness + pet.Affection + pet.Comfort + pet.Energy + pet.Health + pet.Fitness) / 8.0;
         var stressTarget = Clamp(100 - careAverage + ((pet.ActiveConditions?.Count ?? 0) * 6));
@@ -586,20 +599,21 @@ public sealed class PetSimulationEngine
         {
             HabitProfile = habits with
             {
-                Nutrition = Approach(habits.Nutrition, pet.Hunger, 0.18 * deltaSeconds),
-                Hydration = Approach(habits.Hydration, pet.Thirst, 0.18 * deltaSeconds),
-                Exercise = Approach(habits.Exercise, pet.Fitness + (mode == CompanionMode.Passive ? 6 : 0), 0.16 * deltaSeconds),
-                Hygiene = Approach(habits.Hygiene, pet.Cleanliness, 0.16 * deltaSeconds),
-                Affection = Approach(habits.Affection, (pet.Affection + pet.Comfort) / 2.0, 0.16 * deltaSeconds),
-                Rest = Approach(habits.Rest, pet.Energy, 0.16 * deltaSeconds),
-                Medical = Approach(habits.Medical, Math.Min(100, pet.Health + ((pet.ActiveConditions?.Count ?? 0) == 0 ? 10 : -8)), 0.12 * deltaSeconds),
-                Stress = Approach(habits.Stress, stressTarget, 0.2 * deltaSeconds)
+                Nutrition = Approach(habits.Nutrition, pet.Hunger, 0.18 * careDelta),
+                Hydration = Approach(habits.Hydration, pet.Thirst, 0.18 * careDelta),
+                Exercise = Approach(habits.Exercise, pet.Fitness + (mode == CompanionMode.Passive ? 6 : 0), 0.16 * careDelta),
+                Hygiene = Approach(habits.Hygiene, pet.Cleanliness, 0.16 * careDelta),
+                Affection = Approach(habits.Affection, (pet.Affection + pet.Comfort) / 2.0, 0.16 * careDelta),
+                Rest = Approach(habits.Rest, pet.Energy, 0.16 * careDelta),
+                Medical = Approach(habits.Medical, Math.Min(100, pet.Health + ((pet.ActiveConditions?.Count ?? 0) == 0 ? 10 : -8)), 0.12 * careDelta),
+                Stress = Approach(habits.Stress, stressTarget, 0.2 * careDelta)
             }
         };
     }
 
     private PetActor UpdateConditions(PetActor pet, double deltaSeconds)
     {
+        var careDelta = deltaSeconds * CareDeltaSecondsToMinutes;
         var conditions = (pet.ActiveConditions ?? [])
             .ToDictionary(condition => condition.Id, condition => condition, StringComparer.OrdinalIgnoreCase);
         var habits = pet.HabitProfile ?? new PetHabitProfile();
@@ -611,14 +625,14 @@ public sealed class PetSimulationEngine
         UpdateCondition(ref conditions, "anxiety", GetLifestyleSeverity((pet.Comfort < 28 || habits.Stress > 56), pet.Comfort < 18 || habits.Stress > 68, pet.Comfort < 10 || habits.Stress > 82), false);
         UpdateCondition(ref conditions, "jointPain", GetLifestyleSeverity(pet.Fitness < 28 || pet.BiologicalAgeMinutes >= AgingThresholdMinutes, pet.Fitness < 18 || (pet.BiologicalAgeMinutes >= AgingThresholdMinutes && lifestylePenalty > 18), pet.Fitness < 10), false);
         UpdateCondition(ref conditions, "exhaustion", GetLifestyleSeverity(pet.Energy < 16, pet.Energy < 10, pet.Energy < 6), false);
-        UpdateCondition(ref conditions, "injury", ReduceByTime(conditions, "injury", pet.Energy > 64 && pet.Health > 68 ? deltaSeconds * 0.3 : 0), false);
+        UpdateCondition(ref conditions, "injury", ReduceByTime(conditions, "injury", pet.Energy > 64 && pet.Health > 68 ? careDelta * 0.3 : 0), false);
 
         foreach (var innateCondition in conditions.Values.Where(condition => condition.IsInnate).ToList())
         {
             var targetSeverity = GetInnateConditionTargetSeverity(pet, innateCondition.Id);
             conditions[innateCondition.Id] = innateCondition with
             {
-                Severity = ApproachSeverity(innateCondition.Severity, targetSeverity, deltaSeconds * 0.4)
+                Severity = ApproachSeverity(innateCondition.Severity, targetSeverity, careDelta * 0.4)
             };
         }
 
@@ -627,6 +641,7 @@ public sealed class PetSimulationEngine
 
     private PetActor UpdatePersonality(PetActor pet, double deltaSeconds)
     {
+        var careDelta = deltaSeconds * CareDeltaSecondsToMinutes;
         var habits = pet.HabitProfile ?? new PetHabitProfile();
         var personality = pet.Personality ?? new PetPersonalityProfile();
         var conditionLoad = (pet.ActiveConditions ?? []).Sum(condition => condition.Severity);
@@ -635,14 +650,14 @@ public sealed class PetSimulationEngine
         {
             Personality = personality with
             {
-                FoodLove = DriftTrait(personality.FoodLove, (55 - habits.Nutrition) * 0.8 + habits.FeedCount * 0.12, deltaSeconds),
-                CuddleNeed = DriftTrait(personality.CuddleNeed, (60 - habits.Affection) * 0.9 + (50 - habits.Rest) * 0.2, deltaSeconds),
-                CleanlinessPreference = DriftTrait(personality.CleanlinessPreference, (habits.Hygiene - 50) * 0.75, deltaSeconds),
-                ActivityLevel = DriftTrait(personality.ActivityLevel, (habits.Exercise - 50) * 0.9, deltaSeconds),
-                Cheerfulness = DriftTrait(personality.Cheerfulness, (habits.Affection + habits.Rest + habits.Nutrition + habits.Hydration) / 2.2 - habits.Stress - conditionLoad * 4, deltaSeconds),
-                SocialNeed = DriftTrait(personality.SocialNeed, (58 - habits.Affection) * 0.8 + (personality.CuddleNeed / 2.5), deltaSeconds),
-                Playfulness = DriftTrait(personality.Playfulness, (habits.Exercise + habits.Affection - 110) * 0.85, deltaSeconds),
-                Stubbornness = DriftTrait(personality.Stubbornness, habits.Stress - habits.Medical + conditionLoad * 3, deltaSeconds)
+                FoodLove = DriftTrait(personality.FoodLove, (55 - habits.Nutrition) * 0.8 + habits.FeedCount * 0.12, careDelta),
+                CuddleNeed = DriftTrait(personality.CuddleNeed, (60 - habits.Affection) * 0.9 + (50 - habits.Rest) * 0.2, careDelta),
+                CleanlinessPreference = DriftTrait(personality.CleanlinessPreference, (habits.Hygiene - 50) * 0.75, careDelta),
+                ActivityLevel = DriftTrait(personality.ActivityLevel, (habits.Exercise - 50) * 0.9, careDelta),
+                Cheerfulness = DriftTrait(personality.Cheerfulness, (habits.Affection + habits.Rest + habits.Nutrition + habits.Hydration) / 2.2 - habits.Stress - conditionLoad * 4, careDelta),
+                SocialNeed = DriftTrait(personality.SocialNeed, (58 - habits.Affection) * 0.8 + (personality.CuddleNeed / 2.5), careDelta),
+                Playfulness = DriftTrait(personality.Playfulness, (habits.Exercise + habits.Affection - 110) * 0.85, careDelta),
+                Stubbornness = DriftTrait(personality.Stubbornness, habits.Stress - habits.Medical + conditionLoad * 3, careDelta)
             }
         };
     }
@@ -661,10 +676,8 @@ public sealed class PetSimulationEngine
         {
             return pet with
             {
-                Speed = 0,
-                TargetX = pet.CurrentX,
-                TargetY = pet.CurrentY,
-                BehaviorState = PetBehaviorState.Home,
+                Speed = Math.Max(24, pet.BaseSpeed * 0.42),
+                BehaviorState = PetBehaviorState.Roaming,
                 ActiveFetchSequence = null
             };
         }
@@ -696,12 +709,12 @@ public sealed class PetSimulationEngine
             Health = 0,
             Hunger = Math.Max(0, pet.Hunger),
             Thirst = Math.Max(0, pet.Thirst),
-            Speed = 0,
+            Speed = Math.Max(24, pet.BaseSpeed * 0.42),
             TargetX = memorialX,
             TargetY = memorialY,
             CurrentX = memorialX,
             CurrentY = memorialY,
-            BehaviorState = PetBehaviorState.Home,
+            BehaviorState = PetBehaviorState.Roaming,
             ActiveFetchSequence = null,
             CurrentActionVisualIntent = null,
             OverrideAnimationState = PetAnimationState.Sad,
@@ -728,9 +741,8 @@ public sealed class PetSimulationEngine
             DiedAtUtc = diedAt,
             MemorialObjectId = memorialExpired ? string.Empty : pet.MemorialObjectId,
             MemorialExpiresAtUtc = memorialExpired ? null : pet.MemorialExpiresAtUtc,
-            Speed = 0,
-            TargetX = pet.CurrentX,
-            TargetY = pet.CurrentY,
+            Speed = Math.Max(24, pet.BaseSpeed * 0.42),
+            BehaviorState = PetBehaviorState.Roaming,
             ActiveFetchSequence = null,
             CurrentActionVisualIntent = null
         };
@@ -1080,7 +1092,7 @@ public sealed class PetSimulationEngine
             petWithTarget = pet with
             {
                 TargetX = nextX,
-                TargetY = roamBandBounds.Bottom - 28,
+                TargetY = roamBandBounds.Bottom - 10,
                 BehaviorState = PetBehaviorState.Roaming,
                 NextDecisionAtUtc = now.AddSeconds(_random.NextDouble() * 1.5 + 0.7)
             };
@@ -1168,6 +1180,13 @@ public sealed class PetSimulationEngine
         var dx = pet.TargetX - pet.CurrentX;
         var dy = pet.TargetY - pet.CurrentY;
         return Math.Sqrt(dx * dx + dy * dy) > 2.5;
+    }
+
+    private static int StarterRosterScore(string speciesId)
+    {
+        var daySeed = DateTimeOffset.UtcNow.UtcDateTime.Date.DayOfYear;
+        var hash = StringComparer.OrdinalIgnoreCase.GetHashCode(speciesId);
+        return HashCode.Combine(daySeed, hash);
     }
 
     private static IReadOnlyList<PetStatusType> BuildStatuses(PetActor pet)

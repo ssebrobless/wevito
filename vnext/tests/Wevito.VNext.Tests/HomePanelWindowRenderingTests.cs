@@ -8,13 +8,26 @@ public sealed class HomePanelWindowRenderingTests
     [Fact]
     public void ShouldRenderPetInHomePanel_UsesSingleOwnerOutsidePassiveMode()
     {
-        Assert.True(HomePanelWindow.ShouldRenderPetInHomePanel(CompanionMode.Focused));
-        Assert.True(HomePanelWindow.ShouldRenderPetInHomePanel(CompanionMode.Pinned));
+        var pet = new PetActor(Guid.NewGuid(), "Fox 1", "fox", ActiveStatuses: []);
+
+        Assert.True(HomePanelWindow.ShouldRenderPetInHomePanel(CompanionMode.Focused, pet));
+        Assert.True(HomePanelWindow.ShouldRenderPetInHomePanel(CompanionMode.Pinned, pet));
     }
 
     [Fact]
     public void ShouldRenderPetInHomePanel_DisablesHomeCopyInPassiveMode()
     {
-        Assert.False(HomePanelWindow.ShouldRenderPetInHomePanel(CompanionMode.Passive));
+        var pet = new PetActor(Guid.NewGuid(), "Fox 1", "fox", ActiveStatuses: []);
+
+        Assert.False(HomePanelWindow.ShouldRenderPetInHomePanel(CompanionMode.Passive, pet));
+    }
+
+    [Fact]
+    public void ShouldRenderPetInHomePanel_ExcludesDeadPetsFromHabitat()
+    {
+        var ghost = new PetActor(Guid.NewGuid(), "Fox 1", "fox", IsDead: true, IsGhost: true, ActiveStatuses: []);
+
+        Assert.False(HomePanelWindow.ShouldRenderPetInHomePanel(CompanionMode.Focused, ghost));
+        Assert.False(HomePanelWindow.ShouldRenderPetInHomePanel(CompanionMode.Pinned, ghost));
     }
 }

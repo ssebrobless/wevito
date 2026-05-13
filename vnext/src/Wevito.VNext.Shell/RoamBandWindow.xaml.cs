@@ -1,8 +1,10 @@
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
 using Wevito.VNext.Contracts;
 using Wevito.VNext.Core;
 
@@ -54,12 +56,10 @@ public partial class RoamBandWindow : Window
             killSwitchActive,
             now,
             statusSnapshot?.LastAtUtc);
-        if (state.Mode != CompanionMode.Passive)
-        {
-            return;
-        }
+        TryGetCursorPoint(out var cursorPoint);
+        GhostNamePopup.Visibility = Visibility.Collapsed;
 
-        foreach (var pet in state.ActivePets)
+        foreach (var pet in state.ActivePets.Where(pet => ShouldRenderPetInRoamBand(state.Mode, pet)))
         {
             var source = assetService.GetPetFrame(pet, now);
             if (source is null)
@@ -81,6 +81,7 @@ public partial class RoamBandWindow : Window
                 SnapsToDevicePixels = true,
                 UseLayoutRounding = true
             };
+            image.Opacity = pet.IsDead ? 0.74 : 1.0;
             RenderOptions.SetBitmapScalingMode(image, BitmapScalingMode.NearestNeighbor);
             RenderOptions.SetEdgeMode(image, EdgeMode.Aliased);
             if (pet.FacingDirection == PetFacingDirection.Left)
@@ -93,7 +94,37 @@ public partial class RoamBandWindow : Window
             Canvas.SetLeft(image, localX);
             Canvas.SetTop(image, localY);
             RoamCanvas.Children.Add(image);
+
+            if (pet.IsDead)
+            {
+                var ghostWash = new Rectangle
+                {
+                    Width = width,
+                    Height = height,
+                    Fill = Brushes.White,
+                    Opacity = 0.48,
+                    IsHitTestVisible = false
+                };
+                Canvas.SetLeft(ghostWash, localX);
+                Canvas.SetTop(ghostWash, localY);
+                RoamCanvas.Children.Add(ghostWash);
+
+                if (state.Mode == CompanionMode.Focused &&
+                    cursorPoint is { } point &&
+                    point.X >= localX &&
+                    point.X <= localX + width &&
+                    point.Y >= localY &&
+                    point.Y <= localY + height)
+                {
+                    ShowGhostName(pet.Name, point);
+                }
+            }
         }
+    }
+
+    internal static bool ShouldRenderPetInRoamBand(CompanionMode mode, PetActor pet)
+    {
+        return pet.IsDead || mode == CompanionMode.Passive;
     }
 
     internal static double ResolvePetTopInBand(double petScreenY, double windowTop, double height, double actualHeight)
@@ -105,6 +136,27 @@ public partial class RoamBandWindow : Window
         }
 
         return Math.Clamp(localY, 0, Math.Max(0, actualHeight - height - 8));
+    }
+
+    private void ShowGhostName(string petName, Point cursorPoint)
+    {
+        GhostNameText.Text = petName;
+        GhostNamePopup.Visibility = Visibility.Visible;
+        GhostNamePopup.RenderTransform = new TranslateTransform(
+            Math.Clamp(cursorPoint.X + 10, 4, Math.Max(4, ActualWidth - 120)),
+            Math.Clamp(cursorPoint.Y - 28, 4, Math.Max(4, ActualHeight - 28)));
+    }
+
+    private bool TryGetCursorPoint(out Point point)
+    {
+        point = default;
+        if (!GetCursorPos(out var cursor))
+        {
+            return false;
+        }
+
+        point = PointFromScreen(new Point(cursor.X, cursor.Y));
+        return point.X >= 0 && point.X <= ActualWidth && point.Y >= 0 && point.Y <= ActualHeight;
     }
 
     private static string FormatStatusText(string statusText, EvidenceCollectionStatus? evidenceStatus)
@@ -152,5 +204,15 @@ public partial class RoamBandWindow : Window
         }
 
         base.OnClosed(e);
+    }
+
+    [DllImport("user32.dll")]
+    private static extern bool GetCursorPos(out NativePoint lpPoint);
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct NativePoint
+    {
+        public int X;
+        public int Y;
     }
 }

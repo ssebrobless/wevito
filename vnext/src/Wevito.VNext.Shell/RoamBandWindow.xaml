@@ -13,6 +13,20 @@
         ShowActivated="False">
     <Grid IsHitTestVisible="False">
         <Canvas x:Name="RoamCanvas" />
+        <Border x:Name="GhostNamePopup"
+                Visibility="Collapsed"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Background="#E61F242A"
+                BorderBrush="#CCFFFFFF"
+                BorderThickness="1"
+                CornerRadius="10"
+                Padding="8,3">
+            <TextBlock x:Name="GhostNameText"
+                       Foreground="#FFFFFFFF"
+                       FontSize="11"
+                       FontWeight="SemiBold" />
+        </Border>
         <local:OverlayStatusBannerView x:Name="StatusBanner"
                                        xmlns:local="clr-namespace:Wevito.VNext.Shell"
                                        Width="760"

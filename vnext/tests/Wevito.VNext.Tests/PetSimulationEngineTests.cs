@@ -243,6 +243,34 @@ public sealed class PetSimulationEngineTests
     }
 
     [Fact]
+    public void Tick_HealthyPetsDoNotDieDuringNormalBackgroundMinutes()
+    {
+        var now = DateTimeOffset.Parse("2026-05-13T22:00:00Z");
+        var pet = new PetActor(
+            Guid.NewGuid(),
+            "Fox 1",
+            "fox",
+            Hunger: 84,
+            Thirst: 82,
+            Energy: 76,
+            Cleanliness: 78,
+            Health: 88,
+            ActiveStatuses: []);
+
+        var updated = _engine.Tick(
+            [pet],
+            CompanionMode.Passive,
+            new RectInt(0, 962, 1920, 118),
+            now,
+            600).Single();
+
+        Assert.False(updated.IsDead);
+        Assert.True(updated.Hunger > 50);
+        Assert.True(updated.Thirst > 50);
+        Assert.True(updated.Health > 70);
+    }
+
+    [Fact]
     public void Tick_PassivePetMovingTowardTargetUsesWalkAnimation()
     {
         var now = DateTimeOffset.Parse("2026-05-13T22:00:00Z");
@@ -295,6 +323,8 @@ public sealed class PetSimulationEngineTests
         Assert.Equal(PetAnimationState.Idle, updated.CurrentAnimationState);
         Assert.Equal(PetStatusType.Ghost, Assert.Single(updated.ActiveStatuses!));
         Assert.Equal("memorial_object", updated.MemorialObjectId);
+        Assert.Equal(PetBehaviorState.Roaming, updated.BehaviorState);
+        Assert.Equal(1030, updated.TargetY);
     }
 
     [Fact]

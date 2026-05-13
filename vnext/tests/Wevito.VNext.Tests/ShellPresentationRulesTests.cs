@@ -41,6 +41,17 @@ public sealed class ShellPresentationRulesTests
         Assert.Equal(74, RoamBandWindow.ResolvePetTopInBand(petScreenY: 1400, windowTop: 900, height: 36, actualHeight: 118));
     }
 
+    [Fact]
+    public void ShouldRenderPetInRoamBand_KeepsGhostsVisibleOutsideFocusHabitat()
+    {
+        var living = new PetActor(Guid.NewGuid(), "Fox 1", "fox", ActiveStatuses: []);
+        var ghost = living with { IsDead = true, IsGhost = true };
+
+        Assert.False(RoamBandWindow.ShouldRenderPetInRoamBand(CompanionMode.Focused, living));
+        Assert.True(RoamBandWindow.ShouldRenderPetInRoamBand(CompanionMode.Focused, ghost));
+        Assert.True(RoamBandWindow.ShouldRenderPetInRoamBand(CompanionMode.Passive, living));
+    }
+
     private static DesktopContext BuildDesktopContext(long hwnd, bool isShellSurface)
     {
         return new DesktopContext(

@@ -148,11 +148,12 @@ public partial class ToolPopupWindow : Window
                 .Select(item => ActionOptionRowItem.From(actionDefinition.Id, item, ResolveActionOptionPreview(assetService, actionDefinition.Id, item)))
                 .ToList();
             ActionGrid.ItemsSource = _actionRows;
+            var targetSummary = FormatLivingPetTargets(state.ActivePets);
             ActionSummaryText.Text = _actionRows.Count switch
             {
-                0 => $"No specific {actionDefinition.DisplayName.ToLowerInvariant()} options are ready right now.",
-                1 => $"Use the prepared {actionDefinition.DisplayName.ToLowerInvariant()} option below.",
-                _ => $"Choose how to {actionDefinition.DisplayName.ToLowerInvariant()} from {_actionRows.Count} prepared options."
+                0 => $"No specific {actionDefinition.DisplayName.ToLowerInvariant()} options are ready right now. Target: {targetSummary}.",
+                1 => $"Use the prepared {actionDefinition.DisplayName.ToLowerInvariant()} option below. Target: {targetSummary}.",
+                _ => $"Choose how to {actionDefinition.DisplayName.ToLowerInvariant()} from {_actionRows.Count} prepared options. Target: {targetSummary}."
             };
         }
         else if (showingPetCommand)
@@ -1334,6 +1335,18 @@ public partial class ToolPopupWindow : Window
         };
 
         return preview ?? assetService.GetItem(item.CategoryFolder, item.AssetId);
+    }
+
+    private static string FormatLivingPetTargets(IReadOnlyList<PetActor> pets)
+    {
+        var names = pets
+            .Where(pet => !pet.IsDead)
+            .Select(pet => pet.Name)
+            .Take(3)
+            .ToList();
+        return names.Count == 0
+            ? "no living pets"
+            : string.Join(", ", names);
     }
 
     private async Task<bool> TryInvokeButtonAsync(Button button, Point localPoint, Func<Task>? action)

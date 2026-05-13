@@ -102,7 +102,8 @@ internal static class HabitatLoadoutResolver
 
     public static HabitatLoadout Resolve(CompanionState state, GameContent content)
     {
-        if (state.ActivePets.Count == 0)
+        var livingPets = state.ActivePets.Where(pet => !pet.IsDead).ToList();
+        if (livingPets.Count == 0)
         {
             return new HabitatLoadout(
                 [],
@@ -111,9 +112,9 @@ internal static class HabitatLoadoutResolver
                 []);
         }
 
-        var focusPet = state.ActivePets[0];
+        var focusPet = livingPets[0];
         var species = content.Species.First(species => string.Equals(species.Id, focusPet.SpeciesId, StringComparison.OrdinalIgnoreCase));
-        var needSnapshot = BuildNeedSnapshot(state.ActivePets);
+        var needSnapshot = BuildNeedSnapshot(livingPets);
         var actionMap = new Dictionary<string, HabitatDisplayItem>(StringComparer.OrdinalIgnoreCase);
         var ordered = new List<HabitatDisplayItem>();
         var added = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
