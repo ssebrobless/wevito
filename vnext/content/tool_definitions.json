@@ -90,7 +90,32 @@
     "storage": "%LOCALAPPDATA%/Wevito/memory/<pet-id>.db",
     "schemaVersion": "1",
     "vectorExtension": "sqlite-vec",
-    "fallbackWhenUnavailable": "disable-memory-routing"
+    "embeddingProviderDefault": "hashing-fallback",
+    "embeddingDimensionsWhenOnnxActive": 384,
+    "embeddingDimensionsWhenHashingFallback": 16,
+    "localModelFolder": "vnext/content/local-models/embeddings/bge-micro-v2",
+    "fallbackWhenUnavailable": "hashing-embedding"
+  },
+  {
+    "id": "learning_eval",
+    "displayName": "Learning Eval",
+    "capacity": 0,
+    "defaultState": "local-only",
+    "networkDefault": "disabled",
+    "hostedAiDefault": "disabled",
+    "metrics": [
+      "recall@1",
+      "recall@3",
+      "mrr",
+      "latency_ms_p50",
+      "latency_ms_p95"
+    ],
+    "regressionTolerance": 0.02,
+    "outputs": [
+      "eval-report",
+      "run-summary",
+      "eval-baseline"
+    ]
   },
   {
     "id": "learning_promotion",
