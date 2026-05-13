@@ -644,6 +644,14 @@
                                       Foreground="#FFF0F4F5"
                                       Checked="RuntimeBackgroundWorkAllowedCheckBox_OnChanged"
                                       Unchecked="RuntimeBackgroundWorkAllowedCheckBox_OnChanged" />
+                            <CheckBox x:Name="SchedulerEnabledCheckBox"
+                                      Margin="0,8,0,0"
+                                      Style="{StaticResource PopupCheckBoxStyle}"
+                                      automation:AutomationProperties.AutomationId="SchedulerEnabledCheckBox"
+                                      Content="Allow Wevito to propose background tasks (preview only)"
+                                      Foreground="#FFF0F4F5"
+                                      Checked="SchedulerEnabledCheckBox_OnChanged"
+                                      Unchecked="SchedulerEnabledCheckBox_OnChanged" />
                             <CheckBox x:Name="RuntimeNoFocusStealCheckBox"
                                       Margin="0,8,0,0"
                                       Style="{StaticResource PopupCheckBoxStyle}"

@@ -32,6 +32,8 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private readonly PetTaskCardQueueService _petTaskCardQueueService = new();
     private readonly PetTaskAdapterPreviewDispatcher _petTaskAdapterPreviewDispatcher = new();
     private readonly RuntimeSupervisorService _runtimeSupervisorService = new();
+    private readonly RuntimeBudgetMeter _runtimeBudgetMeter = new();
+    private readonly AutonomousTaskScheduler _autonomousTaskScheduler;
     private readonly TranslationExecutionAdapter _translationExecutionAdapter = new();
     private readonly AudioAssistExecutionAdapter _audioAssistExecutionAdapter = new();
     private readonly BuildProofExecutionAdapter _buildProofExecutionAdapter = new();
@@ -55,6 +57,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private CompanionState? _state;
     private DesktopContext? _desktopContext;
     private DateTimeOffset _lastTickAtUtc;
+    private DateTimeOffset _lastSchedulerPollAtUtc;
     private string _feedbackText = "";
     private CompanionMode? _lastLoggedMode;
     private string _lastPublishedRegionsKey = "";
@@ -63,6 +66,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     public ShellCoordinator(Application application)
     {
         _application = application;
+        _autonomousTaskScheduler = new AutonomousTaskScheduler(_runtimeSupervisorService, _runtimeBudgetMeter);
         _screenCaptureExecutionAdapter = new ScreenCaptureExecutionAdapter(new WindowsGraphicsCaptureBackend(() => _homeWindow));
         _tickTimer = new DispatcherTimer(DispatcherPriority.Render)
         {
@@ -264,6 +268,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         };
 
         _state = ApplyAmbientWorkCompanionState(_state, now);
+        TryPollAutonomousScheduler(now);
 
         var roamBandRect = _desktopContext?.WorkArea is { } workArea
             ? new RectInt(workArea.X, workArea.Bottom - (int)RoamBandHeight, workArea.Width, (int)RoamBandHeight)
@@ -275,6 +280,53 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         };
 
         Render();
+    }
+
+    private void TryPollAutonomousScheduler(DateTimeOffset now)
+    {
+        if (_state is null)
+        {
+            return;
+        }
+
+        if (_lastSchedulerPollAtUtc != default && now - _lastSchedulerPollAtUtc < TimeSpan.FromMinutes(5))
+        {
+            return;
+        }
+
+        _lastSchedulerPollAtUtc = now;
+        var supervisorStatus = _runtimeSupervisorService.Evaluate(_state.SettingsSnapshot, _desktopContext, isUserInitiatedToolOpen: false);
+        var triggers = AutonomousTaskScheduler.BuildShellTriggers(_state.TaskCards, _state.SettingsSnapshot, now);
+        var request = new AutonomousSchedulerRequest(
+            _state.SettingsSnapshot,
+            supervisorStatus,
+            _runtimeSupervisorService.ReadBudgetSnapshot(_state.SettingsSnapshot),
+            triggers,
+            _state.TaskCards ?? [],
+            Path.Combine(ResolveRepoRootOrBaseDirectory(), "vnext", "artifacts", "pet-tasks"),
+            now);
+        var result = _autonomousTaskScheduler.TryCreateProposal(request);
+        if (!result.Created || result.TaskCard is null)
+        {
+            return;
+        }
+
+        var taskCards = _petTaskCardQueueService.AppendDraft(_state.TaskCards, result.TaskCard);
+        _state = _state with { TaskCards = taskCards };
+        var helpers = BuildHelperProfiles(_state.ActivePets);
+        _petCommandBarState = new PetCommandBarState(
+            helpers,
+            result.TaskCard.Intent.RawText,
+            result.TaskCard.Intent,
+            result.TaskCard,
+            LastPolicyDecision: null,
+            StatusMessage: "Wevito proposed a background draft. No preview or execution has started.",
+            UpdatedAtUtc: now,
+            QueuedTaskCards: taskCards,
+            WellbeingSnapshots: _petWellbeingInterpreter.BuildSnapshots(_state.ActivePets));
+        SetFeedback("Scheduler proposed a draft task card. Preview it manually if useful.");
+        TraceLog.Write("scheduler", $"proposal card={result.TaskCard.Id} family={result.TaskCard.ToolFamily} artifact={result.SummaryPath}");
+        _ = PersistAsync();
     }
 
     private void ApplyModeAndLayout()
@@ -1860,6 +1912,8 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         hydrated.TryAdd(RuntimeSupervisorService.MaxBackgroundTasksPerHourSetting, "4");
         hydrated.TryAdd(RuntimeSupervisorService.CpuBudgetPercentSetting, "20");
         hydrated.TryAdd(RuntimeSupervisorService.MemoryBudgetMbSetting, "512");
+        hydrated.TryAdd(AutonomousTaskScheduler.SchedulerEnabledSetting, bool.FalseString);
+        hydrated.TryAdd(AutonomousTaskScheduler.SchedulerPreviewDispatchApprovedSetting, bool.FalseString);
         return hydrated;
     }
 

@@ -161,6 +161,15 @@ public sealed class RuntimeSupervisorService
             : "Background helper work is disabled.";
     }
 
+    public RuntimeBudgetSnapshot ReadBudgetSnapshot(IReadOnlyDictionary<string, string>? settings)
+    {
+        var parsed = ReadSettings(settings);
+        return new RuntimeBudgetSnapshot(
+            parsed.MaxBackgroundTasksPerHour,
+            parsed.CpuBudgetPercent,
+            parsed.MemoryBudgetMb);
+    }
+
     private static bool ReadBool(IReadOnlyDictionary<string, string> settings, string key, bool defaultValue)
     {
         return settings.TryGetValue(key, out var raw) && bool.TryParse(raw, out var parsed)

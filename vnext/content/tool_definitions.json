@@ -61,6 +61,27 @@
     "normalOperationRequiresHostedAi": false
   },
   {
+    "id": "autonomous_scheduler",
+    "displayName": "Autonomous Scheduler Preview",
+    "capacity": 0,
+    "defaultState": "off",
+    "toolFamily": "scheduler",
+    "allowedTriggers": [
+      "stale_dashboard_report",
+      "pending_reviewed_bundle",
+      "failed_prior_proof_packet",
+      "recurring_user_request"
+    ],
+    "outputs": [
+      "scheduler-proposal",
+      "draft-task-card",
+      "run-summary"
+    ],
+    "mayDispatchAdapters": false,
+    "mayExecute": false,
+    "mayMutate": false
+  },
+  {
     "id": "pet_memory",
     "displayName": "Pet Memory",
     "capacity": 0,
