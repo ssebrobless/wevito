@@ -34,6 +34,11 @@ public sealed record RerankHeadApplicationResult(
     IReadOnlyList<PetMemorySearchResult> Results,
     string Message);
 
+public sealed record DocumentChunkSearchResult(
+    RetrievalChunk Chunk,
+    double Score,
+    string Method);
+
 public interface ITextEmbeddingService
 {
     int Dimensions { get; }
@@ -241,6 +246,104 @@ public sealed class PetMemoryStore
         return new RerankHeadApplicationResult(true, results, $"Applied rerank head {rerankHead.HeadId} in-process.");
     }
 
+    public IReadOnlyList<RetrievalChunk> AddDocumentChunks(
+        Guid petId,
+        string docId,
+        string path,
+        string sha256,
+        IReadOnlyList<RetrievalChunk> chunks,
+        DateTimeOffset? nowUtc = null)
+    {
+        var timestamp = nowUtc ?? DateTimeOffset.UtcNow;
+        var status = EnsureReady(petId, timestamp);
+        using var connection = OpenConnection(status.DatabasePath);
+        var vectorAvailable = TryLoadVector(connection);
+        using var transaction = connection.BeginTransaction();
+        ArchivePriorChunks(connection, transaction, path, sha256, timestamp);
+        foreach (var chunk in chunks)
+        {
+            using var command = connection.CreateCommand();
+            command.Transaction = transaction;
+            command.CommandText = """
+                INSERT OR REPLACE INTO pet_doc_chunks(
+                    chunk_id, doc_id, path, sha256, text, byte_start, byte_end, embedding, chunked_at_utc, archived_at_utc, is_tombstone)
+                VALUES(
+                    $chunk_id, $doc_id, $path, $sha256, $text, $byte_start, $byte_end, $embedding, $chunked_at_utc, '', 0);
+                """;
+            command.Parameters.AddWithValue("$chunk_id", chunk.ChunkId);
+            command.Parameters.AddWithValue("$doc_id", docId);
+            command.Parameters.AddWithValue("$path", path);
+            command.Parameters.AddWithValue("$sha256", sha256);
+            command.Parameters.AddWithValue("$text", chunk.Text);
+            command.Parameters.AddWithValue("$byte_start", chunk.ByteStart);
+            command.Parameters.AddWithValue("$byte_end", chunk.ByteEnd);
+            command.Parameters.Add("$embedding", SqliteType.Blob).Value = SerializeEmbedding(chunk.Embedding);
+            command.Parameters.AddWithValue("$chunked_at_utc", chunk.ChunkedAtUtc.ToString("O"));
+            command.ExecuteNonQuery();
+
+            using var deleteFts = connection.CreateCommand();
+            deleteFts.Transaction = transaction;
+            deleteFts.CommandText = "DELETE FROM pet_doc_chunks_fts WHERE chunk_id = $chunk_id;";
+            deleteFts.Parameters.AddWithValue("$chunk_id", chunk.ChunkId);
+            deleteFts.ExecuteNonQuery();
+
+            using var fts = connection.CreateCommand();
+            fts.Transaction = transaction;
+            fts.CommandText = "INSERT INTO pet_doc_chunks_fts(chunk_id, path, text) VALUES($chunk_id, $path, $text);";
+            fts.Parameters.AddWithValue("$chunk_id", chunk.ChunkId);
+            fts.Parameters.AddWithValue("$path", path);
+            fts.Parameters.AddWithValue("$text", chunk.Text);
+            fts.ExecuteNonQuery();
+
+            if (vectorAvailable)
+            {
+                using var vectorDelete = connection.CreateCommand();
+                vectorDelete.Transaction = transaction;
+                vectorDelete.CommandText = "DELETE FROM vec_doc_chunks WHERE chunk_id = $chunk_id;";
+                vectorDelete.Parameters.AddWithValue("$chunk_id", chunk.ChunkId);
+                vectorDelete.ExecuteNonQuery();
+
+                using var vector = connection.CreateCommand();
+                vector.Transaction = transaction;
+                vector.CommandText = "INSERT INTO vec_doc_chunks(chunk_id, embedding) VALUES($chunk_id, $embedding);";
+                vector.Parameters.AddWithValue("$chunk_id", chunk.ChunkId);
+                vector.Parameters.AddWithValue("$embedding", FormatVector(chunk.Embedding));
+                vector.ExecuteNonQuery();
+            }
+        }
+
+        transaction.Commit();
+        return chunks;
+    }
+
+    public IReadOnlyList<DocumentChunkSearchResult> SearchDocumentChunksDense(Guid petId, string query, int topK = 20)
+    {
+        var status = EnsureReady(petId);
+        var queryEmbedding = _embeddingService.Embed(query);
+        using var connection = OpenConnection(status.DatabasePath);
+        var vectorAvailable = TryLoadVector(connection);
+        if (vectorAvailable)
+        {
+            var vectorResults = TrySearchDocumentChunksWithSqliteVec(connection, queryEmbedding, topK);
+            if (vectorResults.Count > 0)
+            {
+                return vectorResults;
+            }
+        }
+
+        return SearchDocumentChunksDenseInProcess(connection, queryEmbedding, topK);
+    }
+
+    public IReadOnlyList<DocumentChunkSearchResult> SearchDocumentChunksKeyword(Guid petId, string query, int topK = 20)
+    {
+        var status = EnsureReady(petId);
+        using var connection = OpenConnection(status.DatabasePath);
+        var ftsResults = TrySearchDocumentChunksWithFts(connection, query, topK);
+        return ftsResults.Count > 0
+            ? ftsResults
+            : SearchDocumentChunksKeywordInProcess(connection, query, topK);
+    }
+
     public string ResolveDatabasePath(Guid petId)
     {
         return Path.GetFullPath(Path.Combine(_memoryRoot, $"{petId:N}.db"));
@@ -330,6 +433,22 @@ public sealed class PetMemoryStore
                 source_task_card_id TEXT NOT NULL DEFAULT ''
             );
             CREATE VIRTUAL TABLE IF NOT EXISTS examples_fts USING fts5(kind, content, label, content='examples', content_rowid='id');
+            CREATE TABLE IF NOT EXISTS pet_doc_chunks(
+                chunk_id TEXT PRIMARY KEY,
+                doc_id TEXT NOT NULL,
+                path TEXT NOT NULL,
+                sha256 TEXT NOT NULL,
+                text TEXT NOT NULL,
+                byte_start INTEGER NOT NULL,
+                byte_end INTEGER NOT NULL,
+                embedding BLOB NOT NULL,
+                chunked_at_utc TEXT NOT NULL,
+                archived_at_utc TEXT NOT NULL DEFAULT '',
+                is_tombstone INTEGER NOT NULL DEFAULT 0
+            );
+            CREATE INDEX IF NOT EXISTS ix_pet_doc_chunks_path ON pet_doc_chunks(path);
+            CREATE INDEX IF NOT EXISTS ix_pet_doc_chunks_doc_id ON pet_doc_chunks(doc_id);
+            CREATE VIRTUAL TABLE IF NOT EXISTS pet_doc_chunks_fts USING fts5(chunk_id UNINDEXED, path UNINDEXED, text);
             """;
         command.Parameters.AddWithValue("$embedding_dimensions", embeddingDimensions.ToString(CultureInfo.InvariantCulture));
         command.ExecuteNonQuery();
@@ -342,8 +461,178 @@ public sealed class PetMemoryStore
         }
 
         using var vectorCommand = connection.CreateCommand();
-        vectorCommand.CommandText = $"CREATE VIRTUAL TABLE IF NOT EXISTS vec_examples USING vec0(example_id INTEGER PRIMARY KEY, embedding float[{embeddingDimensions}]);";
+        vectorCommand.CommandText = $"""
+            CREATE VIRTUAL TABLE IF NOT EXISTS vec_examples USING vec0(example_id INTEGER PRIMARY KEY, embedding float[{embeddingDimensions}]);
+            CREATE VIRTUAL TABLE IF NOT EXISTS vec_doc_chunks USING vec0(chunk_id TEXT PRIMARY KEY, embedding float[{embeddingDimensions}]);
+            """;
         vectorCommand.ExecuteNonQuery();
+    }
+
+    private static void ArchivePriorChunks(SqliteConnection connection, SqliteTransaction transaction, string path, string sha256, DateTimeOffset timestamp)
+    {
+        using var command = connection.CreateCommand();
+        command.Transaction = transaction;
+        command.CommandText = """
+            UPDATE pet_doc_chunks
+            SET archived_at_utc = $archived_at_utc, is_tombstone = 1
+            WHERE path = $path AND sha256 <> $sha256 AND archived_at_utc = '';
+            """;
+        command.Parameters.AddWithValue("$path", path);
+        command.Parameters.AddWithValue("$sha256", sha256);
+        command.Parameters.AddWithValue("$archived_at_utc", timestamp.ToString("O"));
+        command.ExecuteNonQuery();
+    }
+
+    private static IReadOnlyList<DocumentChunkSearchResult> TrySearchDocumentChunksWithSqliteVec(SqliteConnection connection, float[] queryEmbedding, int topK)
+    {
+        try
+        {
+            using var command = connection.CreateCommand();
+            command.CommandText = """
+                SELECT c.chunk_id, c.doc_id, c.path, c.sha256, c.text, c.byte_start, c.byte_end, c.embedding, c.chunked_at_utc, v.distance
+                FROM vec_doc_chunks v
+                JOIN pet_doc_chunks c ON c.chunk_id = v.chunk_id
+                WHERE v.embedding MATCH $embedding AND k = $k AND c.archived_at_utc = '' AND c.is_tombstone = 0
+                ORDER BY v.distance
+                """;
+            command.Parameters.AddWithValue("$embedding", FormatVector(queryEmbedding));
+            command.Parameters.AddWithValue("$k", Math.Max(1, topK));
+            var results = new List<DocumentChunkSearchResult>();
+            using var reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                var distance = Convert.ToDouble(reader["distance"], CultureInfo.InvariantCulture);
+                results.Add(new DocumentChunkSearchResult(
+                    ReadChunk(reader),
+                    Score: 1d / (1d + distance),
+                    Method: "dense:sqlite-vec"));
+            }
+
+            return results;
+        }
+        catch
+        {
+            return [];
+        }
+    }
+
+    private static IReadOnlyList<DocumentChunkSearchResult> SearchDocumentChunksDenseInProcess(SqliteConnection connection, float[] queryEmbedding, int topK)
+    {
+        return ReadActiveChunks(connection)
+            .Select(chunk => new DocumentChunkSearchResult(chunk, Cosine(queryEmbedding, chunk.Embedding), "dense:in-process"))
+            .OrderByDescending(result => result.Score)
+            .ThenBy(result => result.Chunk.ChunkId, StringComparer.OrdinalIgnoreCase)
+            .Take(Math.Max(1, topK))
+            .ToList();
+    }
+
+    private static IReadOnlyList<DocumentChunkSearchResult> TrySearchDocumentChunksWithFts(SqliteConnection connection, string query, int topK)
+    {
+        var ftsQuery = BuildFtsQuery(query);
+        if (string.IsNullOrWhiteSpace(ftsQuery))
+        {
+            return [];
+        }
+
+        try
+        {
+            using var command = connection.CreateCommand();
+            command.CommandText = """
+                SELECT c.chunk_id, c.doc_id, c.path, c.sha256, c.text, c.byte_start, c.byte_end, c.embedding, c.chunked_at_utc, bm25(f) AS rank
+                FROM pet_doc_chunks_fts f
+                JOIN pet_doc_chunks c ON c.chunk_id = f.chunk_id
+                WHERE pet_doc_chunks_fts MATCH $query AND c.archived_at_utc = '' AND c.is_tombstone = 0
+                ORDER BY rank
+                LIMIT $k;
+                """;
+            command.Parameters.AddWithValue("$query", ftsQuery);
+            command.Parameters.AddWithValue("$k", Math.Max(1, topK));
+            var results = new List<DocumentChunkSearchResult>();
+            using var reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                var rank = Math.Abs(Convert.ToDouble(reader["rank"], CultureInfo.InvariantCulture));
+                results.Add(new DocumentChunkSearchResult(ReadChunk(reader), 1d / (1d + rank), "keyword:fts5"));
+            }
+
+            return results;
+        }
+        catch
+        {
+            return [];
+        }
+    }
+
+    private static IReadOnlyList<DocumentChunkSearchResult> SearchDocumentChunksKeywordInProcess(SqliteConnection connection, string query, int topK)
+    {
+        var queryTokens = Tokenize(query);
+        if (queryTokens.Count == 0)
+        {
+            return [];
+        }
+
+        return ReadActiveChunks(connection)
+            .Select(chunk =>
+            {
+                var tokens = Tokenize(chunk.Text);
+                var score = queryTokens.Count(token => tokens.Contains(token)) / (double)queryTokens.Count;
+                return new DocumentChunkSearchResult(chunk, score, "keyword:in-process");
+            })
+            .Where(result => result.Score > 0)
+            .OrderByDescending(result => result.Score)
+            .ThenBy(result => result.Chunk.ChunkId, StringComparer.OrdinalIgnoreCase)
+            .Take(Math.Max(1, topK))
+            .ToList();
+    }
+
+    private static IReadOnlyList<RetrievalChunk> ReadActiveChunks(SqliteConnection connection)
+    {
+        using var command = connection.CreateCommand();
+        command.CommandText = """
+            SELECT chunk_id, doc_id, path, sha256, text, byte_start, byte_end, embedding, chunked_at_utc
+            FROM pet_doc_chunks
+            WHERE archived_at_utc = '' AND is_tombstone = 0;
+            """;
+        var chunks = new List<RetrievalChunk>();
+        using var reader = command.ExecuteReader();
+        while (reader.Read())
+        {
+            chunks.Add(ReadChunk(reader));
+        }
+
+        return chunks;
+    }
+
+    private static RetrievalChunk ReadChunk(SqliteDataReader reader)
+    {
+        return new RetrievalChunk(
+            Convert.ToString(reader["chunk_id"], CultureInfo.InvariantCulture) ?? "",
+            Convert.ToString(reader["doc_id"], CultureInfo.InvariantCulture) ?? "",
+            Convert.ToString(reader["path"], CultureInfo.InvariantCulture) ?? "",
+            Convert.ToString(reader["sha256"], CultureInfo.InvariantCulture) ?? "",
+            Convert.ToString(reader["text"], CultureInfo.InvariantCulture) ?? "",
+            Convert.ToInt32(reader["byte_start"], CultureInfo.InvariantCulture),
+            Convert.ToInt32(reader["byte_end"], CultureInfo.InvariantCulture),
+            DeserializeEmbedding((byte[])reader["embedding"]),
+            DateTimeOffset.Parse(Convert.ToString(reader["chunked_at_utc"], CultureInfo.InvariantCulture) ?? DateTimeOffset.MinValue.ToString("O"), CultureInfo.InvariantCulture));
+    }
+
+    private static string BuildFtsQuery(string query)
+    {
+        var tokens = Tokenize(query)
+            .Take(12)
+            .Select(token => token.Replace("\"", "\"\"", StringComparison.Ordinal))
+            .ToList();
+        return tokens.Count == 0 ? "" : string.Join(" OR ", tokens.Select(token => $"\"{token}\""));
+    }
+
+    private static HashSet<string> Tokenize(string value)
+    {
+        return (value ?? "")
+            .ToLowerInvariant()
+            .Split([' ', '\t', '\r', '\n', '.', ',', ';', ':', '/', '\\', '-', '_', '(', ')', '[', ']', '{', '}'], StringSplitOptions.RemoveEmptyEntries)
+            .Where(token => token.Length > 1)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
     }
 
     private static bool ShouldRebuildForEmbeddingDimension(string path, int expectedDimensions)

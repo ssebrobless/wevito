@@ -7,10 +7,12 @@ public sealed class AssetInventoryPreviewAdapter
 {
     private const string ToolFamily = "assetInventory";
     private readonly UnifiedPolicyService _policyService;
+    private readonly LocalRetrievalService? _retrievalService;
 
-    public AssetInventoryPreviewAdapter(UnifiedPolicyService? policyService = null)
+    public AssetInventoryPreviewAdapter(UnifiedPolicyService? policyService = null, LocalRetrievalService? retrievalService = null)
     {
         _policyService = policyService ?? new UnifiedPolicyService();
+        _retrievalService = retrievalService;
     }
 
     public TaskAdapterResult BuildReport(TaskAdapterRequest request, DateTimeOffset? nowUtc = null)
@@ -88,6 +90,7 @@ public sealed class AssetInventoryPreviewAdapter
             findings,
             DidMutate: false,
             timestamp);
+        var retrieval = _retrievalService?.Retrieve(request.TaskCardId, request.Intent.RawText, ToolFamily, nowUtc: timestamp);
 
         Directory.CreateDirectory(artifactRoot);
         var jsonPath = Path.Combine(artifactRoot, "asset-inventory-report.json");
@@ -102,7 +105,7 @@ public sealed class AssetInventoryPreviewAdapter
             DidMutate: false,
             ReadPaths: roots,
             WrittenPaths: [jsonPath, markdownPath],
-            PreviewSummary: $"Wrote assetInventory markdown and JSON reports for {summaries.Count} root(s). No asset files were changed.",
+            PreviewSummary: $"Wrote assetInventory markdown and JSON reports for {summaries.Count} root(s). Retrieved {retrieval?.Chunks.Count ?? 0} local context chunk(s). No asset files were changed.",
             ResultSummary: $"assetInventory report ready: {markdownPath}",
             AuditLogPath: markdownPath,
             CompletedAtUtc: timestamp);

@@ -12,11 +12,13 @@ public sealed class CodeReviewPreviewAdapter
     private static readonly string[] SkippedDirectories = [".git", ".codex-cache", ".godot", ".vs", "bin", "obj", "artifacts", "node_modules", "sprites_runtime", "sprites_shared_runtime", "source_assets", "builds"];
     private readonly UnifiedPolicyService _policyService;
     private readonly IModelAdapter? _localModelAdapter;
+    private readonly LocalRetrievalService? _retrievalService;
 
-    public CodeReviewPreviewAdapter(UnifiedPolicyService? policyService = null, IModelAdapter? localModelAdapter = null)
+    public CodeReviewPreviewAdapter(UnifiedPolicyService? policyService = null, IModelAdapter? localModelAdapter = null, LocalRetrievalService? retrievalService = null)
     {
         _policyService = policyService ?? new UnifiedPolicyService();
         _localModelAdapter = localModelAdapter;
+        _retrievalService = retrievalService;
     }
 
     public TaskAdapterResult BuildReport(TaskAdapterRequest request, DateTimeOffset? nowUtc = null)
@@ -87,7 +89,8 @@ public sealed class CodeReviewPreviewAdapter
             BuildSuggestedTests(summaries),
             DidMutate: false,
             timestamp);
-        var modelResponse = TryBuildLocalModelSynthesis(request, report, timestamp);
+        var retrieval = _retrievalService?.Retrieve(request.TaskCardId, request.Intent.RawText, ToolFamily, nowUtc: timestamp);
+        var modelResponse = TryBuildLocalModelSynthesis(request, report, timestamp, retrieval);
 
         Directory.CreateDirectory(artifactRoot);
         var jsonPath = Path.Combine(artifactRoot, "code-review-report.json");
@@ -108,7 +111,7 @@ public sealed class CodeReviewPreviewAdapter
             CompletedAtUtc: timestamp);
     }
 
-    private ModelResponse? TryBuildLocalModelSynthesis(TaskAdapterRequest request, CodeReviewReport report, DateTimeOffset timestamp)
+    private ModelResponse? TryBuildLocalModelSynthesis(TaskAdapterRequest request, CodeReviewReport report, DateTimeOffset timestamp, RetrievalResult? retrieval)
     {
         if (_localModelAdapter is null)
         {
@@ -122,7 +125,7 @@ public sealed class CodeReviewPreviewAdapter
             ToolFamily,
             request.Intent.RawText,
             $"Files scanned: {report.FilesScanned}. Findings: {report.FindingCount}.",
-            TrustedContext: report.Files.Select(file => file.RelativePath).ToList(),
+            TrustedContext: report.Files.Select(file => file.RelativePath).Concat(retrieval?.Chunks.Select(chunk => $"{chunk.ChunkId}:{chunk.Path}") ?? []).ToList(),
             UntrustedContext: [request.Intent.RawText],
             ApprovedForModelCall: true,
             ArtifactRoot: request.ArtifactRoot,

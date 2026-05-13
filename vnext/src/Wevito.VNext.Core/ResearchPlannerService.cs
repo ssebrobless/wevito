@@ -4,6 +4,7 @@ public sealed record ResearchPlannerRequest(
     string Question,
     IReadOnlyList<string>? LocalMemory = null,
     IReadOnlyList<string>? LocalDocumentPaths = null,
+    IReadOnlyList<RetrievalChunk>? RetrievedChunks = null,
     IReadOnlyList<string>? PriorToolReports = null,
     IReadOnlyList<WebFetchRecord>? WebFetches = null,
     bool AllowNetwork = false,
@@ -55,6 +56,16 @@ public sealed class ResearchPlannerService
             yield return new ResearchSourceRecord($"doc-{index++}", ResearchSourceKind.LocalDocument, Path.GetFileName(path.Trim()), path.Trim());
         }
 
+        foreach (var chunk in request.RetrievedChunks ?? [])
+        {
+            if (string.IsNullOrWhiteSpace(chunk.Text))
+            {
+                continue;
+            }
+
+            yield return new ResearchSourceRecord($"chunk-{index++}", ResearchSourceKind.LocalDocument, $"Retrieved chunk {chunk.ChunkId}", $"{chunk.Path}#{chunk.ChunkId}");
+        }
+
         foreach (var report in request.PriorToolReports ?? [])
         {
             if (string.IsNullOrWhiteSpace(report))
@@ -100,6 +111,15 @@ public sealed class ResearchPlannerService
                 "Claim is based on local source presence, not semantic document understanding yet.");
         }
 
+        if (request.RetrievedChunks is { Count: > 0 })
+        {
+            yield return new ResearchClaimRecord(
+                $"Hybrid retrieval returned {request.RetrievedChunks.Count} local chunk(s) for this task.",
+                sources.Where(source => source.Id.StartsWith("chunk-", StringComparison.OrdinalIgnoreCase)).Select(source => source.Id).ToList(),
+                0.86,
+                "Claim is based on local retrieval metadata and chunk provenance.");
+        }
+
         if (request.AllowNetwork)
         {
             yield return new ResearchClaimRecord(
@@ -123,10 +143,13 @@ public sealed class ResearchPlannerService
     {
         var question = string.IsNullOrWhiteSpace(request.Question) ? "Unspecified research question" : request.Question.Trim();
         var localCount = sources.Count(source => !source.IsNetworkSource);
+        var retrievalNote = request.RetrievedChunks is { Count: > 0 }
+            ? $" Hybrid retrieval supplied {request.RetrievedChunks.Count} local chunk(s) for synthesis."
+            : "";
         var networkNote = networkRequested
             ? " Network fetching was requested but intentionally not performed."
             : "";
-        return $"Research plan for '{question}': inspect {localCount} local source(s), extract claims with source ids, and produce a reviewable report before taking action.{networkNote} Hosted AI was not used.";
+        return $"Research plan for '{question}': inspect {localCount} local source(s), extract claims with source ids, and produce a reviewable report before taking action.{retrievalNote}{networkNote} Hosted AI was not used.";
     }
 
     private static string BuildNextAction(ResearchPlannerRequest request, bool networkRequested)

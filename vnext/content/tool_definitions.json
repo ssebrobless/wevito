@@ -75,6 +75,28 @@
     "normalOperationRequiresHostedAi": false
   },
   {
+    "id": "local_retrieval",
+    "displayName": "Local Retrieval",
+    "capacity": 0,
+    "defaultState": "off",
+    "toolFamily": "retrieval",
+    "storage": "%LOCALAPPDATA%/Wevito/memory/<pet-id>.db",
+    "keywordProvider": "sqlite-fts5-bm25",
+    "denseProvider": "sqlite-vec-when-available-or-in-process-embedding",
+    "fusion": "reciprocal-rank-fusion",
+    "rrfK": 60,
+    "rerankTopN": 8,
+    "requiresUnifiedPolicyRead": true,
+    "mayUseNetwork": false,
+    "mayUseHostedAi": false,
+    "mayMutateSourceFiles": false,
+    "outputs": [
+      "local-doc-ingest-manifest",
+      "retrieval-result",
+      "method-trace"
+    ]
+  },
+  {
     "id": "autonomous_scheduler",
     "displayName": "Autonomous Scheduler Preview",
     "capacity": 0,

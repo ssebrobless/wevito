@@ -10,17 +10,20 @@ public sealed class LocalResearchPreviewAdapter
     private readonly WebResearchConnector? _webResearchConnector;
     private readonly UnifiedPolicyService _policyService;
     private readonly IModelAdapter? _localModelAdapter;
+    private readonly LocalRetrievalService? _retrievalService;
 
     public LocalResearchPreviewAdapter(
         ResearchPlannerService? planner = null,
         WebResearchConnector? webResearchConnector = null,
         UnifiedPolicyService? policyService = null,
-        IModelAdapter? localModelAdapter = null)
+        IModelAdapter? localModelAdapter = null,
+        LocalRetrievalService? retrievalService = null)
     {
         _planner = planner ?? new ResearchPlannerService();
         _webResearchConnector = webResearchConnector;
         _policyService = policyService ?? new UnifiedPolicyService();
         _localModelAdapter = localModelAdapter;
+        _retrievalService = retrievalService;
     }
 
     public TaskAdapterResult BuildPreview(TaskAdapterRequest request, DateTimeOffset? nowUtc = null)
@@ -63,10 +66,12 @@ public sealed class LocalResearchPreviewAdapter
         }
 
         var webFetches = TryFetchWebEvidence(request, timestamp, artifactRoot);
+        var retrieval = _retrievalService?.Retrieve(request.TaskCardId, request.Intent.RawText, ToolFamily, nowUtc: timestamp);
         var packet = _planner.Plan(new ResearchPlannerRequest(
             request.Intent.RawText,
             LocalMemory: request.Intent.TargetPathsOrAssets ?? [],
             LocalDocumentPaths: request.PolicySnapshot.ApprovedRootPaths,
+            RetrievedChunks: retrieval?.Chunks,
             PriorToolReports: [],
             WebFetches: webFetches,
             AllowNetwork: webFetches.Count > 0,
