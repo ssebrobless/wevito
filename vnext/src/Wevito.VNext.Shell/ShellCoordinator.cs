@@ -37,6 +37,9 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private readonly PetTaskAdapterPreviewDispatcher _petTaskAdapterPreviewDispatcher;
     private readonly RuntimeSupervisorService _runtimeSupervisorService = new();
     private readonly RuntimeBudgetMeter _runtimeBudgetMeter = new();
+    private readonly WindowsForegroundFullscreenMonitor _fullscreenMonitor;
+    private readonly WindowsPowerHandler _powerHandler;
+    private readonly FocusStealCounter _focusStealCounter = new();
     private readonly AutonomousTaskScheduler _autonomousTaskScheduler;
     private readonly AutonomousBetaDecisionService _autonomousBetaDecisionService;
     private readonly AutonomousOperationsLoop _autonomousOperationsLoop;
@@ -64,6 +67,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private DesktopContext? _desktopContext;
     private DateTimeOffset _lastTickAtUtc;
     private DateTimeOffset _lastSchedulerPollAtUtc;
+    private DateTimeOffset _lastForegroundPollAtUtc;
     private string _feedbackText = "";
     private CompanionMode? _lastLoggedMode;
     private string _lastPublishedRegionsKey = "";
@@ -76,6 +80,8 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _activitySummaryService = new ActivitySummaryService(_auditLedgerService, plainLanguageExplainer);
         _liveStatusFeed = new LiveStatusFeed(_auditLedgerService, plainLanguageExplainer);
         _killSwitchService = new KillSwitchService(() => _state?.SettingsSnapshot ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase), _auditLedgerService);
+        _fullscreenMonitor = new WindowsForegroundFullscreenMonitor(_auditLedgerService);
+        _powerHandler = new WindowsPowerHandler(_auditLedgerService);
         _petTaskAdapterPreviewDispatcher = new PetTaskAdapterPreviewDispatcher(auditLedgerService: _auditLedgerService, killSwitchService: _killSwitchService);
         _autonomousTaskScheduler = new AutonomousTaskScheduler(_runtimeSupervisorService, _runtimeBudgetMeter, _auditLedgerService, _killSwitchService);
         _autonomousBetaDecisionService = new AutonomousBetaDecisionService(_auditLedgerService);
@@ -101,6 +107,12 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _homeWindow.StopEverythingRequested += async () => await ActivateKillSwitchAsync();
         _homeWindow.ActionRequested += HandleAction;
         _homeWindow.Closed += (_, _) => _application.Shutdown();
+        _homeWindow.RegisterFocusStealCounter(_focusStealCounter, () => _fullscreenMonitor.IsFullscreenOther);
+        _roamBandWindow.RegisterFocusStealCounter(_focusStealCounter, () => _fullscreenMonitor.IsFullscreenOther);
+        _powerHandler.RuntimeEventObserved += runtimeEvent =>
+        {
+            _ = _application.Dispatcher.InvokeAsync(async () => await HandlePowerRuntimeEventAsync(runtimeEvent));
+        };
 
         _toolPopupWindow.CloseRequested += async () =>
         {
@@ -153,6 +165,8 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         var appDataPath = Path.Combine(dataRoot, "wevito-vnext.db");
         _repository = new AppRepository(appDataPath);
         await _repository.InitializeAsync();
+        _runtimeBudgetMeter.EnsureStateFile();
+        _powerHandler.Subscribe();
 
         var defaultStateFactory = new DefaultStateFactory(_petSimulationEngine);
         _state = await _repository.LoadAsync() ?? defaultStateFactory.Create(_content);
@@ -193,6 +207,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         {
             case ShellEventTypes.DesktopContextChanged:
                 _desktopContext = PipeMessage.DeserializePayload<DesktopContext>(envelope.Payload);
+                _fullscreenMonitor.Observe(_desktopContext, DateTimeOffset.UtcNow);
                 TraceLog.Write("desktop-context", $"foreground={_desktopContext.ForegroundWindow.ProcessName} title={_desktopContext.ForegroundWindow.Title} shell={_desktopContext.ForegroundWindow.IsShellSurface} fullscreen={_desktopContext.ForegroundWindow.IsFullscreenApp}");
                 ApplyModeAndLayout();
                 break;
@@ -282,6 +297,8 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         };
 
         _state = ApplyAmbientWorkCompanionState(_state, now);
+        TryPollForegroundContext(now);
+        _runtimeBudgetMeter.FlushIfDue();
         TryPollAutonomousScheduler(now);
         TryRunAutonomousOperationsBeta(now);
 
@@ -297,6 +314,22 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         Render();
     }
 
+    private void TryPollForegroundContext(DateTimeOffset now)
+    {
+        if (_brokerClient is null)
+        {
+            return;
+        }
+
+        if (_lastForegroundPollAtUtc != default && now - _lastForegroundPollAtUtc < WindowsForegroundFullscreenMonitor.PollInterval)
+        {
+            return;
+        }
+
+        _lastForegroundPollAtUtc = now;
+        _ = _brokerClient.SendCommandAsync(ShellCommandTypes.RequestDesktopContext, new RequestDesktopContextCommand());
+    }
+
     private void TryPollAutonomousScheduler(DateTimeOffset now)
     {
         if (_state is null)
@@ -310,7 +343,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         }
 
         _lastSchedulerPollAtUtc = now;
-        var supervisorStatus = _runtimeSupervisorService.Evaluate(_state.SettingsSnapshot, _desktopContext, isUserInitiatedToolOpen: false);
+        var supervisorStatus = EvaluateRuntimeSupervisor(isUserInitiatedToolOpen: false);
         var triggers = AutonomousTaskScheduler.BuildShellTriggers(_state.TaskCards, _state.SettingsSnapshot, now);
         var request = new AutonomousSchedulerRequest(
             _state.SettingsSnapshot,
@@ -351,7 +384,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             return;
         }
 
-        var supervisorStatus = _runtimeSupervisorService.Evaluate(_state.SettingsSnapshot, _desktopContext, isUserInitiatedToolOpen: false);
+        var supervisorStatus = EvaluateRuntimeSupervisor(isUserInitiatedToolOpen: false);
         var result = _autonomousOperationsLoop.TryRunIteration(new AutonomousOperationsRequest(
             _state.SettingsSnapshot,
             supervisorStatus,
@@ -431,10 +464,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
 
         OverlayWindowStyler.Apply(_homeWindow, passive, passive || pinned);
         OverlayWindowStyler.Apply(_roamBandWindow, true, true);
-        var supervisorStatus = _runtimeSupervisorService.Evaluate(
-            _state.SettingsSnapshot,
-            _desktopContext,
-            isUserInitiatedToolOpen: _state.ActiveTool.IsOpen);
+        var supervisorStatus = EvaluateRuntimeSupervisor(isUserInitiatedToolOpen: _state.ActiveTool.IsOpen);
 
         OverlayWindowStyler.Apply(_toolPopupWindow, passive || !_state.ActiveTool.IsOpen, passive || pinned);
 
@@ -462,10 +492,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         var habitatLoadout = HabitatLoadoutResolver.Resolve(_state, _content);
         var petCommandBarState = EnsurePetCommandBarState(_state.ActivePets, _state.TaskCards);
         var now = DateTimeOffset.UtcNow;
-        var supervisorStatus = _runtimeSupervisorService.Evaluate(
-            _state.SettingsSnapshot,
-            _desktopContext,
-            isUserInitiatedToolOpen: _state.ActiveTool.IsOpen);
+        var supervisorStatus = EvaluateRuntimeSupervisor(isUserInitiatedToolOpen: _state.ActiveTool.IsOpen);
         var activitySummary = _activitySummaryService.BuildDaily(now);
         var liveStatus = _liveStatusFeed.BuildDaily(now, _state.SettingsSnapshot);
         var liveBannerText = _liveStatusFeed.FormatBanner(liveStatus);
@@ -476,6 +503,15 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _homeWindow.Render(_state, environment, _feedbackText, _assetService, needSnapshot, aggregateStatuses, actionEnabled, habitatLoadout);
         _roamBandWindow.Render(_state, _assetService, liveStatus, liveBannerText, supervisorStatus, killSwitchActive);
         _toolPopupWindow.Render(_state, _content, habitatLoadout, _assetService, _devToolsEnabled, petCommandBarState, supervisorStatus, activitySummary, autonomousDecision, liveRecentLines);
+    }
+
+    private RuntimeSupervisorStatus EvaluateRuntimeSupervisor(bool isUserInitiatedToolOpen)
+    {
+        return _runtimeSupervisorService.Evaluate(
+            _state?.SettingsSnapshot,
+            _desktopContext,
+            isUserInitiatedToolOpen,
+            fullscreenOtherOverride: _fullscreenMonitor.IsFullscreenOther);
     }
 
     private PetCommandBarState EnsurePetCommandBarState(IReadOnlyList<PetActor> pets, IReadOnlyList<TaskCard>? taskCards)
@@ -737,6 +773,23 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         await PersistAndRenderAsync();
     }
 
+    private async Task HandlePowerRuntimeEventAsync(WindowsPowerRuntimeEvent runtimeEvent)
+    {
+        if (_state is null)
+        {
+            return;
+        }
+
+        var result = _powerHandler.ApplyRuntimeEvent(_state.SettingsSnapshot, runtimeEvent, DateTimeOffset.UtcNow);
+        _state = _state with { SettingsSnapshot = result.SettingsSnapshot };
+        _feedbackText = result.ForcedQuiet
+            ? "Quiet mode is active because Windows is sleeping, locking, or switching sessions."
+            : "Windows resumed. Wevito did not auto-return to Active; review Settings when ready.";
+        TraceLog.Write("power", $"event={runtimeEvent} forcedQuiet={result.ForcedQuiet}");
+        ApplyModeAndLayout();
+        await PersistAndRenderAsync();
+    }
+
     private async Task ToggleDevAsync()
     {
         if (!_devToolsEnabled)
@@ -859,7 +912,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             return;
         }
 
-        var supervisorStatus = _runtimeSupervisorService.Evaluate(_state.SettingsSnapshot, _desktopContext, isUserInitiatedToolOpen: true);
+        var supervisorStatus = EvaluateRuntimeSupervisor(isUserInitiatedToolOpen: true);
         if (!_runtimeSupervisorService.CanStartUserInitiatedWork(supervisorStatus, out var supervisorReason))
         {
             SetFeedback(supervisorReason);
@@ -932,7 +985,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             return;
         }
 
-        var supervisorStatus = _runtimeSupervisorService.Evaluate(_state.SettingsSnapshot, _desktopContext, isUserInitiatedToolOpen: true);
+        var supervisorStatus = EvaluateRuntimeSupervisor(isUserInitiatedToolOpen: true);
         if (!_runtimeSupervisorService.CanStartUserInitiatedWork(supervisorStatus, out var supervisorReason))
         {
             SetFeedback(supervisorReason);
@@ -1580,6 +1633,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     {
         TraceLog.Write("shell", "shutdown-begin");
         _tickTimer.Stop();
+        _powerHandler.Dispose();
         if (_state is not null)
         {
             await PersistAsync();

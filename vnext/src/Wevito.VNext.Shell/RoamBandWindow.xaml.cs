@@ -10,15 +10,30 @@ namespace Wevito.VNext.Shell;
 
 public partial class RoamBandWindow : Window
 {
+    private const int WmActivate = 0x0006;
     private bool _closingSilently;
+    private FocusStealCounter? _focusStealCounter;
+    private Func<bool>? _isForegroundFullscreenOther;
+    private HwndSource? _hwndSource;
 
     public RoamBandWindow()
     {
         InitializeComponent();
-        SourceInitialized += (_, _) => OverlayWindowStyler.Apply(this, clickThrough: true, noActivate: true);
+        SourceInitialized += (_, _) =>
+        {
+            OverlayWindowStyler.Apply(this, clickThrough: true, noActivate: true);
+            AttachFocusStealHook();
+        };
     }
 
     public long WindowHandle => new WindowInteropHelper(this).Handle.ToInt64();
+
+    public void RegisterFocusStealCounter(FocusStealCounter counter, Func<bool> isForegroundFullscreenOther)
+    {
+        _focusStealCounter = counter;
+        _isForegroundFullscreenOther = isForegroundFullscreenOther;
+        AttachFocusStealHook();
+    }
 
     internal void Render(
         CompanionState state,
@@ -80,6 +95,27 @@ public partial class RoamBandWindow : Window
     {
         _closingSilently = true;
         Close();
+    }
+
+    private void AttachFocusStealHook()
+    {
+        if (_hwndSource is not null || PresentationSource.FromVisual(this) is not HwndSource source)
+        {
+            return;
+        }
+
+        _hwndSource = source;
+        _hwndSource.AddHook(WndProc);
+    }
+
+    private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+    {
+        if (msg == WmActivate && wParam != IntPtr.Zero)
+        {
+            _focusStealCounter?.RecordActivation(_isForegroundFullscreenOther?.Invoke() == true, DateTimeOffset.UtcNow);
+        }
+
+        return IntPtr.Zero;
     }
 
     protected override void OnClosed(EventArgs e)

@@ -26,6 +26,7 @@ public sealed class RuntimeBudgetMeter
     private readonly string _statePath;
     private readonly Func<DateTimeOffset> _clock;
     private readonly Func<RuntimeResourceSnapshot> _resourceReader;
+    private DateTimeOffset? _lastFlushAtUtc;
 
     public RuntimeBudgetMeter(
         string? statePath = null,
@@ -77,6 +78,27 @@ public sealed class RuntimeBudgetMeter
         state = state with { UsedThisHour = state.UsedThisHour + 1 };
         WriteState(state);
         return new RuntimeBudgetReservation(true, state.UsedThisHour, budget.MaxBackgroundTasksPerHour, resourceSnapshot, "");
+    }
+
+    public bool EnsureStateFile()
+    {
+        var existed = File.Exists(_statePath);
+        WriteState(ReadState());
+        return existed;
+    }
+
+    public bool FlushIfDue(TimeSpan? minimumInterval = null)
+    {
+        var now = _clock();
+        var interval = minimumInterval ?? TimeSpan.FromMinutes(5);
+        if (_lastFlushAtUtc is not null && now - _lastFlushAtUtc < interval)
+        {
+            return false;
+        }
+
+        WriteState(ReadState());
+        _lastFlushAtUtc = now;
+        return true;
     }
 
     public RuntimeBudgetReservation ReadCurrent(RuntimeBudgetSnapshot budget)
