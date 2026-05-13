@@ -178,5 +178,19 @@
       "local-tool-exec-preview-report",
       "run-summary"
     ]
+  },
+  {
+    "id": "guarded_mutation",
+    "displayName": "Guarded Mutation Preview",
+    "capacity": 0,
+    "toolFamily": "guardedMutation",
+    "defaultState": "off",
+    "executionDefault": "blocked",
+    "dryRunOnly": true,
+    "requiresApprovedTaskCardForApply": true,
+    "outputs": [
+      "guarded-mutation-preview",
+      "run-summary"
+    ]
   }
 ]

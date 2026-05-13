@@ -40,8 +40,8 @@ public sealed class SpriteWorkflowPostApplyProof
     private static bool RunDefaultProof(SpriteWorkflowApplyManifest applyManifest)
     {
         var repoRoot = FindRepoRoot(applyManifest.RuntimeRowFolder);
-        return RunPythonScript(repoRoot, Path.Combine(repoRoot, "tools", "audit_sprite_contract.py")) &&
-               RunPythonScript(repoRoot, Path.Combine(repoRoot, "tools", "report_runtime_canvas_mismatches.py"));
+        var commands = new MutationVerifier().BuildPostProofCommands(repoRoot, applyManifest.Changes.Select(change => change.RuntimePath).ToList());
+        return commands.Count > 0 && commands.All(command => RunProofCommand(command));
     }
 
     private static string FindRepoRoot(string startPath)
@@ -61,22 +61,27 @@ public sealed class SpriteWorkflowPostApplyProof
         throw new InvalidOperationException("Could not locate Wevito repository root for post-apply proof.");
     }
 
-    private static bool RunPythonScript(string workingDirectory, string scriptPath)
+    private static bool RunProofCommand(ProofExecutionCommand command)
     {
-        if (!File.Exists(scriptPath))
+        if (string.Equals(command.Executable, "python", StringComparison.OrdinalIgnoreCase) &&
+            command.Arguments.Count > 0 &&
+            !File.Exists(Path.GetFullPath(command.Arguments[0], command.WorkingDirectory)))
         {
             return false;
         }
 
         var startInfo = new ProcessStartInfo
         {
-            FileName = "python",
-            WorkingDirectory = workingDirectory,
+            FileName = command.Executable,
+            WorkingDirectory = command.WorkingDirectory,
             RedirectStandardError = true,
             RedirectStandardOutput = true,
             UseShellExecute = false
         };
-        startInfo.ArgumentList.Add(scriptPath);
+        foreach (var argument in command.Arguments)
+        {
+            startInfo.ArgumentList.Add(argument);
+        }
 
         using var process = Process.Start(startInfo);
         if (process is null)

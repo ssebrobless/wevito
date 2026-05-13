@@ -17,6 +17,7 @@ public sealed class PetTaskAdapterPreviewDispatcher
     private const string ScreenCaptureToolFamily = "screenCapture";
     private const string PetMemoryToolFamily = "petMemory";
     private const string LocalToolExecToolFamily = "localToolExec";
+    private const string GuardedMutationToolFamily = "guardedMutation";
 
     private readonly LocalDocsPreviewAdapter _localDocsPreviewAdapter;
     private readonly LocalResearchPreviewAdapter _localResearchPreviewAdapter;
@@ -32,6 +33,7 @@ public sealed class PetTaskAdapterPreviewDispatcher
     private readonly ScreenCapturePreviewAdapter _screenCapturePreviewAdapter;
     private readonly PetMemoryPreviewAdapter _petMemoryPreviewAdapter;
     private readonly LocalToolExecutionPreviewAdapter _localToolExecutionPreviewAdapter;
+    private readonly GuardedMutationPreviewAdapter _guardedMutationPreviewAdapter;
     private readonly AuditLedgerService? _auditLedgerService;
     private readonly KillSwitchService? _killSwitchService;
 
@@ -50,6 +52,7 @@ public sealed class PetTaskAdapterPreviewDispatcher
         ScreenCapturePreviewAdapter? screenCapturePreviewAdapter = null,
         PetMemoryPreviewAdapter? petMemoryPreviewAdapter = null,
         LocalToolExecutionPreviewAdapter? localToolExecutionPreviewAdapter = null,
+        GuardedMutationPreviewAdapter? guardedMutationPreviewAdapter = null,
         IModelAdapter? activeLocalModelAdapter = null,
         AuditLedgerService? auditLedgerService = null,
         KillSwitchService? killSwitchService = null)
@@ -68,6 +71,7 @@ public sealed class PetTaskAdapterPreviewDispatcher
         _screenCapturePreviewAdapter = screenCapturePreviewAdapter ?? new ScreenCapturePreviewAdapter();
         _petMemoryPreviewAdapter = petMemoryPreviewAdapter ?? new PetMemoryPreviewAdapter();
         _localToolExecutionPreviewAdapter = localToolExecutionPreviewAdapter ?? new LocalToolExecutionPreviewAdapter();
+        _guardedMutationPreviewAdapter = guardedMutationPreviewAdapter ?? new GuardedMutationPreviewAdapter();
         _auditLedgerService = auditLedgerService;
         _killSwitchService = killSwitchService;
     }
@@ -123,6 +127,8 @@ public sealed class PetTaskAdapterPreviewDispatcher
                 _petMemoryPreviewAdapter.BuildPreview(request, timestamp),
             var family when string.Equals(family, LocalToolExecToolFamily, StringComparison.OrdinalIgnoreCase) =>
                 _localToolExecutionPreviewAdapter.BuildPreview(request, timestamp),
+            var family when string.Equals(family, GuardedMutationToolFamily, StringComparison.OrdinalIgnoreCase) =>
+                _guardedMutationPreviewAdapter.BuildPreview(request, timestamp),
             _ => Block(request, ResolveResultFamily(policyFamily, intentFamily), $"No PET TASKS dry-run preview adapter is registered for tool family '{policyFamily}'.", timestamp)
         };
         RecordAdapterResult(result, timestamp);
