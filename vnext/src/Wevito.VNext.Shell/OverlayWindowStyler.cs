@@ -24,7 +24,7 @@ internal static class OverlayWindowStyler
     private static readonly Dictionary<IntPtr, WindowStyleState> StyleStateByHandle = [];
     private static readonly IntPtr HwndTopMost = new(-1);
 
-    public static void Apply(Window window, bool clickThrough, bool noActivate)
+    public static void Apply(Window window, bool clickThrough, bool noActivate, bool hideFromTaskbar = true)
     {
         var handle = new WindowInteropHelper(window).Handle;
         if (handle == IntPtr.Zero)
@@ -41,7 +41,7 @@ internal static class OverlayWindowStyler
         }
 
         var exStyle = NativeMethods.GetWindowLong(handle, GwlExStyle);
-        exStyle |= WsExToolWindow;
+        exStyle = hideFromTaskbar ? exStyle | WsExToolWindow : exStyle & ~WsExToolWindow;
         exStyle = clickThrough ? exStyle | WsExTransparent : exStyle & ~WsExTransparent;
         exStyle = noActivate ? exStyle | WsExNoActivate : exStyle & ~WsExNoActivate;
         NativeMethods.SetWindowLong(handle, GwlExStyle, exStyle);

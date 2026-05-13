@@ -9,7 +9,7 @@
         AllowsTransparency="True"
         Background="Transparent"
         ResizeMode="NoResize"
-        ShowInTaskbar="False"
+        ShowInTaskbar="True"
         Topmost="True">
     <Window.Resources>
         <Style x:Key="HudButtonStyle" TargetType="Button">
