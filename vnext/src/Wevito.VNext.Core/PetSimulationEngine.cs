@@ -1158,7 +1158,16 @@ public sealed class PetSimulationEngine
             return PetAnimationState.Idle;
         }
 
-        return PetAnimationState.Walk;
+        return IsMovingTowardTarget(pet)
+            ? PetAnimationState.Walk
+            : PetAnimationState.Idle;
+    }
+
+    private static bool IsMovingTowardTarget(PetActor pet)
+    {
+        var dx = pet.TargetX - pet.CurrentX;
+        var dy = pet.TargetY - pet.CurrentY;
+        return Math.Sqrt(dx * dx + dy * dy) > 2.5;
     }
 
     private static IReadOnlyList<PetStatusType> BuildStatuses(PetActor pet)

@@ -220,7 +220,7 @@ public partial class HomePanelWindow : Window
         var stageRect = GetStageRect();
         var now = DateTimeOffset.UtcNow;
         var renderedInteractionCue = false;
-        foreach (var pet in state.ActivePets.Where(pet => state.Mode != CompanionMode.Passive || pet.BehaviorState == PetBehaviorState.Roaming))
+        foreach (var pet in state.ActivePets.Where(pet => ShouldRenderPetInHomePanel(state.Mode)))
         {
             RenderMemorialIfActive(pet, now, stageRect, assetService);
             var ghostFrame = pet.IsGhost ? assetService.GetGhostPetFrame(pet, now) : null;
@@ -299,6 +299,11 @@ public partial class HomePanelWindow : Window
             Canvas.SetZIndex(label, HabitatDepthOrder.GetZIndex(DepthBand.UiOverlay));
             HomePetCanvas.Children.Add(label);
         }
+    }
+
+    internal static bool ShouldRenderPetInHomePanel(CompanionMode mode)
+    {
+        return mode != CompanionMode.Passive;
     }
 
     private void RenderMemorialIfActive(PetActor pet, DateTimeOffset now, RectInt stageRect, SpriteAssetService assetService)

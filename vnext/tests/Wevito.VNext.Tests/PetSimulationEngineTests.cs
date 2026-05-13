@@ -216,6 +216,61 @@ public sealed class PetSimulationEngineTests
     }
 
     [Fact]
+    public void Tick_PassivePetAtRoamTargetIdlesInsteadOfWalkingInPlace()
+    {
+        var now = DateTimeOffset.Parse("2026-05-13T22:00:00Z");
+        var pet = new PetActor(
+            Guid.NewGuid(),
+            "Fox 1",
+            "fox",
+            CurrentX: 400,
+            CurrentY: 1000,
+            TargetX: 400,
+            TargetY: 1000,
+            BehaviorState: PetBehaviorState.Roaming,
+            NextDecisionAtUtc: now.AddSeconds(10),
+            CurrentAnimationState: PetAnimationState.Walk,
+            ActiveStatuses: []);
+
+        var updated = _engine.Tick(
+            [pet],
+            CompanionMode.Passive,
+            new RectInt(0, 922, 1920, 118),
+            now,
+            0.2).Single();
+
+        Assert.Equal(PetAnimationState.Idle, updated.CurrentAnimationState);
+    }
+
+    [Fact]
+    public void Tick_PassivePetMovingTowardTargetUsesWalkAnimation()
+    {
+        var now = DateTimeOffset.Parse("2026-05-13T22:00:00Z");
+        var pet = new PetActor(
+            Guid.NewGuid(),
+            "Fox 1",
+            "fox",
+            CurrentX: 400,
+            CurrentY: 1000,
+            TargetX: 700,
+            TargetY: 1000,
+            Speed: 120,
+            BehaviorState: PetBehaviorState.Roaming,
+            NextDecisionAtUtc: now.AddSeconds(10),
+            CurrentAnimationState: PetAnimationState.Idle,
+            ActiveStatuses: []);
+
+        var updated = _engine.Tick(
+            [pet],
+            CompanionMode.Passive,
+            new RectInt(0, 922, 1920, 118),
+            now,
+            0.2).Single();
+
+        Assert.Equal(PetAnimationState.Walk, updated.CurrentAnimationState);
+    }
+
+    [Fact]
     public void Tick_DeadPetTransitionsToGhostAfterSadWindow()
     {
         var now = DateTimeOffset.Parse("2026-05-07T10:00:00Z");
