@@ -40,6 +40,8 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private readonly WindowsForegroundFullscreenMonitor _fullscreenMonitor;
     private readonly WindowsPowerHandler _powerHandler;
     private readonly FocusStealCounter _focusStealCounter = new();
+    private readonly RuntimeSessionTracker _runtimeSessionTracker;
+    private readonly DailyEvidenceSnapshotService _dailyEvidenceSnapshotService;
     private readonly AutonomousTaskScheduler _autonomousTaskScheduler;
     private readonly AutonomousBetaDecisionService _autonomousBetaDecisionService;
     private readonly AutonomousOperationsLoop _autonomousOperationsLoop;
@@ -80,6 +82,8 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _activitySummaryService = new ActivitySummaryService(_auditLedgerService, plainLanguageExplainer);
         _liveStatusFeed = new LiveStatusFeed(_auditLedgerService, plainLanguageExplainer);
         _killSwitchService = new KillSwitchService(() => _state?.SettingsSnapshot ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase), _auditLedgerService);
+        _runtimeSessionTracker = new RuntimeSessionTracker(_auditLedgerService, killSwitchService: _killSwitchService);
+        _dailyEvidenceSnapshotService = new DailyEvidenceSnapshotService(_auditLedgerService, _runtimeBudgetMeter, _focusStealCounter, killSwitchService: _killSwitchService);
         _fullscreenMonitor = new WindowsForegroundFullscreenMonitor(_auditLedgerService);
         _powerHandler = new WindowsPowerHandler(_auditLedgerService);
         var onnxPhiAdapter = new OnnxPhiLocalModelAdapter(
@@ -311,6 +315,8 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _state = ApplyAmbientWorkCompanionState(_state, now);
         TryPollForegroundContext(now);
         _runtimeBudgetMeter.FlushIfDue();
+        _runtimeSessionTracker.Tick(now, _state.SettingsSnapshot);
+        _dailyEvidenceSnapshotService.Tick(now, _runtimeSupervisorService.ReadBudgetSnapshot(_state.SettingsSnapshot), _state.SettingsSnapshot);
         TryPollAutonomousScheduler(now);
         TryRunAutonomousOperationsBeta(now);
 
@@ -1645,6 +1651,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     {
         TraceLog.Write("shell", "shutdown-begin");
         _tickTimer.Stop();
+        _runtimeSessionTracker.End(DateTimeOffset.UtcNow);
         _powerHandler.Dispose();
         if (_state is not null)
         {

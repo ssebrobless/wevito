@@ -104,6 +104,7 @@ public sealed class RuntimeBudgetMeter
     public RuntimeBudgetReservation ReadCurrent(RuntimeBudgetSnapshot budget)
     {
         var now = _clock();
+        var resourceSnapshot = _resourceReader();
         var state = ReadState();
         var currentHour = TruncateToHour(now);
         if (state.HourStartedAtUtc != currentHour)
@@ -112,12 +113,38 @@ public sealed class RuntimeBudgetMeter
             WriteState(state);
         }
 
+        var reason = BuildBlockReason(state, budget, resourceSnapshot);
         return new RuntimeBudgetReservation(
-            state.UsedThisHour < budget.MaxBackgroundTasksPerHour,
+            string.IsNullOrWhiteSpace(reason),
             state.UsedThisHour,
             budget.MaxBackgroundTasksPerHour,
-            _resourceReader(),
-            "");
+            resourceSnapshot,
+            reason);
+    }
+
+    private static string BuildBlockReason(
+        BudgetMeterState state,
+        RuntimeBudgetSnapshot budget,
+        RuntimeResourceSnapshot resourceSnapshot)
+    {
+        if (budget.MaxBackgroundTasksPerHour <= 0)
+        {
+            return "Background task budget is zero.";
+        }
+
+        if (state.UsedThisHour >= budget.MaxBackgroundTasksPerHour)
+        {
+            return "Hourly background task budget is exhausted.";
+        }
+
+        if (resourceSnapshot.CpuPercent > budget.CpuBudgetPercent)
+        {
+            return "CPU budget is exceeded.";
+        }
+
+        return resourceSnapshot.MemoryMb > budget.MemoryBudgetMb
+            ? "Memory budget is exceeded."
+            : "";
     }
 
     private BudgetMeterState ReadState()

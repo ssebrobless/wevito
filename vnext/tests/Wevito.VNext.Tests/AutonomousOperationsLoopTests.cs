@@ -132,7 +132,9 @@ public sealed class AutonomousOperationsLoopTests
 
     private static void SeedPassingRows(AuditLedgerService ledger)
     {
-        ledger.Record(Packet("runtime_session", Now.AddHours(-2), "uptime_hours>=4 quiet_honored=true", "Completed"));
+        ledger.Record(Packet("runtime_session_heartbeat", Now.AddHours(-2), "runtime_session uptime_hours=4 uptime_hours>=4 heartbeat=true", "Completed"));
+        ledger.Record(Packet("focus_steal_snapshot", Now.AddHours(-1), "focus_steal=false day_delta=0 total=0", "Completed"));
+        ledger.Record(Packet("budget_meter_snapshot", Now.AddHours(-1), "budget_exceeded=false used_this_hour=0 max_this_hour=4", "Completed"));
         ledger.Record(Packet("localDocs", Now.AddHours(-1), "preview", "PreviewReady"));
         ledger.Record(Packet("mutation_apply", Now.AddMinutes(-40), "post-proof passed", "Completed", mutate: true));
         ledger.Record(Packet("proof_packet", Now.AddMinutes(-39), "post-proof passed", "Completed"));
