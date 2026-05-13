@@ -12,7 +12,9 @@ public sealed record ModelProviderSettings(
     bool HostedProviderApproved,
     bool LocalProviderAvailable,
     string LocalProviderId,
-    string HostedProviderId);
+    string HostedProviderId,
+    string LocalRuntimeEndpoint = LocalRuntimeProbeService.DefaultOllamaEndpoint,
+    string LocalRuntimeModel = LocalRuntimeProbeService.DefaultOllamaModel);
 
 public sealed class ModelProviderModeService
 {
@@ -21,6 +23,8 @@ public sealed class ModelProviderModeService
     public const string HostedProviderIdSetting = "pet_model_hosted_provider_id";
     public const string HostedProviderApprovedSetting = "pet_model_hosted_provider_approved";
     public const string LocalProviderAvailableSetting = "pet_model_local_provider_available";
+    public const string LocalRuntimeEndpointSetting = LocalRuntimeProbeService.OllamaEndpointSetting;
+    public const string LocalRuntimeModelSetting = LocalRuntimeProbeService.OllamaModelSetting;
 
     public ModelProviderSettings ReadSettings(IReadOnlyDictionary<string, string>? settings)
     {
@@ -30,7 +34,9 @@ public sealed class ModelProviderModeService
             HostedProviderApproved: ReadBool(snapshot, HostedProviderApprovedSetting, false),
             LocalProviderAvailable: ReadBool(snapshot, LocalProviderAvailableSetting, false),
             LocalProviderId: Read(snapshot, LocalProviderIdSetting, "deterministic-local"),
-            HostedProviderId: Read(snapshot, HostedProviderIdSetting, "none"));
+            HostedProviderId: Read(snapshot, HostedProviderIdSetting, "none"),
+            LocalRuntimeEndpoint: Read(snapshot, LocalRuntimeEndpointSetting, LocalRuntimeProbeService.DefaultOllamaEndpoint),
+            LocalRuntimeModel: Read(snapshot, LocalRuntimeModelSetting, LocalRuntimeProbeService.DefaultOllamaModel));
     }
 
     public bool CanUseHostedProvider(ModelProviderSettings settings, out string reason)
