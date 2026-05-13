@@ -1,0 +1,221 @@
+# Runtime Sprite Canvas Padding Repair
+
+- generated_at: `2026-05-13T23:50:36.293410+00:00`
+- dry_run: `False`
+- runtime_root: `C:\Users\fishe\.codex\worktrees\ab46\wevito\sprites_runtime`
+- backup_root: `vnext\artifacts\sprite-repair-20260513-edge-padding\backup-before-padding`
+- rows_considered: `1440`
+- rows_repaired: `390`
+- frames_repaired: `1440`
+
+## Scope
+
+This repair only adds transparent canvas padding to rows with top/left/right edge contact.
+Bottom-only edge contact is intentionally ignored because it is usually ground contact.
+
+## Repaired Rows
+
+- `deer / adult / female / blue / eat` edges=left,right,top frames=4
+- `deer / adult / female / blue / idle` edges=top frames=4
+- `deer / adult / female / blue / sleep` edges=left,right,top frames=2
+- `deer / adult / female / indigo / eat` edges=left,right,top frames=4
+- `deer / adult / female / indigo / idle` edges=top frames=4
+- `deer / adult / female / indigo / sleep` edges=left,right,top frames=2
+- `deer / adult / female / orange / eat` edges=left,right,top frames=4
+- `deer / adult / female / orange / idle` edges=top frames=4
+- `deer / adult / female / orange / sleep` edges=left,right,top frames=2
+- `deer / adult / female / red / eat` edges=left,right,top frames=4
+- `deer / adult / female / red / idle` edges=top frames=4
+- `deer / adult / female / red / sleep` edges=left,right,top frames=2
+- `deer / adult / female / violet / eat` edges=left,right,top frames=4
+- `deer / adult / female / violet / idle` edges=top frames=4
+- `deer / adult / female / violet / sleep` edges=left,right,top frames=2
+- `deer / adult / female / yellow / eat` edges=left,right,top frames=4
+- `deer / adult / female / yellow / idle` edges=top frames=4
+- `deer / adult / female / yellow / sleep` edges=left,right,top frames=2
+- `deer / adult / male / blue / bathe` edges=left,right,top frames=4
+- `deer / adult / male / blue / happy` edges=left,right,top frames=4
+- `deer / adult / male / blue / sad` edges=left,right,top frames=2
+- `deer / adult / male / blue / sick` edges=left,right,top frames=4
+- `deer / adult / male / indigo / bathe` edges=left,right,top frames=4
+- `deer / adult / male / indigo / happy` edges=left,right,top frames=4
+- `deer / adult / male / indigo / sad` edges=left,right,top frames=2
+- `deer / adult / male / indigo / sick` edges=left,right,top frames=4
+- `deer / adult / male / orange / bathe` edges=left,right,top frames=4
+- `deer / adult / male / orange / happy` edges=left,right,top frames=4
+- `deer / adult / male / orange / sad` edges=left,right,top frames=2
+- `deer / adult / male / orange / sick` edges=left,right,top frames=4
+- `deer / adult / male / red / bathe` edges=left,right,top frames=4
+- `deer / adult / male / red / happy` edges=left,right,top frames=4
+- `deer / adult / male / red / sad` edges=left,right,top frames=2
+- `deer / adult / male / red / sick` edges=left,right,top frames=4
+- `deer / adult / male / violet / bathe` edges=left,right,top frames=4
+- `deer / adult / male / violet / happy` edges=left,right,top frames=4
+- `deer / adult / male / violet / sad` edges=left,right,top frames=2
+- `deer / adult / male / violet / sick` edges=left,right,top frames=4
+- `deer / adult / male / yellow / bathe` edges=left,right,top frames=4
+- `deer / adult / male / yellow / happy` edges=left,right,top frames=4
+- `deer / adult / male / yellow / sad` edges=left,right,top frames=2
+- `deer / adult / male / yellow / sick` edges=left,right,top frames=4
+- `fox / adult / female / blue / walk` edges=left,right frames=6
+- `fox / adult / female / indigo / walk` edges=left,right frames=6
+- `fox / adult / female / orange / walk` edges=left,right frames=6
+- `fox / adult / female / red / walk` edges=left,right frames=6
+- `fox / adult / female / violet / walk` edges=left,right frames=6
+- `fox / adult / female / yellow / walk` edges=left,right frames=6
+- `fox / adult / male / blue / walk` edges=left,right frames=6
+- `fox / adult / male / indigo / walk` edges=left,right frames=6
+- `fox / adult / male / orange / walk` edges=left,right frames=6
+- `fox / adult / male / red / walk` edges=left,right frames=6
+- `fox / adult / male / violet / walk` edges=left,right frames=6
+- `fox / adult / male / yellow / walk` edges=left,right frames=6
+- `frog / adult / female / blue / eat` edges=left,right frames=4
+- `frog / adult / female / blue / sick` edges=left,right frames=4
+- `frog / adult / female / blue / sleep` edges=left,right frames=2
+- `frog / adult / female / blue / walk` edges=left,right frames=6
+- `frog / adult / female / indigo / eat` edges=left,right frames=4
+- `frog / adult / female / indigo / sick` edges=left,right frames=4
+- `frog / adult / female / indigo / sleep` edges=left,right frames=2
+- `frog / adult / female / indigo / walk` edges=left,right frames=6
+- `frog / adult / female / orange / eat` edges=left,right frames=4
+- `frog / adult / female / orange / sick` edges=left,right frames=4
+- `frog / adult / female / orange / sleep` edges=left,right frames=2
+- `frog / adult / female / orange / walk` edges=left,right frames=6
+- `frog / adult / female / red / eat` edges=left,right frames=4
+- `frog / adult / female / red / sick` edges=left,right frames=4
+- `frog / adult / female / red / sleep` edges=left,right frames=2
+- `frog / adult / female / red / walk` edges=left,right frames=6
+- `frog / adult / female / violet / eat` edges=left,right frames=4
+- `frog / adult / female / violet / sick` edges=left,right frames=4
+- `frog / adult / female / violet / sleep` edges=left,right frames=2
+- `frog / adult / female / violet / walk` edges=left,right frames=6
+- `frog / adult / female / yellow / eat` edges=left,right frames=4
+- `frog / adult / female / yellow / sick` edges=left,right frames=4
+- `frog / adult / female / yellow / sleep` edges=left,right frames=2
+- `frog / adult / female / yellow / walk` edges=left,right frames=6
+- `frog / adult / male / blue / bathe` edges=left,right,top frames=4
+- `frog / adult / male / blue / eat` edges=left,right frames=4
+- `frog / adult / male / blue / happy` edges=left,right,top frames=4
+- `frog / adult / male / blue / sad` edges=left,right,top frames=2
+- `frog / adult / male / blue / sick` edges=left,right frames=4
+- `frog / adult / male / blue / sleep` edges=left,right frames=2
+- `frog / adult / male / indigo / bathe` edges=left,right,top frames=4
+- `frog / adult / male / indigo / eat` edges=left,right frames=4
+- `frog / adult / male / indigo / happy` edges=left,right,top frames=4
+- `frog / adult / male / indigo / sad` edges=left,right,top frames=2
+- `frog / adult / male / indigo / sick` edges=left,right frames=4
+- `frog / adult / male / indigo / sleep` edges=left,right frames=2
+- `frog / adult / male / orange / bathe` edges=left,right,top frames=4
+- `frog / adult / male / orange / eat` edges=left,right frames=4
+- `frog / adult / male / orange / happy` edges=left,right,top frames=4
+- `frog / adult / male / orange / sad` edges=left,right,top frames=2
+- `frog / adult / male / orange / sick` edges=left,right frames=4
+- `frog / adult / male / orange / sleep` edges=left,right frames=2
+- `frog / adult / male / red / bathe` edges=left,right,top frames=4
+- `frog / adult / male / red / eat` edges=left,right frames=4
+- `frog / adult / male / red / happy` edges=left,right,top frames=4
+- `frog / adult / male / red / sad` edges=left,right,top frames=2
+- `frog / adult / male / red / sick` edges=left,right frames=4
+- `frog / adult / male / red / sleep` edges=left,right frames=2
+- `frog / adult / male / violet / bathe` edges=left,right,top frames=4
+- `frog / adult / male / violet / eat` edges=left,right frames=4
+- `frog / adult / male / violet / happy` edges=left,right,top frames=4
+- `frog / adult / male / violet / sad` edges=left,right,top frames=2
+- `frog / adult / male / violet / sick` edges=left,right frames=4
+- `frog / adult / male / violet / sleep` edges=left,right frames=2
+- `frog / adult / male / yellow / bathe` edges=left,right,top frames=4
+- `frog / adult / male / yellow / eat` edges=left,right frames=4
+- `frog / adult / male / yellow / happy` edges=left,right,top frames=4
+- `frog / adult / male / yellow / sad` edges=left,right,top frames=2
+- `frog / adult / male / yellow / sick` edges=left,right frames=4
+- `frog / adult / male / yellow / sleep` edges=left,right frames=2
+- `frog / baby / female / blue / happy` edges=left,right,top frames=4
+- `frog / baby / female / indigo / happy` edges=left,right,top frames=4
+- `frog / baby / female / orange / happy` edges=left,right,top frames=4
+- `frog / baby / female / red / happy` edges=left,right,top frames=4
+- `frog / baby / female / violet / happy` edges=left,right,top frames=4
+- `frog / baby / female / yellow / happy` edges=left,right,top frames=4
+- ... 270 additional rows in JSON
+
+## First Frame Records
+
+- `deer/adult/female/blue/eat_00.png` (125, 100) -> (141, 108) sha `8fda6b0735c0` -> `8afa8492f799`
+- `deer/adult/female/blue/eat_01.png` (125, 100) -> (141, 108) sha `22a37ff24c19` -> `4e02f6308a7d`
+- `deer/adult/female/blue/eat_02.png` (125, 100) -> (141, 108) sha `ec480b6831db` -> `84d02396bdad`
+- `deer/adult/female/blue/eat_03.png` (125, 100) -> (141, 108) sha `521d592e06f3` -> `46c26239b385`
+- `deer/adult/female/blue/idle_00.png` (72, 64) -> (72, 72) sha `748bac9ae48f` -> `5761a61fba58`
+- `deer/adult/female/blue/idle_01.png` (72, 64) -> (72, 72) sha `bd3731f49ee7` -> `2d152d9034e2`
+- `deer/adult/female/blue/idle_02.png` (72, 64) -> (72, 72) sha `b80a193a6038` -> `55ff5873deb6`
+- `deer/adult/female/blue/idle_03.png` (72, 64) -> (72, 72) sha `abc5e45b921f` -> `94095fe96d06`
+- `deer/adult/female/blue/sleep_00.png` (120, 104) -> (136, 112) sha `09ea88a377e6` -> `bdb8ef8b9f9e`
+- `deer/adult/female/blue/sleep_01.png` (120, 104) -> (136, 112) sha `085dbd8f6abb` -> `104b430f65da`
+- `deer/adult/female/indigo/eat_00.png` (125, 100) -> (141, 108) sha `477cc716dd3a` -> `056df9c7ce3b`
+- `deer/adult/female/indigo/eat_01.png` (125, 100) -> (141, 108) sha `599b1971a0a6` -> `2bf821f9bd3f`
+- `deer/adult/female/indigo/eat_02.png` (125, 100) -> (141, 108) sha `e472c0a1f4b7` -> `c01bbfca7ebb`
+- `deer/adult/female/indigo/eat_03.png` (125, 100) -> (141, 108) sha `abddaac72a8e` -> `6228f11b2d69`
+- `deer/adult/female/indigo/idle_00.png` (72, 64) -> (72, 72) sha `44f7a17743ea` -> `4159b264562b`
+- `deer/adult/female/indigo/idle_01.png` (72, 64) -> (72, 72) sha `d6dbc823c566` -> `d3bbbe8740e4`
+- `deer/adult/female/indigo/idle_02.png` (72, 64) -> (72, 72) sha `ec0268ba153a` -> `1c57b1907a68`
+- `deer/adult/female/indigo/idle_03.png` (72, 64) -> (72, 72) sha `c27356f2b044` -> `4b6a03574062`
+- `deer/adult/female/indigo/sleep_00.png` (120, 104) -> (136, 112) sha `ec0d0bdab1e7` -> `c240d3ad18dc`
+- `deer/adult/female/indigo/sleep_01.png` (120, 104) -> (136, 112) sha `443b20af7ada` -> `5a6bc4989770`
+- `deer/adult/female/orange/eat_00.png` (125, 100) -> (141, 108) sha `9e89709b6a20` -> `125330d759ac`
+- `deer/adult/female/orange/eat_01.png` (125, 100) -> (141, 108) sha `3ea4ff109f29` -> `4097bc02598e`
+- `deer/adult/female/orange/eat_02.png` (125, 100) -> (141, 108) sha `8ac4f3c376b4` -> `d304918f6d16`
+- `deer/adult/female/orange/eat_03.png` (125, 100) -> (141, 108) sha `d3b5cb8367d1` -> `8022d593feb8`
+- `deer/adult/female/orange/idle_00.png` (72, 64) -> (72, 72) sha `1b5f3c8ab3b3` -> `c88bd8cbf41c`
+- `deer/adult/female/orange/idle_01.png` (72, 64) -> (72, 72) sha `c84fb0ecbaa1` -> `662386f39ea5`
+- `deer/adult/female/orange/idle_02.png` (72, 64) -> (72, 72) sha `879f9cbf5504` -> `b4298569275d`
+- `deer/adult/female/orange/idle_03.png` (72, 64) -> (72, 72) sha `8e4bcad8203d` -> `709ce6ae1a12`
+- `deer/adult/female/orange/sleep_00.png` (120, 104) -> (136, 112) sha `32097962d669` -> `69f4fa50b31e`
+- `deer/adult/female/orange/sleep_01.png` (120, 104) -> (136, 112) sha `4a4c165b33d6` -> `42cd342dbec6`
+- `deer/adult/female/red/eat_00.png` (125, 100) -> (141, 108) sha `fda07988b35e` -> `60829189bca9`
+- `deer/adult/female/red/eat_01.png` (125, 100) -> (141, 108) sha `e29189e02569` -> `11f5a7ab8663`
+- `deer/adult/female/red/eat_02.png` (125, 100) -> (141, 108) sha `3d9dc462442c` -> `de221bc6f9a0`
+- `deer/adult/female/red/eat_03.png` (125, 100) -> (141, 108) sha `7129cf918de7` -> `f9e6d62b1489`
+- `deer/adult/female/red/idle_00.png` (72, 64) -> (72, 72) sha `745ad4886ba5` -> `c92e94d1ad8c`
+- `deer/adult/female/red/idle_01.png` (72, 64) -> (72, 72) sha `86f272b20012` -> `473371565452`
+- `deer/adult/female/red/idle_02.png` (72, 64) -> (72, 72) sha `c968910b479a` -> `ec834eb1fda7`
+- `deer/adult/female/red/idle_03.png` (72, 64) -> (72, 72) sha `7cf2b9fae3e0` -> `714fd65296fe`
+- `deer/adult/female/red/sleep_00.png` (120, 104) -> (136, 112) sha `260ce5b6bd68` -> `79eab4700236`
+- `deer/adult/female/red/sleep_01.png` (120, 104) -> (136, 112) sha `09930d846b0c` -> `daaf80aaa27b`
+- `deer/adult/female/violet/eat_00.png` (125, 100) -> (141, 108) sha `660d3ad9e319` -> `8ed7d611abb0`
+- `deer/adult/female/violet/eat_01.png` (125, 100) -> (141, 108) sha `68a7bb688e3d` -> `9509fe0b2ac3`
+- `deer/adult/female/violet/eat_02.png` (125, 100) -> (141, 108) sha `4e3b724770fc` -> `a6512522ec39`
+- `deer/adult/female/violet/eat_03.png` (125, 100) -> (141, 108) sha `3af0a57bc6ef` -> `d02688dd719c`
+- `deer/adult/female/violet/idle_00.png` (72, 64) -> (72, 72) sha `b28d61239c27` -> `d13d10a1b057`
+- `deer/adult/female/violet/idle_01.png` (72, 64) -> (72, 72) sha `8e328c5822c5` -> `6d1bb710c580`
+- `deer/adult/female/violet/idle_02.png` (72, 64) -> (72, 72) sha `5e375e67487c` -> `cd32c10590b2`
+- `deer/adult/female/violet/idle_03.png` (72, 64) -> (72, 72) sha `b1f862619674` -> `d0cfd3451aca`
+- `deer/adult/female/violet/sleep_00.png` (120, 104) -> (136, 112) sha `b6984a85a8d9` -> `d7194436af83`
+- `deer/adult/female/violet/sleep_01.png` (120, 104) -> (136, 112) sha `71f5c6ac40c5` -> `8a1ba94818ef`
+- `deer/adult/female/yellow/eat_00.png` (125, 100) -> (141, 108) sha `bc5fb7b20699` -> `38f883cf462f`
+- `deer/adult/female/yellow/eat_01.png` (125, 100) -> (141, 108) sha `c533eda082af` -> `1b94291be45d`
+- `deer/adult/female/yellow/eat_02.png` (125, 100) -> (141, 108) sha `8f405530282e` -> `d2b0523ed8d5`
+- `deer/adult/female/yellow/eat_03.png` (125, 100) -> (141, 108) sha `5f702dcba33d` -> `477e18074699`
+- `deer/adult/female/yellow/idle_00.png` (72, 64) -> (72, 72) sha `8d298e043ae6` -> `b3ef6d1c7e80`
+- `deer/adult/female/yellow/idle_01.png` (72, 64) -> (72, 72) sha `b0f74c9cd7d3` -> `9c7aa6617815`
+- `deer/adult/female/yellow/idle_02.png` (72, 64) -> (72, 72) sha `e7e3792bd8f2` -> `53e493e29eec`
+- `deer/adult/female/yellow/idle_03.png` (72, 64) -> (72, 72) sha `48a72f118841` -> `d60eaff611aa`
+- `deer/adult/female/yellow/sleep_00.png` (120, 104) -> (136, 112) sha `e58bff3bda1f` -> `fe99032306af`
+- `deer/adult/female/yellow/sleep_01.png` (120, 104) -> (136, 112) sha `f8e6ab2101a4` -> `0e4119d4498f`
+- `deer/adult/male/blue/bathe_00.png` (76, 117) -> (92, 125) sha `9a095eaecefa` -> `e1f65f3d0b1a`
+- `deer/adult/male/blue/bathe_01.png` (76, 117) -> (92, 125) sha `40f40f466b78` -> `9a8eca15b728`
+- `deer/adult/male/blue/bathe_02.png` (76, 117) -> (92, 125) sha `2781c94ecf8e` -> `2fd1b782d9ed`
+- `deer/adult/male/blue/bathe_03.png` (76, 117) -> (92, 125) sha `45413b7653c1` -> `75b0366689dc`
+- `deer/adult/male/blue/happy_00.png` (91, 132) -> (107, 140) sha `8592935f12ec` -> `69cdca2d5e15`
+- `deer/adult/male/blue/happy_01.png` (91, 132) -> (107, 140) sha `d8551292b2ff` -> `de11e7e5d44b`
+- `deer/adult/male/blue/happy_02.png` (91, 132) -> (107, 140) sha `cf7c5f0e0027` -> `146500268ad3`
+- `deer/adult/male/blue/happy_03.png` (91, 132) -> (107, 140) sha `13e5e968b306` -> `346dc9172859`
+- `deer/adult/male/blue/sad_00.png` (116, 129) -> (132, 137) sha `ec0730d9ee9e` -> `e9a967267d00`
+- `deer/adult/male/blue/sad_01.png` (116, 129) -> (132, 137) sha `945f1277501e` -> `5db25abd0234`
+- `deer/adult/male/blue/sick_00.png` (114, 111) -> (130, 119) sha `78ffc44cba16` -> `bfaef1135e87`
+- `deer/adult/male/blue/sick_01.png` (114, 111) -> (130, 119) sha `b0da6cc1201e` -> `b3b923c02444`
+- `deer/adult/male/blue/sick_02.png` (114, 111) -> (130, 119) sha `2d4373255f9e` -> `25cb24bb649b`
+- `deer/adult/male/blue/sick_03.png` (114, 111) -> (130, 119) sha `3a3320d98334` -> `b7b33d4edc4a`
+- `deer/adult/male/indigo/bathe_00.png` (76, 117) -> (92, 125) sha `485e313f09ff` -> `b1e3f811b0f3`
+- `deer/adult/male/indigo/bathe_01.png` (76, 117) -> (92, 125) sha `ea96b713293b` -> `a708bf318501`
+- `deer/adult/male/indigo/bathe_02.png` (76, 117) -> (92, 125) sha `aed8a2983246` -> `2932e8d236ff`
+- `deer/adult/male/indigo/bathe_03.png` (76, 117) -> (92, 125) sha `a252ffab77a5` -> `677304d04211`
+- `deer/adult/male/indigo/happy_00.png` (91, 132) -> (107, 140) sha `666ac4831906` -> `fa0fc23da753`
+- `deer/adult/male/indigo/happy_01.png` (91, 132) -> (107, 140) sha `6c91c03bbad3` -> `db6d316deff2`
