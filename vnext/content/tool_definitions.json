@@ -132,5 +132,29 @@
       "examples-jsonl",
       "promotion-report"
     ]
+  },
+  {
+    "id": "web_research",
+    "displayName": "Approved Web Research",
+    "capacity": 0,
+    "toolFamily": "localResearch",
+    "defaultBackend": "offline",
+    "networkDefault": "disabled",
+    "hostedAiDefault": "disabled",
+    "requiresApprovedTaskCard": true,
+    "credentialTargets": [
+      "Wevito/web-search/brave",
+      "Wevito/web-search/tavily",
+      "Wevito/web-search/firecrawl"
+    ],
+    "rateLimits": {
+      "maxFetchesPerHour": 30,
+      "maxFetchesPerTask": 5
+    },
+    "outputs": [
+      "web-fetch-records",
+      "web-fetch-evidence-packet",
+      "run-summary"
+    ]
   }
 ]

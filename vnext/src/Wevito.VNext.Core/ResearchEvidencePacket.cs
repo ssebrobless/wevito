@@ -6,7 +6,8 @@ public enum ResearchSourceKind
     LocalDocument,
     ToolReport,
     UserProvided,
-    WebSourcePlaceholder
+    WebSourcePlaceholder,
+    WebFetch
 }
 
 public sealed record ResearchSourceRecord(

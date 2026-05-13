@@ -175,6 +175,10 @@ public partial class ToolPopupWindow : Window
             ? "Consent acknowledged. Live calls still require a later explicit approval."
             : "Consent not acknowledged. No live model calls can run.";
         PetModelFirstCallConsentButton.IsEnabled = !modelFirstCallApproved;
+        var webSearchEnabled = GetSettingBool(state, WebResearchConnector.WebSearchEnabledSetting);
+        var webBackend = state.SettingsSnapshot.TryGetValue(WebResearchConnector.WebBackendSetting, out var backend) ? backend : "offline";
+        WebSearchEnabledCheckBox.IsChecked = webSearchEnabled;
+        WebSearchStatusText.Text = $"Backend: {webBackend} · live fetches {(webSearchEnabled ? "allowed after approval" : "disabled")} · keys: Wevito/web-search/<backend>";
         ActivitySummaryText.Text = activitySummary is null
             ? "Activity ledger: waiting for shell state."
             : ActivitySummaryService.FormatOneLine(activitySummary);
@@ -262,6 +266,7 @@ public partial class ToolPopupWindow : Window
             if (TryToggleCheckBox(RuntimeNoFocusStealCheckBox, localPoint)) { return true; }
             if (TryToggleCheckBox(RuntimeAutoQuietFullscreenCheckBox, localPoint)) { return true; }
             if (TryToggleCheckBox(PetModelAdapterEnabledCheckBox, localPoint)) { return true; }
+            if (TryToggleCheckBox(WebSearchEnabledCheckBox, localPoint)) { return true; }
             if (await TryInvokeButtonAsync(PetModelFirstCallConsentButton, localPoint, () =>
                 {
                     PublishSetting("pet_model_first_call_approved", true);
@@ -910,6 +915,11 @@ public partial class ToolPopupWindow : Window
     private void RuntimeAutoQuietFullscreenCheckBox_OnChanged(object sender, RoutedEventArgs e)
     {
         PublishSetting(RuntimeSupervisorService.AutoQuietFullscreenSetting, RuntimeAutoQuietFullscreenCheckBox.IsChecked != false);
+    }
+
+    private void WebSearchEnabledCheckBox_OnChanged(object sender, RoutedEventArgs e)
+    {
+        PublishSetting(WebResearchConnector.WebSearchEnabledSetting, WebSearchEnabledCheckBox.IsChecked == true);
     }
 
     private void PetModelAdapterEnabledCheckBox_OnChanged(object sender, RoutedEventArgs e)
