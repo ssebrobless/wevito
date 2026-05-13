@@ -1141,7 +1141,8 @@ public partial class ToolPopupWindow : Window
             ? configuredModel
             : LocalRuntimeProbeService.DefaultOllamaModel;
         var available = GetSettingBool(state, ModelProviderModeService.LocalProviderAvailableSetting);
-        return $"Local AI runtime: mode={providerMode}; provider={(available ? "available" : "not probed/available")}; endpoint={endpoint}; model={model}; hosted AI remains disabled unless separately approved.";
+        var inProcessEnabled = GetSettingBool(state, ModelProviderModeService.InProcessLocalRuntimeEnabledSetting);
+        return $"Local AI runtime: mode={providerMode}; provider={(available ? "available" : "not probed/available")}; endpoint={endpoint}; model={model}; in-process fallback={(inProcessEnabled ? "enabled if weights exist" : "off")}; hosted AI remains disabled unless separately approved.";
     }
 
     private static ImageSource? ResolveActionOptionPreview(SpriteAssetService assetService, string actionId, HabitatDisplayItem item)

@@ -81,6 +81,21 @@ public sealed class OllamaLocalModelAdapter : IModelAdapter
         }
     }
 
+    public static string FormatReadableStatus(LocalRuntimeProbeResult? probe)
+    {
+        if (probe is null)
+        {
+            return "Ollama status: not probed.";
+        }
+
+        var state = probe.WasDormant
+            ? "dormant"
+            : probe.IsAvailable
+                ? "available"
+                : "unavailable";
+        return $"Ollama status: {state}; endpoint={probe.Endpoint}; model={probe.Model}; reason={probe.Reason}; last={probe.ProbedAtUtc:O}";
+    }
+
     private async Task<ModelResponse> FallbackAsync(
         ModelRequest request,
         string auditPath,

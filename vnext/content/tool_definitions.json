@@ -57,6 +57,13 @@
       "probePath": "/api/tags",
       "chatPath": "/v1/chat/completions"
     },
+    "inProcessFallback": {
+      "defaultState": "off",
+      "setting": "local_runtime_inproc_enabled",
+      "provider": "onnx-phi",
+      "weightsFolder": "vnext/content/local-models/generation/phi-3-mini-4k-int4",
+      "actualInferenceDeferred": true
+    },
     "networkDefault": "disabled",
     "hostedAiDefault": "disabled",
     "outputs": [
