@@ -8,6 +8,12 @@ public sealed class LocalDocsPreviewAdapter
 {
     private const string ToolFamily = "localDocs";
     private static readonly string[] DocumentPatterns = ["*.md", "*.txt", "*.json"];
+    private readonly UnifiedPolicyService _policyService;
+
+    public LocalDocsPreviewAdapter(UnifiedPolicyService? policyService = null)
+    {
+        _policyService = policyService ?? new UnifiedPolicyService();
+    }
 
     public TaskAdapterResult BuildPreview(TaskAdapterRequest request, DateTimeOffset? nowUtc = null)
     {
@@ -40,6 +46,15 @@ public sealed class LocalDocsPreviewAdapter
             return Block(request, targets.BlockReason, timestamp);
         }
 
+        foreach (var target in targets.Paths)
+        {
+            var decision = _policyService.EvaluateRead(target, approvedRoots, request.TaskCardId, timestamp);
+            if (decision.IsBlocked)
+            {
+                return Block(request, $"Unified policy blocked localDocs target: {decision.Reason}", timestamp);
+            }
+        }
+
         var artifactRoot = ResolveArtifactRoot(request.ArtifactRoot, timestamp);
         if (!IsSafePetTaskArtifactRoot(artifactRoot))
         {
@@ -50,6 +65,7 @@ public sealed class LocalDocsPreviewAdapter
             .SelectMany(path => EnumerateDocuments(path))
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .Where(path => IsInsideAnyRoot(path, approvedRoots))
+            .Where(path => _policyService.EvaluateRead(path, approvedRoots, request.TaskCardId, timestamp).IsAllowed)
             .OrderBy(path => path, StringComparer.OrdinalIgnoreCase)
             .Take(12)
             .Select(path => BuildEntry(path, approvedRoots))

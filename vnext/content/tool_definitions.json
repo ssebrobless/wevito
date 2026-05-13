@@ -156,5 +156,20 @@
       "web-fetch-evidence-packet",
       "run-summary"
     ]
+  },
+  {
+    "id": "local_tool_exec",
+    "displayName": "Local Tool Execution Preview",
+    "capacity": 0,
+    "toolFamily": "localToolExec",
+    "defaultState": "off",
+    "executionDefault": "blocked",
+    "dryRunOnly": true,
+    "allowedRoot": "tools/",
+    "requiresSha256Allowlist": true,
+    "outputs": [
+      "local-tool-exec-preview-report",
+      "run-summary"
+    ]
   }
 ]
