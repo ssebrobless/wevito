@@ -203,15 +203,17 @@ public sealed class PetSimulationEngine
         double homeWidth,
         double homeHeight)
     {
-        var count = Math.Max(1, pets.Count);
-        var slotWidth = homeWidth / count;
-        var floorY = homeTop + homeHeight - 24;
+        var livingCount = Math.Max(1, pets.Count(pet => !pet.IsDead));
+        var slotWidth = homeWidth / livingCount;
+        var floorY = homeTop + homeHeight - 68;
         var updated = new List<PetActor>(pets.Count);
+        var livingIndex = 0;
 
         for (var i = 0; i < pets.Count; i++)
         {
             var pet = pets[i];
-            var homeX = homeLeft + slotWidth * i + slotWidth / 2;
+            var slotIndex = pet.IsDead ? Math.Min(livingIndex, livingCount - 1) : livingIndex++;
+            var homeX = homeLeft + slotWidth * slotIndex + slotWidth / 2;
             updated.Add(pet with
             {
                 HomeX = homeX,
@@ -1152,6 +1154,11 @@ public sealed class PetSimulationEngine
 
         if (mode is CompanionMode.Focused or CompanionMode.Pinned)
         {
+            if (pet.BehaviorState == PetBehaviorState.Recalling && IsMovingTowardTarget(pet))
+            {
+                return PetAnimationState.Walk;
+            }
+
             if (pet.Energy < 24)
             {
                 return PetAnimationState.Sleep;

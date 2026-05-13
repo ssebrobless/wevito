@@ -21,7 +21,7 @@ public sealed class HabitatLoadoutManifestTests
         {
             Assert.Equal(loadout.SpeciesId, loadout.EnvironmentId);
             Assert.Equal(
-                ["primary", "bed-left", "bed-center", "bed-right", "food", "water"],
+                ["bed-left", "bed-center", "bed-right"],
                 loadout.Slots.Select(slot => slot.SlotId).ToArray());
             Assert.All(loadout.Slots, slot =>
             {
@@ -49,16 +49,15 @@ public sealed class HabitatLoadoutManifestTests
 
     private static void AssertUniversalHome(HabitatLoadoutDefinition loadout)
     {
-        Assert.Equal("log_shelter", loadout.Slots.Single(slot => slot.SlotId == "primary").AssetId);
         Assert.Equal(["moss_bed", "moss_bed", "moss_bed"], loadout.Slots
-            .Where(slot => slot.SlotId.StartsWith("bed-", StringComparison.OrdinalIgnoreCase))
             .Select(slot => slot.AssetId)
             .ToArray());
-        Assert.Equal("snack_bowl", loadout.Slots.Single(slot => slot.SlotId == "food").AssetId);
-        Assert.Equal("water_bowl", loadout.Slots.Single(slot => slot.SlotId == "water").AssetId);
-        Assert.Equal(DepthBand.GroundContact, loadout.Slots.Single(slot => slot.SlotId == "primary").DepthBand);
-        Assert.All(loadout.Slots.Where(slot => slot.SlotId.StartsWith("bed-", StringComparison.OrdinalIgnoreCase)), slot =>
-            Assert.Equal(DepthBand.GroundContact, slot.DepthBand));
+        Assert.All(loadout.Slots, slot =>
+        {
+            Assert.StartsWith("bed-", slot.SlotId, StringComparison.OrdinalIgnoreCase);
+            Assert.Equal("petBed", slot.Role);
+            Assert.Equal(DepthBand.GroundContact, slot.DepthBand);
+        });
     }
 
     private static string FindPath(params string[] segments)

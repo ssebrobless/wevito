@@ -60,13 +60,14 @@ public sealed class HabitatLoadoutResolverFallbackTests
 
         var loadout = HabitatLoadoutResolver.Resolve(state, content);
 
-        Assert.Equal(["log_shelter", "moss_bed", "moss_bed", "moss_bed", "snack_bowl", "water_bowl"], loadout.DynamicStageProps.Select(prop => prop.AssetId).ToArray());
-        Assert.Contains(loadout.DynamicStageProps, prop =>
-            prop.AssetId == "log_shelter" &&
-            prop.CategoryFolder == "toys_b" &&
-            prop.DepthBand == DepthBand.GroundContact &&
-            prop.OcclusionMode == OcclusionMode.BodyOnly &&
-            prop.ContactShadowMode == ContactShadowMode.Soft);
+        Assert.Equal(["moss_bed", "moss_bed", "moss_bed"], loadout.DynamicStageProps.Select(prop => prop.AssetId).ToArray());
+        Assert.All(loadout.DynamicStageProps, prop =>
+        {
+            Assert.Equal("toys_b", prop.CategoryFolder);
+            Assert.Equal(DepthBand.GroundContact, prop.DepthBand);
+            Assert.Equal(OcclusionMode.None, prop.OcclusionMode);
+            Assert.Equal(ContactShadowMode.Soft, prop.ContactShadowMode);
+        });
         Assert.Equal(3, loadout.DynamicStageProps.Count(prop => prop.SlotId.StartsWith("bed-", StringComparison.OrdinalIgnoreCase)));
     }
 
@@ -83,11 +84,8 @@ public sealed class HabitatLoadoutResolverFallbackTests
 
         var loadout = HabitatLoadoutResolver.Resolve(state, content);
 
-        Assert.Equal(["log_shelter", "moss_bed", "moss_bed", "moss_bed", "snack_bowl", "water_bowl"], loadout.DynamicStageProps.Select(prop => prop.AssetId).ToArray());
-        Assert.Contains(loadout.DynamicStageProps, prop =>
-            prop.AssetId == "snack_bowl" &&
-            prop.DepthBand == DepthBand.GroundContact &&
-            prop.SlotId == "food");
+        Assert.Equal(["moss_bed", "moss_bed", "moss_bed"], loadout.DynamicStageProps.Select(prop => prop.AssetId).ToArray());
+        Assert.DoesNotContain(loadout.DynamicStageProps, prop => prop.SlotId is "food" or "water" or "primary");
     }
 
     [Fact]
@@ -101,7 +99,7 @@ public sealed class HabitatLoadoutResolverFallbackTests
         var loadout = HabitatLoadoutResolver.Resolve(state, content);
 
         Assert.NotEmpty(loadout.DynamicStageProps);
-        Assert.NotEqual(["log_shelter", "moss_bed", "moss_bed", "moss_bed", "snack_bowl", "water_bowl"], loadout.DynamicStageProps.Select(prop => prop.AssetId).ToArray());
+        Assert.NotEqual(["moss_bed", "moss_bed", "moss_bed"], loadout.DynamicStageProps.Select(prop => prop.AssetId).ToArray());
     }
 
     [Fact]
@@ -121,7 +119,7 @@ public sealed class HabitatLoadoutResolverFallbackTests
         var loadout = HabitatLoadoutResolver.Resolve(state, content);
 
         Assert.NotEmpty(loadout.DynamicStageProps);
-        Assert.NotEqual(["log_shelter", "moss_bed", "moss_bed", "moss_bed", "snack_bowl", "water_bowl"], loadout.DynamicStageProps.Select(prop => prop.AssetId).ToArray());
+        Assert.NotEqual(["moss_bed", "moss_bed", "moss_bed"], loadout.DynamicStageProps.Select(prop => prop.AssetId).ToArray());
     }
 
     private static CompanionState CreateState(string speciesId, Func<PetActor, PetActor>? configurePet = null)

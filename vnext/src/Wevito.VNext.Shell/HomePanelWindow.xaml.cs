@@ -244,7 +244,9 @@ public partial class HomePanelWindow : Window
         foreach (var pet in renderedPets)
         {
             RenderMemorialIfActive(pet, now, stageRect, assetService);
-            var renderPet = calmLineup && !pet.IsGhost
+            var useCalmPlacement = ShouldUseCalmLineupPlacement(calmLineup, pet);
+            var useHomeStageScale = calmLineup && !pet.IsGhost;
+            var renderPet = useCalmPlacement
                 ? pet with
                 {
                     CurrentAnimationState = PetAnimationState.Idle,
@@ -263,7 +265,7 @@ public partial class HomePanelWindow : Window
             var usesGenericGhostOverlay = renderPet.IsGhost && ghostFrame is null;
             var bitmap = source as BitmapSource;
             var baseScale = assetService.GetPetScale(renderPet);
-            var scale = calmLineup && bitmap is not null
+            var scale = useHomeStageScale && bitmap is not null
                 ? ResolveCalmLineupScale(bitmap.PixelHeight, baseScale)
                 : baseScale;
             var width = (bitmap?.PixelWidth ?? 28) * scale;
@@ -272,7 +274,7 @@ public partial class HomePanelWindow : Window
             image.Opacity = renderPet.IsGhost ? (usesGenericGhostOverlay ? 0.44 : 0.82) : renderPet.IsDead ? 0.58 : 1.0;
             var localX = Math.Round(pet.CurrentX - Left - stageRect.X - width / 2);
             var localY = Math.Round(pet.CurrentY - Top - stageRect.Y - height);
-            if (calmLineup)
+            if (useCalmPlacement)
             {
                 var placement = ResolveCalmLineupPlacement(livingIndex, Math.Max(1, livingPetCount), stageRect, width, height);
                 localX = placement.X;
@@ -345,6 +347,14 @@ public partial class HomePanelWindow : Window
     internal static bool ShouldRenderPetInHomePanel(CompanionMode mode, PetActor pet)
     {
         return mode != CompanionMode.Passive && !pet.IsDead;
+    }
+
+    internal static bool ShouldUseCalmLineupPlacement(bool calmLineup, PetActor pet)
+    {
+        return calmLineup &&
+               !pet.IsGhost &&
+               !pet.IsDead &&
+               pet.BehaviorState == PetBehaviorState.Home;
     }
 
     internal static double ResolveCalmLineupScale(double spriteHeight, double baseScale)

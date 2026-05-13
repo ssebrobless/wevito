@@ -52,4 +52,15 @@ public sealed class HomePanelWindowRenderingTests
         Assert.Equal(first.Y, second.Y);
         Assert.Equal(second.Y, third.Y);
     }
+
+    [Fact]
+    public void ShouldUseCalmLineup_OnlyForPetsAlreadySettledAtHome()
+    {
+        var settled = new PetActor(Guid.NewGuid(), "Fox 1", "fox", BehaviorState: PetBehaviorState.Home, ActiveStatuses: []);
+        var returning = settled with { BehaviorState = PetBehaviorState.Recalling };
+
+        Assert.True(HomePanelWindow.ShouldUseCalmLineupPlacement(calmLineup: true, settled));
+        Assert.False(HomePanelWindow.ShouldUseCalmLineupPlacement(calmLineup: true, returning));
+        Assert.False(HomePanelWindow.ShouldUseCalmLineupPlacement(calmLineup: false, settled));
+    }
 }
