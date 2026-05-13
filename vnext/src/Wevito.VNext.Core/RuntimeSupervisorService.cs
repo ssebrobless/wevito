@@ -61,12 +61,16 @@ public sealed class RuntimeSupervisorService
     public RuntimeSupervisorStatus Evaluate(
         IReadOnlyDictionary<string, string>? settings,
         DesktopContext? desktopContext = null,
-        bool isUserInitiatedToolOpen = false)
+        bool isUserInitiatedToolOpen = false,
+        bool? fullscreenOtherOverride = null,
+        bool forceQuiet = false)
     {
         var parsed = ReadSettings(settings);
-        var isFullscreen = desktopContext?.ForegroundWindow.IsFullscreenApp == true;
+        var isFullscreen = fullscreenOtherOverride ?? desktopContext?.ForegroundWindow.IsFullscreenApp == true;
         var quietedForFullscreen = parsed.AutoQuietDuringFullscreen && isFullscreen;
-        var effectiveMode = quietedForFullscreen && parsed.Mode == RuntimeSupervisorMode.Active
+        var effectiveMode = forceQuiet
+            ? RuntimeSupervisorMode.Quiet
+            : quietedForFullscreen && parsed.Mode == RuntimeSupervisorMode.Active
             ? RuntimeSupervisorMode.Quiet
             : parsed.Mode;
 
@@ -75,7 +79,9 @@ public sealed class RuntimeSupervisorService
                                 (!quietedForFullscreen || isUserInitiatedToolOpen) &&
                                 (!parsed.NoFocusSteal || !isFullscreen || isUserInitiatedToolOpen);
 
-        var blockReason = BuildBlockReason(effectiveMode, quietedForFullscreen, parsed.BackgroundWorkAllowed);
+        var blockReason = forceQuiet
+            ? "Power/session quiet mode blocks helper background work."
+            : BuildBlockReason(effectiveMode, quietedForFullscreen, parsed.BackgroundWorkAllowed);
         return new RuntimeSupervisorStatus(
             effectiveMode,
             backgroundAllowed,

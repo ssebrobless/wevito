@@ -11,9 +11,13 @@ namespace Wevito.VNext.Shell;
 
 public partial class HomePanelWindow : Window
 {
+    private const int WmActivate = 0x0006;
     private bool _closingSilently;
     private bool _isHudVisible = true;
     private bool _isCompact;
+    private FocusStealCounter? _focusStealCounter;
+    private Func<bool>? _isForegroundFullscreenOther;
+    private HwndSource? _hwndSource;
 
     public HomePanelWindow()
     {
@@ -22,7 +26,11 @@ public partial class HomePanelWindow : Window
         Canvas.SetZIndex(StagePropCanvas, HabitatDepthOrder.GetZIndex(DepthBand.GroundContact));
         Canvas.SetZIndex(HomePetCanvas, HabitatDepthOrder.GetZIndex(DepthBand.PetBody));
         Canvas.SetZIndex(StageDecorationCanvas, HabitatDepthOrder.GetZIndex(DepthBand.NearOccluder));
-        SourceInitialized += (_, _) => OverlayWindowStyler.Apply(this, clickThrough: false, noActivate: false);
+        SourceInitialized += (_, _) =>
+        {
+            OverlayWindowStyler.Apply(this, clickThrough: false, noActivate: false);
+            AttachFocusStealHook();
+        };
     }
 
     public event Func<Task>? TogglePinnedRequested;
@@ -52,6 +60,13 @@ public partial class HomePanelWindow : Window
     public event Action<string>? ActionRequested;
 
     public long WindowHandle => new WindowInteropHelper(this).Handle.ToInt64();
+
+    public void RegisterFocusStealCounter(FocusStealCounter counter, Func<bool> isForegroundFullscreenOther)
+    {
+        _focusStealCounter = counter;
+        _isForegroundFullscreenOther = isForegroundFullscreenOther;
+        AttachFocusStealHook();
+    }
 
     public RectInt GetStageRect()
     {
@@ -2280,6 +2295,27 @@ public partial class HomePanelWindow : Window
         {
             await StopEverythingRequested.Invoke();
         }
+    }
+
+    private void AttachFocusStealHook()
+    {
+        if (_hwndSource is not null || PresentationSource.FromVisual(this) is not HwndSource source)
+        {
+            return;
+        }
+
+        _hwndSource = source;
+        _hwndSource.AddHook(WndProc);
+    }
+
+    private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+    {
+        if (msg == WmActivate && wParam != IntPtr.Zero)
+        {
+            _focusStealCounter?.RecordActivation(_isForegroundFullscreenOther?.Invoke() == true, DateTimeOffset.UtcNow);
+        }
+
+        return IntPtr.Zero;
     }
 
     private void FeedButton_OnClick(object sender, RoutedEventArgs e) => ActionRequested?.Invoke("feed");
