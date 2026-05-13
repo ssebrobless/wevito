@@ -97,6 +97,24 @@
     ]
   },
   {
+    "id": "golden_eval",
+    "displayName": "Golden Eval",
+    "capacity": 0,
+    "defaultState": "off",
+    "toolFamily": "learningEval",
+    "datasetRoot": "vnext/content/local-ai/eval-golden",
+    "requiresNetwork": false,
+    "requiresHostedAi": false,
+    "mayMutate": false,
+    "baselineUpdateRequiresExplicitFlag": true,
+    "regressionThresholds": {
+      "recallAt1Drop": 0.02,
+      "mrrDrop": 0.02,
+      "citationCoverageDrop": 0.05,
+      "citationCoverageFloor": 0.60
+    }
+  },
+  {
     "id": "autonomous_scheduler",
     "displayName": "Autonomous Scheduler Preview",
     "capacity": 0,

@@ -1,0 +1,22 @@
+name: Local Eval
+
+on:
+  pull_request:
+    paths:
+      - "vnext/content/local-ai/**"
+      - "vnext/src/Wevito.VNext.Core/**"
+      - "vnext/tests/Wevito.VNext.Tests/**"
+      - "tools/run-golden-eval.ps1"
+
+jobs:
+  local-eval:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+      - run: dotnet build .\vnext\Wevito.VNext.sln
+      - run: dotnet test .\vnext\tests\Wevito.VNext.Tests\Wevito.VNext.Tests.csproj --no-build
+      - shell: pwsh
+        run: powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\run-golden-eval.ps1 -ArtifactRoot .\vnext\artifacts\eval-golden\
