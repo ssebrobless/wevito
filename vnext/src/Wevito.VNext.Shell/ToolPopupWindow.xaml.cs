@@ -175,6 +175,7 @@ public partial class ToolPopupWindow : Window
             ? "Consent acknowledged. Live calls still require a later explicit approval."
             : "Consent not acknowledged. No live model calls can run.";
         PetModelFirstCallConsentButton.IsEnabled = !modelFirstCallApproved;
+        LocalAiRuntimeStatusText.Text = FormatLocalAiRuntimeStatus(state);
         var webSearchEnabled = GetSettingBool(state, WebResearchConnector.WebSearchEnabledSetting);
         var webBackend = state.SettingsSnapshot.TryGetValue(WebResearchConnector.WebBackendSetting, out var backend) ? backend : "offline";
         WebSearchEnabledCheckBox.IsChecked = webSearchEnabled;
@@ -1104,6 +1105,21 @@ public partial class ToolPopupWindow : Window
             $"Allowlist: {notice.AllowlistSummary}",
             notice.NoToolExecutionStatement
         ]);
+    }
+
+    private static string FormatLocalAiRuntimeStatus(CompanionState state)
+    {
+        var providerMode = state.SettingsSnapshot.TryGetValue(ModelProviderModeService.ProviderModeSetting, out var mode)
+            ? mode
+            : "disabled";
+        var endpoint = state.SettingsSnapshot.TryGetValue(ModelProviderModeService.LocalRuntimeEndpointSetting, out var configuredEndpoint)
+            ? configuredEndpoint
+            : LocalRuntimeProbeService.DefaultOllamaEndpoint;
+        var model = state.SettingsSnapshot.TryGetValue(ModelProviderModeService.LocalRuntimeModelSetting, out var configuredModel)
+            ? configuredModel
+            : LocalRuntimeProbeService.DefaultOllamaModel;
+        var available = GetSettingBool(state, ModelProviderModeService.LocalProviderAvailableSetting);
+        return $"Local AI runtime: mode={providerMode}; provider={(available ? "available" : "not probed/available")}; endpoint={endpoint}; model={model}; hosted AI remains disabled unless separately approved.";
     }
 
     private static ImageSource? ResolveActionOptionPreview(SpriteAssetService assetService, string actionId, HabitatDisplayItem item)

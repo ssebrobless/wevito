@@ -1910,6 +1910,8 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         hydrated.TryAdd(ModelProviderModeService.ProviderModeSetting, "disabled");
         hydrated.TryAdd(ModelProviderModeService.LocalProviderIdSetting, "deterministic-local");
         hydrated.TryAdd(ModelProviderModeService.LocalProviderAvailableSetting, bool.FalseString);
+        hydrated.TryAdd(ModelProviderModeService.LocalRuntimeEndpointSetting, LocalRuntimeProbeService.DefaultOllamaEndpoint);
+        hydrated.TryAdd(ModelProviderModeService.LocalRuntimeModelSetting, LocalRuntimeProbeService.DefaultOllamaModel);
         hydrated.TryAdd(ModelProviderModeService.HostedProviderIdSetting, "none");
         hydrated.TryAdd(ModelProviderModeService.HostedProviderApprovedSetting, bool.FalseString);
         hydrated.TryAdd(RuntimeSupervisorService.QuietModeSetting, bool.FalseString);

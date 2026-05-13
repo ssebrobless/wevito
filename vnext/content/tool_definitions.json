@@ -50,6 +50,13 @@
     "displayName": "Local AI Research",
     "capacity": 0,
     "defaultProvider": "deterministic-local",
+    "ollamaProvider": {
+      "endpointDefault": "http://127.0.0.1:11434",
+      "modelDefault": "llama3.2:3b",
+      "localhostOnly": true,
+      "probePath": "/api/tags",
+      "chatPath": "/v1/chat/completions"
+    },
     "networkDefault": "disabled",
     "hostedAiDefault": "disabled",
     "outputs": [

@@ -11,10 +11,12 @@ public sealed class CodeReviewPreviewAdapter
     private static readonly string[] SupportedExtensions = [".cs", ".xaml", ".gd", ".ps1", ".py", ".json"];
     private static readonly string[] SkippedDirectories = [".git", ".codex-cache", ".godot", ".vs", "bin", "obj", "artifacts", "node_modules", "sprites_runtime", "sprites_shared_runtime", "source_assets", "builds"];
     private readonly UnifiedPolicyService _policyService;
+    private readonly IModelAdapter? _localModelAdapter;
 
-    public CodeReviewPreviewAdapter(UnifiedPolicyService? policyService = null)
+    public CodeReviewPreviewAdapter(UnifiedPolicyService? policyService = null, IModelAdapter? localModelAdapter = null)
     {
         _policyService = policyService ?? new UnifiedPolicyService();
+        _localModelAdapter = localModelAdapter;
     }
 
     public TaskAdapterResult BuildReport(TaskAdapterRequest request, DateTimeOffset? nowUtc = null)
@@ -85,6 +87,7 @@ public sealed class CodeReviewPreviewAdapter
             BuildSuggestedTests(summaries),
             DidMutate: false,
             timestamp);
+        var modelResponse = TryBuildLocalModelSynthesis(request, report, timestamp);
 
         Directory.CreateDirectory(artifactRoot);
         var jsonPath = Path.Combine(artifactRoot, "code-review-report.json");
@@ -99,10 +102,44 @@ public sealed class CodeReviewPreviewAdapter
             DidMutate: false,
             ReadPaths: files,
             WrittenPaths: [jsonPath, markdownPath],
-            PreviewSummary: $"Wrote codeReview markdown and JSON reports for {summaries.Count} file(s). No code files were changed.",
+            PreviewSummary: BuildPreviewSummary(summaries.Count, modelResponse),
             ResultSummary: $"codeReview report ready: {markdownPath}",
             AuditLogPath: markdownPath,
             CompletedAtUtc: timestamp);
+    }
+
+    private ModelResponse? TryBuildLocalModelSynthesis(TaskAdapterRequest request, CodeReviewReport report, DateTimeOffset timestamp)
+    {
+        if (_localModelAdapter is null)
+        {
+            return null;
+        }
+
+        return _localModelAdapter.SuggestAsync(new ModelRequest(
+            Guid.Empty,
+            "Local Wevito",
+            PetHelperRole.ChecklistHelper,
+            ToolFamily,
+            request.Intent.RawText,
+            $"Files scanned: {report.FilesScanned}. Findings: {report.FindingCount}.",
+            TrustedContext: report.Files.Select(file => file.RelativePath).ToList(),
+            UntrustedContext: [request.Intent.RawText],
+            ApprovedForModelCall: true,
+            ArtifactRoot: request.ArtifactRoot,
+            RequestedAtUtc: timestamp)).GetAwaiter().GetResult();
+    }
+
+    private static string BuildPreviewSummary(int fileCount, ModelResponse? modelResponse)
+    {
+        var summary = $"Wrote codeReview markdown and JSON reports for {fileCount} file(s). No code files were changed.";
+        if (modelResponse is null)
+        {
+            return summary;
+        }
+
+        return modelResponse.DidCallProvider
+            ? $"{summary} Local model synthesis was added via {modelResponse.Provider}/{modelResponse.Model}."
+            : $"{summary} Local model degraded to deterministic fallback: {modelResponse.BlockReason}";
     }
 
     private static IEnumerable<string> EnumerateCodeFiles(string path, IReadOnlyList<string> approvedRoots)

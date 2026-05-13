@@ -50,15 +50,16 @@ public sealed class PetTaskAdapterPreviewDispatcher
         ScreenCapturePreviewAdapter? screenCapturePreviewAdapter = null,
         PetMemoryPreviewAdapter? petMemoryPreviewAdapter = null,
         LocalToolExecutionPreviewAdapter? localToolExecutionPreviewAdapter = null,
+        IModelAdapter? activeLocalModelAdapter = null,
         AuditLedgerService? auditLedgerService = null,
         KillSwitchService? killSwitchService = null)
     {
         _localDocsPreviewAdapter = localDocsPreviewAdapter ?? new LocalDocsPreviewAdapter();
-        _localResearchPreviewAdapter = localResearchPreviewAdapter ?? new LocalResearchPreviewAdapter();
+        _localResearchPreviewAdapter = localResearchPreviewAdapter ?? new LocalResearchPreviewAdapter(localModelAdapter: activeLocalModelAdapter);
         _spriteAuditPreviewAdapter = spriteAuditPreviewAdapter ?? new SpriteAuditPreviewAdapter();
         _petStatePreviewAdapter = petStatePreviewAdapter ?? new PetStatePreviewAdapter();
         _assetInventoryPreviewAdapter = assetInventoryPreviewAdapter ?? new AssetInventoryPreviewAdapter();
-        _codeReviewPreviewAdapter = codeReviewPreviewAdapter ?? new CodeReviewPreviewAdapter();
+        _codeReviewPreviewAdapter = codeReviewPreviewAdapter ?? new CodeReviewPreviewAdapter(localModelAdapter: activeLocalModelAdapter);
         _codePatchPlanPreviewAdapter = codePatchPlanPreviewAdapter ?? new CodePatchPlanPreviewAdapter();
         _buildProofPreviewAdapter = buildProofPreviewAdapter ?? new BuildProofPreviewAdapter();
         _translationPreviewAdapter = translationPreviewAdapter ?? new TranslationPreviewAdapter();

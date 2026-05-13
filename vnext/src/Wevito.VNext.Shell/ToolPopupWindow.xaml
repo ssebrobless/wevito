@@ -725,6 +725,31 @@
                     <Border Margin="0,12,0,0"
                             Padding="10"
                             CornerRadius="10"
+                            BorderBrush="#3355A6E6"
+                            BorderThickness="1"
+                            Background="#142940">
+                        <StackPanel>
+                            <TextBlock Text="Local AI Runtime"
+                                       Foreground="#FFF0F4F5"
+                                       FontSize="12"
+                                       FontWeight="SemiBold" />
+                            <TextBlock x:Name="LocalAiRuntimeStatusText"
+                                       Margin="0,5,0,0"
+                                       automation:AutomationProperties.AutomationId="LocalAiRuntimeStatusText"
+                                       Text="Local AI runtime: disabled"
+                                       Foreground="#FFBFD2DC"
+                                       FontSize="10"
+                                       TextWrapping="Wrap" />
+                            <TextBlock Margin="0,5,0,0"
+                                       Text="C-PHASE 72 only supports localhost Ollama probing with deterministic fallback. No hosted provider keys are read here."
+                                       Foreground="#FF9FB7C4"
+                                       FontSize="10"
+                                       TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Border>
+                    <Border Margin="0,12,0,0"
+                            Padding="10"
+                            CornerRadius="10"
                             BorderBrush="#335C6477"
                             BorderThickness="1"
                             Background="#17202A">

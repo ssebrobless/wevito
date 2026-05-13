@@ -9,15 +9,18 @@ public sealed class LocalResearchPreviewAdapter
     private readonly ResearchPlannerService _planner;
     private readonly WebResearchConnector? _webResearchConnector;
     private readonly UnifiedPolicyService _policyService;
+    private readonly IModelAdapter? _localModelAdapter;
 
     public LocalResearchPreviewAdapter(
         ResearchPlannerService? planner = null,
         WebResearchConnector? webResearchConnector = null,
-        UnifiedPolicyService? policyService = null)
+        UnifiedPolicyService? policyService = null,
+        IModelAdapter? localModelAdapter = null)
     {
         _planner = planner ?? new ResearchPlannerService();
         _webResearchConnector = webResearchConnector;
         _policyService = policyService ?? new UnifiedPolicyService();
+        _localModelAdapter = localModelAdapter;
     }
 
     public TaskAdapterResult BuildPreview(TaskAdapterRequest request, DateTimeOffset? nowUtc = null)
@@ -69,6 +72,7 @@ public sealed class LocalResearchPreviewAdapter
             AllowNetwork: webFetches.Count > 0,
             AllowHostedAi: false,
             RequestedAtUtc: timestamp));
+        var modelResponse = TryBuildLocalModelSynthesis(request, packet, timestamp);
 
         Directory.CreateDirectory(artifactRoot);
         var jsonPath = Path.Combine(artifactRoot, "research-evidence-packet.json");
@@ -86,10 +90,44 @@ public sealed class LocalResearchPreviewAdapter
                 .Select(source => source.PathOrUri)
                 .ToList(),
             WrittenPaths: [jsonPath, markdownPath],
-            PreviewSummary: $"Wrote localResearch evidence packet for {packet.SourcesInspected.Count} source record(s). No hosted AI or network fetch was used.",
+            PreviewSummary: BuildPreviewSummary(packet, modelResponse),
             ResultSummary: $"localResearch report ready: {markdownPath}",
             AuditLogPath: markdownPath,
             CompletedAtUtc: timestamp);
+    }
+
+    private ModelResponse? TryBuildLocalModelSynthesis(TaskAdapterRequest request, ResearchEvidencePacket packet, DateTimeOffset timestamp)
+    {
+        if (_localModelAdapter is null)
+        {
+            return null;
+        }
+
+        return _localModelAdapter.SuggestAsync(new ModelRequest(
+            Guid.Empty,
+            "Local Wevito",
+            PetHelperRole.ResearchHelper,
+            ToolFamily,
+            request.Intent.RawText,
+            packet.Synthesis,
+            TrustedContext: packet.SourcesInspected.Select(source => $"{source.Id}:{source.PathOrUri}").ToList(),
+            UntrustedContext: [request.Intent.RawText],
+            ApprovedForModelCall: true,
+            ArtifactRoot: request.ArtifactRoot,
+            RequestedAtUtc: timestamp)).GetAwaiter().GetResult();
+    }
+
+    private static string BuildPreviewSummary(ResearchEvidencePacket packet, ModelResponse? modelResponse)
+    {
+        var summary = $"Wrote localResearch evidence packet for {packet.SourcesInspected.Count} source record(s). No hosted AI or network fetch was used.";
+        if (modelResponse is null)
+        {
+            return summary;
+        }
+
+        return modelResponse.DidCallProvider
+            ? $"{summary} Local model synthesis was added via {modelResponse.Provider}/{modelResponse.Model}."
+            : $"{summary} Local model degraded to deterministic fallback: {modelResponse.BlockReason}";
     }
 
     private IReadOnlyList<WebFetchRecord> TryFetchWebEvidence(TaskAdapterRequest request, DateTimeOffset timestamp, string artifactRoot)
