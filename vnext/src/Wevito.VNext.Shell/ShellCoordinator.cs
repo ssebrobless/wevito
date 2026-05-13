@@ -37,6 +37,8 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private readonly RuntimeSupervisorService _runtimeSupervisorService = new();
     private readonly RuntimeBudgetMeter _runtimeBudgetMeter = new();
     private readonly AutonomousTaskScheduler _autonomousTaskScheduler;
+    private readonly AutonomousBetaDecisionService _autonomousBetaDecisionService;
+    private readonly AutonomousOperationsLoop _autonomousOperationsLoop;
     private readonly TranslationExecutionAdapter _translationExecutionAdapter = new();
     private readonly AudioAssistExecutionAdapter _audioAssistExecutionAdapter = new();
     private readonly BuildProofExecutionAdapter _buildProofExecutionAdapter = new();
@@ -73,6 +75,8 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _killSwitchService = new KillSwitchService(() => _state?.SettingsSnapshot ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase), _auditLedgerService);
         _petTaskAdapterPreviewDispatcher = new PetTaskAdapterPreviewDispatcher(auditLedgerService: _auditLedgerService, killSwitchService: _killSwitchService);
         _autonomousTaskScheduler = new AutonomousTaskScheduler(_runtimeSupervisorService, _runtimeBudgetMeter, _auditLedgerService, _killSwitchService);
+        _autonomousBetaDecisionService = new AutonomousBetaDecisionService(_auditLedgerService);
+        _autonomousOperationsLoop = new AutonomousOperationsLoop(_autonomousBetaDecisionService, _auditLedgerService, _killSwitchService);
         _screenCaptureExecutionAdapter = new ScreenCaptureExecutionAdapter(new WindowsGraphicsCaptureBackend(() => _homeWindow));
         _tickTimer = new DispatcherTimer(DispatcherPriority.Render)
         {
@@ -275,6 +279,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
 
         _state = ApplyAmbientWorkCompanionState(_state, now);
         TryPollAutonomousScheduler(now);
+        TryRunAutonomousOperationsBeta(now);
 
         var roamBandRect = _desktopContext?.WorkArea is { } workArea
             ? new RectInt(workArea.X, workArea.Bottom - (int)RoamBandHeight, workArea.Width, (int)RoamBandHeight)
@@ -333,6 +338,28 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         SetFeedback("Scheduler proposed a draft task card. Preview it manually if useful.");
         TraceLog.Write("scheduler", $"proposal card={result.TaskCard.Id} family={result.TaskCard.ToolFamily} artifact={result.SummaryPath}");
         _ = PersistAsync();
+    }
+
+    private void TryRunAutonomousOperationsBeta(DateTimeOffset now)
+    {
+        if (_state is null)
+        {
+            return;
+        }
+
+        var supervisorStatus = _runtimeSupervisorService.Evaluate(_state.SettingsSnapshot, _desktopContext, isUserInitiatedToolOpen: false);
+        var result = _autonomousOperationsLoop.TryRunIteration(new AutonomousOperationsRequest(
+            _state.SettingsSnapshot,
+            supervisorStatus,
+            Path.Combine(ResolveRepoRootOrBaseDirectory(), "vnext", "artifacts", "pet-tasks"),
+            now));
+        if (!result.Ran)
+        {
+            return;
+        }
+
+        TraceLog.Write("autonomous-beta", $"iteration artifact={result.ArtifactFolder} mutate={result.DidMutate}");
+        SetFeedback("Autonomous beta wrote a proposal-only activity packet. No mutation was applied.");
     }
 
     private void ApplyModeAndLayout()
@@ -438,7 +465,8 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             _desktopContext,
             isUserInitiatedToolOpen: _state.ActiveTool.IsOpen);
         var activitySummary = _activitySummaryService.BuildDaily(DateTimeOffset.UtcNow);
-        _toolPopupWindow.Render(_state, _content, habitatLoadout, _assetService, _devToolsEnabled, petCommandBarState, supervisorStatus, activitySummary);
+        var autonomousDecision = _autonomousBetaDecisionService.Decide(DateTimeOffset.UtcNow);
+        _toolPopupWindow.Render(_state, _content, habitatLoadout, _assetService, _devToolsEnabled, petCommandBarState, supervisorStatus, activitySummary, autonomousDecision);
     }
 
     private PetCommandBarState EnsurePetCommandBarState(IReadOnlyList<PetActor> pets, IReadOnlyList<TaskCard>? taskCards)
@@ -1924,6 +1952,9 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         hydrated.TryAdd(RuntimeSupervisorService.MemoryBudgetMbSetting, "512");
         hydrated.TryAdd(AutonomousTaskScheduler.SchedulerEnabledSetting, bool.FalseString);
         hydrated.TryAdd(AutonomousTaskScheduler.SchedulerPreviewDispatchApprovedSetting, bool.FalseString);
+        hydrated.TryAdd(AutonomousOperationsConfig.EnabledSetting, bool.FalseString);
+        hydrated.TryAdd(AutonomousOperationsConfig.DailyCapSetting, "3");
+        hydrated.TryAdd(AutonomousOperationsConfig.IntervalMinutesSetting, "10");
         hydrated.TryAdd(WebResearchConnector.WebSearchEnabledSetting, bool.FalseString);
         hydrated.TryAdd(WebResearchConnector.WebBackendSetting, "offline");
         hydrated.TryAdd(WebResearchConnector.MaxFetchesPerHourSetting, "30");
