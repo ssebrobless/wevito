@@ -60,6 +60,8 @@ public partial class ToolPopupWindow : Window
 
     public event Action<string, bool>? SettingChanged;
 
+    public event Func<Task>? AutonomousBetaConsentConfirmed;
+
     internal event Func<DevToolCommand, Task>? DevToolCommandRequested;
 
     public event Func<string, string, Task>? ActionOptionRequested;
@@ -86,6 +88,7 @@ public partial class ToolPopupWindow : Window
         RuntimeSupervisorStatus? runtimeSupervisorStatus = null,
         ActivitySummary? activitySummary = null,
         AutonomousBetaDecision? autonomousDecision = null,
+        PromotionDecision? promotionDecision = null,
         IReadOnlyList<string>? activityRecentLines = null,
         EvidenceCollectionStatus? evidenceStatus = null)
     {
@@ -167,7 +170,11 @@ public partial class ToolPopupWindow : Window
         RuntimeBackgroundWorkAllowedCheckBox.IsChecked = GetSettingBool(state, RuntimeSupervisorService.BackgroundWorkAllowedSetting);
         SchedulerEnabledCheckBox.IsChecked = GetSettingBool(state, AutonomousTaskScheduler.SchedulerEnabledSetting);
         AutonomousBetaEnabledCheckBox.IsChecked = GetSettingBool(state, AutonomousOperationsConfig.EnabledSetting);
+        AutonomousBetaEnabledCheckBox.IsEnabled = false;
         AutonomousBetaStatusText.Text = FormatAutonomousBetaStatus(state, autonomousDecision);
+        PromotionSnapshotTableText.Text = FormatPromotionSnapshotTable(promotionDecision);
+        AutonomousBetaTryButton.IsEnabled = PromotionCriteriaSnapshot.CanEnableAutonomousBetaEntry(promotionDecision, state.SettingsSnapshot);
+        AutonomousBetaTryHelpText.Text = FormatAutonomousBetaTryHelp(promotionDecision, state.SettingsSnapshot);
         RuntimeNoFocusStealCheckBox.IsChecked = GetSettingBool(state, RuntimeSupervisorService.NoFocusStealSetting, true);
         RuntimeAutoQuietFullscreenCheckBox.IsChecked = GetSettingBool(state, RuntimeSupervisorService.AutoQuietFullscreenSetting, true);
         RuntimeSupervisorStatusText.Text = runtimeSupervisorStatus?.UserStatus ?? "Runtime supervisor: waiting for shell state.";
@@ -277,7 +284,7 @@ public partial class ToolPopupWindow : Window
             if (TryToggleCheckBox(RuntimePetOnlyModeCheckBox, localPoint)) { return true; }
             if (TryToggleCheckBox(RuntimeBackgroundWorkAllowedCheckBox, localPoint)) { return true; }
             if (TryToggleCheckBox(SchedulerEnabledCheckBox, localPoint)) { return true; }
-            if (TryToggleCheckBox(AutonomousBetaEnabledCheckBox, localPoint)) { return true; }
+            if (await TryInvokeButtonAsync(AutonomousBetaTryButton, localPoint, RequestAutonomousBetaConsentAsync)) { return true; }
             if (TryToggleCheckBox(RuntimeNoFocusStealCheckBox, localPoint)) { return true; }
             if (TryToggleCheckBox(RuntimeAutoQuietFullscreenCheckBox, localPoint)) { return true; }
             if (TryToggleCheckBox(PetModelAdapterEnabledCheckBox, localPoint)) { return true; }
@@ -971,7 +978,17 @@ public partial class ToolPopupWindow : Window
 
     private void AutonomousBetaEnabledCheckBox_OnChanged(object sender, RoutedEventArgs e)
     {
-        PublishSetting(AutonomousOperationsConfig.EnabledSetting, AutonomousBetaEnabledCheckBox.IsChecked == true);
+        if (_suppressSettingEvents || AutonomousBetaEnabledCheckBox.IsChecked != false)
+        {
+            return;
+        }
+
+        PublishSetting(AutonomousOperationsConfig.EnabledSetting, false);
+    }
+
+    private async void AutonomousBetaTryButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        await RequestAutonomousBetaConsentAsync();
     }
 
     private void RuntimeKillSwitchCheckBox_OnChanged(object sender, RoutedEventArgs e)
@@ -1145,12 +1162,12 @@ public partial class ToolPopupWindow : Window
 
     private static bool GetSettingBool(CompanionState state, string key, bool defaultValue = false)
     {
-        if (state.SettingsSnapshot.TryGetValue(key, out var raw) && bool.TryParse(raw, out var parsed))
-        {
-            return parsed;
-        }
+        return GetSettingsBool(state.SettingsSnapshot, key, defaultValue);
+    }
 
-        return defaultValue;
+    private static bool GetSettingsBool(IReadOnlyDictionary<string, string> settings, string key, bool defaultValue = false)
+    {
+        return settings.TryGetValue(key, out var raw) && bool.TryParse(raw, out var parsed) ? parsed : defaultValue;
     }
 
     private static string FormatPetModelCapabilityStatus(bool modelEnabled, bool firstCallApproved)
@@ -1175,6 +1192,70 @@ public partial class ToolPopupWindow : Window
 
         var passed = decision.Checks.Count(check => check.Passed);
         return $"Autonomous beta: {(enabled ? "enabled" : "off")} | decision={decision.Decision} | checks={passed}/{decision.Checks.Count} | proposal-only; mutation apply is blocked.";
+    }
+
+    internal static string FormatPromotionSnapshotTable(PromotionDecision? decision)
+    {
+        if (decision is null)
+        {
+            return "Promotion snapshot: no reviewed decision packet yet.";
+        }
+
+        var lines = new List<string>
+        {
+            $"Promotion decision: {decision.Label} ({decision.Criteria.Count(criterion => criterion.Passed)}/{decision.Criteria.Count})"
+        };
+        lines.AddRange(decision.Criteria.Select(criterion =>
+            $"{(criterion.Passed ? "PASS" : "FAIL")} {criterion.Id}: {criterion.ObservedValue} vs {criterion.Threshold}"));
+        return string.Join(Environment.NewLine, lines);
+    }
+
+    internal static string FormatAutonomousBetaTryHelp(PromotionDecision? decision, IReadOnlyDictionary<string, string> settings)
+    {
+        if (PromotionCriteriaSnapshot.CanEnableAutonomousBetaEntry(decision, settings))
+        {
+            return "Ready for explicit confirmation. The loop remains proposal-only, daily-capped, and KillSwitch-protected.";
+        }
+
+        if (KillSwitchService.IsActive(settings))
+        {
+            return "Disabled because Stop Everything is active.";
+        }
+
+        if (GetSettingsBool(settings, AutonomousOperationsConfig.EnabledSetting))
+        {
+            return "Autonomous beta is already enabled.";
+        }
+
+        return decision is null
+            ? "Disabled until a 7-day promotion packet passes every safety and liveness criterion."
+            : $"Disabled because latest promotion decision is {decision.Label}: {string.Join(", ", decision.Reasons)}.";
+    }
+
+    internal static bool ShouldWriteAutonomousBetaConsent(bool explicitConfirm, PromotionDecision? decision, IReadOnlyDictionary<string, string> settings)
+    {
+        return explicitConfirm && PromotionCriteriaSnapshot.CanEnableAutonomousBetaEntry(decision, settings);
+    }
+
+    private async Task RequestAutonomousBetaConsentAsync()
+    {
+        if (!AutonomousBetaTryButton.IsEnabled)
+        {
+            return;
+        }
+
+        var result = MessageBox.Show(
+            "Enable the autonomous operations beta?\n\nThis lets Wevito run the reviewed proposal-only autonomous loop. It does not mutate files by itself, daily caps still apply, and Stop Everything still blocks helper work immediately.\n\nClick Yes only if you want to enable the beta now.",
+            "Enable the autonomous operations beta?",
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Warning,
+            MessageBoxResult.No);
+        if (result != MessageBoxResult.Yes || AutonomousBetaConsentConfirmed is null)
+        {
+            return;
+        }
+
+        await AutonomousBetaConsentConfirmed.Invoke();
     }
 
     private static string FormatPetModelConsentNotice()
