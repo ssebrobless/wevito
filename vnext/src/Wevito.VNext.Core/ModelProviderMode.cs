@@ -13,8 +13,24 @@ public sealed record ModelProviderSettings(
     bool LocalProviderAvailable,
     string LocalProviderId,
     string HostedProviderId,
+    bool InProcessLocalRuntimeEnabled = false,
     string LocalRuntimeEndpoint = LocalRuntimeProbeService.DefaultOllamaEndpoint,
     string LocalRuntimeModel = LocalRuntimeProbeService.DefaultOllamaModel);
+
+public enum ModelProviderRoute
+{
+    Disabled,
+    Ollama,
+    OnnxPhi,
+    DeterministicLocal,
+    HostedCloudBlocked
+}
+
+public sealed record ModelProviderRouteDecision(
+    ModelProviderRoute Route,
+    string ProviderId,
+    string Reason,
+    bool DidSelectHostedProvider);
 
 public sealed class ModelProviderModeService
 {
@@ -23,6 +39,7 @@ public sealed class ModelProviderModeService
     public const string HostedProviderIdSetting = "pet_model_hosted_provider_id";
     public const string HostedProviderApprovedSetting = "pet_model_hosted_provider_approved";
     public const string LocalProviderAvailableSetting = "pet_model_local_provider_available";
+    public const string InProcessLocalRuntimeEnabledSetting = "local_runtime_inproc_enabled";
     public const string LocalRuntimeEndpointSetting = LocalRuntimeProbeService.OllamaEndpointSetting;
     public const string LocalRuntimeModelSetting = LocalRuntimeProbeService.OllamaModelSetting;
 
@@ -35,6 +52,7 @@ public sealed class ModelProviderModeService
             LocalProviderAvailable: ReadBool(snapshot, LocalProviderAvailableSetting, false),
             LocalProviderId: Read(snapshot, LocalProviderIdSetting, "deterministic-local"),
             HostedProviderId: Read(snapshot, HostedProviderIdSetting, "none"),
+            InProcessLocalRuntimeEnabled: ReadBool(snapshot, InProcessLocalRuntimeEnabledSetting, false),
             LocalRuntimeEndpoint: Read(snapshot, LocalRuntimeEndpointSetting, LocalRuntimeProbeService.DefaultOllamaEndpoint),
             LocalRuntimeModel: Read(snapshot, LocalRuntimeModelSetting, LocalRuntimeProbeService.DefaultOllamaModel));
     }
@@ -73,6 +91,34 @@ public sealed class ModelProviderModeService
 
         reason = "";
         return true;
+    }
+
+    public ModelProviderRouteDecision DecideRoute(
+        ModelProviderSettings settings,
+        LocalRuntimeProbeResult? probeResult = null,
+        bool onnxPhiWeightsPresent = false)
+    {
+        if (settings.Mode == ModelProviderMode.Disabled)
+        {
+            return new ModelProviderRouteDecision(ModelProviderRoute.Disabled, "none", "Model provider mode is disabled.", DidSelectHostedProvider: false);
+        }
+
+        if (settings.Mode == ModelProviderMode.ApprovedCloud)
+        {
+            return new ModelProviderRouteDecision(ModelProviderRoute.HostedCloudBlocked, settings.HostedProviderId, "Hosted providers are outside C-PHASE 79 and remain blocked.", DidSelectHostedProvider: false);
+        }
+
+        if (probeResult?.IsAvailable == true)
+        {
+            return new ModelProviderRouteDecision(ModelProviderRoute.Ollama, "ollama", "LocalOnly routed to localhost Ollama.", DidSelectHostedProvider: false);
+        }
+
+        if (settings.InProcessLocalRuntimeEnabled && onnxPhiWeightsPresent)
+        {
+            return new ModelProviderRouteDecision(ModelProviderRoute.OnnxPhi, "onnx-phi", "LocalOnly routed to feature-flagged in-process ONNX Phi fallback.", DidSelectHostedProvider: false);
+        }
+
+        return new ModelProviderRouteDecision(ModelProviderRoute.DeterministicLocal, "deterministic-local", "LocalOnly fell back to deterministic local adapter.", DidSelectHostedProvider: false);
     }
 
     public static ModelProviderMode ParseMode(string? value)

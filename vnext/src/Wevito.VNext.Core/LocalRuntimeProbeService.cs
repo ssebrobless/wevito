@@ -11,12 +11,15 @@ public sealed class LocalRuntimeProbeService
 
     private readonly HttpClient _httpClient;
     private readonly KillSwitchService? _killSwitchService;
+    private readonly Queue<LocalRuntimeProbeResult> _recentProbeHistory = new();
 
     public LocalRuntimeProbeService(HttpClient? httpClient = null, KillSwitchService? killSwitchService = null)
     {
         _httpClient = httpClient ?? new HttpClient { Timeout = TimeSpan.FromSeconds(2) };
         _killSwitchService = killSwitchService;
     }
+
+    public IReadOnlyList<LocalRuntimeProbeResult> RecentProbeHistory => _recentProbeHistory.ToList();
 
     public async Task<LocalRuntimeProbeResult> ProbeAsync(
         IReadOnlyDictionary<string, string>? settings = null,
@@ -30,17 +33,17 @@ public sealed class LocalRuntimeProbeService
 
         if (_killSwitchService?.IsActive() == true)
         {
-            return Unavailable(endpoint, model, "kill_switch=true", timestamp);
+            return Remember(Unavailable(endpoint, model, "kill_switch=true", timestamp));
         }
 
         if (runtimeStatus?.Mode is RuntimeSupervisorMode.Quiet or RuntimeSupervisorMode.PetOnly)
         {
-            return new LocalRuntimeProbeResult(false, true, "ollama", endpoint, model, "Runtime supervisor is Quiet or PetOnly; local runtime probe is dormant.", timestamp);
+            return Remember(new LocalRuntimeProbeResult(false, true, "ollama", endpoint, model, "Runtime supervisor is Quiet or PetOnly; local runtime probe is dormant.", timestamp));
         }
 
         if (!IsLocalhostEndpoint(endpoint, out var baseUri, out var reason))
         {
-            return Unavailable(endpoint, model, reason, timestamp);
+            return Remember(Unavailable(endpoint, model, reason, timestamp));
         }
 
         try
@@ -50,15 +53,31 @@ public sealed class LocalRuntimeProbeService
             using var response = await _httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
             if (!response.IsSuccessStatusCode)
             {
-                return Unavailable(endpoint, model, $"Ollama probe failed with HTTP {(int)response.StatusCode}.", timestamp);
+                return Remember(Unavailable(endpoint, model, $"Ollama probe failed with HTTP {(int)response.StatusCode}.", timestamp));
             }
 
-            return new LocalRuntimeProbeResult(true, false, "ollama", endpoint, model, "Ollama runtime responded to /api/tags.", timestamp);
+            return Remember(new LocalRuntimeProbeResult(true, false, "ollama", endpoint, model, "Ollama runtime responded to /api/tags.", timestamp));
         }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or OperationCanceledException)
         {
-            return Unavailable(endpoint, model, $"Ollama probe failed: {ex.GetType().Name}.", timestamp);
+            return Remember(Unavailable(endpoint, model, $"Ollama probe failed: {ex.GetType().Name}.", timestamp));
         }
+    }
+
+    public string FormatRecentProbeStatus()
+    {
+        var last = _recentProbeHistory.LastOrDefault();
+        if (last is null)
+        {
+            return "Local runtime probe has not run yet.";
+        }
+
+        var state = last.WasDormant
+            ? "dormant"
+            : last.IsAvailable
+                ? "available"
+                : "unavailable";
+        return $"Local runtime probe: {state}; runtime={last.RuntimeId}; endpoint={last.Endpoint}; model={last.Model}; reason={last.Reason}; last={last.ProbedAtUtc:O}";
     }
 
     public static bool IsLocalhostEndpoint(string endpoint, out Uri baseUri, out string reason)
@@ -90,6 +109,17 @@ public sealed class LocalRuntimeProbeService
     private static LocalRuntimeProbeResult Unavailable(string endpoint, string model, string reason, DateTimeOffset timestamp)
     {
         return new LocalRuntimeProbeResult(false, false, "ollama", endpoint, model, reason, timestamp);
+    }
+
+    private LocalRuntimeProbeResult Remember(LocalRuntimeProbeResult result)
+    {
+        _recentProbeHistory.Enqueue(result);
+        while (_recentProbeHistory.Count > 10)
+        {
+            _recentProbeHistory.Dequeue();
+        }
+
+        return result;
     }
 
     private static string Read(IReadOnlyDictionary<string, string>? settings, string key, string defaultValue)

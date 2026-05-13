@@ -18,6 +18,7 @@ public sealed class ModelProviderModeTests
         Assert.False(parsed.LocalProviderAvailable);
         Assert.Equal("deterministic-local", parsed.LocalProviderId);
         Assert.Equal("none", parsed.HostedProviderId);
+        Assert.False(parsed.InProcessLocalRuntimeEnabled);
     }
 
     [Fact]
@@ -52,5 +53,101 @@ public sealed class ModelProviderModeTests
 
         Assert.False(allowed);
         Assert.Contains("deterministic local fallback", reason);
+    }
+
+    [Fact]
+    public void DecideRoute_DisabledReturnsNoAdapter()
+    {
+        var service = new ModelProviderModeService();
+        var settings = new ModelProviderSettings(
+            ModelProviderMode.Disabled,
+            HostedProviderApproved: false,
+            LocalProviderAvailable: false,
+            LocalProviderId: "deterministic-local",
+            HostedProviderId: "none");
+
+        var route = service.DecideRoute(settings);
+
+        Assert.Equal(ModelProviderRoute.Disabled, route.Route);
+        Assert.False(route.DidSelectHostedProvider);
+    }
+
+    [Fact]
+    public void DecideRoute_LocalOnlyAvailableProbeRoutesOllama()
+    {
+        var service = new ModelProviderModeService();
+        var settings = new ModelProviderSettings(
+            ModelProviderMode.LocalOnly,
+            HostedProviderApproved: false,
+            LocalProviderAvailable: true,
+            LocalProviderId: "deterministic-local",
+            HostedProviderId: "none");
+        var probe = new LocalRuntimeProbeResult(
+            IsAvailable: true,
+            WasDormant: false,
+            RuntimeId: "ollama",
+            Endpoint: LocalRuntimeProbeService.DefaultOllamaEndpoint,
+            Model: LocalRuntimeProbeService.DefaultOllamaModel,
+            Reason: "ok",
+            ProbedAtUtc: DateTimeOffset.Parse("2026-05-13T12:00:00Z"));
+
+        var route = service.DecideRoute(settings, probe);
+
+        Assert.Equal(ModelProviderRoute.Ollama, route.Route);
+        Assert.Equal("ollama", route.ProviderId);
+        Assert.False(route.DidSelectHostedProvider);
+    }
+
+    [Fact]
+    public void DecideRoute_LocalOnlyInProcessWeightsRoutesOnnxPhi()
+    {
+        var service = new ModelProviderModeService();
+        var settings = new ModelProviderSettings(
+            ModelProviderMode.LocalOnly,
+            HostedProviderApproved: false,
+            LocalProviderAvailable: false,
+            LocalProviderId: "deterministic-local",
+            HostedProviderId: "none",
+            InProcessLocalRuntimeEnabled: true);
+
+        var route = service.DecideRoute(settings, probeResult: null, onnxPhiWeightsPresent: true);
+
+        Assert.Equal(ModelProviderRoute.OnnxPhi, route.Route);
+        Assert.Equal("onnx-phi", route.ProviderId);
+        Assert.False(route.DidSelectHostedProvider);
+    }
+
+    [Fact]
+    public void DecideRoute_LocalOnlyWithoutRuntimeFallsBackDeterministic()
+    {
+        var service = new ModelProviderModeService();
+        var settings = new ModelProviderSettings(
+            ModelProviderMode.LocalOnly,
+            HostedProviderApproved: false,
+            LocalProviderAvailable: false,
+            LocalProviderId: "deterministic-local",
+            HostedProviderId: "none");
+
+        var route = service.DecideRoute(settings);
+
+        Assert.Equal(ModelProviderRoute.DeterministicLocal, route.Route);
+        Assert.False(route.DidSelectHostedProvider);
+    }
+
+    [Fact]
+    public void DecideRoute_ApprovedCloudStaysBlockedInThisPhase()
+    {
+        var service = new ModelProviderModeService();
+        var settings = new ModelProviderSettings(
+            ModelProviderMode.ApprovedCloud,
+            HostedProviderApproved: true,
+            LocalProviderAvailable: true,
+            LocalProviderId: "ollama",
+            HostedProviderId: "anthropic");
+
+        var route = service.DecideRoute(settings);
+
+        Assert.Equal(ModelProviderRoute.HostedCloudBlocked, route.Route);
+        Assert.False(route.DidSelectHostedProvider);
     }
 }

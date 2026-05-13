@@ -82,7 +82,19 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _killSwitchService = new KillSwitchService(() => _state?.SettingsSnapshot ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase), _auditLedgerService);
         _fullscreenMonitor = new WindowsForegroundFullscreenMonitor(_auditLedgerService);
         _powerHandler = new WindowsPowerHandler(_auditLedgerService);
-        _petTaskAdapterPreviewDispatcher = new PetTaskAdapterPreviewDispatcher(auditLedgerService: _auditLedgerService, killSwitchService: _killSwitchService);
+        var onnxPhiAdapter = new OnnxPhiLocalModelAdapter(
+            settingsProvider: () => _state?.SettingsSnapshot ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
+            killSwitchService: _killSwitchService);
+        var activeLocalModelAdapter = new LocalModelProviderRouterAdapter(
+            () => _state?.SettingsSnapshot ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
+            probeService: new LocalRuntimeProbeService(killSwitchService: _killSwitchService),
+            ollamaAdapter: new OllamaLocalModelAdapter(
+                settingsProvider: () => _state?.SettingsSnapshot ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
+                killSwitchService: _killSwitchService),
+            onnxPhiAdapter: onnxPhiAdapter,
+            deterministicAdapter: new LocalModelAdapter(_killSwitchService),
+            onnxPhiWeightsPresent: () => onnxPhiAdapter.HasWeights);
+        _petTaskAdapterPreviewDispatcher = new PetTaskAdapterPreviewDispatcher(activeLocalModelAdapter: activeLocalModelAdapter, auditLedgerService: _auditLedgerService, killSwitchService: _killSwitchService);
         _autonomousTaskScheduler = new AutonomousTaskScheduler(_runtimeSupervisorService, _runtimeBudgetMeter, _auditLedgerService, _killSwitchService);
         _autonomousBetaDecisionService = new AutonomousBetaDecisionService(_auditLedgerService);
         _autonomousOperationsLoop = new AutonomousOperationsLoop(_autonomousBetaDecisionService, _auditLedgerService, _killSwitchService);
@@ -2023,6 +2035,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         hydrated.TryAdd(ModelProviderModeService.ProviderModeSetting, "disabled");
         hydrated.TryAdd(ModelProviderModeService.LocalProviderIdSetting, "deterministic-local");
         hydrated.TryAdd(ModelProviderModeService.LocalProviderAvailableSetting, bool.FalseString);
+        hydrated.TryAdd(ModelProviderModeService.InProcessLocalRuntimeEnabledSetting, bool.FalseString);
         hydrated.TryAdd(ModelProviderModeService.LocalRuntimeEndpointSetting, LocalRuntimeProbeService.DefaultOllamaEndpoint);
         hydrated.TryAdd(ModelProviderModeService.LocalRuntimeModelSetting, LocalRuntimeProbeService.DefaultOllamaModel);
         hydrated.TryAdd(ModelProviderModeService.HostedProviderIdSetting, "none");
