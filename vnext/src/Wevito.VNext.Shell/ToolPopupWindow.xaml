@@ -1114,6 +1114,44 @@
                         </StackPanel>
                     </Border>
 
+                    <Border Margin="0,8,0,0"
+                            Padding="8"
+                            CornerRadius="10"
+                            BorderBrush="#335A7480"
+                            BorderThickness="1"
+                            Background="#141B22">
+                        <StackPanel>
+                            <TextBlock Text="Power-user mutation pilot"
+                                       Foreground="#FFF0F4F5"
+                                       FontSize="11"
+                                       FontWeight="SemiBold" />
+                            <TextBlock Margin="0,3,0,0"
+                                       Foreground="#FF9FB7C4"
+                                       FontSize="10"
+                                       TextWrapping="Wrap"
+                                       Text="Default off. This only drafts a guarded mutation proposal for a tiny approved pilot path; it does not apply code." />
+                            <Grid Margin="0,6,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBox x:Name="GuardedMutationPilotTextBox"
+                                         MinHeight="28"
+                                         IsEnabled="False"
+                                         automation:AutomationProperties.AutomationId="GuardedMutationPilotTextBox"
+                                         Text="vnext/content/guarded-mutation-pilot/example.txt" />
+                                <Button x:Name="GuardedMutationPilotButton"
+                                        Grid.Column="1"
+                                        Margin="6,0,0,0"
+                                        Padding="8,4"
+                                        IsEnabled="False"
+                                        Style="{StaticResource PopupButtonStyle}"
+                                        automation:AutomationProperties.AutomationId="GuardedMutationPilotButton"
+                                        Content="PROPOSE" />
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
                     <TextBlock Margin="0,5,0,0"
                                Foreground="#FFE1D6A8"
                                FontSize="10"

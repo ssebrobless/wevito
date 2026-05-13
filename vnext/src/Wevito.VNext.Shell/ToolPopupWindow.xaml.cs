@@ -191,6 +191,9 @@ public partial class ToolPopupWindow : Window
             ? string.Join(Environment.NewLine, activityRecentLines)
             : "Recent activity appears here after helpers produce evidence packets.";
         SelfImprovementText.Text = FormatSelfImprovementPanel(activitySummary);
+        GuardedMutationPilotTextBox.IsEnabled = false;
+        GuardedMutationPilotButton.IsEnabled = false;
+        GuardedMutationPilotButton.ToolTip = "guardedMutation pilotEnabled=false; proposals stay disabled until a later explicit approval.";
         if (showingDev)
         {
             RenderDevTools(state, content);

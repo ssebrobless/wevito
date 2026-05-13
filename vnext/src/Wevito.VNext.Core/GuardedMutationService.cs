@@ -51,6 +51,7 @@ public sealed class GuardedMutationService
         var manifest = BuildManifest(plan, artifactFolder, before: Snapshot(plan.Edits), after: [], commands, applied: false, rolledBack: false);
         var manifestPath = Path.Combine(artifactFolder, "mutation-dry-run.json");
         File.WriteAllText(manifestPath, JsonSerializer.Serialize(manifest, JsonDefaults.Options));
+        File.WriteAllText(Path.Combine(artifactFolder, "mutation-diff.md"), BuildDiff(plan.Edits));
         Record(plan, MutationProposalPacketKind, artifactFolder, "Guarded mutation dry-run packet created.", didMutate: false);
         return new GuardedMutationResult(true, false, false, artifactFolder, manifestPath, commands, "Dry-run completed without mutation.");
     }
@@ -256,6 +257,38 @@ public sealed class GuardedMutationService
     {
         var safe = new string((scopeId ?? "scope").Select(ch => char.IsLetterOrDigit(ch) || ch is '-' or '_' ? ch : '-').ToArray());
         return string.IsNullOrWhiteSpace(safe) ? "scope" : safe;
+    }
+
+    private static string BuildDiff(IReadOnlyList<GuardedMutationEdit> edits)
+    {
+        var lines = new List<string> { "# Guarded Mutation Dry-Run Diff", "" };
+        foreach (var edit in edits)
+        {
+            lines.Add($"## {Path.GetFileName(edit.TargetPath)}");
+            lines.Add("");
+            lines.Add("```diff");
+            if (File.Exists(edit.TargetPath))
+            {
+                foreach (var line in File.ReadAllLines(edit.TargetPath).Take(20))
+                {
+                    lines.Add("-" + line);
+                }
+            }
+            else
+            {
+                lines.Add("-<missing file>");
+            }
+
+            foreach (var line in edit.ProposedContent.Replace("\r\n", "\n").Replace("\r", "\n").Split('\n').Take(20))
+            {
+                lines.Add("+" + line);
+            }
+
+            lines.Add("```");
+            lines.Add("");
+        }
+
+        return string.Join(Environment.NewLine, lines);
     }
 
     private void Record(GuardedMutationPlan plan, string packetKind, string artifactFolder, string summary, bool didMutate)

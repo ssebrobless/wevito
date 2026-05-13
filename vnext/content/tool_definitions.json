@@ -218,6 +218,7 @@
     "capacity": 0,
     "toolFamily": "localToolExec",
     "defaultState": "off",
+    "pilotEnabled": false,
     "executionDefault": "blocked",
     "dryRunOnly": true,
     "allowedRoot": "tools/",

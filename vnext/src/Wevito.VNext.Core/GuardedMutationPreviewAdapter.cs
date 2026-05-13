@@ -6,6 +6,74 @@ namespace Wevito.VNext.Core;
 public sealed class GuardedMutationPreviewAdapter
 {
     public const string ToolFamily = "guardedMutation";
+    public const string PilotScopeId = "guarded-mutation-pilot";
+
+    public GuardedMutationPilotProposal Propose(
+        string repoRoot,
+        string relativeTargetPath,
+        string proposedContent,
+        string artifactRoot,
+        DateTimeOffset? nowUtc = null)
+    {
+        var timestamp = nowUtc ?? DateTimeOffset.UtcNow;
+        var root = Path.GetFullPath(repoRoot);
+        var approvedRoot = Path.GetFullPath(Path.Combine(root, "vnext", "content", PilotScopeId));
+        var target = Path.GetFullPath(Path.Combine(root, relativeTargetPath));
+        if (!target.StartsWith(approvedRoot.TrimEnd(Path.DirectorySeparatorChar) + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase))
+        {
+            return new GuardedMutationPilotProposal(
+                false,
+                null,
+                null,
+                null,
+                "Pilot mutation target must stay under vnext/content/guarded-mutation-pilot/.");
+        }
+
+        var taskCardId = Guid.NewGuid();
+        var intent = new TaskIntent(
+            Guid.NewGuid(),
+            $"Propose guarded pilot mutation for {relativeTargetPath}",
+            TaskIntentTargetMode.RouteToBestHelper,
+            TaskKind: TaskKind.PlanCodePatch,
+            RequestedToolFamily: ToolFamily,
+            TargetPathsOrAssets: [target],
+            RiskLevel: ToolRiskLevel.High,
+            NeedsApproval: true,
+            ExpectedOutput: "Draft guarded mutation plan only.",
+            CreatedAtUtc: timestamp);
+        var policy = new ToolPolicy(
+            "guarded-mutation-pilot",
+            ToolFamily,
+            ToolAccessMode.Write,
+            ToolRiskLevel.High,
+            ApprovalRequirement.BeforeExecution,
+            IsEnabled: false,
+            ApprovedRootPaths: [approvedRoot],
+            BlockReason: "Pilot is default-disabled until an operator approves the task card.");
+        var taskCard = new TaskCard(
+            taskCardId,
+            intent,
+            TaskCardStatus.Draft,
+            ToolFamily: ToolFamily,
+            PolicySnapshot: policy,
+            Timeline: ["guarded_mutation_pilot_proposed: draft only"],
+            ResultSummary: "Draft guarded mutation pilot proposal created. Nothing has been applied.",
+            CreatedAtUtc: timestamp,
+            UpdatedAtUtc: timestamp);
+        var plan = new GuardedMutationPlan(
+            "1",
+            Guid.NewGuid(),
+            taskCardId,
+            PilotScopeId,
+            root,
+            [approvedRoot],
+            [new GuardedMutationEdit(target, proposedContent)],
+            [],
+            DryRunOnly: false,
+            timestamp);
+        var preview = BuildPreview(new TaskAdapterRequest(taskCardId, intent, policy, ArtifactRoot: artifactRoot, RequestedAtUtc: timestamp), timestamp);
+        return new GuardedMutationPilotProposal(true, plan, taskCard, preview, "");
+    }
 
     public TaskAdapterResult BuildPreview(TaskAdapterRequest request, DateTimeOffset? nowUtc = null)
     {
@@ -61,3 +129,10 @@ public sealed class GuardedMutationPreviewAdapter
         return new TaskAdapterResult(request.TaskCardId, ToolFamily, TaskAdapterResultStatus.Blocked, false, [], [], BlockReason: reason, CompletedAtUtc: timestamp);
     }
 }
+
+public sealed record GuardedMutationPilotProposal(
+    bool Succeeded,
+    GuardedMutationPlan? Plan,
+    TaskCard? TaskCard,
+    TaskAdapterResult? Preview,
+    string BlockReason);
