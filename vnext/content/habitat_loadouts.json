@@ -3,120 +3,90 @@
     "speciesId": "goose",
     "environmentId": "goose",
     "slots": [
-      {"slotId":"primary","role":"universalHome","assetId":"log_shelter","priorityTier":0,"defaultRect":{"left":204,"top":156,"width":48,"height":24},"depthBand":"groundContact","occlusionMode":"bodyOnly","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Shared little home anchor used by every species; keep this universal rather than species-themed."},
-      {"slotId":"bed-left","role":"petBed","assetId":"moss_bed","priorityTier":1,"defaultRect":{"left":102,"top":210,"width":22,"height":8},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 1 of 3."},
-      {"slotId":"bed-center","role":"petBed","assetId":"moss_bed","priorityTier":2,"defaultRect":{"left":188,"top":212,"width":22,"height":8},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 2 of 3."},
-      {"slotId":"bed-right","role":"petBed","assetId":"moss_bed","priorityTier":3,"defaultRect":{"left":274,"top":210,"width":22,"height":8},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 3 of 3."},
-      {"slotId":"food","role":"sharedFood","assetId":"snack_bowl","priorityTier":4,"defaultRect":{"left":42,"top":204,"width":34,"height":13},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Simple shared food bowl for the home stage."},
-      {"slotId":"water","role":"sharedWater","assetId":"water_bowl","priorityTier":5,"defaultRect":{"left":332,"top":204,"width":34,"height":14},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Simple shared water bowl for the home stage."}
+      {"slotId":"bed-left","role":"petBed","assetId":"moss_bed","priorityTier":0,"defaultRect":{"left":82,"top":206,"width":34,"height":12},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 1 of 3. Keep the focused habitat readable and uncluttered."},
+      {"slotId":"bed-center","role":"petBed","assetId":"moss_bed","priorityTier":1,"defaultRect":{"left":190,"top":206,"width":34,"height":12},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 2 of 3. Pets settle above this when focused."},
+      {"slotId":"bed-right","role":"petBed","assetId":"moss_bed","priorityTier":2,"defaultRect":{"left":298,"top":206,"width":34,"height":12},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 3 of 3. Stage props stay simple so pets remain visible."}
     ]
   },
   {
     "speciesId": "rat",
     "environmentId": "rat",
     "slots": [
-      {"slotId":"primary","role":"universalHome","assetId":"log_shelter","priorityTier":0,"defaultRect":{"left":204,"top":156,"width":48,"height":24},"depthBand":"groundContact","occlusionMode":"bodyOnly","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Shared little home anchor used by every species; keep this universal rather than species-themed."},
-      {"slotId":"bed-left","role":"petBed","assetId":"moss_bed","priorityTier":1,"defaultRect":{"left":102,"top":210,"width":22,"height":8},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 1 of 3."},
-      {"slotId":"bed-center","role":"petBed","assetId":"moss_bed","priorityTier":2,"defaultRect":{"left":188,"top":212,"width":22,"height":8},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 2 of 3."},
-      {"slotId":"bed-right","role":"petBed","assetId":"moss_bed","priorityTier":3,"defaultRect":{"left":274,"top":210,"width":22,"height":8},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 3 of 3."},
-      {"slotId":"food","role":"sharedFood","assetId":"snack_bowl","priorityTier":4,"defaultRect":{"left":42,"top":204,"width":34,"height":13},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Simple shared food bowl for the home stage."},
-      {"slotId":"water","role":"sharedWater","assetId":"water_bowl","priorityTier":5,"defaultRect":{"left":332,"top":204,"width":34,"height":14},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Simple shared water bowl for the home stage."}
+      {"slotId":"bed-left","role":"petBed","assetId":"moss_bed","priorityTier":0,"defaultRect":{"left":82,"top":206,"width":34,"height":12},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 1 of 3."},
+      {"slotId":"bed-center","role":"petBed","assetId":"moss_bed","priorityTier":1,"defaultRect":{"left":190,"top":206,"width":34,"height":12},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 2 of 3."},
+      {"slotId":"bed-right","role":"petBed","assetId":"moss_bed","priorityTier":2,"defaultRect":{"left":298,"top":206,"width":34,"height":12},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 3 of 3."}
     ]
   },
   {
     "speciesId": "crow",
     "environmentId": "crow",
     "slots": [
-      {"slotId":"primary","role":"universalHome","assetId":"log_shelter","priorityTier":0,"defaultRect":{"left":204,"top":156,"width":48,"height":24},"depthBand":"groundContact","occlusionMode":"bodyOnly","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Shared little home anchor used by every species; keep this universal rather than species-themed."},
-      {"slotId":"bed-left","role":"petBed","assetId":"moss_bed","priorityTier":1,"defaultRect":{"left":102,"top":210,"width":22,"height":8},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 1 of 3."},
-      {"slotId":"bed-center","role":"petBed","assetId":"moss_bed","priorityTier":2,"defaultRect":{"left":188,"top":212,"width":22,"height":8},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 2 of 3."},
-      {"slotId":"bed-right","role":"petBed","assetId":"moss_bed","priorityTier":3,"defaultRect":{"left":274,"top":210,"width":22,"height":8},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 3 of 3."},
-      {"slotId":"food","role":"sharedFood","assetId":"snack_bowl","priorityTier":4,"defaultRect":{"left":42,"top":204,"width":34,"height":13},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Simple shared food bowl for the home stage."},
-      {"slotId":"water","role":"sharedWater","assetId":"water_bowl","priorityTier":5,"defaultRect":{"left":332,"top":204,"width":34,"height":14},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Simple shared water bowl for the home stage."}
+      {"slotId":"bed-left","role":"petBed","assetId":"moss_bed","priorityTier":0,"defaultRect":{"left":82,"top":206,"width":34,"height":12},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 1 of 3."},
+      {"slotId":"bed-center","role":"petBed","assetId":"moss_bed","priorityTier":1,"defaultRect":{"left":190,"top":206,"width":34,"height":12},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 2 of 3."},
+      {"slotId":"bed-right","role":"petBed","assetId":"moss_bed","priorityTier":2,"defaultRect":{"left":298,"top":206,"width":34,"height":12},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 3 of 3."}
     ]
   },
   {
     "speciesId": "snake",
     "environmentId": "snake",
     "slots": [
-      {"slotId":"primary","role":"universalHome","assetId":"log_shelter","priorityTier":0,"defaultRect":{"left":204,"top":156,"width":48,"height":24},"depthBand":"groundContact","occlusionMode":"bodyOnly","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Shared little home anchor used by every species; keep this universal rather than species-themed."},
-      {"slotId":"bed-left","role":"petBed","assetId":"moss_bed","priorityTier":1,"defaultRect":{"left":102,"top":210,"width":22,"height":8},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 1 of 3."},
-      {"slotId":"bed-center","role":"petBed","assetId":"moss_bed","priorityTier":2,"defaultRect":{"left":188,"top":212,"width":22,"height":8},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 2 of 3."},
-      {"slotId":"bed-right","role":"petBed","assetId":"moss_bed","priorityTier":3,"defaultRect":{"left":274,"top":210,"width":22,"height":8},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 3 of 3."},
-      {"slotId":"food","role":"sharedFood","assetId":"snack_bowl","priorityTier":4,"defaultRect":{"left":42,"top":204,"width":34,"height":13},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Simple shared food bowl for the home stage."},
-      {"slotId":"water","role":"sharedWater","assetId":"water_bowl","priorityTier":5,"defaultRect":{"left":332,"top":204,"width":34,"height":14},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Simple shared water bowl for the home stage."}
+      {"slotId":"bed-left","role":"petBed","assetId":"moss_bed","priorityTier":0,"defaultRect":{"left":82,"top":206,"width":34,"height":12},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 1 of 3."},
+      {"slotId":"bed-center","role":"petBed","assetId":"moss_bed","priorityTier":1,"defaultRect":{"left":190,"top":206,"width":34,"height":12},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 2 of 3."},
+      {"slotId":"bed-right","role":"petBed","assetId":"moss_bed","priorityTier":2,"defaultRect":{"left":298,"top":206,"width":34,"height":12},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 3 of 3."}
     ]
   },
   {
     "speciesId": "frog",
     "environmentId": "frog",
     "slots": [
-      {"slotId":"primary","role":"universalHome","assetId":"log_shelter","priorityTier":0,"defaultRect":{"left":204,"top":156,"width":48,"height":24},"depthBand":"groundContact","occlusionMode":"bodyOnly","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Shared little home anchor used by every species; keep this universal rather than species-themed."},
-      {"slotId":"bed-left","role":"petBed","assetId":"moss_bed","priorityTier":1,"defaultRect":{"left":102,"top":210,"width":22,"height":8},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 1 of 3."},
-      {"slotId":"bed-center","role":"petBed","assetId":"moss_bed","priorityTier":2,"defaultRect":{"left":188,"top":212,"width":22,"height":8},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 2 of 3."},
-      {"slotId":"bed-right","role":"petBed","assetId":"moss_bed","priorityTier":3,"defaultRect":{"left":274,"top":210,"width":22,"height":8},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 3 of 3."},
-      {"slotId":"food","role":"sharedFood","assetId":"snack_bowl","priorityTier":4,"defaultRect":{"left":42,"top":204,"width":34,"height":13},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Simple shared food bowl for the home stage."},
-      {"slotId":"water","role":"sharedWater","assetId":"water_bowl","priorityTier":5,"defaultRect":{"left":332,"top":204,"width":34,"height":14},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Simple shared water bowl for the home stage."}
+      {"slotId":"bed-left","role":"petBed","assetId":"moss_bed","priorityTier":0,"defaultRect":{"left":82,"top":206,"width":34,"height":12},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 1 of 3."},
+      {"slotId":"bed-center","role":"petBed","assetId":"moss_bed","priorityTier":1,"defaultRect":{"left":190,"top":206,"width":34,"height":12},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 2 of 3."},
+      {"slotId":"bed-right","role":"petBed","assetId":"moss_bed","priorityTier":2,"defaultRect":{"left":298,"top":206,"width":34,"height":12},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 3 of 3."}
     ]
   },
   {
     "speciesId": "fox",
     "environmentId": "fox",
     "slots": [
-      {"slotId":"primary","role":"universalHome","assetId":"log_shelter","priorityTier":0,"defaultRect":{"left":204,"top":156,"width":48,"height":24},"depthBand":"groundContact","occlusionMode":"bodyOnly","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Shared little home anchor used by every species; keep this universal rather than species-themed."},
-      {"slotId":"bed-left","role":"petBed","assetId":"moss_bed","priorityTier":1,"defaultRect":{"left":102,"top":210,"width":22,"height":8},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 1 of 3."},
-      {"slotId":"bed-center","role":"petBed","assetId":"moss_bed","priorityTier":2,"defaultRect":{"left":188,"top":212,"width":22,"height":8},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 2 of 3."},
-      {"slotId":"bed-right","role":"petBed","assetId":"moss_bed","priorityTier":3,"defaultRect":{"left":274,"top":210,"width":22,"height":8},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 3 of 3."},
-      {"slotId":"food","role":"sharedFood","assetId":"snack_bowl","priorityTier":4,"defaultRect":{"left":42,"top":204,"width":34,"height":13},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Simple shared food bowl for the home stage."},
-      {"slotId":"water","role":"sharedWater","assetId":"water_bowl","priorityTier":5,"defaultRect":{"left":332,"top":204,"width":34,"height":14},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Simple shared water bowl for the home stage."}
+      {"slotId":"bed-left","role":"petBed","assetId":"moss_bed","priorityTier":0,"defaultRect":{"left":82,"top":206,"width":34,"height":12},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 1 of 3."},
+      {"slotId":"bed-center","role":"petBed","assetId":"moss_bed","priorityTier":1,"defaultRect":{"left":190,"top":206,"width":34,"height":12},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 2 of 3."},
+      {"slotId":"bed-right","role":"petBed","assetId":"moss_bed","priorityTier":2,"defaultRect":{"left":298,"top":206,"width":34,"height":12},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 3 of 3."}
     ]
   },
   {
     "speciesId": "deer",
     "environmentId": "deer",
     "slots": [
-      {"slotId":"primary","role":"universalHome","assetId":"log_shelter","priorityTier":0,"defaultRect":{"left":204,"top":156,"width":48,"height":24},"depthBand":"groundContact","occlusionMode":"bodyOnly","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Shared little home anchor used by every species; keep this universal rather than species-themed."},
-      {"slotId":"bed-left","role":"petBed","assetId":"moss_bed","priorityTier":1,"defaultRect":{"left":102,"top":210,"width":22,"height":8},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 1 of 3."},
-      {"slotId":"bed-center","role":"petBed","assetId":"moss_bed","priorityTier":2,"defaultRect":{"left":188,"top":212,"width":22,"height":8},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 2 of 3."},
-      {"slotId":"bed-right","role":"petBed","assetId":"moss_bed","priorityTier":3,"defaultRect":{"left":274,"top":210,"width":22,"height":8},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 3 of 3."},
-      {"slotId":"food","role":"sharedFood","assetId":"snack_bowl","priorityTier":4,"defaultRect":{"left":42,"top":204,"width":34,"height":13},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Simple shared food bowl for the home stage."},
-      {"slotId":"water","role":"sharedWater","assetId":"water_bowl","priorityTier":5,"defaultRect":{"left":332,"top":204,"width":34,"height":14},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Simple shared water bowl for the home stage."}
+      {"slotId":"bed-left","role":"petBed","assetId":"moss_bed","priorityTier":0,"defaultRect":{"left":82,"top":206,"width":34,"height":12},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 1 of 3."},
+      {"slotId":"bed-center","role":"petBed","assetId":"moss_bed","priorityTier":1,"defaultRect":{"left":190,"top":206,"width":34,"height":12},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 2 of 3."},
+      {"slotId":"bed-right","role":"petBed","assetId":"moss_bed","priorityTier":2,"defaultRect":{"left":298,"top":206,"width":34,"height":12},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 3 of 3."}
     ]
   },
   {
     "speciesId": "pigeon",
     "environmentId": "pigeon",
     "slots": [
-      {"slotId":"primary","role":"universalHome","assetId":"log_shelter","priorityTier":0,"defaultRect":{"left":204,"top":156,"width":48,"height":24},"depthBand":"groundContact","occlusionMode":"bodyOnly","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Shared little home anchor used by every species; keep this universal rather than species-themed."},
-      {"slotId":"bed-left","role":"petBed","assetId":"moss_bed","priorityTier":1,"defaultRect":{"left":102,"top":210,"width":22,"height":8},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 1 of 3."},
-      {"slotId":"bed-center","role":"petBed","assetId":"moss_bed","priorityTier":2,"defaultRect":{"left":188,"top":212,"width":22,"height":8},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 2 of 3."},
-      {"slotId":"bed-right","role":"petBed","assetId":"moss_bed","priorityTier":3,"defaultRect":{"left":274,"top":210,"width":22,"height":8},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 3 of 3."},
-      {"slotId":"food","role":"sharedFood","assetId":"snack_bowl","priorityTier":4,"defaultRect":{"left":42,"top":204,"width":34,"height":13},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Simple shared food bowl for the home stage."},
-      {"slotId":"water","role":"sharedWater","assetId":"water_bowl","priorityTier":5,"defaultRect":{"left":332,"top":204,"width":34,"height":14},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Simple shared water bowl for the home stage."}
+      {"slotId":"bed-left","role":"petBed","assetId":"moss_bed","priorityTier":0,"defaultRect":{"left":82,"top":206,"width":34,"height":12},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 1 of 3."},
+      {"slotId":"bed-center","role":"petBed","assetId":"moss_bed","priorityTier":1,"defaultRect":{"left":190,"top":206,"width":34,"height":12},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 2 of 3."},
+      {"slotId":"bed-right","role":"petBed","assetId":"moss_bed","priorityTier":2,"defaultRect":{"left":298,"top":206,"width":34,"height":12},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 3 of 3."}
     ]
   },
   {
     "speciesId": "raccoon",
     "environmentId": "raccoon",
     "slots": [
-      {"slotId":"primary","role":"universalHome","assetId":"log_shelter","priorityTier":0,"defaultRect":{"left":204,"top":156,"width":48,"height":24},"depthBand":"groundContact","occlusionMode":"bodyOnly","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Shared little home anchor used by every species; keep this universal rather than species-themed."},
-      {"slotId":"bed-left","role":"petBed","assetId":"moss_bed","priorityTier":1,"defaultRect":{"left":102,"top":210,"width":22,"height":8},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 1 of 3."},
-      {"slotId":"bed-center","role":"petBed","assetId":"moss_bed","priorityTier":2,"defaultRect":{"left":188,"top":212,"width":22,"height":8},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 2 of 3."},
-      {"slotId":"bed-right","role":"petBed","assetId":"moss_bed","priorityTier":3,"defaultRect":{"left":274,"top":210,"width":22,"height":8},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 3 of 3."},
-      {"slotId":"food","role":"sharedFood","assetId":"snack_bowl","priorityTier":4,"defaultRect":{"left":42,"top":204,"width":34,"height":13},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Simple shared food bowl for the home stage."},
-      {"slotId":"water","role":"sharedWater","assetId":"water_bowl","priorityTier":5,"defaultRect":{"left":332,"top":204,"width":34,"height":14},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Simple shared water bowl for the home stage."}
+      {"slotId":"bed-left","role":"petBed","assetId":"moss_bed","priorityTier":0,"defaultRect":{"left":82,"top":206,"width":34,"height":12},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 1 of 3."},
+      {"slotId":"bed-center","role":"petBed","assetId":"moss_bed","priorityTier":1,"defaultRect":{"left":190,"top":206,"width":34,"height":12},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 2 of 3."},
+      {"slotId":"bed-right","role":"petBed","assetId":"moss_bed","priorityTier":2,"defaultRect":{"left":298,"top":206,"width":34,"height":12},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 3 of 3."}
     ]
   },
   {
     "speciesId": "squirrel",
     "environmentId": "squirrel",
     "slots": [
-      {"slotId":"primary","role":"universalHome","assetId":"log_shelter","priorityTier":0,"defaultRect":{"left":204,"top":156,"width":48,"height":24},"depthBand":"groundContact","occlusionMode":"bodyOnly","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Shared little home anchor used by every species; keep this universal rather than species-themed."},
-      {"slotId":"bed-left","role":"petBed","assetId":"moss_bed","priorityTier":1,"defaultRect":{"left":102,"top":210,"width":22,"height":8},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 1 of 3."},
-      {"slotId":"bed-center","role":"petBed","assetId":"moss_bed","priorityTier":2,"defaultRect":{"left":188,"top":212,"width":22,"height":8},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 2 of 3."},
-      {"slotId":"bed-right","role":"petBed","assetId":"moss_bed","priorityTier":3,"defaultRect":{"left":274,"top":210,"width":22,"height":8},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 3 of 3."},
-      {"slotId":"food","role":"sharedFood","assetId":"snack_bowl","priorityTier":4,"defaultRect":{"left":42,"top":204,"width":34,"height":13},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Simple shared food bowl for the home stage."},
-      {"slotId":"water","role":"sharedWater","assetId":"water_bowl","priorityTier":5,"defaultRect":{"left":332,"top":204,"width":34,"height":14},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Simple shared water bowl for the home stage."}
+      {"slotId":"bed-left","role":"petBed","assetId":"moss_bed","priorityTier":0,"defaultRect":{"left":82,"top":206,"width":34,"height":12},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 1 of 3."},
+      {"slotId":"bed-center","role":"petBed","assetId":"moss_bed","priorityTier":1,"defaultRect":{"left":190,"top":206,"width":34,"height":12},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 2 of 3."},
+      {"slotId":"bed-right","role":"petBed","assetId":"moss_bed","priorityTier":2,"defaultRect":{"left":298,"top":206,"width":34,"height":12},"depthBand":"groundContact","occlusionMode":"none","contactShadowMode":"soft","ageScalePolicy":"constant","notes":"Universal bed slot 3 of 3."}
     ]
   }
 ]

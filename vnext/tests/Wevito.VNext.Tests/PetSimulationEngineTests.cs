@@ -299,6 +299,36 @@ public sealed class PetSimulationEngineTests
     }
 
     [Fact]
+    public void Tick_FocusedPetReturningToBedUsesWalkAnimation()
+    {
+        var now = DateTimeOffset.Parse("2026-05-13T22:00:00Z");
+        var pet = new PetActor(
+            Guid.NewGuid(),
+            "Fox 1",
+            "fox",
+            CurrentX: 400,
+            CurrentY: 1000,
+            HomeX: 700,
+            HomeY: 910,
+            TargetX: 700,
+            TargetY: 910,
+            Speed: 120,
+            BehaviorState: PetBehaviorState.Recalling,
+            CurrentAnimationState: PetAnimationState.Idle,
+            ActiveStatuses: []);
+
+        var updated = _engine.Tick(
+            [pet],
+            CompanionMode.Focused,
+            new RectInt(0, 922, 1920, 118),
+            now,
+            0.2).Single();
+
+        Assert.Equal(PetAnimationState.Walk, updated.CurrentAnimationState);
+        Assert.Equal(PetBehaviorState.Recalling, updated.BehaviorState);
+    }
+
+    [Fact]
     public void Tick_DeadPetTransitionsToGhostAfterSadWindow()
     {
         var now = DateTimeOffset.Parse("2026-05-07T10:00:00Z");
