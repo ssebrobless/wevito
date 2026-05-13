@@ -84,7 +84,8 @@ public partial class ToolPopupWindow : Window
         bool devToolsEnabled,
         PetCommandBarState? petCommandState = null,
         RuntimeSupervisorStatus? runtimeSupervisorStatus = null,
-        ActivitySummary? activitySummary = null)
+        ActivitySummary? activitySummary = null,
+        AutonomousBetaDecision? autonomousDecision = null)
     {
         var toolId = string.IsNullOrWhiteSpace(state.ActiveTool.ToolId) ? "basket" : state.ActiveTool.ToolId;
         var showingBasket = string.Equals(toolId, "basket", StringComparison.OrdinalIgnoreCase);
@@ -163,6 +164,8 @@ public partial class ToolPopupWindow : Window
         RuntimePetOnlyModeCheckBox.IsChecked = GetSettingBool(state, RuntimeSupervisorService.PetOnlyModeSetting);
         RuntimeBackgroundWorkAllowedCheckBox.IsChecked = GetSettingBool(state, RuntimeSupervisorService.BackgroundWorkAllowedSetting);
         SchedulerEnabledCheckBox.IsChecked = GetSettingBool(state, AutonomousTaskScheduler.SchedulerEnabledSetting);
+        AutonomousBetaEnabledCheckBox.IsChecked = GetSettingBool(state, AutonomousOperationsConfig.EnabledSetting);
+        AutonomousBetaStatusText.Text = FormatAutonomousBetaStatus(state, autonomousDecision);
         RuntimeNoFocusStealCheckBox.IsChecked = GetSettingBool(state, RuntimeSupervisorService.NoFocusStealSetting, true);
         RuntimeAutoQuietFullscreenCheckBox.IsChecked = GetSettingBool(state, RuntimeSupervisorService.AutoQuietFullscreenSetting, true);
         RuntimeSupervisorStatusText.Text = runtimeSupervisorStatus?.UserStatus ?? "Runtime supervisor: waiting for shell state.";
@@ -264,6 +267,7 @@ public partial class ToolPopupWindow : Window
             if (TryToggleCheckBox(RuntimePetOnlyModeCheckBox, localPoint)) { return true; }
             if (TryToggleCheckBox(RuntimeBackgroundWorkAllowedCheckBox, localPoint)) { return true; }
             if (TryToggleCheckBox(SchedulerEnabledCheckBox, localPoint)) { return true; }
+            if (TryToggleCheckBox(AutonomousBetaEnabledCheckBox, localPoint)) { return true; }
             if (TryToggleCheckBox(RuntimeNoFocusStealCheckBox, localPoint)) { return true; }
             if (TryToggleCheckBox(RuntimeAutoQuietFullscreenCheckBox, localPoint)) { return true; }
             if (TryToggleCheckBox(PetModelAdapterEnabledCheckBox, localPoint)) { return true; }
@@ -903,6 +907,11 @@ public partial class ToolPopupWindow : Window
         PublishSetting(AutonomousTaskScheduler.SchedulerEnabledSetting, SchedulerEnabledCheckBox.IsChecked == true);
     }
 
+    private void AutonomousBetaEnabledCheckBox_OnChanged(object sender, RoutedEventArgs e)
+    {
+        PublishSetting(AutonomousOperationsConfig.EnabledSetting, AutonomousBetaEnabledCheckBox.IsChecked == true);
+    }
+
     private void RuntimeKillSwitchCheckBox_OnChanged(object sender, RoutedEventArgs e)
     {
         PublishSetting(KillSwitchService.KillSwitchSetting, RuntimeKillSwitchCheckBox.IsChecked == true);
@@ -1092,6 +1101,18 @@ public partial class ToolPopupWindow : Window
         return firstCallApproved
             ? "AI helper summaries: Enabled, no live adapter wired in Shell"
             : "AI helper summaries: Enabled flag set, waiting for first-call consent";
+    }
+
+    private static string FormatAutonomousBetaStatus(CompanionState state, AutonomousBetaDecision? decision)
+    {
+        var enabled = GetSettingBool(state, AutonomousOperationsConfig.EnabledSetting);
+        if (decision is null)
+        {
+            return $"Autonomous beta: {(enabled ? "enabled" : "off")} | decision not evaluated | proposal-only; mutation apply is blocked.";
+        }
+
+        var passed = decision.Checks.Count(check => check.Passed);
+        return $"Autonomous beta: {(enabled ? "enabled" : "off")} | decision={decision.Decision} | checks={passed}/{decision.Checks.Count} | proposal-only; mutation apply is blocked.";
     }
 
     private static string FormatPetModelConsentNotice()
