@@ -26,10 +26,13 @@ public sealed record PetMemoryStoreStatus(
     bool VectorExtensionAvailable,
     bool WasRebuilt,
     string DatabasePath,
-    string Message);
+    string Message,
+    int EmbeddingDimensions = HashingTextEmbeddingService.DefaultDimensions);
 
 public interface ITextEmbeddingService
 {
+    int Dimensions { get; }
+
     float[] Embed(string text);
 }
 
@@ -42,6 +45,8 @@ public sealed class HashingTextEmbeddingService : ITextEmbeddingService
     {
         _dimensions = Math.Max(4, dimensions);
     }
+
+    public int Dimensions => _dimensions;
 
     public float[] Embed(string text)
     {
@@ -84,6 +89,8 @@ public sealed class CachingTextEmbeddingService : ITextEmbeddingService
         _inner = inner ?? new HashingTextEmbeddingService();
     }
 
+    public int Dimensions => _inner.Dimensions;
+
     public float[] Embed(string text)
     {
         var key = text ?? string.Empty;
@@ -100,10 +107,11 @@ public sealed class CachingTextEmbeddingService : ITextEmbeddingService
 public sealed class PetMemoryStore
 {
     public const string SchemaVersion = "1";
-    public const int EmbeddingDimensions = HashingTextEmbeddingService.DefaultDimensions;
+    public const int HashingFallbackEmbeddingDimensions = HashingTextEmbeddingService.DefaultDimensions;
 
     private readonly string _memoryRoot;
     private readonly ITextEmbeddingService _embeddingService;
+    private readonly int _embeddingDimensions;
 
     public PetMemoryStore(string? memoryRoot = null, ITextEmbeddingService? embeddingService = null)
     {
@@ -112,7 +120,10 @@ public sealed class PetMemoryStore
             "Wevito",
             "memory"));
         _embeddingService = embeddingService ?? new CachingTextEmbeddingService();
+        _embeddingDimensions = Math.Max(4, _embeddingService.Dimensions);
     }
+
+    public int EmbeddingDimensions => _embeddingDimensions;
 
     public PetMemoryStoreStatus EnsureReady(Guid petId, DateTimeOffset? nowUtc = null)
     {
@@ -124,19 +135,28 @@ public sealed class PetMemoryStore
         {
             SqliteConnection.ClearAllPools();
             var stamp = (nowUtc ?? DateTimeOffset.UtcNow).ToString("yyyyMMdd-HHmmss", CultureInfo.InvariantCulture);
-            File.Move(path, Path.Combine(Path.GetDirectoryName(path) ?? _memoryRoot, $"{Path.GetFileNameWithoutExtension(path)}.corrupt-{stamp}.db"), overwrite: true);
+            MoveDatabaseAside(path, $"corrupt-{stamp}");
+            rebuilt = true;
+        }
+
+        if (File.Exists(path) && ShouldRebuildForEmbeddingDimension(path, _embeddingDimensions))
+        {
+            SqliteConnection.ClearAllPools();
+            var stamp = (nowUtc ?? DateTimeOffset.UtcNow).ToString("yyyyMMdd-HHmmss", CultureInfo.InvariantCulture);
+            MoveDatabaseAside(path, $"legacy-{stamp}");
             rebuilt = true;
         }
 
         using var connection = OpenConnection(path);
         var vectorAvailable = TryLoadVector(connection);
-        InitializeSchema(connection, vectorAvailable);
+        InitializeSchema(connection, vectorAvailable, _embeddingDimensions);
         return new PetMemoryStoreStatus(
             DatabaseExists: true,
             vectorAvailable,
             rebuilt,
             path,
-            rebuilt ? "Memory database was corrupt and has been rebuilt." : "Memory database is ready.");
+            rebuilt ? "Memory database was rebuilt for integrity or embedding-dimension compatibility." : "Memory database is ready.",
+            _embeddingDimensions);
     }
 
     public PetMemoryExample AddExample(
@@ -270,7 +290,7 @@ public sealed class PetMemoryStore
         }
     }
 
-    private static void InitializeSchema(SqliteConnection connection, bool vectorAvailable)
+    private static void InitializeSchema(SqliteConnection connection, bool vectorAvailable, int embeddingDimensions)
     {
         using var command = connection.CreateCommand();
         command.CommandText = """
@@ -280,6 +300,9 @@ public sealed class PetMemoryStore
             );
             INSERT INTO schema_info(key, value)
             VALUES ('schema_version', '1')
+            ON CONFLICT(key) DO UPDATE SET value = excluded.value;
+            INSERT INTO schema_info(key, value)
+            VALUES ('embedding_dimensions', $embedding_dimensions)
             ON CONFLICT(key) DO UPDATE SET value = excluded.value;
             CREATE TABLE IF NOT EXISTS examples(
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -293,6 +316,7 @@ public sealed class PetMemoryStore
             );
             CREATE VIRTUAL TABLE IF NOT EXISTS examples_fts USING fts5(kind, content, label, content='examples', content_rowid='id');
             """;
+        command.Parameters.AddWithValue("$embedding_dimensions", embeddingDimensions.ToString(CultureInfo.InvariantCulture));
         command.ExecuteNonQuery();
         EnsureColumn(connection, "examples", "dataset_version", "TEXT NOT NULL DEFAULT ''");
         EnsureColumn(connection, "examples", "source_task_card_id", "TEXT NOT NULL DEFAULT ''");
@@ -303,8 +327,46 @@ public sealed class PetMemoryStore
         }
 
         using var vectorCommand = connection.CreateCommand();
-        vectorCommand.CommandText = $"CREATE VIRTUAL TABLE IF NOT EXISTS vec_examples USING vec0(example_id INTEGER PRIMARY KEY, embedding float[{EmbeddingDimensions}]);";
+        vectorCommand.CommandText = $"CREATE VIRTUAL TABLE IF NOT EXISTS vec_examples USING vec0(example_id INTEGER PRIMARY KEY, embedding float[{embeddingDimensions}]);";
         vectorCommand.ExecuteNonQuery();
+    }
+
+    private static bool ShouldRebuildForEmbeddingDimension(string path, int expectedDimensions)
+    {
+        try
+        {
+            using var connection = OpenConnection(path);
+            using var command = connection.CreateCommand();
+            command.CommandText = "SELECT value FROM schema_info WHERE key = 'embedding_dimensions';";
+            var value = command.ExecuteScalar()?.ToString();
+            if (int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var storedDimensions))
+            {
+                return storedDimensions != expectedDimensions;
+            }
+
+            return expectedDimensions != HashingFallbackEmbeddingDimensions;
+        }
+        catch
+        {
+            return expectedDimensions != HashingFallbackEmbeddingDimensions;
+        }
+    }
+
+    private static void MoveDatabaseAside(string path, string suffix)
+    {
+        var directory = Path.GetDirectoryName(path) ?? ".";
+        var stem = Path.GetFileNameWithoutExtension(path);
+        File.Move(path, Path.Combine(directory, $"{stem}.{suffix}.db"), overwrite: true);
+        MoveSidecar(path + "-wal", Path.Combine(directory, $"{stem}.{suffix}.db-wal"));
+        MoveSidecar(path + "-shm", Path.Combine(directory, $"{stem}.{suffix}.db-shm"));
+    }
+
+    private static void MoveSidecar(string source, string destination)
+    {
+        if (File.Exists(source))
+        {
+            File.Move(source, destination, overwrite: true);
+        }
     }
 
     private static IReadOnlyList<PetMemorySearchResult> TrySearchWithSqliteVec(SqliteConnection connection, float[] queryEmbedding, string kind, int topK)
