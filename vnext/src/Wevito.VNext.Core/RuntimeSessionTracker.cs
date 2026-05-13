@@ -79,6 +79,21 @@ public sealed class RuntimeSessionTracker
         }
     }
 
+    public RuntimeSessionTrackerResult ForceHeartbeat(DateTimeOffset nowUtc, string reason)
+    {
+        try
+        {
+            var state = ReadState();
+            var startedAt = state.SessionStartedAtUtc ?? nowUtc;
+            WriteState(new RuntimeSessionState(SchemaVersion, startedAt, nowUtc));
+            return Record("runtime_session_heartbeat", nowUtc, startedAt, $"heartbeat=true reason={SafeToken(reason)}");
+        }
+        catch (Exception)
+        {
+            return new RuntimeSessionTrackerResult(false, "", "");
+        }
+    }
+
     private RuntimeSessionTrackerResult Record(string packetKind, DateTimeOffset nowUtc, DateTimeOffset? startedAtUtc, string suffix)
     {
         var uptime = startedAtUtc is null ? TimeSpan.Zero : nowUtc - startedAtUtc.Value;
@@ -145,6 +160,13 @@ public sealed class RuntimeSessionTracker
             "Wevito",
             "audit",
             "runtime-session.json");
+    }
+
+    private static string SafeToken(string value)
+    {
+        return string.IsNullOrWhiteSpace(value)
+            ? "scheduled"
+            : value.Replace(' ', '_').Replace(';', '_');
     }
 
     private sealed record RuntimeSessionState(

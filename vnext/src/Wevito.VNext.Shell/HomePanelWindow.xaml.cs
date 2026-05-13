@@ -123,7 +123,8 @@ public partial class HomePanelWindow : Window
         IReadOnlyDictionary<string, double> needSnapshot,
         IReadOnlyList<PetStatusType> aggregateStatuses,
         IReadOnlyDictionary<string, bool> actionEnabled,
-        HabitatLoadout habitatLoadout)
+        HabitatLoadout habitatLoadout,
+        EvidenceCollectionStatus? evidenceStatus = null)
     {
         var compactHud = state.SettingsSnapshot.TryGetValue("compact_hud", out var compactValue) &&
                          bool.TryParse(compactValue, out var compactFlag) &&
@@ -161,6 +162,10 @@ public partial class HomePanelWindow : Window
         StopEverythingButton.ToolTip = killSwitchActive
             ? "Stop Everything is active. Re-enable helpers from Settings after confirming."
             : "Immediately block helper work. Re-enable from Settings only.";
+        EvidenceBadge.Visibility = evidenceStatus?.Active == true ? Visibility.Visible : Visibility.Collapsed;
+        EvidenceBadgeText.Text = evidenceStatus?.Active == true
+            ? $"Evidence: Day {evidenceStatus.DayN} of {evidenceStatus.DayMax}"
+            : "Evidence: not started";
         WebToolsBar.Visibility = _isHudVisible && webToolsVisible ? Visibility.Visible : Visibility.Collapsed;
         LinkBinTabButton.Content = state.ActiveTool.IsOpen && string.Equals(state.ActiveTool.ToolId, "basket", StringComparison.OrdinalIgnoreCase) ? "LINK BIN ACTIVE" : "LINK BIN";
         LinkBinTabButton.FontWeight = state.ActiveTool.IsOpen && string.Equals(state.ActiveTool.ToolId, "basket", StringComparison.OrdinalIgnoreCase)

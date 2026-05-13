@@ -86,7 +86,8 @@ public partial class ToolPopupWindow : Window
         RuntimeSupervisorStatus? runtimeSupervisorStatus = null,
         ActivitySummary? activitySummary = null,
         AutonomousBetaDecision? autonomousDecision = null,
-        IReadOnlyList<string>? activityRecentLines = null)
+        IReadOnlyList<string>? activityRecentLines = null,
+        EvidenceCollectionStatus? evidenceStatus = null)
     {
         var toolId = string.IsNullOrWhiteSpace(state.ActiveTool.ToolId) ? "basket" : state.ActiveTool.ToolId;
         var showingBasket = string.Equals(toolId, "basket", StringComparison.OrdinalIgnoreCase);
@@ -191,6 +192,10 @@ public partial class ToolPopupWindow : Window
             ? string.Join(Environment.NewLine, activityRecentLines)
             : "Recent activity appears here after helpers produce evidence packets.";
         SelfImprovementText.Text = FormatSelfImprovementPanel(activitySummary);
+        EvidenceCollectionPanel.Visibility = evidenceStatus is { Active: true } or { HasManifest: true }
+            ? Visibility.Visible
+            : Visibility.Collapsed;
+        EvidenceCollectionText.Text = FormatEvidenceCollectionPanel(evidenceStatus);
         GuardedMutationPilotTextBox.IsEnabled = false;
         GuardedMutationPilotButton.IsEnabled = false;
         GuardedMutationPilotButton.ToolTip = "guardedMutation pilotEnabled=false; proposals stay disabled until a later explicit approval.";
@@ -554,6 +559,31 @@ public partial class ToolPopupWindow : Window
         }
 
         return "No self-improvement reports in this activity window yet.";
+    }
+
+    internal static string FormatEvidenceCollectionPanel(EvidenceCollectionStatus? status)
+    {
+        if (status is null || !status.HasManifest)
+        {
+            return "Soak window: not started";
+        }
+
+        var header = status.Active
+            ? $"Soak window: Day {status.DayN} of {status.DayMax}"
+            : $"Soak window: {status.LastReadinessLabel}";
+        var lines = new List<string>
+        {
+            header,
+            $"Readiness: {status.LastReadinessLabel}",
+            $"Today: rows={status.RowsToday}, flagged={status.FlaggedRowsToday}, heartbeats={status.HeartbeatCountToday}, focus_delta={status.FocusStealDeltaToday}, budget_exceeded={status.BudgetExceededToday}"
+        };
+
+        foreach (var day in status.Days.Take(7))
+        {
+            lines.Add($"{day.DateUtc}: heartbeats={day.HeartbeatCount}, flagged={day.FlaggedRows}, focus_delta={day.FocusStealDelta}, budget_exceeded={day.BudgetExceeded}, report={(day.LastSelfImprovementReportAtUtc?.ToString("O") ?? "none")}");
+        }
+
+        return string.Join(Environment.NewLine, lines);
     }
 
     private static string FormatNextAction(TaskCard card)

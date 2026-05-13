@@ -13,6 +13,7 @@ $ProjectRoot = Split-Path -Parent $PSScriptRoot
 $Solution = Join-Path $ProjectRoot "vnext\Wevito.VNext.sln"
 $BrokerProject = Join-Path $ProjectRoot "vnext\src\Wevito.VNext.Broker\Wevito.VNext.Broker.csproj"
 $ShellProject = Join-Path $ProjectRoot "vnext\src\Wevito.VNext.Shell\Wevito.VNext.Shell.csproj"
+$SoakDriverProject = Join-Path $ProjectRoot "tools\soak-driver-cli\Wevito.VNext.SoakDriver.csproj"
 $GeneratePetRuntimeScript = Join-Path $ProjectRoot "tools\generate_runtime_pose_sprites.py"
 $CleanSharedScript = Join-Path $ProjectRoot "tools\clean_shared_sprite_assets.py"
 $CleanPetRuntimeScript = Join-Path $ProjectRoot "tools\clean_runtime_pet_frames.py"
@@ -21,6 +22,7 @@ $StableReleaseLock = Join-Path $ProjectRoot "vnext\content\stable_release_lock.j
 $ArtifactsRoot = Join-Path $ProjectRoot "vnext\artifacts"
 $BrokerOut = Join-Path $ArtifactsRoot "broker"
 $ShellOut = Join-Path $ArtifactsRoot "shell"
+$SoakDriverOut = Join-Path $ArtifactsRoot "soak-driver"
 
 function Stop-WevitoProcesses {
     $processNames = @("Wevito.VNext.Shell", "Wevito.VNext.Broker")
@@ -146,6 +148,7 @@ Stop-WevitoProcesses
 New-Item -ItemType Directory -Path $ArtifactsRoot -Force | Out-Null
 Reset-Directory -Path $BrokerOut
 Reset-Directory -Path $ShellOut
+Reset-Directory -Path $SoakDriverOut
 
 if ($SkipAssetPrep) {
     Write-Host "[build-vnext] Skipping sprite asset preparation; using existing runtime assets."
@@ -193,6 +196,7 @@ else {
 
 Invoke-BuildStep -Name "Publish broker" -FilePath "dotnet" -Arguments @("publish", $BrokerProject, "-c", $Configuration, "-o", $BrokerOut)
 Invoke-BuildStep -Name "Publish shell" -FilePath "dotnet" -Arguments @("publish", $ShellProject, "-c", $Configuration, "-o", $ShellOut)
+Invoke-BuildStep -Name "Publish soak driver CLI" -FilePath "dotnet" -Arguments @("publish", $SoakDriverProject, "-c", $Configuration, "-o", $SoakDriverOut)
 
 Write-Host "[build-vnext] Copying broker output into shell output"
 Copy-Item -Path (Join-Path $BrokerOut "*") -Destination $ShellOut -Force
@@ -200,3 +204,4 @@ Copy-Item -Path (Join-Path $BrokerOut "*") -Destination $ShellOut -Force
 Write-Host "vNext publish complete:"
 Write-Host "  Shell output: $ShellOut"
 Write-Host "  Entry point : $(Join-Path $ShellOut 'Wevito.VNext.Shell.exe')"
+Write-Host "  Soak driver: $(Join-Path $SoakDriverOut 'Wevito.VNext.SoakDriver.exe')"
