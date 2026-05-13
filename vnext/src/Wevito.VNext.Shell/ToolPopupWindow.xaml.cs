@@ -85,7 +85,8 @@ public partial class ToolPopupWindow : Window
         PetCommandBarState? petCommandState = null,
         RuntimeSupervisorStatus? runtimeSupervisorStatus = null,
         ActivitySummary? activitySummary = null,
-        AutonomousBetaDecision? autonomousDecision = null)
+        AutonomousBetaDecision? autonomousDecision = null,
+        IReadOnlyList<string>? activityRecentLines = null)
     {
         var toolId = string.IsNullOrWhiteSpace(state.ActiveTool.ToolId) ? "basket" : state.ActiveTool.ToolId;
         var showingBasket = string.Equals(toolId, "basket", StringComparison.OrdinalIgnoreCase);
@@ -186,8 +187,8 @@ public partial class ToolPopupWindow : Window
         ActivitySummaryText.Text = activitySummary is null
             ? "Activity ledger: waiting for shell state."
             : ActivitySummaryService.FormatOneLine(activitySummary);
-        ActivityRecentText.Text = activitySummary is { TotalRows: > 0 }
-            ? string.Join(Environment.NewLine, activitySummary.RecentRows.Take(3).Select(row => $"{row.CreatedAtUtc:HH:mm} {row.PacketKind}: {row.Status}"))
+        ActivityRecentText.Text = activityRecentLines is { Count: > 0 }
+            ? string.Join(Environment.NewLine, activityRecentLines)
             : "Recent activity appears here after helpers produce evidence packets.";
         if (showingDev)
         {

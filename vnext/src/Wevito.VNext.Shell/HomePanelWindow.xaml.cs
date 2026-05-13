@@ -5,6 +5,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Wevito.VNext.Contracts;
+using Wevito.VNext.Core;
 
 namespace Wevito.VNext.Shell;
 
@@ -45,6 +46,8 @@ public partial class HomePanelWindow : Window
     public event Func<Task>? ToggleCompactRequested;
 
     public event Func<Task>? ToggleDevRequested;
+
+    public event Func<Task>? StopEverythingRequested;
 
     public event Action<string>? ActionRequested;
 
@@ -137,6 +140,12 @@ public partial class HomePanelWindow : Window
         WebToolsButton.Content = webToolsVisible ? "HIDE" : "TOOLS";
         SettingsButton.Content = state.ActiveTool.IsOpen && string.Equals(state.ActiveTool.ToolId, "settings", StringComparison.OrdinalIgnoreCase) ? "CLOSE" : "SETTINGS";
         DevButton.Content = state.ActiveTool.IsOpen && string.Equals(state.ActiveTool.ToolId, "dev", StringComparison.OrdinalIgnoreCase) ? "CLOSE" : "DEV";
+        var killSwitchActive = KillSwitchService.IsActive(state.SettingsSnapshot);
+        StopEverythingButton.Content = killSwitchActive ? "STOP ON" : "STOP";
+        StopEverythingButton.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(killSwitchActive ? "#8C2632" : "#5A1E24"));
+        StopEverythingButton.ToolTip = killSwitchActive
+            ? "Stop Everything is active. Re-enable helpers from Settings after confirming."
+            : "Immediately block helper work. Re-enable from Settings only.";
         WebToolsBar.Visibility = _isHudVisible && webToolsVisible ? Visibility.Visible : Visibility.Collapsed;
         LinkBinTabButton.Content = state.ActiveTool.IsOpen && string.Equals(state.ActiveTool.ToolId, "basket", StringComparison.OrdinalIgnoreCase) ? "LINK BIN ACTIVE" : "LINK BIN";
         LinkBinTabButton.FontWeight = state.ActiveTool.IsOpen && string.Equals(state.ActiveTool.ToolId, "basket", StringComparison.OrdinalIgnoreCase)
@@ -376,6 +385,11 @@ public partial class HomePanelWindow : Window
         }
 
         if (await TryInvokeButtonAsync(SettingsButton, localPoint, OpenSettingsRequested))
+        {
+            return true;
+        }
+
+        if (await TryInvokeButtonAsync(StopEverythingButton, localPoint, StopEverythingRequested))
         {
             return true;
         }
@@ -2257,6 +2271,14 @@ public partial class HomePanelWindow : Window
         if (ToggleDevRequested is not null)
         {
             await ToggleDevRequested.Invoke();
+        }
+    }
+
+    private async void StopEverythingButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (StopEverythingRequested is not null)
+        {
+            await StopEverythingRequested.Invoke();
         }
     }
 

@@ -18,10 +18,12 @@ public sealed record ActivitySummary(
 public sealed class ActivitySummaryService
 {
     private readonly AuditLedgerService _ledger;
+    private readonly PlainLanguageExplainer _explainer;
 
-    public ActivitySummaryService(AuditLedgerService ledger)
+    public ActivitySummaryService(AuditLedgerService ledger, PlainLanguageExplainer? explainer = null)
     {
         _ledger = ledger;
+        _explainer = explainer ?? new PlainLanguageExplainer();
     }
 
     public ActivitySummary BuildDaily(DateTimeOffset nowUtc)
@@ -64,7 +66,15 @@ public sealed class ActivitySummaryService
         }
 
         var sensitive = summary.Buckets.Sum(bucket => bucket.NetworkCount + bucket.HostedAiCount + bucket.MutationCount);
-        var headline = string.Join(", ", summary.Buckets.Take(3).Select(bucket => $"{bucket.PacketKind}: {bucket.Count}"));
+        var headline = string.Join(", ", summary.Buckets.Take(3).Select(bucket => $"{new PlainLanguageExplainer().ExplainPacketKind(bucket.PacketKind).TrimEnd('.')}: {bucket.Count}"));
         return $"Audited helper activity: {summary.TotalRows} row(s). {headline}. Sensitive flags: {sensitive}.";
+    }
+
+    public IReadOnlyList<string> FormatRecentRows(ActivitySummary summary, int take = 3)
+    {
+        return summary.RecentRows
+            .Take(Math.Max(0, take))
+            .Select(row => $"{row.CreatedAtUtc:HH:mm} {_explainer.Explain(row)}")
+            .ToList();
     }
 }

@@ -32,6 +32,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private readonly PetTaskCardQueueService _petTaskCardQueueService = new();
     private readonly AuditLedgerService _auditLedgerService = new();
     private readonly ActivitySummaryService _activitySummaryService;
+    private readonly LiveStatusFeed _liveStatusFeed;
     private readonly KillSwitchService _killSwitchService;
     private readonly PetTaskAdapterPreviewDispatcher _petTaskAdapterPreviewDispatcher;
     private readonly RuntimeSupervisorService _runtimeSupervisorService = new();
@@ -71,7 +72,9 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     public ShellCoordinator(Application application)
     {
         _application = application;
-        _activitySummaryService = new ActivitySummaryService(_auditLedgerService);
+        var plainLanguageExplainer = new PlainLanguageExplainer(kind => TraceLog.Write("activity", $"WarnUnknownPacketKind kind={kind}"));
+        _activitySummaryService = new ActivitySummaryService(_auditLedgerService, plainLanguageExplainer);
+        _liveStatusFeed = new LiveStatusFeed(_auditLedgerService, plainLanguageExplainer);
         _killSwitchService = new KillSwitchService(() => _state?.SettingsSnapshot ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase), _auditLedgerService);
         _petTaskAdapterPreviewDispatcher = new PetTaskAdapterPreviewDispatcher(auditLedgerService: _auditLedgerService, killSwitchService: _killSwitchService);
         _autonomousTaskScheduler = new AutonomousTaskScheduler(_runtimeSupervisorService, _runtimeBudgetMeter, _auditLedgerService, _killSwitchService);
@@ -95,6 +98,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _homeWindow.ToggleCompactRequested += async () => await ToggleCompactHudAsync();
         _homeWindow.SaveRequested += async () => await SaveAsync();
         _homeWindow.ToggleDevRequested += async () => await ToggleDevAsync();
+        _homeWindow.StopEverythingRequested += async () => await ActivateKillSwitchAsync();
         _homeWindow.ActionRequested += HandleAction;
         _homeWindow.Closed += (_, _) => _application.Shutdown();
 
@@ -457,16 +461,21 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             .ToDictionary(action => action.Id, action => _petSimulationEngine.IsActionEnabled(action.Id, _state.ActivePets), StringComparer.OrdinalIgnoreCase);
         var habitatLoadout = HabitatLoadoutResolver.Resolve(_state, _content);
         var petCommandBarState = EnsurePetCommandBarState(_state.ActivePets, _state.TaskCards);
-
-        _homeWindow.Render(_state, environment, _feedbackText, _assetService, needSnapshot, aggregateStatuses, actionEnabled, habitatLoadout);
-        _roamBandWindow.Render(_state, _assetService);
+        var now = DateTimeOffset.UtcNow;
         var supervisorStatus = _runtimeSupervisorService.Evaluate(
             _state.SettingsSnapshot,
             _desktopContext,
             isUserInitiatedToolOpen: _state.ActiveTool.IsOpen);
-        var activitySummary = _activitySummaryService.BuildDaily(DateTimeOffset.UtcNow);
-        var autonomousDecision = _autonomousBetaDecisionService.Decide(DateTimeOffset.UtcNow);
-        _toolPopupWindow.Render(_state, _content, habitatLoadout, _assetService, _devToolsEnabled, petCommandBarState, supervisorStatus, activitySummary, autonomousDecision);
+        var activitySummary = _activitySummaryService.BuildDaily(now);
+        var liveStatus = _liveStatusFeed.BuildDaily(now, _state.SettingsSnapshot);
+        var liveBannerText = _liveStatusFeed.FormatBanner(liveStatus);
+        var liveRecentLines = _activitySummaryService.FormatRecentRows(activitySummary);
+        var autonomousDecision = _autonomousBetaDecisionService.Decide(now);
+        var killSwitchActive = KillSwitchService.IsActive(_state.SettingsSnapshot);
+
+        _homeWindow.Render(_state, environment, _feedbackText, _assetService, needSnapshot, aggregateStatuses, actionEnabled, habitatLoadout);
+        _roamBandWindow.Render(_state, _assetService, liveStatus, liveBannerText, supervisorStatus, killSwitchActive);
+        _toolPopupWindow.Render(_state, _content, habitatLoadout, _assetService, _devToolsEnabled, petCommandBarState, supervisorStatus, activitySummary, autonomousDecision, liveRecentLines);
     }
 
     private PetCommandBarState EnsurePetCommandBarState(IReadOnlyList<PetActor> pets, IReadOnlyList<TaskCard>? taskCards)
@@ -704,6 +713,28 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private async Task ToggleSettingsAsync()
     {
         await ToggleToolAsync("settings");
+    }
+
+    private async Task ActivateKillSwitchAsync()
+    {
+        if (_state is null)
+        {
+            return;
+        }
+
+        if (KillSwitchService.IsActive(_state.SettingsSnapshot))
+        {
+            _feedbackText = "Stop Everything is already active. Re-enable helpers from Settings after confirming.";
+            Render();
+            return;
+        }
+
+        _state = _state with { SettingsSnapshot = WithSetting(_state.SettingsSnapshot, KillSwitchService.KillSwitchSetting, bool.TrueString) };
+        _killSwitchService.Record("kill_switch", null, DateTimeOffset.UtcNow, "Stop Everything activated from the home overlay.", "Blocked");
+        _feedbackText = "Stop Everything is active. Helper work is blocked until you turn it off in Settings.";
+        TraceLog.Write("settings", $"{KillSwitchService.KillSwitchSetting}=True source=home-overlay");
+        ApplyModeAndLayout();
+        await PersistAndRenderAsync();
     }
 
     private async Task ToggleDevAsync()
@@ -1955,6 +1986,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         hydrated.TryAdd(AutonomousOperationsConfig.EnabledSetting, bool.FalseString);
         hydrated.TryAdd(AutonomousOperationsConfig.DailyCapSetting, "3");
         hydrated.TryAdd(AutonomousOperationsConfig.IntervalMinutesSetting, "10");
+        hydrated.TryAdd(LiveStatusFeed.PollSecondsSetting, "10");
         hydrated.TryAdd(WebResearchConnector.WebSearchEnabledSetting, bool.FalseString);
         hydrated.TryAdd(WebResearchConnector.WebBackendSetting, "offline");
         hydrated.TryAdd(WebResearchConnector.MaxFetchesPerHourSetting, "30");

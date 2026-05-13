@@ -4,6 +4,7 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Wevito.VNext.Contracts;
+using Wevito.VNext.Core;
 
 namespace Wevito.VNext.Shell;
 
@@ -19,9 +20,22 @@ public partial class RoamBandWindow : Window
 
     public long WindowHandle => new WindowInteropHelper(this).Handle.ToInt64();
 
-    internal void Render(CompanionState state, SpriteAssetService assetService)
+    internal void Render(
+        CompanionState state,
+        SpriteAssetService assetService,
+        OverlayStatusSnapshot? statusSnapshot = null,
+        string statusText = "",
+        RuntimeSupervisorStatus? runtimeStatus = null,
+        bool killSwitchActive = false)
     {
         RoamCanvas.Children.Clear();
+        var now = DateTimeOffset.UtcNow;
+        StatusBanner.Render(
+            string.IsNullOrWhiteSpace(statusText) ? "Last action: none yet · today: 0 previews, 0 approvals, 0 mutations" : statusText,
+            runtimeStatus ?? new RuntimeSupervisorStatus(RuntimeSupervisorMode.Active, true, true, false, "active", ""),
+            killSwitchActive,
+            now,
+            statusSnapshot?.LastAtUtc);
         if (state.Mode != CompanionMode.Passive)
         {
             return;
@@ -29,7 +43,7 @@ public partial class RoamBandWindow : Window
 
         foreach (var pet in state.ActivePets)
         {
-            var source = assetService.GetPetFrame(pet, DateTimeOffset.UtcNow);
+            var source = assetService.GetPetFrame(pet, now);
             if (source is null)
             {
                 continue;

@@ -13,5 +13,11 @@
         ShowActivated="False">
     <Grid IsHitTestVisible="False">
         <Canvas x:Name="RoamCanvas" />
+        <local:OverlayStatusBannerView x:Name="StatusBanner"
+                                       xmlns:local="clr-namespace:Wevito.VNext.Shell"
+                                       Width="760"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Top"
+                                       Margin="0,4,0,0" />
     </Grid>
 </Window>
