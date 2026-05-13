@@ -18,7 +18,9 @@ function Get-DatasetSha {
     $lines = @()
     foreach ($file in Get-ChildItem -Path $rootFull -Recurse -File | Where-Object { $_.Name -ne "baseline.json" } | Sort-Object FullName) {
         $rel = $file.FullName.Substring($rootFull.Length + 1).Replace('\', '/')
-        $hash = (Get-FileHash -Algorithm SHA256 -LiteralPath $file.FullName).Hash.ToLowerInvariant()
+        $text = [System.IO.File]::ReadAllText($file.FullName).Replace("`r`n", "`n").Replace("`r", "`n")
+        $shaFile = [System.Security.Cryptography.SHA256]::Create()
+        $hash = [System.BitConverter]::ToString($shaFile.ComputeHash([System.Text.Encoding]::UTF8.GetBytes($text))).Replace('-', '').ToLowerInvariant()
         $lines += "$rel`:$hash"
     }
     $material = ($lines -join "`n") + "`n"

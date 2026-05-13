@@ -102,8 +102,26 @@ public sealed class AutonomousOperationsLoop
             folder,
             "Autonomous operations beta completed one proposal-only iteration; mutation_apply=false.",
             "Completed"));
+        TryWriteSelfImprovementReport(request);
         _lastIterationAtUtc = request.RequestedAtUtc;
         return new AutonomousOperationsResult(true, false, folder, "Autonomous beta iteration completed without mutation.", "");
+    }
+
+    private void TryWriteSelfImprovementReport(AutonomousOperationsRequest request)
+    {
+        try
+        {
+            var since = request.RequestedAtUtc.AddDays(-1);
+            _ = new SelfImprovementReportService(_ledger, _killSwitchService).Run(new SelfImprovementReportRequest(
+                since,
+                request.RequestedAtUtc,
+                request.ArtifactRoot,
+                request.RequestedAtUtc));
+        }
+        catch (Exception)
+        {
+            // Activity reports are optional evidence packets; never let a report failure make the pet loop noisy.
+        }
     }
 
     private int CountToday(DateTimeOffset nowUtc)
