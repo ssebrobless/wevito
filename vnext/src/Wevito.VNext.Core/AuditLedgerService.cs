@@ -9,6 +9,7 @@ public sealed class AuditLedgerService
     public const string TrainPlanPacketKind = "train_plan";
     public const string TuningApplyPacketKind = "tuning_apply";
     public const string TuningRollbackPacketKind = "tuning_rollback";
+    public const string GoldenEvalPacketKind = "golden_eval";
 
     private readonly string _databasePath;
 

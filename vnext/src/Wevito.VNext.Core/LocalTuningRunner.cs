@@ -14,6 +14,8 @@ public sealed record LocalTuningRunRequest(
     LearningEvalMetrics CandidateMetrics,
     DateTimeOffset CreatedAtUtc,
     double RegressionTolerance = 0.02,
+    string GoldenEvalDatasetRoot = "",
+    string GoldenEvalArtifactRoot = "",
     IReadOnlyDictionary<string, string>? Settings = null);
 
 public sealed record LocalTuningRunResult(
@@ -85,8 +87,9 @@ public sealed class LocalTuningRunner
         WriteCandidate(request, targetPath);
         var postHash = PromptConfigStore.Sha256(targetPath);
         var comparison = LearningEvalService.EvaluateAgainst(request.CandidateMetrics, request.BaselineMetrics, request.RegressionTolerance);
+        var goldenRegression = RunGoldenGateIfRequested(request);
         var rolledBack = false;
-        if (comparison.Regression)
+        if (comparison.Regression || goldenRegression)
         {
             Rollback(targetPath, backupPath, hadExisting);
             rolledBack = true;
@@ -130,6 +133,21 @@ public sealed class LocalTuningRunner
             rolledBack && hadExisting ? PromptConfigStore.Sha256(targetPath) : postHash,
             runFolder,
             rolledBack ? "Eval regression exceeded tolerance; rollback restored pre-apply bytes." : "Tuning applied after eval gate.");
+    }
+
+    private bool RunGoldenGateIfRequested(LocalTuningRunRequest request)
+    {
+        if (string.IsNullOrWhiteSpace(request.GoldenEvalDatasetRoot) || string.IsNullOrWhiteSpace(request.GoldenEvalArtifactRoot))
+        {
+            return false;
+        }
+
+        var result = new EvalRegressionGate(_auditLedgerService, _killSwitchService).Run(
+            request.GoldenEvalDatasetRoot,
+            request.GoldenEvalArtifactRoot,
+            updateBaseline: false,
+            request.CreatedAtUtc);
+        return !result.Succeeded || result.Regression;
     }
 
     private static string ResolveTargetPath(LocalTrainingStage stage, string contentRoot)

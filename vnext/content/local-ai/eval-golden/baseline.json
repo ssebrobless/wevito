@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "1",
+  "recallAt1": 0.98,
+  "recallAt3": 1.0,
+  "meanReciprocalRank": 0.99,
+  "citationCoverageRatio": 1.0,
+  "latencyP50": 0.0,
+  "latencyP95": 0.0,
+  "datasetSha256": "f45be0450a231caeda247cd068b5199dbdc681bf11ca248239ac853fe177dd8b",
+  "capturedAtUtc": "2026-05-13T00:00:00+00:00"
+}

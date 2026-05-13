@@ -100,6 +100,11 @@ public sealed class LearningEvalService
                 : "Learning eval completed and baseline was promoted.");
     }
 
+    public GoldenEvalRunResult RunGoldenEval(string datasetRoot, string artifactRoot, bool updateBaseline = false, DateTimeOffset? nowUtc = null)
+    {
+        return new EvalRegressionGate(_auditLedgerService, _killSwitchService).Run(datasetRoot, artifactRoot, updateBaseline, nowUtc);
+    }
+
     public static LearningEvalComparison EvaluateAgainst(
         LearningEvalMetrics candidate,
         LearningEvalMetrics baseline,
