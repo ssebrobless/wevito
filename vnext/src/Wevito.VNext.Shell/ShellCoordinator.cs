@@ -142,7 +142,8 @@ internal sealed class ShellCoordinator : IAsyncDisposable
                 return;
             }
 
-            _state = _state with { ActiveTool = _state.ActiveTool with { IsOpen = false } };
+            _state = CloseToolSession(_state);
+            await SyncPinnedAsync();
             await PersistAndRenderAsync();
         };
         _toolPopupWindow.PasteRequested += async () => await RequestClipboardCaptureAsync();
@@ -327,10 +328,14 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         TryRunAutonomousOperationsBeta(now);
 
         var roamBandRect = ResolveRoamBandRect();
+        var petMotionBounds = ResolvePetMotionBounds(roamBandRect, homeStageRect);
+        var petMotionMode = ShellPresentationRules.IsActionsSurfaceOpen(_state.ActiveTool)
+            ? CompanionMode.Passive
+            : _state.Mode;
 
         _state = _state with
         {
-            ActivePets = _petSimulationEngine.Tick(_state.ActivePets, _state.Mode, roamBandRect, now, deltaSeconds)
+            ActivePets = _petSimulationEngine.Tick(_state.ActivePets, petMotionMode, petMotionBounds, now, deltaSeconds)
         };
 
         Render();
@@ -481,6 +486,22 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         var monitor = _desktopContext?.PrimaryMonitorBounds
             ?? new RectInt(0, 0, (int)SystemParameters.PrimaryScreenWidth, (int)SystemParameters.PrimaryScreenHeight);
         return new RectInt(monitor.X, monitor.Bottom - (int)RoamBandHeight, monitor.Width, (int)RoamBandHeight);
+    }
+
+    private RectInt ResolvePetMotionBounds(RectInt roamBandRect, RectInt homeStageRect)
+    {
+        if (_state is not null && ShellPresentationRules.IsActionsSurfaceOpen(_state.ActiveTool))
+        {
+            return new RectInt(
+                (int)Math.Round(_homeWindow.Left + homeStageRect.X + 24),
+                (int)Math.Round(_homeWindow.Top + homeStageRect.Y + 24),
+                Math.Max(1, homeStageRect.Width - 48),
+                Math.Max(1, homeStageRect.Height - 54));
+        }
+
+        var workArea = _desktopContext?.WorkArea
+            ?? new RectInt(0, 0, (int)SystemParameters.WorkArea.Width, (int)SystemParameters.WorkArea.Height);
+        return ShellPresentationRules.ResolveRoamMotionBounds(roamBandRect, workArea);
     }
 
     private void ApplyWindowStyles(double desktopAssetOpacity)
@@ -1486,8 +1507,17 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             return;
         }
 
-        _state = _state with { ActiveTool = new ToolSession($"action:{actionId}", true) };
+        var nextSettings = _state.SettingsSnapshot;
+        var autoPinned = !_state.IsPinned;
+        nextSettings = WithSetting(nextSettings, "actions_auto_pinned", autoPinned.ToString());
+        _state = _state with
+        {
+            IsPinned = true,
+            ActiveTool = new ToolSession($"action:{actionId}", true),
+            SettingsSnapshot = nextSettings
+        };
         TraceLog.Write("ui-command", $"open-action action={actionId} count={options.Count}");
+        _ = SyncPinnedAsync();
         ApplyModeAndLayout();
         _ = PersistAsync();
     }
@@ -1521,8 +1551,9 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _state = _state with
         {
             ActivePets = _petSimulationEngine.ApplyAction(actionDefinition, _state.ActivePets, DateTimeOffset.UtcNow),
-            ActiveTool = new ToolSession("basket", false)
         };
+        _state = CloseToolSession(_state);
+        await SyncPinnedAsync();
 
         if (string.Equals(actionId, "home", StringComparison.OrdinalIgnoreCase))
         {
@@ -1942,7 +1973,22 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         var currentlyOpen = _state.ActiveTool.IsOpen && string.Equals(_state.ActiveTool.ToolId, toolId, StringComparison.OrdinalIgnoreCase);
         var nextToolState = !currentlyOpen;
         var nextPinned = _state.IsPinned;
-        if (!_state.IsPinned && _state.Mode == CompanionMode.Passive && nextToolState)
+        var nextSettings = WithSetting(_state.SettingsSnapshot, "webtools_visible", bool.TrueString);
+        if (string.Equals(toolId, "actions", StringComparison.OrdinalIgnoreCase))
+        {
+            if (nextToolState)
+            {
+                var autoPinned = !_state.IsPinned;
+                nextPinned = true;
+                nextSettings = WithSetting(nextSettings, "actions_auto_pinned", autoPinned.ToString());
+            }
+            else if (GetSettingBool(nextSettings, "actions_auto_pinned") && _state.IsPinned)
+            {
+                nextPinned = false;
+                nextSettings = WithSetting(nextSettings, "actions_auto_pinned", string.Empty);
+            }
+        }
+        else if (!_state.IsPinned && _state.Mode == CompanionMode.Passive && nextToolState)
         {
             nextPinned = true;
         }
@@ -1951,13 +1997,13 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         {
             IsPinned = nextPinned,
             ActiveTool = new ToolSession(toolId, nextToolState),
-            SettingsSnapshot = WithSetting(_state.SettingsSnapshot, "webtools_visible", bool.TrueString)
+            SettingsSnapshot = nextSettings
         };
         TraceLog.Write("ui-command", $"toggle-tool tool={toolId} open={nextToolState} pinned={nextPinned}");
 
         if (_brokerClient is not null)
         {
-            await _brokerClient.SendCommandAsync(ShellCommandTypes.SetPinned, new SetPinnedCommand(_state.IsPinned));
+            await SyncPinnedAsync();
         }
 
         ApplyModeAndLayout();
@@ -2077,12 +2123,43 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             return defaultValue;
         }
 
-        if (_state.SettingsSnapshot.TryGetValue(key, out var raw) && bool.TryParse(raw, out var parsed))
+        return GetSettingBool(_state.SettingsSnapshot, key, defaultValue);
+    }
+
+    private static bool GetSettingBool(IReadOnlyDictionary<string, string> settings, string key, bool defaultValue = false)
+    {
+        if (settings.TryGetValue(key, out var raw) && bool.TryParse(raw, out var parsed))
         {
             return parsed;
         }
 
         return defaultValue;
+    }
+
+    private CompanionState CloseToolSession(CompanionState state)
+    {
+        var nextPinned = state.IsPinned;
+        var nextSettings = state.SettingsSnapshot;
+        if (GetSettingBool(nextSettings, "actions_auto_pinned") && state.IsPinned)
+        {
+            nextPinned = false;
+            nextSettings = WithSetting(nextSettings, "actions_auto_pinned", string.Empty);
+        }
+
+        return state with
+        {
+            IsPinned = nextPinned,
+            ActiveTool = new ToolSession("basket", false),
+            SettingsSnapshot = nextSettings
+        };
+    }
+
+    private async Task SyncPinnedAsync()
+    {
+        if (_state is not null && _brokerClient is not null)
+        {
+            await _brokerClient.SendCommandAsync(ShellCommandTypes.SetPinned, new SetPinnedCommand(_state.IsPinned));
+        }
     }
 
     internal static IReadOnlyDictionary<string, string> ApplyDefaultSettings(IReadOnlyDictionary<string, string> settings)
