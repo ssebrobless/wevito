@@ -148,6 +148,21 @@
                             automation:AutomationProperties.AutomationId="StopEverythingButton"
                             Content="STOP"
                             Click="StopEverythingButton_OnClick" />
+                    <Border x:Name="EvidenceBadge"
+                            Margin="6,0,0,0"
+                            Padding="8,4"
+                            CornerRadius="4"
+                            Background="#243646"
+                            BorderBrush="#7DA4B8"
+                            BorderThickness="1"
+                            Visibility="Collapsed"
+                            automation:AutomationProperties.AutomationId="EvidenceBadge">
+                        <TextBlock x:Name="EvidenceBadgeText"
+                                   Foreground="#FFEAF7FB"
+                                   FontSize="11"
+                                   FontWeight="SemiBold"
+                                   Text="Evidence: Day 0 of 0" />
+                    </Border>
                 </WrapPanel>
 
                 <WrapPanel Grid.Row="1"

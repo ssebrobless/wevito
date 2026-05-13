@@ -41,12 +41,13 @@ public partial class RoamBandWindow : Window
         OverlayStatusSnapshot? statusSnapshot = null,
         string statusText = "",
         RuntimeSupervisorStatus? runtimeStatus = null,
-        bool killSwitchActive = false)
+        bool killSwitchActive = false,
+        EvidenceCollectionStatus? evidenceStatus = null)
     {
         RoamCanvas.Children.Clear();
         var now = DateTimeOffset.UtcNow;
         StatusBanner.Render(
-            string.IsNullOrWhiteSpace(statusText) ? "Last action: none yet · today: 0 previews, 0 approvals, 0 mutations" : statusText,
+            FormatStatusText(statusText, evidenceStatus),
             runtimeStatus ?? new RuntimeSupervisorStatus(RuntimeSupervisorMode.Active, true, true, false, "active", ""),
             killSwitchActive,
             now,
@@ -89,6 +90,16 @@ public partial class RoamBandWindow : Window
             Canvas.SetTop(image, Math.Round(ActualHeight - height - 8));
             RoamCanvas.Children.Add(image);
         }
+    }
+
+    private static string FormatStatusText(string statusText, EvidenceCollectionStatus? evidenceStatus)
+    {
+        var baseText = string.IsNullOrWhiteSpace(statusText)
+            ? "Last action: none yet - today: 0 previews, 0 approvals, 0 mutations"
+            : statusText;
+        return evidenceStatus?.Active == true
+            ? $"{baseText} - soak day {evidenceStatus.DayN} of {evidenceStatus.DayMax}"
+            : baseText;
     }
 
     internal void CloseSilently()

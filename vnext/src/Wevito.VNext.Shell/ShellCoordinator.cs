@@ -33,6 +33,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private readonly AuditLedgerService _auditLedgerService = new();
     private readonly ActivitySummaryService _activitySummaryService;
     private readonly LiveStatusFeed _liveStatusFeed;
+    private readonly EvidenceCollectionStatusService _evidenceCollectionStatusService;
     private readonly KillSwitchService _killSwitchService;
     private readonly PetTaskAdapterPreviewDispatcher _petTaskAdapterPreviewDispatcher;
     private readonly RuntimeSupervisorService _runtimeSupervisorService = new();
@@ -82,6 +83,10 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _activitySummaryService = new ActivitySummaryService(_auditLedgerService, plainLanguageExplainer);
         _liveStatusFeed = new LiveStatusFeed(_auditLedgerService, plainLanguageExplainer);
         _killSwitchService = new KillSwitchService(() => _state?.SettingsSnapshot ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase), _auditLedgerService);
+        _evidenceCollectionStatusService = new EvidenceCollectionStatusService(
+            _auditLedgerService,
+            Path.Combine(ResolveRepoRootOrBaseDirectory(), "vnext", "artifacts", "soak"),
+            killSwitchService: _killSwitchService);
         _runtimeSessionTracker = new RuntimeSessionTracker(_auditLedgerService, killSwitchService: _killSwitchService);
         _dailyEvidenceSnapshotService = new DailyEvidenceSnapshotService(_auditLedgerService, _runtimeBudgetMeter, _focusStealCounter, killSwitchService: _killSwitchService);
         _fullscreenMonitor = new WindowsForegroundFullscreenMonitor(_auditLedgerService);
@@ -517,10 +522,11 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         var liveRecentLines = _activitySummaryService.FormatRecentRows(activitySummary);
         var autonomousDecision = _autonomousBetaDecisionService.Decide(now);
         var killSwitchActive = KillSwitchService.IsActive(_state.SettingsSnapshot);
+        var evidenceStatus = _evidenceCollectionStatusService.Read();
 
-        _homeWindow.Render(_state, environment, _feedbackText, _assetService, needSnapshot, aggregateStatuses, actionEnabled, habitatLoadout);
-        _roamBandWindow.Render(_state, _assetService, liveStatus, liveBannerText, supervisorStatus, killSwitchActive);
-        _toolPopupWindow.Render(_state, _content, habitatLoadout, _assetService, _devToolsEnabled, petCommandBarState, supervisorStatus, activitySummary, autonomousDecision, liveRecentLines);
+        _homeWindow.Render(_state, environment, _feedbackText, _assetService, needSnapshot, aggregateStatuses, actionEnabled, habitatLoadout, evidenceStatus);
+        _roamBandWindow.Render(_state, _assetService, liveStatus, liveBannerText, supervisorStatus, killSwitchActive, evidenceStatus);
+        _toolPopupWindow.Render(_state, _content, habitatLoadout, _assetService, _devToolsEnabled, petCommandBarState, supervisorStatus, activitySummary, autonomousDecision, liveRecentLines, evidenceStatus);
     }
 
     private RuntimeSupervisorStatus EvaluateRuntimeSupervisor(bool isUserInitiatedToolOpen)
