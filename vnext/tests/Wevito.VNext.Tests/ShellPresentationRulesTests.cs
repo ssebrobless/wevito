@@ -42,6 +42,29 @@ public sealed class ShellPresentationRulesTests
     }
 
     [Fact]
+    public void ResolveRoamMotionBounds_AlignsPetFeetToTaskbarTopInsteadOfScreenBottom()
+    {
+        var monitor = new RectInt(0, 0, 1920, 1080);
+        var workArea = new RectInt(0, 0, 1920, 1040);
+        var band = new RectInt(0, 962, 1920, 118);
+
+        var motion = ShellPresentationRules.ResolveRoamMotionBounds(band, workArea);
+
+        Assert.Equal(1050, motion.Bottom);
+        Assert.Equal(88, motion.Height);
+    }
+
+    [Theory]
+    [InlineData("actions", true, true)]
+    [InlineData("action:feed", true, true)]
+    [InlineData("settings", true, false)]
+    [InlineData("actions", false, false)]
+    public void IsActionsSurfaceOpen_IdentifiesInteractiveCareSurfaces(string toolId, bool isOpen, bool expected)
+    {
+        Assert.Equal(expected, ShellPresentationRules.IsActionsSurfaceOpen(new ToolSession(toolId, isOpen)));
+    }
+
+    [Fact]
     public void ShouldRenderPetInRoamBand_KeepsGhostsVisibleOutsideFocusHabitat()
     {
         var living = new PetActor(Guid.NewGuid(), "Fox 1", "fox", ActiveStatuses: []);

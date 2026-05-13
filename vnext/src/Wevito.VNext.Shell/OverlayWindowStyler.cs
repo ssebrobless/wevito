@@ -34,7 +34,7 @@ internal static class OverlayWindowStyler
 
         HookWindow(handle, window);
 
-        var desiredState = new WindowStyleState(clickThrough, noActivate);
+        var desiredState = new WindowStyleState(clickThrough, noActivate, hideFromTaskbar);
         if (StyleStateByHandle.TryGetValue(handle, out var existingState) && existingState.Equals(desiredState))
         {
             return;
@@ -48,7 +48,7 @@ internal static class OverlayWindowStyler
         NativeMethods.SetWindowPos(handle, HwndTopMost, 0, 0, 0, 0,
             SwpNoMove | SwpNoSize | SwpNoOwnerZOrder | SwpNoRedraw | SwpNoSendChanging | (noActivate ? SwpNoActivate : 0));
         StyleStateByHandle[handle] = desiredState;
-        TraceLog.Write("overlay-style", $"window={window.Title} clickThrough={clickThrough} noActivate={noActivate} handle={handle}");
+        TraceLog.Write("overlay-style", $"window={window.Title} clickThrough={clickThrough} noActivate={noActivate} hideFromTaskbar={hideFromTaskbar} handle={handle}");
     }
 
     private static void HookWindow(IntPtr handle, Window window)
@@ -100,5 +100,5 @@ internal static class OverlayWindowStyler
             uint uFlags);
     }
 
-    private readonly record struct WindowStyleState(bool ClickThrough, bool NoActivate);
+    private readonly record struct WindowStyleState(bool ClickThrough, bool NoActivate, bool HideFromTaskbar);
 }

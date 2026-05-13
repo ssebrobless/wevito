@@ -237,26 +237,48 @@ public partial class HomePanelWindow : Window
         var stageRect = GetStageRect();
         var now = DateTimeOffset.UtcNow;
         var renderedInteractionCue = false;
-        foreach (var pet in state.ActivePets.Where(pet => ShouldRenderPetInHomePanel(state.Mode, pet)))
+        var calmLineup = !ShellPresentationRules.IsActionsSurfaceOpen(state.ActiveTool);
+        var renderedPets = state.ActivePets.Where(pet => ShouldRenderPetInHomePanel(state.Mode, pet)).ToList();
+        var livingPetCount = renderedPets.Count(pet => !pet.IsDead);
+        var livingIndex = 0;
+        foreach (var pet in renderedPets)
         {
             RenderMemorialIfActive(pet, now, stageRect, assetService);
-            var ghostFrame = pet.IsGhost ? assetService.GetGhostPetFrame(pet, now) : null;
-            var source = ghostFrame ?? assetService.GetPetFrame(pet, now);
+            var renderPet = calmLineup && !pet.IsGhost
+                ? pet with
+                {
+                    CurrentAnimationState = PetAnimationState.Idle,
+                    OverrideAnimationState = null,
+                    OverrideAnimationEndsAtUtc = null,
+                    AnimationStartedAtUtc = now
+                }
+                : pet;
+            var ghostFrame = renderPet.IsGhost ? assetService.GetGhostPetFrame(renderPet, now) : null;
+            var source = ghostFrame ?? assetService.GetPetFrame(renderPet, now);
             if (source is null)
             {
                 continue;
             }
 
-            var usesGenericGhostOverlay = pet.IsGhost && ghostFrame is null;
-            var scale = assetService.GetPetScale(pet);
+            var usesGenericGhostOverlay = renderPet.IsGhost && ghostFrame is null;
             var bitmap = source as BitmapSource;
+            var baseScale = assetService.GetPetScale(renderPet);
+            var scale = calmLineup && bitmap is not null
+                ? ResolveCalmLineupScale(bitmap.PixelHeight, baseScale)
+                : baseScale;
             var width = (bitmap?.PixelWidth ?? 28) * scale;
             var height = (bitmap?.PixelHeight ?? 24) * scale;
-            var image = CreateSpriteImage(source, width, height, pet.FacingDirection == PetFacingDirection.Left);
-            image.Opacity = pet.IsGhost ? (usesGenericGhostOverlay ? 0.44 : 0.82) : pet.IsDead ? 0.58 : 1.0;
+            var image = CreateSpriteImage(source, width, height, renderPet.FacingDirection == PetFacingDirection.Left);
+            image.Opacity = renderPet.IsGhost ? (usesGenericGhostOverlay ? 0.44 : 0.82) : renderPet.IsDead ? 0.58 : 1.0;
             var localX = Math.Round(pet.CurrentX - Left - stageRect.X - width / 2);
             var localY = Math.Round(pet.CurrentY - Top - stageRect.Y - height);
-            if (focusPet is not null &&
+            if (calmLineup)
+            {
+                var placement = ResolveCalmLineupPlacement(livingIndex, Math.Max(1, livingPetCount), stageRect, width, height);
+                localX = placement.X;
+                localY = placement.Y;
+            }
+            else if (focusPet is not null &&
                 pet.Id == focusPet.Id &&
                 TryResolveInteractionVisual(pet, stageSpecs, now, width, height, out var interactionX, out var interactionY, out var cueText, out var cuePoint))
             {
@@ -268,6 +290,8 @@ public partial class HomePanelWindow : Window
                     renderedInteractionCue = true;
                 }
             }
+
+            livingIndex++;
             var shadow = CreatePetContactShadow(pet, width, height);
             Canvas.SetLeft(shadow, Math.Round(localX + width * 0.12));
             Canvas.SetTop(shadow, Math.Round(localY + height - shadow.Height * 0.58));
@@ -321,6 +345,44 @@ public partial class HomePanelWindow : Window
     internal static bool ShouldRenderPetInHomePanel(CompanionMode mode, PetActor pet)
     {
         return mode != CompanionMode.Passive && !pet.IsDead;
+    }
+
+    internal static double ResolveCalmLineupScale(double spriteHeight, double baseScale)
+    {
+        if (spriteHeight <= 0 || double.IsNaN(spriteHeight) || double.IsInfinity(spriteHeight))
+        {
+            return baseScale;
+        }
+
+        var renderedHeight = spriteHeight * baseScale;
+        var scale = baseScale;
+        if (renderedHeight > 144)
+        {
+            scale = 144 / spriteHeight;
+        }
+        else if (renderedHeight < 108)
+        {
+            scale = 108 / spriteHeight;
+        }
+
+        return Math.Round(Math.Clamp(scale, 1.6, 3.0), 2);
+    }
+
+    internal static Point ResolveCalmLineupPlacement(
+        int index,
+        int livingPetCount,
+        RectInt stageRect,
+        double spriteWidth,
+        double spriteHeight)
+    {
+        var count = Math.Max(1, livingPetCount);
+        var safeWidth = Math.Max(1, stageRect.Width - 56);
+        var slotWidth = safeWidth / count;
+        var x = stageRect.X + 28 + slotWidth * Math.Clamp(index, 0, count - 1) + slotWidth / 2 - spriteWidth / 2;
+        var y = stageRect.Y + stageRect.Height - spriteHeight - 54;
+        return new Point(
+            Math.Round(Math.Clamp(x, stageRect.X + 8, stageRect.X + Math.Max(8, stageRect.Width - spriteWidth - 8))),
+            Math.Round(Math.Clamp(y, stageRect.Y + 8, stageRect.Y + Math.Max(8, stageRect.Height - spriteHeight - 8))));
     }
 
     private void RenderMemorialIfActive(PetActor pet, DateTimeOffset now, RectInt stageRect, SpriteAssetService assetService)
