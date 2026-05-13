@@ -12,7 +12,9 @@ public sealed record PetMemoryExample(
     string Content,
     string Label,
     float[] Embedding,
-    DateTimeOffset CreatedAtUtc);
+    DateTimeOffset CreatedAtUtc,
+    string DatasetVersion = "",
+    string SourceTaskCardId = "");
 
 public sealed record PetMemorySearchResult(
     PetMemoryExample Example,
@@ -137,7 +139,14 @@ public sealed class PetMemoryStore
             rebuilt ? "Memory database was corrupt and has been rebuilt." : "Memory database is ready.");
     }
 
-    public PetMemoryExample AddExample(Guid petId, string kind, string content, string label, DateTimeOffset? nowUtc = null)
+    public PetMemoryExample AddExample(
+        Guid petId,
+        string kind,
+        string content,
+        string label,
+        DateTimeOffset? nowUtc = null,
+        string datasetVersion = "",
+        string sourceTaskCardId = "")
     {
         var timestamp = nowUtc ?? DateTimeOffset.UtcNow;
         var status = EnsureReady(petId, timestamp);
@@ -148,14 +157,16 @@ public sealed class PetMemoryStore
         using var command = connection.CreateCommand();
         command.Transaction = transaction;
         command.CommandText = """
-            INSERT INTO examples(kind, content, label, embedding, created_at)
-            VALUES ($kind, $content, $label, $embedding, $created_at);
+            INSERT INTO examples(kind, content, label, embedding, created_at, dataset_version, source_task_card_id)
+            VALUES ($kind, $content, $label, $embedding, $created_at, $dataset_version, $source_task_card_id);
             """;
         command.Parameters.AddWithValue("$kind", kind);
         command.Parameters.AddWithValue("$content", content);
         command.Parameters.AddWithValue("$label", label);
         command.Parameters.Add("$embedding", SqliteType.Blob).Value = SerializeEmbedding(embedding);
         command.Parameters.AddWithValue("$created_at", timestamp.ToString("O"));
+        command.Parameters.AddWithValue("$dataset_version", datasetVersion ?? "");
+        command.Parameters.AddWithValue("$source_task_card_id", sourceTaskCardId ?? "");
         command.ExecuteNonQuery();
 
         using var idCommand = connection.CreateCommand();
@@ -174,7 +185,7 @@ public sealed class PetMemoryStore
         }
 
         transaction.Commit();
-        return new PetMemoryExample(id, kind, content, label, embedding, timestamp);
+        return new PetMemoryExample(id, kind, content, label, embedding, timestamp, datasetVersion ?? "", sourceTaskCardId ?? "");
     }
 
     public IReadOnlyList<PetMemorySearchResult> Search(Guid petId, string query, string kind = "", int topK = 3)
@@ -276,11 +287,15 @@ public sealed class PetMemoryStore
                 content TEXT NOT NULL,
                 label TEXT NOT NULL,
                 embedding BLOB NOT NULL,
-                created_at TEXT NOT NULL
+                created_at TEXT NOT NULL,
+                dataset_version TEXT NOT NULL DEFAULT '',
+                source_task_card_id TEXT NOT NULL DEFAULT ''
             );
             CREATE VIRTUAL TABLE IF NOT EXISTS examples_fts USING fts5(kind, content, label, content='examples', content_rowid='id');
             """;
         command.ExecuteNonQuery();
+        EnsureColumn(connection, "examples", "dataset_version", "TEXT NOT NULL DEFAULT ''");
+        EnsureColumn(connection, "examples", "source_task_card_id", "TEXT NOT NULL DEFAULT ''");
 
         if (!vectorAvailable)
         {
@@ -300,14 +315,14 @@ public sealed class PetMemoryStore
             var hasKind = !string.IsNullOrWhiteSpace(kind);
             command.CommandText = hasKind
                 ? """
-                  SELECT e.id, e.kind, e.content, e.label, e.embedding, e.created_at, v.distance
+                  SELECT e.id, e.kind, e.content, e.label, e.embedding, e.created_at, e.dataset_version, e.source_task_card_id, v.distance
                   FROM vec_examples v
                   JOIN examples e ON e.id = v.example_id
                   WHERE v.embedding MATCH $embedding AND k = $k AND e.kind = $kind
                   ORDER BY v.distance
                   """
                 : """
-                  SELECT e.id, e.kind, e.content, e.label, e.embedding, e.created_at, v.distance
+                  SELECT e.id, e.kind, e.content, e.label, e.embedding, e.created_at, e.dataset_version, e.source_task_card_id, v.distance
                   FROM vec_examples v
                   JOIN examples e ON e.id = v.example_id
                   WHERE v.embedding MATCH $embedding AND k = $k
@@ -345,8 +360,8 @@ public sealed class PetMemoryStore
         using var command = connection.CreateCommand();
         var hasKind = !string.IsNullOrWhiteSpace(kind);
         command.CommandText = hasKind
-            ? "SELECT id, kind, content, label, embedding, created_at FROM examples WHERE kind = $kind"
-            : "SELECT id, kind, content, label, embedding, created_at FROM examples";
+            ? "SELECT id, kind, content, label, embedding, created_at, dataset_version, source_task_card_id FROM examples WHERE kind = $kind"
+            : "SELECT id, kind, content, label, embedding, created_at, dataset_version, source_task_card_id FROM examples";
         if (hasKind)
         {
             command.Parameters.AddWithValue("$kind", kind);
@@ -375,7 +390,27 @@ public sealed class PetMemoryStore
             Convert.ToString(reader["content"], CultureInfo.InvariantCulture) ?? "",
             Convert.ToString(reader["label"], CultureInfo.InvariantCulture) ?? "",
             embedding,
-            DateTimeOffset.Parse(Convert.ToString(reader["created_at"], CultureInfo.InvariantCulture) ?? DateTimeOffset.MinValue.ToString("O"), CultureInfo.InvariantCulture));
+            DateTimeOffset.Parse(Convert.ToString(reader["created_at"], CultureInfo.InvariantCulture) ?? DateTimeOffset.MinValue.ToString("O"), CultureInfo.InvariantCulture),
+            Convert.ToString(reader["dataset_version"], CultureInfo.InvariantCulture) ?? "",
+            Convert.ToString(reader["source_task_card_id"], CultureInfo.InvariantCulture) ?? "");
+    }
+
+    private static void EnsureColumn(SqliteConnection connection, string tableName, string columnName, string definition)
+    {
+        using var read = connection.CreateCommand();
+        read.CommandText = $"PRAGMA table_info({tableName});";
+        using var reader = read.ExecuteReader();
+        while (reader.Read())
+        {
+            if (string.Equals(reader["name"]?.ToString(), columnName, StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+        }
+
+        using var alter = connection.CreateCommand();
+        alter.CommandText = $"ALTER TABLE {tableName} ADD COLUMN {columnName} {definition};";
+        alter.ExecuteNonQuery();
     }
 
     private static byte[] SerializeEmbedding(float[] embedding)

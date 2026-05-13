@@ -161,6 +161,16 @@
                                 automation:AutomationProperties.AutomationId="LearningLabExportReviewedBundleButton"
                                 Content="Export Reviewed Bundle"
                                 Click="ExportReviewedBundleButton_OnClick" />
+                        <Button x:Name="ProposePromotionButton"
+                                Height="32"
+                                Margin="0,8,0,0"
+                                Background="#273A46"
+                                BorderBrush="#6EA0A0"
+                                Foreground="#F3F7F4"
+                                FontWeight="SemiBold"
+                                automation:AutomationProperties.AutomationId="LearningLabProposePromotionButton"
+                                Content="Propose Promotion"
+                                Click="ProposePromotionButton_OnClick" />
                     </StackPanel>
                 </Border>
 
