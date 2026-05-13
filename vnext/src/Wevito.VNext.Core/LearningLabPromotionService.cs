@@ -33,11 +33,13 @@ public sealed class LearningLabPromotionService
 
     private readonly PetMemoryStore _memoryStore;
     private readonly PetMemoryWriteGate _writeGate;
+    private readonly AuditLedgerService? _auditLedgerService;
 
-    public LearningLabPromotionService(PetMemoryStore? memoryStore = null, PetMemoryWriteGate? writeGate = null)
+    public LearningLabPromotionService(PetMemoryStore? memoryStore = null, PetMemoryWriteGate? writeGate = null, AuditLedgerService? auditLedgerService = null)
     {
         _memoryStore = memoryStore ?? new PetMemoryStore();
         _writeGate = writeGate ?? new PetMemoryWriteGate();
+        _auditLedgerService = auditLedgerService;
     }
 
     public LearningLabPromotionResult Promote(LearningLabPromotionRequest request)
@@ -145,6 +147,18 @@ public sealed class LearningLabPromotionService
             "",
             "Reviewed examples were promoted into local memory and a versioned dataset only after an approved task card."
         ]));
+        _auditLedgerService?.Record(new EvidencePacket(
+            Guid.NewGuid(),
+            "learning_promotion",
+            request.ApprovedTaskCard.Id,
+            request.PromotedAtUtc,
+            DidUseNetwork: false,
+            DidUseHostedAi: false,
+            DidUseLocalModel: true,
+            DidMutate: true,
+            reportFolder,
+            $"Promoted {accepted.Count} reviewed Learning Lab example(s) into local memory and dataset {datasetVersion}.",
+            "Completed"));
 
         return new LearningLabPromotionResult(
             true,

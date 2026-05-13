@@ -28,11 +28,13 @@ public sealed class AutonomousTaskScheduler
 
     private readonly RuntimeSupervisorService _runtimeSupervisorService;
     private readonly RuntimeBudgetMeter _budgetMeter;
+    private readonly AuditLedgerService? _auditLedgerService;
 
-    public AutonomousTaskScheduler(RuntimeSupervisorService runtimeSupervisorService, RuntimeBudgetMeter budgetMeter)
+    public AutonomousTaskScheduler(RuntimeSupervisorService runtimeSupervisorService, RuntimeBudgetMeter budgetMeter, AuditLedgerService? auditLedgerService = null)
     {
         _runtimeSupervisorService = runtimeSupervisorService;
         _budgetMeter = budgetMeter;
+        _auditLedgerService = auditLedgerService;
     }
 
     public SchedulerProposalResult TryCreateProposal(AutonomousSchedulerRequest request)
@@ -108,6 +110,18 @@ public sealed class AutonomousTaskScheduler
             CreatedAtUtc: timestamp);
 
         var artifactFolder = WriteEvidencePacket(request.ArtifactRoot, packet, reservation);
+        _auditLedgerService?.Record(new EvidencePacket(
+            packet.PacketId,
+            packet.PacketKind,
+            packet.TaskCardId,
+            packet.CreatedAtUtc,
+            packet.DidUseNetwork,
+            packet.DidUseHostedAi,
+            DidUseLocalModel: false,
+            packet.DidMutate,
+            artifactFolder,
+            $"Scheduler proposed {packet.ToolFamily} from {packet.TriggerKind}.",
+            "Draft"));
         return new SchedulerProposalResult(
             true,
             card with { AuditLogPath = Path.Combine(artifactFolder, "run-summary.md") },

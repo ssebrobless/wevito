@@ -9,10 +9,12 @@ public sealed class LearningEvalService
     public const string PacketKind = "eval_run";
 
     private readonly ITextEmbeddingService _embeddingService;
+    private readonly AuditLedgerService? _auditLedgerService;
 
-    public LearningEvalService(ITextEmbeddingService? embeddingService = null)
+    public LearningEvalService(ITextEmbeddingService? embeddingService = null, AuditLedgerService? auditLedgerService = null)
     {
         _embeddingService = embeddingService ?? new CachingTextEmbeddingService();
+        _auditLedgerService = auditLedgerService;
     }
 
     public LearningEvalResult Evaluate(LearningEvalRequest request)
@@ -63,6 +65,18 @@ public sealed class LearningEvalService
             Directory.CreateDirectory(Path.GetDirectoryName(request.BaselinePath) ?? request.ArtifactRoot);
             File.WriteAllText(request.BaselinePath, JsonSerializer.Serialize(record, JsonDefaults.Options));
         }
+        _auditLedgerService?.Record(new EvidencePacket(
+            Guid.NewGuid(),
+            PacketKind,
+            TaskCardId: null,
+            request.CreatedAtUtc,
+            DidUseNetwork: false,
+            DidUseHostedAi: false,
+            DidUseLocalModel: _embeddingService is OnnxTextEmbeddingService { IsOnnxReady: true },
+            DidMutate: baselinePromoted,
+            runFolder,
+            $"Learning eval for {datasetVersion}: recall@1={metrics.RecallAt1:0.###}, mrr={metrics.MeanReciprocalRank:0.###}, regression={regression.ToString().ToLowerInvariant()}.",
+            regression ? "Regression" : "Completed"));
 
         return new LearningEvalResult(
             true,
