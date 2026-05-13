@@ -7,10 +7,12 @@ public sealed class LocalResearchPreviewAdapter
 {
     private const string ToolFamily = "localResearch";
     private readonly ResearchPlannerService _planner;
+    private readonly WebResearchConnector? _webResearchConnector;
 
-    public LocalResearchPreviewAdapter(ResearchPlannerService? planner = null)
+    public LocalResearchPreviewAdapter(ResearchPlannerService? planner = null, WebResearchConnector? webResearchConnector = null)
     {
         _planner = planner ?? new ResearchPlannerService();
+        _webResearchConnector = webResearchConnector;
     }
 
     public TaskAdapterResult BuildPreview(TaskAdapterRequest request, DateTimeOffset? nowUtc = null)
@@ -38,12 +40,14 @@ public sealed class LocalResearchPreviewAdapter
             return Block(request, "Local research artifacts must be written under a pet-tasks artifact folder.", timestamp);
         }
 
+        var webFetches = TryFetchWebEvidence(request, timestamp, artifactRoot);
         var packet = _planner.Plan(new ResearchPlannerRequest(
             request.Intent.RawText,
             LocalMemory: request.Intent.TargetPathsOrAssets ?? [],
             LocalDocumentPaths: request.PolicySnapshot.ApprovedRootPaths,
             PriorToolReports: [],
-            AllowNetwork: false,
+            WebFetches: webFetches,
+            AllowNetwork: webFetches.Count > 0,
             AllowHostedAi: false,
             RequestedAtUtc: timestamp));
 
@@ -67,6 +71,30 @@ public sealed class LocalResearchPreviewAdapter
             ResultSummary: $"localResearch report ready: {markdownPath}",
             AuditLogPath: markdownPath,
             CompletedAtUtc: timestamp);
+    }
+
+    private IReadOnlyList<WebFetchRecord> TryFetchWebEvidence(TaskAdapterRequest request, DateTimeOffset timestamp, string artifactRoot)
+    {
+        if (_webResearchConnector is null || request.PolicySnapshot.AccessMode != ToolAccessMode.Network || request.RunMode != TaskAdapterRunMode.DryRunPreview)
+        {
+            return [];
+        }
+
+        var result = _webResearchConnector.FetchAsync(new WebResearchRequest(
+            TaskCardId: request.TaskCardId,
+            ApprovedTaskCard: true,
+            Query: request.Intent.RawText,
+            Backend: "",
+            ArtifactRoot: artifactRoot,
+            CacheRoot: "",
+            Settings: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                [WebResearchConnector.WebSearchEnabledSetting] = bool.FalseString,
+                [WebResearchConnector.WebBackendSetting] = "offline"
+            },
+            RuntimeStatus: new RuntimeSupervisorStatus(RuntimeSupervisorMode.Active, true, true, false, "active", ""),
+            RequestedAtUtc: timestamp)).GetAwaiter().GetResult();
+        return result.Succeeded ? result.Records : [];
     }
 
     private static string BuildMarkdown(ResearchEvidencePacket packet, TaskAdapterRequest request)

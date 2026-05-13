@@ -1922,6 +1922,10 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         hydrated.TryAdd(RuntimeSupervisorService.MemoryBudgetMbSetting, "512");
         hydrated.TryAdd(AutonomousTaskScheduler.SchedulerEnabledSetting, bool.FalseString);
         hydrated.TryAdd(AutonomousTaskScheduler.SchedulerPreviewDispatchApprovedSetting, bool.FalseString);
+        hydrated.TryAdd(WebResearchConnector.WebSearchEnabledSetting, bool.FalseString);
+        hydrated.TryAdd(WebResearchConnector.WebBackendSetting, "offline");
+        hydrated.TryAdd(WebResearchConnector.MaxFetchesPerHourSetting, "30");
+        hydrated.TryAdd(WebResearchConnector.MaxFetchesPerTaskSetting, "5");
         return hydrated;
     }
 

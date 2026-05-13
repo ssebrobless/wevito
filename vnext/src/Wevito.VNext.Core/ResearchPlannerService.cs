@@ -5,6 +5,7 @@ public sealed record ResearchPlannerRequest(
     IReadOnlyList<string>? LocalMemory = null,
     IReadOnlyList<string>? LocalDocumentPaths = null,
     IReadOnlyList<string>? PriorToolReports = null,
+    IReadOnlyList<WebFetchRecord>? WebFetches = null,
     bool AllowNetwork = false,
     bool AllowHostedAi = false,
     DateTimeOffset RequestedAtUtc = default);
@@ -62,6 +63,17 @@ public sealed class ResearchPlannerService
             }
 
             yield return new ResearchSourceRecord($"report-{index++}", ResearchSourceKind.ToolReport, "Prior tool report", report.Trim());
+        }
+
+        foreach (var fetch in request.WebFetches ?? [])
+        {
+            yield return new ResearchSourceRecord(
+                $"web-fetch-{index++}",
+                ResearchSourceKind.WebFetch,
+                fetch.Title,
+                fetch.Citation,
+                IsNetworkSource: true,
+                WasFetched: true);
         }
 
         if (request.AllowNetwork)

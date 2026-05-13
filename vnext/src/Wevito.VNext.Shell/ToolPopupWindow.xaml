@@ -749,6 +749,39 @@
                                        TextWrapping="Wrap" />
                         </StackPanel>
                     </Border>
+                    <Border Margin="0,12,0,0"
+                            Padding="10"
+                            CornerRadius="10"
+                            BorderBrush="#334A6672"
+                            BorderThickness="1"
+                            Background="#161E26">
+                        <StackPanel>
+                            <TextBlock Text="Web research"
+                                       Foreground="#FFF0F4F5"
+                                       FontSize="12"
+                                       FontWeight="SemiBold" />
+                            <TextBlock Text="Default backend is offline. Live fetches require approved task cards, privacy filtering, and stored backend credentials."
+                                       Margin="0,4,0,0"
+                                       Foreground="#FFBFD2DC"
+                                       FontSize="10"
+                                       TextWrapping="Wrap" />
+                            <CheckBox x:Name="WebSearchEnabledCheckBox"
+                                      Margin="0,8,0,0"
+                                      Style="{StaticResource PopupCheckBoxStyle}"
+                                      automation:AutomationProperties.AutomationId="WebSearchEnabledCheckBox"
+                                      Content="Allow approved web research fetches"
+                                      Foreground="#FFF0F4F5"
+                                      Checked="WebSearchEnabledCheckBox_OnChanged"
+                                      Unchecked="WebSearchEnabledCheckBox_OnChanged" />
+                            <TextBlock x:Name="WebSearchStatusText"
+                                       Margin="0,4,0,0"
+                                       automation:AutomationProperties.AutomationId="WebSearchStatusText"
+                                       Text="Backend: offline · keys stored under Wevito/web-search/&lt;backend&gt;"
+                                       Foreground="#FF9FB7C4"
+                                       FontSize="10"
+                                       TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Border>
                     <UniformGrid Margin="0,12,0,0"
                                  Columns="2">
                         <Button x:Name="SettingsSaveButton"
