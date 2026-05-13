@@ -27,4 +27,8 @@
     <ProjectReference Include="..\..\src\Wevito.VNext.Shell\Wevito.VNext.Shell.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="fakes\test-embedder\**\*.*" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>
