@@ -128,7 +128,7 @@ public sealed class WindowsPowerHandler : IDisposable
             DidUseLocalModel: false,
             DidMutate: false,
             ArtifactPath: "",
-            Summary: forceQuiet ? "Power/session event forced Quiet mode and halted helper work." : "Power/session event observed; Wevito did not auto-return to Active.",
-            Status: forceQuiet ? "Blocked" : "Completed"));
+            Summary: forceQuiet ? "power_event force_quiet=true quiet_mode=true background_work_allowed=false" : "power_event force_quiet=false Wevito did not auto-return to Active.",
+            Status: "Completed"));
     }
 }
