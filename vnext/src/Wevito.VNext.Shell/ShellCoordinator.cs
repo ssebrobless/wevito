@@ -326,9 +326,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         TryPollAutonomousScheduler(now);
         TryRunAutonomousOperationsBeta(now);
 
-        var roamBandRect = _desktopContext?.WorkArea is { } workArea
-            ? new RectInt(workArea.X, workArea.Bottom - (int)RoamBandHeight, workArea.Width, (int)RoamBandHeight)
-            : new RectInt(0, 0, 1280, (int)RoamBandHeight);
+        var roamBandRect = ResolveRoamBandRect();
 
         _state = _state with
         {
@@ -431,6 +429,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         }
 
         var workArea = _desktopContext?.WorkArea ?? new RectInt(0, 0, (int)SystemParameters.WorkArea.Width, (int)SystemParameters.WorkArea.Height);
+        var roamBandRect = ResolveRoamBandRect();
         var handles = new List<long>
         {
             _homeWindow.WindowHandle,
@@ -458,10 +457,10 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _toolPopupWindow.Height = toolHeight;
         _toolPopupWindow.Top = Math.Max(workArea.Y + 10, homeTop - toolHeight - 10);
 
-        _roamBandWindow.Left = workArea.X;
-        _roamBandWindow.Top = workArea.Bottom - RoamBandHeight;
-        _roamBandWindow.Width = workArea.Width;
-        _roamBandWindow.Height = RoamBandHeight;
+        _roamBandWindow.Left = roamBandRect.X;
+        _roamBandWindow.Top = roamBandRect.Y;
+        _roamBandWindow.Width = roamBandRect.Width;
+        _roamBandWindow.Height = roamBandRect.Height;
 
         if (_lastLoggedMode != _state.Mode)
         {
@@ -474,7 +473,14 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         var desktopAssetOpacity = ShellPresentationRules.ResolveDesktopAssetOpacity(_state.Mode, _desktopContext, handles);
         ApplyWindowStyles(desktopAssetOpacity);
         Render(desktopAssetOpacity);
-        _ = PublishOverlayRegionsAsync(workArea);
+        _ = PublishOverlayRegionsAsync(roamBandRect);
+    }
+
+    private RectInt ResolveRoamBandRect()
+    {
+        var monitor = _desktopContext?.PrimaryMonitorBounds
+            ?? new RectInt(0, 0, (int)SystemParameters.PrimaryScreenWidth, (int)SystemParameters.PrimaryScreenHeight);
+        return new RectInt(monitor.X, monitor.Bottom - (int)RoamBandHeight, monitor.Width, (int)RoamBandHeight);
     }
 
     private void ApplyWindowStyles(double desktopAssetOpacity)
@@ -689,7 +695,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         ];
     }
 
-    private async Task PublishOverlayRegionsAsync(RectInt workArea)
+    private async Task PublishOverlayRegionsAsync(RectInt roamBandRect)
     {
         if (_brokerClient is null || _state is null)
         {
@@ -699,7 +705,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         var regions = new List<OverlayRegion>
         {
             new(WindowRole.HomePanel, new RectInt((int)_homeWindow.Left, (int)_homeWindow.Top, (int)_homeWindow.Width, (int)_homeWindow.Height), _state.Mode != CompanionMode.Passive),
-            new(WindowRole.RoamBand, new RectInt(workArea.X, workArea.Bottom - (int)RoamBandHeight, workArea.Width, (int)RoamBandHeight), false),
+            new(WindowRole.RoamBand, roamBandRect, false),
             new(WindowRole.ToolPopup, new RectInt((int)_toolPopupWindow.Left, (int)_toolPopupWindow.Top, (int)_toolPopupWindow.Width, (int)_toolPopupWindow.Height), _state.Mode != CompanionMode.Passive && _state.ActiveTool.IsOpen)
         };
 
@@ -1505,6 +1511,13 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             return;
         }
 
+        var targetNames = _state.ActivePets
+            .Where(pet => !pet.IsDead)
+            .Select(pet => pet.Name)
+            .Take(3)
+            .ToList();
+        var targetSummary = targetNames.Count == 0 ? "no living pets" : string.Join(", ", targetNames);
+
         _state = _state with
         {
             ActivePets = _petSimulationEngine.ApplyAction(actionDefinition, _state.ActivePets, DateTimeOffset.UtcNow),
@@ -1522,9 +1535,10 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             ? options.FirstOrDefault(option => string.Equals(option.Id, itemId, StringComparison.OrdinalIgnoreCase))
             : null;
 
-        _feedbackText = selectedItem is null
+        var baseFeedback = selectedItem is null
             ? HabitatLoadoutResolver.BuildActionFeedback(actionId, actionDefinition, habitatLoadout)
             : BuildSelectedActionFeedback(actionId, actionDefinition.DisplayName, selectedItem);
+        _feedbackText = $"{baseFeedback} Target: {targetSummary}.";
         TraceLog.Write("action", $"{actionId}:{selectedItem?.Id ?? "default"}");
         await PersistAndRenderAsync();
     }

@@ -237,7 +237,7 @@ public partial class HomePanelWindow : Window
         var stageRect = GetStageRect();
         var now = DateTimeOffset.UtcNow;
         var renderedInteractionCue = false;
-        foreach (var pet in state.ActivePets.Where(pet => ShouldRenderPetInHomePanel(state.Mode)))
+        foreach (var pet in state.ActivePets.Where(pet => ShouldRenderPetInHomePanel(state.Mode, pet)))
         {
             RenderMemorialIfActive(pet, now, stageRect, assetService);
             var ghostFrame = pet.IsGhost ? assetService.GetGhostPetFrame(pet, now) : null;
@@ -318,9 +318,9 @@ public partial class HomePanelWindow : Window
         }
     }
 
-    internal static bool ShouldRenderPetInHomePanel(CompanionMode mode)
+    internal static bool ShouldRenderPetInHomePanel(CompanionMode mode, PetActor pet)
     {
-        return mode != CompanionMode.Passive;
+        return mode != CompanionMode.Passive && !pet.IsDead;
     }
 
     private void RenderMemorialIfActive(PetActor pet, DateTimeOffset now, RectInt stageRect, SpriteAssetService assetService)
