@@ -132,6 +132,11 @@ public partial class CreativeLearningLabWindow : Window
             : $"Reviewed bundle export blocked: {result.Message}";
     }
 
+    private void ProposePromotionButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        StatusText.Text = "Promotion is approval-gated: queue a PET TASKS card with tool family learningPromotion before memory or dataset writes can happen.";
+    }
+
     private string ResolveLabel(LearningLabArtifactRecord artifact)
     {
         return _labels.TryGetValue(Path.GetFullPath(artifact.AbsolutePath), out var label)

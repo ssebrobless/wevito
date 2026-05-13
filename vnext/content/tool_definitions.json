@@ -91,5 +91,21 @@
     "schemaVersion": "1",
     "vectorExtension": "sqlite-vec",
     "fallbackWhenUnavailable": "disable-memory-routing"
+  },
+  {
+    "id": "learning_promotion",
+    "displayName": "Learning Promotion",
+    "capacity": 0,
+    "toolFamily": "learningPromotion",
+    "defaultState": "approval-required",
+    "requiresApprovedTaskCard": true,
+    "automaticTrainingEnabled": false,
+    "automaticMemoryPromotionEnabled": false,
+    "copiesBinaryAssets": false,
+    "outputs": [
+      "learning-dataset-manifest",
+      "examples-jsonl",
+      "promotion-report"
+    ]
   }
 ]
