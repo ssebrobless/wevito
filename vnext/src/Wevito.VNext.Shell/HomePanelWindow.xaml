@@ -139,6 +139,15 @@
                             automation:AutomationProperties.AutomationId="SettingsButton"
                             Content="SETTINGS"
                             Click="SettingsButton_OnClick" />
+                    <Button x:Name="StopEverythingButton"
+                            Margin="6,0,0,0"
+                            Style="{StaticResource HudButtonStyle}"
+                            MinWidth="54"
+                            Background="#5A1E24"
+                            BorderBrush="#D56B73"
+                            automation:AutomationProperties.AutomationId="StopEverythingButton"
+                            Content="STOP"
+                            Click="StopEverythingButton_OnClick" />
                 </WrapPanel>
 
                 <WrapPanel Grid.Row="1"
