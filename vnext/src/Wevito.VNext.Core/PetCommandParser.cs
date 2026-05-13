@@ -250,6 +250,19 @@ public sealed class PetCommandParser
                 ExpectedOutput: "No-mutation pet state/debug-truth report");
         }
 
+        if (normalized.Contains("research") ||
+            normalized.Contains("look into") ||
+            normalized.Contains("investigate") ||
+            normalized.Contains("compare sources"))
+        {
+            return new Classification(
+                TaskKind.Research,
+                "localResearch",
+                ToolRiskLevel.Low,
+                NeedsApproval: false,
+                ExpectedOutput: "Local-first research plan with source/evidence packet");
+        }
+
         if (normalized.Contains("translate") ||
             normalized.Contains("translation") ||
             normalized.Contains("make this japanese") ||
@@ -469,6 +482,7 @@ public sealed class PetCommandParser
             (PetHelperRole.SpriteReviewHelper, TaskKind.InventoryAssets) => true,
             (PetHelperRole.ChecklistHelper, TaskKind.ReviewPetState) => true,
             (PetHelperRole.ResearchHelper, TaskKind.ReviewPetState) => true,
+            (PetHelperRole.ResearchHelper, TaskKind.Research) => true,
             (PetHelperRole.ResearchHelper, TaskKind.TranslateText) => true,
             (PetHelperRole.ResearchHelper, TaskKind.AudioAssist) => true,
             (PetHelperRole.ResearchHelper, TaskKind.ScreenCapture) => true,

@@ -23,6 +23,7 @@
         "role": "ResearchHelper",
         "allowedToolFamilies": [
           "localDocs",
+          "localResearch",
           "codeReview"
         ]
       },
@@ -43,6 +44,21 @@
         ]
       }
     ]
+  },
+  {
+    "id": "local_ai_research",
+    "displayName": "Local AI Research",
+    "capacity": 0,
+    "defaultProvider": "deterministic-local",
+    "networkDefault": "disabled",
+    "hostedAiDefault": "disabled",
+    "outputs": [
+      "research-evidence-packet",
+      "source-records",
+      "claims",
+      "synthesis-report"
+    ],
+    "normalOperationRequiresHostedAi": false
   },
   {
     "id": "pet_memory",
