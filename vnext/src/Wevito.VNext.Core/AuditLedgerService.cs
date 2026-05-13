@@ -10,6 +10,8 @@ public sealed class AuditLedgerService
     public const string TuningApplyPacketKind = "tuning_apply";
     public const string TuningRollbackPacketKind = "tuning_rollback";
     public const string GoldenEvalPacketKind = "golden_eval";
+    public const string SelfImprovementReportPacketKind = "self_improvement_report";
+    public const string RollbackProposalPacketKind = "rollback_proposal";
 
     private readonly string _databasePath;
 

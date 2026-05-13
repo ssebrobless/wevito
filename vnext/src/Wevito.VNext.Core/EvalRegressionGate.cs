@@ -122,11 +122,17 @@ public sealed class EvalRegressionGate
         {
             builder.Append(Path.GetFullPath(file)[(root.Length + 1)..].Replace('\\', '/'));
             builder.Append(':');
-            builder.Append(Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(file))).ToLowerInvariant());
+            builder.Append(Convert.ToHexString(SHA256.HashData(ReadNormalizedDatasetBytes(file))).ToLowerInvariant());
             builder.Append('\n');
         }
 
         return Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(builder.ToString()))).ToLowerInvariant();
+    }
+
+    private static byte[] ReadNormalizedDatasetBytes(string path)
+    {
+        var text = File.ReadAllText(path).Replace("\r\n", "\n").Replace("\r", "\n");
+        return Encoding.UTF8.GetBytes(text);
     }
 
     private static GoldenEvalBaseline Evaluate(string root, IReadOnlyList<GoldenEvalQuestion> questions, string datasetSha, DateTimeOffset timestamp)

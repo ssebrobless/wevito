@@ -190,6 +190,7 @@ public partial class ToolPopupWindow : Window
         ActivityRecentText.Text = activityRecentLines is { Count: > 0 }
             ? string.Join(Environment.NewLine, activityRecentLines)
             : "Recent activity appears here after helpers produce evidence packets.";
+        SelfImprovementText.Text = FormatSelfImprovementPanel(activitySummary);
         if (showingDev)
         {
             RenderDevTools(state, content);
@@ -523,6 +524,33 @@ public partial class ToolPopupWindow : Window
             PetHelperRole.ReminderHelper => "Reminder",
             _ => role.ToString()
         };
+    }
+
+    private static string FormatSelfImprovementPanel(ActivitySummary? summary)
+    {
+        if (summary is null)
+        {
+            return "Self-improvement reports appear here after the daily/weekly loop runs.";
+        }
+
+        var reportCount = summary.Buckets
+            .FirstOrDefault(bucket => string.Equals(bucket.PacketKind, AuditLedgerService.SelfImprovementReportPacketKind, StringComparison.OrdinalIgnoreCase))
+            ?.Count ?? 0;
+        var proposalCount = summary.Buckets
+            .FirstOrDefault(bucket => string.Equals(bucket.PacketKind, AuditLedgerService.RollbackProposalPacketKind, StringComparison.OrdinalIgnoreCase))
+            ?.Count ?? 0;
+
+        if (proposalCount > 0)
+        {
+            return $"Review needed: {proposalCount} rollback proposal(s). Reports: {reportCount}. Rollbacks are draft-only.";
+        }
+
+        if (reportCount > 0)
+        {
+            return $"Self-improvement reports: {reportCount}. No rollback proposals in this activity window.";
+        }
+
+        return "No self-improvement reports in this activity window yet.";
     }
 
     private static string FormatNextAction(TaskCard card)

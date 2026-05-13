@@ -179,6 +179,10 @@ public partial class HomePanelWindow : Window
             1 => "Link Bin has 1 saved link. Pet Tasks prepares reports first; execution stays gated.",
             _ => $"Link Bin has {state.BasketItems.Count} saved links. Pet Tasks prepares reports first; execution stays gated."
         };
+        if (HasRollbackProposal(state.TaskCards))
+        {
+            WebToolsHintText.Text += " Rollback proposal waiting in PET TASKS.";
+        }
         var focusPet = state.ActivePets.FirstOrDefault();
         StatusText.Text = showStatusSummary
             ? BuildLeadPetSummary(focusPet, state.BasketItems.Count)
@@ -2165,6 +2169,14 @@ public partial class HomePanelWindow : Window
         var agePhase = pet.IsGhost ? "ghost" : pet.IsDead ? "passed" : pet.AgeStage.ToString().ToLowerInvariant();
         var traitText = personalityBits.Count == 0 ? "settling" : string.Join(", ", personalityBits.Take(2));
         return $"{pet.Name} - {agePhase} - {traitText} - {basketText}";
+    }
+
+    private static bool HasRollbackProposal(IReadOnlyList<TaskCard>? cards)
+    {
+        return cards?.Any(card =>
+            card.Status == TaskCardStatus.Draft &&
+            string.Equals(card.ToolFamily, RollbackProposalService.ToolFamily, StringComparison.OrdinalIgnoreCase) &&
+            card.Intent.RawText.Contains("rollback", StringComparison.OrdinalIgnoreCase)) == true;
     }
 
     private async Task<bool> TryInvokeButtonAsync(Button button, Point localPoint, Func<Task>? action)

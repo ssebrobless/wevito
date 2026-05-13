@@ -15,6 +15,13 @@ public sealed record ActivitySummary(
     IReadOnlyList<ActivitySummaryBucket> Buckets,
     IReadOnlyList<AuditLedgerRow> RecentRows);
 
+public sealed record SelfImprovementTabData(
+    string LatestReportPath,
+    string LatestRollbackProposalPath,
+    int ReportCount,
+    int RollbackProposalCount,
+    string Summary);
+
 public sealed class ActivitySummaryService
 {
     private readonly AuditLedgerService _ledger;
@@ -76,5 +83,36 @@ public sealed class ActivitySummaryService
             .Take(Math.Max(0, take))
             .Select(row => $"{row.CreatedAtUtc:HH:mm} {_explainer.Explain(row)}")
             .ToList();
+    }
+
+    public SelfImprovementTabData BuildSelfImprovementTabData(DateTimeOffset sinceUtc, DateTimeOffset untilUtc)
+    {
+        var rows = _ledger.Snapshot(sinceUtc, untilUtc);
+        var reports = rows
+            .Where(row => row.PacketKind.Equals(AuditLedgerService.SelfImprovementReportPacketKind, StringComparison.OrdinalIgnoreCase))
+            .OrderByDescending(row => row.CreatedAtUtc)
+            .ToList();
+        var proposals = rows
+            .Where(row => row.PacketKind.Equals(AuditLedgerService.RollbackProposalPacketKind, StringComparison.OrdinalIgnoreCase))
+            .OrderByDescending(row => row.CreatedAtUtc)
+            .ToList();
+
+        var summary = proposals.Count > 0
+            ? $"{proposals.Count} rollback proposal(s) need review. Latest report: {PathLabel(reports.FirstOrDefault()?.ArtifactPath)}."
+            : reports.Count > 0
+                ? $"{reports.Count} self-improvement report(s) available. No rollback proposals in this window."
+                : "No self-improvement report has been generated for this window yet.";
+
+        return new SelfImprovementTabData(
+            reports.FirstOrDefault()?.ArtifactPath ?? "",
+            proposals.FirstOrDefault()?.ArtifactPath ?? "",
+            reports.Count,
+            proposals.Count,
+            summary);
+    }
+
+    private static string PathLabel(string? path)
+    {
+        return string.IsNullOrWhiteSpace(path) ? "none" : path;
     }
 }
