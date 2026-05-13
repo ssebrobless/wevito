@@ -205,7 +205,7 @@ public partial class HomePanelWindow : Window
         {
             WebToolsHintText.Text += " Rollback proposal waiting in PET TASKS.";
         }
-        var focusPet = state.ActivePets.FirstOrDefault();
+        var focusPet = state.ActivePets.FirstOrDefault(pet => !pet.IsDead) ?? state.ActivePets.FirstOrDefault();
         StatusText.Text = showStatusSummary
             ? BuildLeadPetSummary(focusPet, state.BasketItems.Count)
             : $"{environment.DisplayName} - {state.ActivePets.Count} companions";
@@ -763,72 +763,12 @@ public partial class HomePanelWindow : Window
 
     private void RenderStageBackdrop(PetActor? focusPet)
     {
-        if (focusPet is null)
-        {
-            return;
-        }
-
-        switch (focusPet.SpeciesId)
-        {
-            case "rat":
-                AddBackdropElement(CreateBackdropPatch(300, 126, "#2E3123", "#516448", 0.34), 28, 128);
-                AddBackdropElement(CreateBackdropPatch(222, 72, "#443521", "#6B5A40", 0.42), 72, 166);
-                AddBackdropElement(CreateGrassCluster(84, 48, "#728948", "#8FA25A"), 68, 186);
-                AddBackdropElement(CreateGrassCluster(70, 40, "#68813C", "#81994D"), 286, 194);
-                break;
-            case "crow":
-                AddBackdropElement(CreateBackdropPatch(268, 86, "#2F353E", "#56606A", 0.32), 68, 166);
-                AddBackdropElement(CreatePebbleCluster(92, 44, "#6E7882", "#4E565F", "#8C959C"), 74, 196);
-                AddBackdropElement(CreateTwigScatter(108, 34, "#7A5A3D", "#8F6C48"), 250, 196);
-                break;
-            case "fox":
-                AddBackdropElement(CreateBackdropPatch(308, 118, "#33442D", "#5E7356", 0.3), 32, 138);
-                AddBackdropElement(CreateBackdropPatch(218, 70, "#5A4631", "#7D6446", 0.34), 138, 176);
-                AddBackdropElement(CreateGrassCluster(96, 54, "#75904A", "#97AF61"), 54, 182);
-                AddBackdropElement(CreateLeafScatter(96, 40, "#A88B4C", "#6A7636", "#8A6438"), 268, 194);
-                break;
-            case "snake":
-                AddBackdropElement(CreateBackdropPatch(314, 108, "#3D4332", "#626A56", 0.28), 40, 146);
-                AddBackdropElement(CreateBackdropPatch(184, 58, "#787169", "#9A9389", 0.38), 166, 182);
-                AddBackdropElement(CreatePebbleCluster(110, 42, "#8B8479", "#6B665E", "#A29B90"), 70, 196);
-                AddBackdropElement(CreateReedCluster(70, 54, "#7A8F4D", "#90A95C"), 300, 176);
-                break;
-            case "deer":
-                AddBackdropElement(CreateBackdropPatch(324, 124, "#36502F", "#64845D", 0.28), 26, 134);
-                AddBackdropElement(CreateGrassCluster(114, 58, "#7D9A4B", "#9FBA62"), 42, 182);
-                AddBackdropElement(CreateGrassCluster(96, 52, "#769446", "#91AD57"), 268, 184);
-                AddBackdropElement(CreateFlowerScatter(76, 34, "#D8D6CA", "#F1C989", "#E7E8F2"), 176, 202);
-                break;
-            case "frog":
-                AddBackdropElement(CreateBackdropPatch(320, 112, "#355342", "#5E8E78", 0.28), 30, 142);
-                AddBackdropElement(CreateRipplePool(164, 58, "#6EA7AD", "#90C5CB"), 84, 190);
-                AddBackdropElement(CreateLilyCluster(106, 54, "#688D44", "#4E6E33"), 240, 176);
-                AddBackdropElement(CreateReedCluster(78, 60, "#829F55", "#9FC26A"), 36, 172);
-                break;
-            case "pigeon":
-                AddBackdropElement(CreateBackdropPatch(286, 90, "#3A4047", "#5E646C", 0.28), 52, 160);
-                AddBackdropElement(CreatePebbleCluster(112, 42, "#7B838A", "#5C636A", "#9AA0A5"), 76, 196);
-                AddBackdropElement(CreateTwigScatter(88, 28, "#8C6C49", "#6B5038"), 250, 202);
-                break;
-            case "raccoon":
-                AddBackdropElement(CreateBackdropPatch(322, 116, "#324234", "#5F765E", 0.28), 24, 140);
-                AddBackdropElement(CreateBackdropPatch(208, 68, "#4C3929", "#6F5944", 0.3), 148, 178);
-                AddBackdropElement(CreateFernCluster(82, 56, "#6E8C47", "#8EA95C"), 44, 176);
-                AddBackdropElement(CreatePebbleCluster(82, 34, "#7E786F", "#5C5750", "#A39B8F"), 278, 202);
-                break;
-            case "squirrel":
-                AddBackdropElement(CreateBackdropPatch(308, 112, "#34452E", "#61755B", 0.28), 28, 142);
-                AddBackdropElement(CreateGrassCluster(80, 44, "#739149", "#95AF5E"), 44, 190);
-                AddBackdropElement(CreateLeafScatter(102, 42, "#A58347", "#6A7131", "#7D5B36"), 254, 194);
-                AddBackdropElement(CreateTwigScatter(80, 28, "#7B5C40", "#966D4A"), 166, 204);
-                break;
-            case "goose":
-                AddBackdropElement(CreateBackdropPatch(328, 116, "#3B594A", "#688C7A", 0.26), 22, 140);
-                AddBackdropElement(CreateRipplePool(156, 54, "#78AEB7", "#9BD0D8"), 42, 192);
-                AddBackdropElement(CreateReedCluster(86, 64, "#87A35A", "#A4C56E"), 244, 168);
-                AddBackdropElement(CreateGrassCluster(82, 48, "#789349", "#98B55F"), 308, 186);
-                break;
-        }
+        _ = focusPet;
+        AddBackdropElement(CreateBackdropPatch(326, 112, "#344632", "#667957", 0.28), 24, 142);
+        AddBackdropElement(CreateBackdropPatch(218, 64, "#574330", "#7C6040", 0.26), 116, 180);
+        AddBackdropElement(CreateGrassCluster(92, 48, "#78934C", "#9CB45F"), 40, 190);
+        AddBackdropElement(CreateGrassCluster(88, 46, "#6F8845", "#8EA354"), 286, 190);
+        AddBackdropElement(CreateLeafScatter(84, 32, "#A58347", "#6A7131", "#7D5B36"), 172, 204);
     }
 
     private bool TryResolveInteractionVisual(
@@ -855,8 +795,11 @@ public partial class HomePanelWindow : Window
         var actionId = pet.LastActionId;
         var anchor = actionId switch
         {
-            "feed" or "water" or "bath" => stageSpecs.FirstOrDefault(spec => spec.CategoryFolder == "containers"),
-            "rest" or "home" => stageSpecs.FirstOrDefault(spec => IsRestAnchorAsset(spec.AssetId)),
+            "feed" => stageSpecs.FirstOrDefault(spec => spec.CategoryFolder.StartsWith("food_", StringComparison.OrdinalIgnoreCase)) ??
+                      stageSpecs.FirstOrDefault(spec => spec.CategoryFolder == "containers"),
+            "water" or "bath" => stageSpecs.FirstOrDefault(spec => spec.CategoryFolder == "containers"),
+            "rest" or "home" => stageSpecs.FirstOrDefault(spec => spec.SlotId.StartsWith("bed-", StringComparison.OrdinalIgnoreCase)) ??
+                                stageSpecs.FirstOrDefault(spec => IsRestAnchorAsset(spec.AssetId)),
             "play" => stageSpecs.FirstOrDefault(spec => spec.AssetId is "branch_perch" or "stump_perch" or "rope_toy") ??
                       stageSpecs.FirstOrDefault(spec => IsRestAnchorAsset(spec.AssetId)),
             _ => null
@@ -990,18 +933,12 @@ public partial class HomePanelWindow : Window
 
     private void AddGroundShade(PetActor? focusPet)
     {
-        var fill = focusPet?.SpeciesId switch
-        {
-            "crow" or "pigeon" => "#3A454F",
-            "frog" or "goose" => "#466A62",
-            "snake" => "#504D47",
-            _ => "#303B42"
-        };
+        _ = focusPet;
         var ground = new Ellipse
         {
             Width = 380,
             Height = 42,
-            Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString(fill)),
+            Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#303B42")),
             Opacity = 0.9,
             IsHitTestVisible = false
         };
@@ -2087,12 +2024,12 @@ public partial class HomePanelWindow : Window
         PetActor? focusPet)
     {
         _ = environment;
-        var speciesId = focusPet?.SpeciesId ?? string.Empty;
-        if (UsesManifestHabitatPilot(speciesId) && dynamicStageProps.Count > 0)
+        if (dynamicStageProps.Count > 0)
         {
             return dynamicStageProps;
         }
 
+        var speciesId = focusPet?.SpeciesId ?? string.Empty;
         var template = speciesId switch
         {
             "rat" => new[]
@@ -2162,11 +2099,6 @@ public partial class HomePanelWindow : Window
         }
 
         return dynamicStageProps;
-    }
-
-    private static bool UsesManifestHabitatPilot(string speciesId)
-    {
-        return speciesId is "goose" or "rat" or "crow" or "snake" or "frog";
     }
 
     private static string BuildLeadPetSummary(PetActor? pet, int basketCount)

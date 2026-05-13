@@ -60,17 +60,18 @@ public sealed class HabitatLoadoutResolverFallbackTests
 
         var loadout = HabitatLoadoutResolver.Resolve(state, content);
 
-        Assert.Equal(["pond_dish", "pebble_cluster"], loadout.DynamicStageProps.Select(prop => prop.AssetId).ToArray());
+        Assert.Equal(["log_shelter", "moss_bed", "moss_bed", "moss_bed", "snack_bowl", "water_bowl"], loadout.DynamicStageProps.Select(prop => prop.AssetId).ToArray());
         Assert.Contains(loadout.DynamicStageProps, prop =>
-            prop.AssetId == "pond_dish" &&
-            prop.CategoryFolder == "containers" &&
+            prop.AssetId == "log_shelter" &&
+            prop.CategoryFolder == "toys_b" &&
             prop.DepthBand == DepthBand.GroundContact &&
             prop.OcclusionMode == OcclusionMode.BodyOnly &&
             prop.ContactShadowMode == ContactShadowMode.Soft);
+        Assert.Equal(3, loadout.DynamicStageProps.Count(prop => prop.SlotId.StartsWith("bed-", StringComparison.OrdinalIgnoreCase)));
     }
 
     [Fact]
-    public async Task Resolve_ShowsManifestInteractionSlotWhenNeedOrActionRequiresIt()
+    public async Task Resolve_ShowsUniversalHomePropsWithoutNeedGating()
     {
         var repository = new ContentRepository(FindPath("vnext", "content"));
         var content = await repository.LoadAsync();
@@ -82,11 +83,11 @@ public sealed class HabitatLoadoutResolverFallbackTests
 
         var loadout = HabitatLoadoutResolver.Resolve(state, content);
 
-        Assert.Equal(["pond_dish", "ball", "pebble_cluster"], loadout.DynamicStageProps.Select(prop => prop.AssetId).ToArray());
+        Assert.Equal(["log_shelter", "moss_bed", "moss_bed", "moss_bed", "snack_bowl", "water_bowl"], loadout.DynamicStageProps.Select(prop => prop.AssetId).ToArray());
         Assert.Contains(loadout.DynamicStageProps, prop =>
-            prop.AssetId == "ball" &&
-            prop.DepthBand == DepthBand.HeldOrCarriedProp &&
-            prop.SlotId == "interaction");
+            prop.AssetId == "snack_bowl" &&
+            prop.DepthBand == DepthBand.GroundContact &&
+            prop.SlotId == "food");
     }
 
     [Fact]
@@ -100,7 +101,7 @@ public sealed class HabitatLoadoutResolverFallbackTests
         var loadout = HabitatLoadoutResolver.Resolve(state, content);
 
         Assert.NotEmpty(loadout.DynamicStageProps);
-        Assert.NotEqual(["pond_dish", "ball", "pebble_cluster"], loadout.DynamicStageProps.Select(prop => prop.AssetId).ToArray());
+        Assert.NotEqual(["log_shelter", "moss_bed", "moss_bed", "moss_bed", "snack_bowl", "water_bowl"], loadout.DynamicStageProps.Select(prop => prop.AssetId).ToArray());
     }
 
     [Fact]
@@ -120,7 +121,7 @@ public sealed class HabitatLoadoutResolverFallbackTests
         var loadout = HabitatLoadoutResolver.Resolve(state, content);
 
         Assert.NotEmpty(loadout.DynamicStageProps);
-        Assert.NotEqual(["pond_dish", "ball", "pebble_cluster"], loadout.DynamicStageProps.Select(prop => prop.AssetId).ToArray());
+        Assert.NotEqual(["log_shelter", "moss_bed", "moss_bed", "moss_bed", "snack_bowl", "water_bowl"], loadout.DynamicStageProps.Select(prop => prop.AssetId).ToArray());
     }
 
     private static CompanionState CreateState(string speciesId, Func<PetActor, PetActor>? configurePet = null)
