@@ -152,6 +152,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _toolPopupWindow.DeleteRequested += async ids => await DeleteBasketItemsAsync(ids);
         _toolPopupWindow.LinksDropped += async urls => await AddLinksAsync(urls, "drop");
         _toolPopupWindow.SettingChanged += OnSettingChanged;
+        _toolPopupWindow.AutonomousBetaConsentConfirmed += async () => await EnableAutonomousBetaAfterConsentAsync();
         _toolPopupWindow.DevToolCommandRequested += async command => await HandleDevToolCommandAsync(command);
         _toolPopupWindow.ActionMenuRequested += actionId =>
         {
@@ -520,13 +521,46 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         var liveStatus = _liveStatusFeed.BuildDaily(now, _state.SettingsSnapshot);
         var liveBannerText = _liveStatusFeed.FormatBanner(liveStatus);
         var liveRecentLines = _activitySummaryService.FormatRecentRows(activitySummary);
-        var autonomousDecision = _autonomousBetaDecisionService.Decide(now);
+        var promotionDecision = PromotionCriteriaSnapshot.TryReadLatestDecision(Path.Combine(ResolveRepoRootOrBaseDirectory(), "vnext", "artifacts", "promotion"));
+        var autonomousDecision = _autonomousBetaDecisionService.Decide(now, promotionDecision);
         var killSwitchActive = KillSwitchService.IsActive(_state.SettingsSnapshot);
         var evidenceStatus = _evidenceCollectionStatusService.Read();
 
         _homeWindow.Render(_state, environment, _feedbackText, _assetService, needSnapshot, aggregateStatuses, actionEnabled, habitatLoadout, evidenceStatus);
         _roamBandWindow.Render(_state, _assetService, liveStatus, liveBannerText, supervisorStatus, killSwitchActive, evidenceStatus);
-        _toolPopupWindow.Render(_state, _content, habitatLoadout, _assetService, _devToolsEnabled, petCommandBarState, supervisorStatus, activitySummary, autonomousDecision, liveRecentLines, evidenceStatus);
+        _toolPopupWindow.Render(_state, _content, habitatLoadout, _assetService, _devToolsEnabled, petCommandBarState, supervisorStatus, activitySummary, autonomousDecision, promotionDecision, liveRecentLines, evidenceStatus);
+    }
+
+    private async Task EnableAutonomousBetaAfterConsentAsync()
+    {
+        if (_state is null)
+        {
+            return;
+        }
+
+        var now = DateTimeOffset.UtcNow;
+        var promotionDecision = PromotionCriteriaSnapshot.TryReadLatestDecision(Path.Combine(ResolveRepoRootOrBaseDirectory(), "vnext", "artifacts", "promotion"));
+        if (!PromotionCriteriaSnapshot.CanEnableAutonomousBetaEntry(promotionDecision, _state.SettingsSnapshot))
+        {
+            SetFeedback("Autonomous beta still needs a passing promotion decision before it can be enabled.");
+            return;
+        }
+
+        _auditLedgerService.Record(new EvidencePacket(
+            Guid.NewGuid(),
+            PromotionCriteriaSnapshot.UserConsentPacketKind,
+            TaskCardId: null,
+            now,
+            DidUseNetwork: false,
+            DidUseHostedAi: false,
+            DidUseLocalModel: false,
+            DidMutate: false,
+            ArtifactPath: "",
+            Summary: $"user_consent_at={now:O}",
+            Status: "Completed"));
+        _state = _state with { SettingsSnapshot = WithSetting(_state.SettingsSnapshot, AutonomousOperationsConfig.EnabledSetting, bool.TrueString) };
+        _feedbackText = "Autonomous beta enabled after explicit consent. Stop Everything can still pause it immediately.";
+        await PersistAndRenderAsync();
     }
 
     private RuntimeSupervisorStatus EvaluateRuntimeSupervisor(bool isUserInitiatedToolOpen)

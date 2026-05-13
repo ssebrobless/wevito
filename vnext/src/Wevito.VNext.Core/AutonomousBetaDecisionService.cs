@@ -53,6 +53,31 @@ public sealed class AutonomousBetaDecisionService
             $"Autonomous beta decision {decision}: {checks.Count(check => check.Passed)}/{checks.Count} checks passed.");
     }
 
+    public AutonomousBetaDecision Decide(DateTimeOffset nowUtc, PromotionDecision? promotionDecision, TimeSpan? lookback = null)
+    {
+        if (promotionDecision is null)
+        {
+            return Decide(nowUtc, lookback);
+        }
+
+        return new AutonomousBetaDecision(
+            promotionDecision.Label switch
+            {
+                PromotionDecisionLabel.EnableAutonomousBeta => AutonomousBetaDecisionLabel.EnableAutonomousBeta,
+                PromotionDecisionLabel.PauseForReliabilityWork => AutonomousBetaDecisionLabel.PauseForReliabilityWork,
+                _ => AutonomousBetaDecisionLabel.KeepSupervisedPreview
+            },
+            promotionDecision.Criteria
+                .Select(criterion => new AutonomousBetaCheck(
+                    criterion.Id,
+                    criterion.Passed,
+                    criterion.Class == PromotionCriterionClass.Safety,
+                    $"{criterion.ObservedValue} / {criterion.Threshold}: {criterion.Detail}"))
+                .ToList(),
+            promotionDecision.CreatedAtUtc,
+            promotionDecision.Summary);
+    }
+
     private static IReadOnlyList<AutonomousBetaCheck> BuildChecks(IReadOnlyList<AuditLedgerRow> rows)
     {
         return

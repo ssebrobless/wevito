@@ -241,5 +241,22 @@
       "guarded-mutation-preview",
       "run-summary"
     ]
+  },
+  {
+    "id": "autonomous_beta_promotion",
+    "displayName": "Autonomous Beta Promotion",
+    "capacity": 0,
+    "defaultState": "off",
+    "toolFamily": "promotion",
+    "requiresSevenDayEvidenceWindow": true,
+    "entryRequiresDecision": "EnableAutonomousBeta",
+    "entryRequiresKillSwitchOff": true,
+    "entryRequiresCurrentBetaDisabled": true,
+    "confirmationRequired": true,
+    "outputs": [
+      "promotion_criteria_snapshot",
+      "promotion_decision",
+      "runtime_autonomous_beta_user_consent"
+    ]
   }
 ]

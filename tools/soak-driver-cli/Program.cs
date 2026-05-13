@@ -17,6 +17,7 @@ try
         "heartbeat" => PrintResult(service.Heartbeat(Option(options, "reason", "scheduled"), settings)),
         "day-end" => PrintResult(service.DayEnd()),
         "window-end" => PrintResult(service.WindowEnd(Option(options, "reason", "completed"))),
+        "promotion-snapshot" => PrintPromotionSnapshot(options, settings, ledger),
         "status" => PrintStatus(service.Status(settings), settings),
         _ => Fail($"Unknown command '{command}'.")
     };
@@ -59,6 +60,47 @@ static int PrintStatus(SoakDriverCommandResult result, IReadOnlyDictionary<strin
         settingsSnapshotSha256 = EvidenceCollectionStatusService.ComputeSettingsHash(settings)
     }, JsonDefaults.Options));
     return 0;
+}
+
+static int PrintPromotionSnapshot(
+    IReadOnlyDictionary<string, string> options,
+    IReadOnlyDictionary<string, string> settings,
+    AuditLedgerService ledger)
+{
+    var now = DateTimeOffset.UtcNow;
+    var window = int.TryParse(Option(options, "window", "7"), out var parsedWindow) ? parsedWindow : 7;
+    var promotionRoot = FullPath(Option(options, "promotion-root", Path.Combine("vnext", "artifacts", "promotion")));
+    var timestamp = now.ToString("yyyyMMdd-HHmmss", System.Globalization.CultureInfo.InvariantCulture);
+    var folder = Path.Combine(promotionRoot, $"{timestamp}-promotion");
+    var goldenEvalPath = LatestFile(Path.Combine(FindRepoRoot(), "vnext", "artifacts", "eval-golden"), "eval-report.json");
+    var snapshot = new PromotionCriteriaSnapshot(ledger);
+    var decision = snapshot.Compute(new PromotionCriteriaSnapshotRequest(
+        now.AddDays(-window),
+        now,
+        settings,
+        GoldenEvalReportPath: goldenEvalPath,
+        EmitAuditRow: true));
+    PromotionCriteriaSnapshot.WriteArtifacts(folder, decision);
+    ledger.Record(new EvidencePacket(
+        Guid.NewGuid(),
+        PromotionCriteriaSnapshot.DecisionPacketKind,
+        TaskCardId: null,
+        now,
+        DidUseNetwork: false,
+        DidUseHostedAi: false,
+        DidUseLocalModel: false,
+        DidMutate: false,
+        ArtifactPath: Path.Combine(folder, "decision.json"),
+        Summary: decision.Summary,
+        Status: "Completed"));
+    Console.WriteLine(JsonSerializer.Serialize(new
+    {
+        ok = decision.Label == PromotionDecisionLabel.EnableAutonomousBeta,
+        decision = decision.Label.ToString(),
+        artifactPath = folder,
+        summary = decision.Summary
+    }, JsonDefaults.Options));
+    return decision.Label == PromotionDecisionLabel.EnableAutonomousBeta ? 0 : 1;
 }
 
 static int Fail(string message)
@@ -131,4 +173,13 @@ static string FindRepoRoot()
     }
 
     return Directory.GetCurrentDirectory();
+}
+
+static string? LatestFile(string root, string fileName)
+{
+    return Directory.Exists(root)
+        ? Directory.GetFiles(root, fileName, SearchOption.AllDirectories)
+            .OrderByDescending(File.GetLastWriteTimeUtc)
+            .FirstOrDefault()
+        : null;
 }
