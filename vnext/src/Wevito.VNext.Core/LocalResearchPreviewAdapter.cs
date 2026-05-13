@@ -8,11 +8,16 @@ public sealed class LocalResearchPreviewAdapter
     private const string ToolFamily = "localResearch";
     private readonly ResearchPlannerService _planner;
     private readonly WebResearchConnector? _webResearchConnector;
+    private readonly UnifiedPolicyService _policyService;
 
-    public LocalResearchPreviewAdapter(ResearchPlannerService? planner = null, WebResearchConnector? webResearchConnector = null)
+    public LocalResearchPreviewAdapter(
+        ResearchPlannerService? planner = null,
+        WebResearchConnector? webResearchConnector = null,
+        UnifiedPolicyService? policyService = null)
     {
         _planner = planner ?? new ResearchPlannerService();
         _webResearchConnector = webResearchConnector;
+        _policyService = policyService ?? new UnifiedPolicyService();
     }
 
     public TaskAdapterResult BuildPreview(TaskAdapterRequest request, DateTimeOffset? nowUtc = null)
@@ -38,6 +43,20 @@ public sealed class LocalResearchPreviewAdapter
         if (!IsSafePetTaskArtifactRoot(artifactRoot))
         {
             return Block(request, "Local research artifacts must be written under a pet-tasks artifact folder.", timestamp);
+        }
+
+        foreach (var path in (request.PolicySnapshot.ApprovedRootPaths ?? []).Concat(request.Intent.TargetPathsOrAssets ?? []))
+        {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                continue;
+            }
+
+            var decision = _policyService.EvaluateRead(path, request.PolicySnapshot.ApprovedRootPaths, request.TaskCardId, timestamp);
+            if (decision.IsBlocked)
+            {
+                return Block(request, $"Unified policy blocked localResearch path: {decision.Reason}", timestamp);
+            }
         }
 
         var webFetches = TryFetchWebEvidence(request, timestamp, artifactRoot);

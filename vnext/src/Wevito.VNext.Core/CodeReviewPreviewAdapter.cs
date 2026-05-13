@@ -10,6 +10,12 @@ public sealed class CodeReviewPreviewAdapter
     private const long MaxFileBytes = 512 * 1024;
     private static readonly string[] SupportedExtensions = [".cs", ".xaml", ".gd", ".ps1", ".py", ".json"];
     private static readonly string[] SkippedDirectories = [".git", ".codex-cache", ".godot", ".vs", "bin", "obj", "artifacts", "node_modules", "sprites_runtime", "sprites_shared_runtime", "source_assets", "builds"];
+    private readonly UnifiedPolicyService _policyService;
+
+    public CodeReviewPreviewAdapter(UnifiedPolicyService? policyService = null)
+    {
+        _policyService = policyService ?? new UnifiedPolicyService();
+    }
 
     public TaskAdapterResult BuildReport(TaskAdapterRequest request, DateTimeOffset? nowUtc = null)
     {
@@ -49,9 +55,19 @@ public sealed class CodeReviewPreviewAdapter
         }
 
         var targetPaths = targets.Paths.Count > 0 ? targets.Paths : approvedRoots;
+        foreach (var target in targetPaths)
+        {
+            var decision = _policyService.EvaluateRead(target, approvedRoots, request.TaskCardId, timestamp);
+            if (decision.IsBlocked)
+            {
+                return Block(request, $"Unified policy blocked codeReview target: {decision.Reason}", timestamp);
+            }
+        }
+
         var files = targetPaths
             .SelectMany(path => EnumerateCodeFiles(path, approvedRoots))
             .Distinct(StringComparer.OrdinalIgnoreCase)
+            .Where(path => _policyService.EvaluateRead(path, approvedRoots, request.TaskCardId, timestamp).IsAllowed)
             .OrderBy(path => path, StringComparer.OrdinalIgnoreCase)
             .Take(MaxFiles)
             .ToList();

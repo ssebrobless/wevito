@@ -28,15 +28,18 @@ public sealed class HelperAllowlistEvaluator
     private readonly IReadOnlyList<HelperToolCapability> _capabilities;
     private readonly IReadOnlySet<string> _globalDeny;
     private readonly IReadOnlyDictionary<string, IReadOnlySet<string>> _helperDeny;
+    private readonly UnifiedPolicyService _unifiedPolicyService;
 
     public HelperAllowlistEvaluator(
         IReadOnlyList<HelperToolCapability>? capabilities = null,
         IReadOnlySet<string>? globalDeny = null,
-        IReadOnlyDictionary<string, IReadOnlySet<string>>? helperDeny = null)
+        IReadOnlyDictionary<string, IReadOnlySet<string>>? helperDeny = null,
+        UnifiedPolicyService? unifiedPolicyService = null)
     {
         _capabilities = capabilities ?? BuildDefaultCapabilityMatrix();
         _globalDeny = globalDeny ?? new HashSet<string>(Comparer);
         _helperDeny = helperDeny ?? new Dictionary<string, IReadOnlySet<string>>(Comparer);
+        _unifiedPolicyService = unifiedPolicyService ?? new UnifiedPolicyService();
     }
 
     public HelperAllowlistDecision Evaluate(PetHelperProfile helper, string toolFamily, HelperPermissionMode mode = HelperPermissionMode.Preview)
@@ -77,7 +80,8 @@ public sealed class HelperAllowlistEvaluator
             return new HelperAllowlistDecision(false, $"Capability '{capability.HelperName}/{capability.ToolFamily}' combines untrusted input, private data, and network send.");
         }
 
-        return new HelperAllowlistDecision(true, "Allowed by read-only pet model capability.", capability);
+        return _unifiedPolicyService.EvaluateHelperCapability(
+            new HelperAllowlistDecision(true, "Allowed by read-only pet model capability.", capability));
     }
 
     public IReadOnlyList<HelperToolCapability> FindLethalTrifectaViolations()

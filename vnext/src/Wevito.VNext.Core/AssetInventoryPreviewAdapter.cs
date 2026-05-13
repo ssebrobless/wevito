@@ -6,6 +6,12 @@ namespace Wevito.VNext.Core;
 public sealed class AssetInventoryPreviewAdapter
 {
     private const string ToolFamily = "assetInventory";
+    private readonly UnifiedPolicyService _policyService;
+
+    public AssetInventoryPreviewAdapter(UnifiedPolicyService? policyService = null)
+    {
+        _policyService = policyService ?? new UnifiedPolicyService();
+    }
 
     public TaskAdapterResult BuildReport(TaskAdapterRequest request, DateTimeOffset? nowUtc = null)
     {
@@ -45,6 +51,15 @@ public sealed class AssetInventoryPreviewAdapter
         }
 
         var roots = targets.Paths.Count > 0 ? targets.Paths : approvedRoots;
+        foreach (var root in roots)
+        {
+            var decision = _policyService.EvaluateRead(root, approvedRoots, request.TaskCardId, timestamp);
+            if (decision.IsBlocked)
+            {
+                return Block(request, $"Unified policy blocked assetInventory root: {decision.Reason}", timestamp);
+            }
+        }
+
         var summaries = roots
             .Where(Directory.Exists)
             .Distinct(StringComparer.OrdinalIgnoreCase)
