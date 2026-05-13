@@ -83,7 +83,8 @@ public partial class ToolPopupWindow : Window
         SpriteAssetService assetService,
         bool devToolsEnabled,
         PetCommandBarState? petCommandState = null,
-        RuntimeSupervisorStatus? runtimeSupervisorStatus = null)
+        RuntimeSupervisorStatus? runtimeSupervisorStatus = null,
+        ActivitySummary? activitySummary = null)
     {
         var toolId = string.IsNullOrWhiteSpace(state.ActiveTool.ToolId) ? "basket" : state.ActiveTool.ToolId;
         var showingBasket = string.Equals(toolId, "basket", StringComparison.OrdinalIgnoreCase);
@@ -173,6 +174,12 @@ public partial class ToolPopupWindow : Window
             ? "Consent acknowledged. Live calls still require a later explicit approval."
             : "Consent not acknowledged. No live model calls can run.";
         PetModelFirstCallConsentButton.IsEnabled = !modelFirstCallApproved;
+        ActivitySummaryText.Text = activitySummary is null
+            ? "Activity ledger: waiting for shell state."
+            : ActivitySummaryService.FormatOneLine(activitySummary);
+        ActivityRecentText.Text = activitySummary is { TotalRows: > 0 }
+            ? string.Join(Environment.NewLine, activitySummary.RecentRows.Take(3).Select(row => $"{row.CreatedAtUtc:HH:mm} {row.PacketKind}: {row.Status}"))
+            : "Recent activity appears here after helpers produce evidence packets.";
         if (showingDev)
         {
             RenderDevTools(state, content);

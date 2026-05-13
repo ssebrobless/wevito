@@ -30,6 +30,7 @@ public sealed class PetTaskAdapterPreviewDispatcher
     private readonly AudioBoostHandoffAdapter _audioBoostHandoffAdapter;
     private readonly ScreenCapturePreviewAdapter _screenCapturePreviewAdapter;
     private readonly PetMemoryPreviewAdapter _petMemoryPreviewAdapter;
+    private readonly AuditLedgerService? _auditLedgerService;
 
     public PetTaskAdapterPreviewDispatcher(
         LocalDocsPreviewAdapter? localDocsPreviewAdapter = null,
@@ -44,7 +45,8 @@ public sealed class PetTaskAdapterPreviewDispatcher
         AudioAssistPreviewAdapter? audioAssistPreviewAdapter = null,
         AudioBoostHandoffAdapter? audioBoostHandoffAdapter = null,
         ScreenCapturePreviewAdapter? screenCapturePreviewAdapter = null,
-        PetMemoryPreviewAdapter? petMemoryPreviewAdapter = null)
+        PetMemoryPreviewAdapter? petMemoryPreviewAdapter = null,
+        AuditLedgerService? auditLedgerService = null)
     {
         _localDocsPreviewAdapter = localDocsPreviewAdapter ?? new LocalDocsPreviewAdapter();
         _localResearchPreviewAdapter = localResearchPreviewAdapter ?? new LocalResearchPreviewAdapter();
@@ -59,6 +61,7 @@ public sealed class PetTaskAdapterPreviewDispatcher
         _audioBoostHandoffAdapter = audioBoostHandoffAdapter ?? new AudioBoostHandoffAdapter();
         _screenCapturePreviewAdapter = screenCapturePreviewAdapter ?? new ScreenCapturePreviewAdapter();
         _petMemoryPreviewAdapter = petMemoryPreviewAdapter ?? new PetMemoryPreviewAdapter();
+        _auditLedgerService = auditLedgerService;
     }
 
     public TaskAdapterResult BuildPreview(
@@ -77,7 +80,7 @@ public sealed class PetTaskAdapterPreviewDispatcher
             return Block(request, ResolveResultFamily(policyFamily, intentFamily), "Task intent and policy must target the same tool family.", timestamp);
         }
 
-        return policyFamily switch
+        var result = policyFamily switch
         {
             var family when string.Equals(family, LocalDocsToolFamily, StringComparison.OrdinalIgnoreCase) =>
                 _localDocsPreviewAdapter.BuildPreview(request, timestamp),
@@ -107,6 +110,25 @@ public sealed class PetTaskAdapterPreviewDispatcher
                 _petMemoryPreviewAdapter.BuildPreview(request, timestamp),
             _ => Block(request, ResolveResultFamily(policyFamily, intentFamily), $"No PET TASKS dry-run preview adapter is registered for tool family '{policyFamily}'.", timestamp)
         };
+        RecordAdapterResult(result, timestamp);
+        return result;
+    }
+
+    private void RecordAdapterResult(TaskAdapterResult result, DateTimeOffset timestamp)
+    {
+        _auditLedgerService?.Record(new EvidencePacket(
+            Guid.NewGuid(),
+            result.ToolFamily,
+            result.TaskCardId,
+            timestamp,
+            DidUseNetwork: false,
+            DidUseHostedAi: false,
+            DidUseLocalModel: string.Equals(result.ToolFamily, PetMemoryToolFamily, StringComparison.OrdinalIgnoreCase),
+            result.DidMutate,
+            result.AuditLogPath,
+            string.IsNullOrWhiteSpace(result.ResultSummary) ? result.PreviewSummary : result.ResultSummary,
+            result.Status.ToString(),
+            result.BlockReason));
     }
 
     private static string ResolveResultFamily(string policyFamily, string intentFamily)

@@ -30,7 +30,9 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private readonly BasketService _basketService = new(5);
     private readonly PetCommandBarService _petCommandBarService = new();
     private readonly PetTaskCardQueueService _petTaskCardQueueService = new();
-    private readonly PetTaskAdapterPreviewDispatcher _petTaskAdapterPreviewDispatcher = new();
+    private readonly AuditLedgerService _auditLedgerService = new();
+    private readonly ActivitySummaryService _activitySummaryService;
+    private readonly PetTaskAdapterPreviewDispatcher _petTaskAdapterPreviewDispatcher;
     private readonly RuntimeSupervisorService _runtimeSupervisorService = new();
     private readonly RuntimeBudgetMeter _runtimeBudgetMeter = new();
     private readonly AutonomousTaskScheduler _autonomousTaskScheduler;
@@ -66,7 +68,9 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     public ShellCoordinator(Application application)
     {
         _application = application;
-        _autonomousTaskScheduler = new AutonomousTaskScheduler(_runtimeSupervisorService, _runtimeBudgetMeter);
+        _activitySummaryService = new ActivitySummaryService(_auditLedgerService);
+        _petTaskAdapterPreviewDispatcher = new PetTaskAdapterPreviewDispatcher(auditLedgerService: _auditLedgerService);
+        _autonomousTaskScheduler = new AutonomousTaskScheduler(_runtimeSupervisorService, _runtimeBudgetMeter, _auditLedgerService);
         _screenCaptureExecutionAdapter = new ScreenCaptureExecutionAdapter(new WindowsGraphicsCaptureBackend(() => _homeWindow));
         _tickTimer = new DispatcherTimer(DispatcherPriority.Render)
         {
@@ -431,7 +435,8 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             _state.SettingsSnapshot,
             _desktopContext,
             isUserInitiatedToolOpen: _state.ActiveTool.IsOpen);
-        _toolPopupWindow.Render(_state, _content, habitatLoadout, _assetService, _devToolsEnabled, petCommandBarState, supervisorStatus);
+        var activitySummary = _activitySummaryService.BuildDaily(DateTimeOffset.UtcNow);
+        _toolPopupWindow.Render(_state, _content, habitatLoadout, _assetService, _devToolsEnabled, petCommandBarState, supervisorStatus, activitySummary);
     }
 
     private PetCommandBarState EnsurePetCommandBarState(IReadOnlyList<PetActor> pets, IReadOnlyList<TaskCard>? taskCards)

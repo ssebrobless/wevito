@@ -714,6 +714,33 @@
                             </UniformGrid>
                         </StackPanel>
                     </Border>
+                    <Border Margin="0,12,0,0"
+                            Padding="10"
+                            CornerRadius="10"
+                            BorderBrush="#335C6477"
+                            BorderThickness="1"
+                            Background="#17202A">
+                        <StackPanel>
+                            <TextBlock Text="Wevito activity"
+                                       Foreground="#FFF0F4F5"
+                                       FontSize="12"
+                                       FontWeight="SemiBold" />
+                            <TextBlock x:Name="ActivitySummaryText"
+                                       Margin="0,4,0,0"
+                                       automation:AutomationProperties.AutomationId="ActivitySummaryText"
+                                       Text="Activity ledger: waiting for shell state."
+                                       Foreground="#FFD9E5EA"
+                                       FontSize="10"
+                                       TextWrapping="Wrap" />
+                            <TextBlock x:Name="ActivityRecentText"
+                                       Margin="0,4,0,0"
+                                       automation:AutomationProperties.AutomationId="ActivityRecentText"
+                                       Text="Recent activity appears here after helpers produce evidence packets."
+                                       Foreground="#FF9FB7C4"
+                                       FontSize="10"
+                                       TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Border>
                     <UniformGrid Margin="0,12,0,0"
                                  Columns="2">
                         <Button x:Name="SettingsSaveButton"
