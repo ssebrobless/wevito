@@ -1,5 +1,3 @@
-using Microsoft.ML.OnnxRuntime;
-
 namespace Wevito.VNext.Core;
 
 public sealed record OnnxTextEmbeddingOptions(
@@ -14,9 +12,9 @@ public sealed class OnnxTextEmbeddingService : ITextEmbeddingService, IDisposabl
     private readonly OnnxTextEmbeddingOptions _options;
     private readonly ITextEmbeddingService _fallback;
     private readonly Action<string>? _auditLine;
-    private readonly Func<string, InferenceSession> _sessionFactory;
+    private readonly Func<OnnxTextEmbeddingOptions, OnnxEmbeddingBackend> _backendFactory;
     private readonly Dictionary<string, float[]> _cache = new(StringComparer.Ordinal);
-    private readonly Lazy<InferenceSession?> _session;
+    private readonly Lazy<OnnxEmbeddingBackend?> _backend;
     private bool _degradeEmitted;
     private bool _disposed;
 
@@ -24,18 +22,18 @@ public sealed class OnnxTextEmbeddingService : ITextEmbeddingService, IDisposabl
         OnnxTextEmbeddingOptions options,
         ITextEmbeddingService? fallback = null,
         Action<string>? auditLine = null,
-        Func<string, InferenceSession>? sessionFactory = null)
+        Func<OnnxTextEmbeddingOptions, OnnxEmbeddingBackend>? backendFactory = null)
     {
         _options = options;
         _fallback = fallback ?? new HashingTextEmbeddingService();
         _auditLine = auditLine;
-        _sessionFactory = sessionFactory ?? (path => new InferenceSession(path, BuildSessionOptions()));
-        _session = new Lazy<InferenceSession?>(TryLoadSession);
+        _backendFactory = backendFactory ?? (backendOptions => new OnnxEmbeddingBackend(backendOptions));
+        _backend = new Lazy<OnnxEmbeddingBackend?>(TryLoadBackend);
     }
 
-    public int Dimensions => IsOnnxReady ? Math.Max(4, _options.OnnxDimensions) : _fallback.Dimensions;
+    public int Dimensions => IsOnnxReady ? _backend.Value?.Dimensions ?? Math.Max(4, _options.OnnxDimensions) : _fallback.Dimensions;
 
-    public bool IsOnnxReady => _session.Value is not null && File.Exists(ResolveTokenizerPath());
+    public bool IsOnnxReady => _backend.Value?.IsReady == true;
 
     public float[] Embed(string text)
     {
@@ -59,9 +57,9 @@ public sealed class OnnxTextEmbeddingService : ITextEmbeddingService, IDisposabl
             return;
         }
 
-        if (_session.IsValueCreated)
+        if (_backend.IsValueCreated)
         {
-            _session.Value?.Dispose();
+            _backend.Value?.Dispose();
         }
 
         _disposed = true;
@@ -69,9 +67,15 @@ public sealed class OnnxTextEmbeddingService : ITextEmbeddingService, IDisposabl
 
     private float[] EmbedWithOnnxFallback(string text)
     {
-        // The approved phase installs model weights only. Tokenizer/inference graph
-        // contracts remain explicit so Wevito never guesses how to feed a model.
-        return DegradeToFallback("local ONNX embedding runtime loaded, but tokenizer inference is not yet configured; hashing fallback is active", text);
+        try
+        {
+            return _backend.Value?.Embed(text) ??
+                DegradeToFallback("local ONNX embedding backend is unavailable; hashing fallback is active", text);
+        }
+        catch (Exception ex)
+        {
+            return DegradeToFallback($"local ONNX embedding inference failed: {ex.GetType().Name}", text);
+        }
     }
 
     private float[] DegradeToFallback(string reason, string text)
@@ -85,16 +89,23 @@ public sealed class OnnxTextEmbeddingService : ITextEmbeddingService, IDisposabl
         return _fallback.Embed(text);
     }
 
-    private InferenceSession? TryLoadSession()
+    private OnnxEmbeddingBackend? TryLoadBackend()
     {
         try
         {
             if (!File.Exists(_options.ModelPath))
             {
+                DegradeToFallback("local ONNX embedding model is missing; hashing fallback is active", "");
                 return null;
             }
 
-            return _sessionFactory(_options.ModelPath);
+            if (!File.Exists(ResolveTokenizerPath()))
+            {
+                DegradeToFallback("local ONNX embedding tokenizer is missing; hashing fallback is active", "");
+                return null;
+            }
+
+            return _backendFactory(_options);
         }
         catch (Exception ex)
         {
@@ -112,22 +123,7 @@ public sealed class OnnxTextEmbeddingService : ITextEmbeddingService, IDisposabl
         }
 
         var directory = Path.GetDirectoryName(_options.ModelPath) ?? ".";
-        return Path.Combine(directory, "tokenizer.json");
-    }
-
-    private static SessionOptions BuildSessionOptions()
-    {
-        var options = new SessionOptions();
-        try
-        {
-            options.AppendExecutionProvider_DML();
-        }
-        catch
-        {
-            // CPU fallback keeps the local-first path available on machines
-            // without DirectML support.
-        }
-
-        return options;
+        var tokenizerJson = Path.Combine(directory, "tokenizer.json");
+        return File.Exists(tokenizerJson) ? tokenizerJson : Path.Combine(directory, "vocab.txt");
     }
 }

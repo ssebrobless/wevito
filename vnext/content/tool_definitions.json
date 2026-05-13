@@ -98,6 +98,7 @@
     "schemaVersion": "1",
     "vectorExtension": "sqlite-vec",
     "embeddingProviderDefault": "hashing-fallback",
+    "embeddingProviderWhenOnnxActive": "bge-micro-v2",
     "embeddingDimensionsWhenOnnxActive": 384,
     "embeddingDimensionsWhenHashingFallback": 16,
     "localModelFolder": "vnext/content/local-models/embeddings/bge-micro-v2",

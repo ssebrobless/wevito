@@ -1,0 +1,18 @@
+{
+  "vocab": {
+    "[PAD]": 0,
+    "[UNK]": 100,
+    "[CLS]": 101,
+    "[SEP]": 102,
+    "goose": 1001,
+    "sprite": 1002,
+    "review": 1003,
+    "snake": 1004,
+    "habitat": 1005,
+    "baby": 1006,
+    "female": 1007,
+    "blue": 1008,
+    "hold": 1009,
+    "ball": 1010
+  }
+}
