@@ -34,6 +34,13 @@ public sealed record LearningEvalResult(
     bool BaselinePromoted,
     string Message);
 
+public sealed record LearningEvalComparison(
+    LearningEvalMetrics Candidate,
+    LearningEvalMetrics Baseline,
+    double RegressionTolerance,
+    bool Regression,
+    string Message);
+
 public sealed record LearningEvalRequest(
     string DatasetRoot,
     string ArtifactRoot,

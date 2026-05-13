@@ -6,6 +6,9 @@ namespace Wevito.VNext.Core;
 public sealed class AuditLedgerService
 {
     public const string DefaultRelativePath = "Wevito/audit/ledger.sqlite";
+    public const string TrainPlanPacketKind = "train_plan";
+    public const string TuningApplyPacketKind = "tuning_apply";
+    public const string TuningRollbackPacketKind = "tuning_rollback";
 
     private readonly string _databasePath;
 
