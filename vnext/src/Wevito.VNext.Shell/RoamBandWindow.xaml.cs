@@ -42,9 +42,11 @@ public partial class RoamBandWindow : Window
         string statusText = "",
         RuntimeSupervisorStatus? runtimeStatus = null,
         bool killSwitchActive = false,
-        EvidenceCollectionStatus? evidenceStatus = null)
+        EvidenceCollectionStatus? evidenceStatus = null,
+        double assetOpacity = ShellPresentationRules.ActiveAssetOpacity)
     {
         RoamCanvas.Children.Clear();
+        RoamCanvas.Opacity = Math.Clamp(assetOpacity, 0.0, 1.0);
         var now = DateTimeOffset.UtcNow;
         StatusBanner.Render(
             FormatStatusText(statusText, evidenceStatus),
@@ -86,10 +88,23 @@ public partial class RoamBandWindow : Window
                 image.RenderTransform = new ScaleTransform(-1, 1);
             }
 
-            Canvas.SetLeft(image, Math.Round(pet.CurrentX - Left - width / 2));
-            Canvas.SetTop(image, Math.Round(ActualHeight - height - 8));
+            var localX = Math.Round(pet.CurrentX - Left - width / 2);
+            var localY = ResolvePetTopInBand(pet.CurrentY, Top, height, ActualHeight);
+            Canvas.SetLeft(image, localX);
+            Canvas.SetTop(image, localY);
             RoamCanvas.Children.Add(image);
         }
+    }
+
+    internal static double ResolvePetTopInBand(double petScreenY, double windowTop, double height, double actualHeight)
+    {
+        var localY = Math.Round(petScreenY - windowTop - height);
+        if (double.IsNaN(localY) || double.IsInfinity(localY))
+        {
+            localY = actualHeight - height - 8;
+        }
+
+        return Math.Clamp(localY, 0, Math.Max(0, actualHeight - height - 8));
     }
 
     private static string FormatStatusText(string statusText, EvidenceCollectionStatus? evidenceStatus)

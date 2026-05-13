@@ -115,6 +115,23 @@ public partial class HomePanelWindow : Window
         DevButton.Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
     }
 
+    public void SetMainPanelVisible(bool isVisible)
+    {
+        PanelBorder.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
+    }
+
+    public void SetDesktopAssetOpacity(double opacity)
+    {
+        var clamped = Math.Clamp(opacity, 0.0, 1.0);
+        StageBackgroundImage.Opacity = clamped;
+        StageGradient.Opacity = clamped;
+        CelestialImage.Opacity = clamped;
+        StageBackdropCanvas.Opacity = clamped;
+        StagePropCanvas.Opacity = clamped;
+        StageDecorationCanvas.Opacity = clamped;
+        HomePetCanvas.Opacity = clamped;
+    }
+
     internal void Render(
         CompanionState state,
         EnvironmentDefinition environment,

@@ -471,12 +471,13 @@ internal sealed class ShellCoordinator : IAsyncDisposable
 
         TraceLog.Write("layout", $"home={homeLeft:0},{homeTop:0} {HomeWindowWidth:0}x{homeHeight:0} tool={_toolPopupWindow.Left:0},{_toolPopupWindow.Top:0} {toolWidth:0}x{toolHeight:0} roam={_roamBandWindow.Left:0},{_roamBandWindow.Top:0} {_roamBandWindow.Width:0}x{_roamBandWindow.Height:0}");
 
-        ApplyWindowStyles();
-        Render();
+        var desktopAssetOpacity = ShellPresentationRules.ResolveDesktopAssetOpacity(_state.Mode, _desktopContext, handles);
+        ApplyWindowStyles(desktopAssetOpacity);
+        Render(desktopAssetOpacity);
         _ = PublishOverlayRegionsAsync(workArea);
     }
 
-    private void ApplyWindowStyles()
+    private void ApplyWindowStyles(double desktopAssetOpacity)
     {
         if (_state is null)
         {
@@ -484,23 +485,24 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         }
 
         var passive = _state.Mode == CompanionMode.Passive;
-        var pinned = _state.Mode == CompanionMode.Pinned;
-
-        OverlayWindowStyler.Apply(_homeWindow, passive, passive || pinned);
+        OverlayWindowStyler.Apply(_homeWindow, passive, passive, hideFromTaskbar: false);
         OverlayWindowStyler.Apply(_roamBandWindow, true, true);
         var supervisorStatus = EvaluateRuntimeSupervisor(isUserInitiatedToolOpen: _state.ActiveTool.IsOpen);
 
-        OverlayWindowStyler.Apply(_toolPopupWindow, passive || !_state.ActiveTool.IsOpen, passive || pinned);
+        OverlayWindowStyler.Apply(_toolPopupWindow, passive || !_state.ActiveTool.IsOpen, passive);
 
         _homeWindow.SetHudVisible(!passive, GetSettingBool("compact_hud"));
+        _homeWindow.SetMainPanelVisible(ShellPresentationRules.ShouldShowMainPanel(_state.Mode));
+        _homeWindow.SetDesktopAssetOpacity(desktopAssetOpacity);
         _homeWindow.SetDevToolsVisible(_devToolsEnabled && !passive);
+        SetWindowVisibility(_homeWindow, Visibility.Visible, "HomePanel");
         SetWindowVisibility(_roamBandWindow, Visibility.Visible, "RoamBand");
         var settingsToolOpen = string.Equals(_state.ActiveTool.ToolId, "settings", StringComparison.OrdinalIgnoreCase);
         var toolWindowAllowed = supervisorStatus.ToolWindowAllowed || settingsToolOpen;
         SetWindowVisibility(_toolPopupWindow, _state.ActiveTool.IsOpen && !passive && toolWindowAllowed ? Visibility.Visible : Visibility.Hidden, "ToolPopup");
     }
 
-    private void Render()
+    private void Render(double desktopAssetOpacity = ShellPresentationRules.ActiveAssetOpacity)
     {
         if (_state is null || _content is null || _assetService is null)
         {
@@ -527,7 +529,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         var evidenceStatus = _evidenceCollectionStatusService.Read();
 
         _homeWindow.Render(_state, environment, _feedbackText, _assetService, needSnapshot, aggregateStatuses, actionEnabled, habitatLoadout, evidenceStatus);
-        _roamBandWindow.Render(_state, _assetService, liveStatus, liveBannerText, supervisorStatus, killSwitchActive, evidenceStatus);
+        _roamBandWindow.Render(_state, _assetService, liveStatus, liveBannerText, supervisorStatus, killSwitchActive, evidenceStatus, desktopAssetOpacity);
         _toolPopupWindow.Render(_state, _content, habitatLoadout, _assetService, _devToolsEnabled, petCommandBarState, supervisorStatus, activitySummary, autonomousDecision, promotionDecision, liveRecentLines, evidenceStatus);
     }
 
