@@ -5,6 +5,7 @@ public sealed record ResearchPlannerRequest(
     IReadOnlyList<string>? LocalMemory = null,
     IReadOnlyList<string>? LocalDocumentPaths = null,
     IReadOnlyList<RetrievalChunk>? RetrievedChunks = null,
+    LocalReasoningResult? LocalReasoning = null,
     IReadOnlyList<string>? PriorToolReports = null,
     IReadOnlyList<WebFetchRecord>? WebFetches = null,
     bool AllowNetwork = false,
@@ -19,7 +20,9 @@ public sealed class ResearchPlannerService
         var sources = BuildSources(request).ToList();
         var claims = BuildClaims(request, sources).ToList();
         var networkRequested = request.AllowNetwork;
-        var synthesis = BuildSynthesis(request, sources, claims, networkRequested);
+        var synthesis = request.LocalReasoning?.Succeeded == true
+            ? request.LocalReasoning.Synthesis
+            : BuildSynthesis(request, sources, claims, networkRequested);
 
         return new ResearchEvidencePacket(
             request.Question.Trim(),
@@ -118,6 +121,15 @@ public sealed class ResearchPlannerService
                 sources.Where(source => source.Id.StartsWith("chunk-", StringComparison.OrdinalIgnoreCase)).Select(source => source.Id).ToList(),
                 0.86,
                 "Claim is based on local retrieval metadata and chunk provenance.");
+        }
+
+        if (request.LocalReasoning?.Succeeded == true)
+        {
+            yield return new ResearchClaimRecord(
+                $"Local reasoning produced citation coverage {request.LocalReasoning.CitationCoverageRatio:0.00}.",
+                sources.Where(source => source.Id.StartsWith("chunk-", StringComparison.OrdinalIgnoreCase)).Select(source => source.Id).ToList(),
+                Math.Min(0.95, request.LocalReasoning.CitationCoverageRatio),
+                "Claim is based on the local reasoning evidence packet and retrieved chunk ids.");
         }
 
         if (request.AllowNetwork)

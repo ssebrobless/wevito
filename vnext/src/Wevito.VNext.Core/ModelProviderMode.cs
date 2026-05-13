@@ -121,6 +121,15 @@ public sealed class ModelProviderModeService
         return new ModelProviderRouteDecision(ModelProviderRoute.DeterministicLocal, "deterministic-local", "LocalOnly fell back to deterministic local adapter.", DidSelectHostedProvider: false);
     }
 
+    public static bool IsHostedProviderId(string providerId)
+    {
+        return providerId.Contains("anthropic", StringComparison.OrdinalIgnoreCase) ||
+               providerId.Contains("openai", StringComparison.OrdinalIgnoreCase) ||
+               providerId.Contains("gemini", StringComparison.OrdinalIgnoreCase) ||
+               providerId.Contains("hosted", StringComparison.OrdinalIgnoreCase) ||
+               providerId.Contains("cloud", StringComparison.OrdinalIgnoreCase);
+    }
+
     public static ModelProviderMode ParseMode(string? value)
     {
         return value?.Trim().ToLowerInvariant() switch
