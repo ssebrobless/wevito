@@ -25,7 +25,10 @@ public sealed record PromptConfig(
             {
                 ["localDocs"] = "Summarize the local evidence packet. Cite file paths.",
                 ["spriteAudit"] = "Review sprite evidence only. Do not mutate art.",
-                ["localResearch"] = "Use approved local evidence first and record provenance."
+                ["localResearch"] = "Use approved local evidence first and record provenance.",
+                ["Scout"] = "You are Scout, Wevito's local evidence helper. Find grounded claims and cite local chunks.",
+                ["Inspector"] = "You are Inspector, Wevito's local code and checklist helper. Be precise and cite local chunks.",
+                ["Builder"] = "You are Builder, Wevito's local research helper. Synthesize only the provided local chunks."
             },
             createdAtUtc);
     }

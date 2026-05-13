@@ -13,12 +13,14 @@ public sealed class CodeReviewPreviewAdapter
     private readonly UnifiedPolicyService _policyService;
     private readonly IModelAdapter? _localModelAdapter;
     private readonly LocalRetrievalService? _retrievalService;
+    private readonly LocalReasoningService? _reasoningService;
 
-    public CodeReviewPreviewAdapter(UnifiedPolicyService? policyService = null, IModelAdapter? localModelAdapter = null, LocalRetrievalService? retrievalService = null)
+    public CodeReviewPreviewAdapter(UnifiedPolicyService? policyService = null, IModelAdapter? localModelAdapter = null, LocalRetrievalService? retrievalService = null, LocalReasoningService? reasoningService = null)
     {
         _policyService = policyService ?? new UnifiedPolicyService();
         _localModelAdapter = localModelAdapter;
         _retrievalService = retrievalService;
+        _reasoningService = reasoningService;
     }
 
     public TaskAdapterResult BuildReport(TaskAdapterRequest request, DateTimeOffset? nowUtc = null)
@@ -90,7 +92,21 @@ public sealed class CodeReviewPreviewAdapter
             DidMutate: false,
             timestamp);
         var retrieval = _retrievalService?.Retrieve(request.TaskCardId, request.Intent.RawText, ToolFamily, nowUtc: timestamp);
-        var modelResponse = TryBuildLocalModelSynthesis(request, report, timestamp, retrieval);
+        var reasoning = retrieval is null
+            ? null
+            : _reasoningService?.ReasonAsync(new LocalReasoningRequest(
+                request.TaskCardId,
+                request.Intent.RawText,
+                retrieval,
+                PetHelperRole.ChecklistHelper,
+                ToolFamily,
+                TrustedContext: report.Files.Select(file => file.RelativePath).ToList(),
+                UntrustedContext: [request.Intent.RawText],
+                ArtifactRoot: artifactRoot,
+                RequestedAtUtc: timestamp)).GetAwaiter().GetResult();
+        var modelResponse = reasoning is not null
+            ? new ModelResponse("local-reasoning", "rag-citation-enforced", reasoning.Synthesis, DidCallProvider: false, BlockReason: reasoning.BlockReason, AuditLogPath: reasoning.PacketPath)
+            : TryBuildLocalModelSynthesis(request, report, timestamp, retrieval);
 
         Directory.CreateDirectory(artifactRoot);
         var jsonPath = Path.Combine(artifactRoot, "code-review-report.json");

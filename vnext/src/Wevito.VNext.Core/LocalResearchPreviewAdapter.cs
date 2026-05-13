@@ -11,19 +11,22 @@ public sealed class LocalResearchPreviewAdapter
     private readonly UnifiedPolicyService _policyService;
     private readonly IModelAdapter? _localModelAdapter;
     private readonly LocalRetrievalService? _retrievalService;
+    private readonly LocalReasoningService? _reasoningService;
 
     public LocalResearchPreviewAdapter(
         ResearchPlannerService? planner = null,
         WebResearchConnector? webResearchConnector = null,
         UnifiedPolicyService? policyService = null,
         IModelAdapter? localModelAdapter = null,
-        LocalRetrievalService? retrievalService = null)
+        LocalRetrievalService? retrievalService = null,
+        LocalReasoningService? reasoningService = null)
     {
         _planner = planner ?? new ResearchPlannerService();
         _webResearchConnector = webResearchConnector;
         _policyService = policyService ?? new UnifiedPolicyService();
         _localModelAdapter = localModelAdapter;
         _retrievalService = retrievalService;
+        _reasoningService = reasoningService;
     }
 
     public TaskAdapterResult BuildPreview(TaskAdapterRequest request, DateTimeOffset? nowUtc = null)
@@ -67,11 +70,24 @@ public sealed class LocalResearchPreviewAdapter
 
         var webFetches = TryFetchWebEvidence(request, timestamp, artifactRoot);
         var retrieval = _retrievalService?.Retrieve(request.TaskCardId, request.Intent.RawText, ToolFamily, nowUtc: timestamp);
+        var reasoning = retrieval is null
+            ? null
+            : _reasoningService?.ReasonAsync(new LocalReasoningRequest(
+                request.TaskCardId,
+                request.Intent.RawText,
+                retrieval,
+                PetHelperRole.ResearchHelper,
+                ToolFamily,
+                TrustedContext: request.PolicySnapshot.ApprovedRootPaths,
+                UntrustedContext: [request.Intent.RawText],
+                ArtifactRoot: artifactRoot,
+                RequestedAtUtc: timestamp)).GetAwaiter().GetResult();
         var packet = _planner.Plan(new ResearchPlannerRequest(
             request.Intent.RawText,
             LocalMemory: request.Intent.TargetPathsOrAssets ?? [],
             LocalDocumentPaths: request.PolicySnapshot.ApprovedRootPaths,
             RetrievedChunks: retrieval?.Chunks,
+            LocalReasoning: reasoning,
             PriorToolReports: [],
             WebFetches: webFetches,
             AllowNetwork: webFetches.Count > 0,
