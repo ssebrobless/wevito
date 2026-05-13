@@ -34,16 +34,24 @@ public sealed class LearningLabPromotionService
     private readonly PetMemoryStore _memoryStore;
     private readonly PetMemoryWriteGate _writeGate;
     private readonly AuditLedgerService? _auditLedgerService;
+    private readonly KillSwitchService? _killSwitchService;
 
-    public LearningLabPromotionService(PetMemoryStore? memoryStore = null, PetMemoryWriteGate? writeGate = null, AuditLedgerService? auditLedgerService = null)
+    public LearningLabPromotionService(PetMemoryStore? memoryStore = null, PetMemoryWriteGate? writeGate = null, AuditLedgerService? auditLedgerService = null, KillSwitchService? killSwitchService = null)
     {
         _memoryStore = memoryStore ?? new PetMemoryStore();
         _writeGate = writeGate ?? new PetMemoryWriteGate();
         _auditLedgerService = auditLedgerService;
+        _killSwitchService = killSwitchService;
     }
 
     public LearningLabPromotionResult Promote(LearningLabPromotionRequest request)
     {
+        if (_killSwitchService?.IsActive() == true)
+        {
+            _killSwitchService.Record("kill_switch", request.ApprovedTaskCard.Id, request.PromotedAtUtc, "Blocked learning promotion because kill_switch=true.", "Blocked");
+            return Block("kill_switch=true");
+        }
+
         var approval = ValidateApproval(request);
         if (!string.IsNullOrWhiteSpace(approval))
         {

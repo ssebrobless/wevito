@@ -6,9 +6,28 @@ public sealed class LocalModelAdapter : IModelAdapter
 {
     public const string Provider = "local";
     public const string Model = "deterministic-local-research-scaffold";
+    private readonly KillSwitchService? _killSwitchService;
+
+    public LocalModelAdapter(KillSwitchService? killSwitchService = null)
+    {
+        _killSwitchService = killSwitchService;
+    }
 
     public Task<ModelResponse> SuggestAsync(ModelRequest request, CancellationToken cancellationToken = default)
     {
+        if (_killSwitchService?.IsActive() == true)
+        {
+            _killSwitchService.Record("kill_switch", null, request.RequestedAtUtc == default ? DateTimeOffset.UtcNow : request.RequestedAtUtc, "Blocked local model adapter because kill_switch=true.", "Blocked");
+            return Task.FromResult(new ModelResponse(
+                Provider,
+                Model,
+                "",
+                DidCallProvider: false,
+                BlockReason: "kill_switch=true",
+                AuditLogPath: "",
+                Latency: TimeSpan.Zero));
+        }
+
         var summary = BuildDeterministicSummary(request);
         return Task.FromResult(new ModelResponse(
             Provider,

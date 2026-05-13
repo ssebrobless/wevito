@@ -620,6 +620,14 @@
                                        Foreground="#FFE7F8DF"
                                        FontSize="10"
                                        TextWrapping="Wrap" />
+                            <CheckBox x:Name="RuntimeKillSwitchCheckBox"
+                                      Margin="0,8,0,0"
+                                      Style="{StaticResource PopupCheckBoxStyle}"
+                                      automation:AutomationProperties.AutomationId="RuntimeKillSwitchCheckBox"
+                                      Content="STOP all helper work immediately"
+                                      Foreground="#FFFFC7C7"
+                                      Checked="RuntimeKillSwitchCheckBox_OnChanged"
+                                      Unchecked="RuntimeKillSwitchCheckBox_OnChanged" />
                             <CheckBox x:Name="RuntimeQuietModeCheckBox"
                                       Margin="0,8,0,0"
                                       Style="{StaticResource PopupCheckBoxStyle}"

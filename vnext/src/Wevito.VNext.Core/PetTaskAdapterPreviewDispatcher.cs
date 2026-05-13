@@ -31,6 +31,7 @@ public sealed class PetTaskAdapterPreviewDispatcher
     private readonly ScreenCapturePreviewAdapter _screenCapturePreviewAdapter;
     private readonly PetMemoryPreviewAdapter _petMemoryPreviewAdapter;
     private readonly AuditLedgerService? _auditLedgerService;
+    private readonly KillSwitchService? _killSwitchService;
 
     public PetTaskAdapterPreviewDispatcher(
         LocalDocsPreviewAdapter? localDocsPreviewAdapter = null,
@@ -46,7 +47,8 @@ public sealed class PetTaskAdapterPreviewDispatcher
         AudioBoostHandoffAdapter? audioBoostHandoffAdapter = null,
         ScreenCapturePreviewAdapter? screenCapturePreviewAdapter = null,
         PetMemoryPreviewAdapter? petMemoryPreviewAdapter = null,
-        AuditLedgerService? auditLedgerService = null)
+        AuditLedgerService? auditLedgerService = null,
+        KillSwitchService? killSwitchService = null)
     {
         _localDocsPreviewAdapter = localDocsPreviewAdapter ?? new LocalDocsPreviewAdapter();
         _localResearchPreviewAdapter = localResearchPreviewAdapter ?? new LocalResearchPreviewAdapter();
@@ -62,6 +64,7 @@ public sealed class PetTaskAdapterPreviewDispatcher
         _screenCapturePreviewAdapter = screenCapturePreviewAdapter ?? new ScreenCapturePreviewAdapter();
         _petMemoryPreviewAdapter = petMemoryPreviewAdapter ?? new PetMemoryPreviewAdapter();
         _auditLedgerService = auditLedgerService;
+        _killSwitchService = killSwitchService;
     }
 
     public TaskAdapterResult BuildPreview(
@@ -72,6 +75,11 @@ public sealed class PetTaskAdapterPreviewDispatcher
         CompanionMode mode = CompanionMode.Focused)
     {
         var timestamp = nowUtc ?? DateTimeOffset.UtcNow;
+        if (_killSwitchService?.IsActive() == true)
+        {
+            return _killSwitchService.BlockTask(request, timestamp);
+        }
+
         var policyFamily = request.PolicySnapshot.ToolFamily;
         var intentFamily = request.Intent.RequestedToolFamily;
 

@@ -29,16 +29,24 @@ public sealed class AutonomousTaskScheduler
     private readonly RuntimeSupervisorService _runtimeSupervisorService;
     private readonly RuntimeBudgetMeter _budgetMeter;
     private readonly AuditLedgerService? _auditLedgerService;
+    private readonly KillSwitchService? _killSwitchService;
 
-    public AutonomousTaskScheduler(RuntimeSupervisorService runtimeSupervisorService, RuntimeBudgetMeter budgetMeter, AuditLedgerService? auditLedgerService = null)
+    public AutonomousTaskScheduler(RuntimeSupervisorService runtimeSupervisorService, RuntimeBudgetMeter budgetMeter, AuditLedgerService? auditLedgerService = null, KillSwitchService? killSwitchService = null)
     {
         _runtimeSupervisorService = runtimeSupervisorService;
         _budgetMeter = budgetMeter;
         _auditLedgerService = auditLedgerService;
+        _killSwitchService = killSwitchService;
     }
 
     public SchedulerProposalResult TryCreateProposal(AutonomousSchedulerRequest request)
     {
+        if (KillSwitchService.IsActive(request.Settings))
+        {
+            _killSwitchService?.Record("kill_switch", null, request.RequestedAtUtc == default ? DateTimeOffset.UtcNow : request.RequestedAtUtc, "Blocked scheduler proposal because kill_switch=true.", "Blocked");
+            return Block("kill_switch=true");
+        }
+
         if (!ReadBool(request.Settings, SchedulerEnabledSetting, false))
         {
             return Block("Autonomous scheduler is disabled.");

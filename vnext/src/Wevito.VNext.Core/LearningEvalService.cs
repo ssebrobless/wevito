@@ -10,15 +10,23 @@ public sealed class LearningEvalService
 
     private readonly ITextEmbeddingService _embeddingService;
     private readonly AuditLedgerService? _auditLedgerService;
+    private readonly KillSwitchService? _killSwitchService;
 
-    public LearningEvalService(ITextEmbeddingService? embeddingService = null, AuditLedgerService? auditLedgerService = null)
+    public LearningEvalService(ITextEmbeddingService? embeddingService = null, AuditLedgerService? auditLedgerService = null, KillSwitchService? killSwitchService = null)
     {
         _embeddingService = embeddingService ?? new CachingTextEmbeddingService();
         _auditLedgerService = auditLedgerService;
+        _killSwitchService = killSwitchService;
     }
 
     public LearningEvalResult Evaluate(LearningEvalRequest request)
     {
+        if (_killSwitchService?.IsActive() == true)
+        {
+            _killSwitchService.Record("kill_switch", null, request.CreatedAtUtc, "Blocked learning eval because kill_switch=true.", "Blocked");
+            return Block("kill_switch=true");
+        }
+
         var datasetFolder = ResolveDatasetFolder(request.DatasetRoot, request.DatasetVersion);
         if (string.IsNullOrWhiteSpace(datasetFolder))
         {
