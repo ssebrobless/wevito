@@ -32,6 +32,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private readonly PetTaskCardQueueService _petTaskCardQueueService = new();
     private readonly AuditLedgerService _auditLedgerService = new();
     private readonly ActivitySummaryService _activitySummaryService;
+    private readonly KillSwitchService _killSwitchService;
     private readonly PetTaskAdapterPreviewDispatcher _petTaskAdapterPreviewDispatcher;
     private readonly RuntimeSupervisorService _runtimeSupervisorService = new();
     private readonly RuntimeBudgetMeter _runtimeBudgetMeter = new();
@@ -69,8 +70,9 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     {
         _application = application;
         _activitySummaryService = new ActivitySummaryService(_auditLedgerService);
-        _petTaskAdapterPreviewDispatcher = new PetTaskAdapterPreviewDispatcher(auditLedgerService: _auditLedgerService);
-        _autonomousTaskScheduler = new AutonomousTaskScheduler(_runtimeSupervisorService, _runtimeBudgetMeter, _auditLedgerService);
+        _killSwitchService = new KillSwitchService(() => _state?.SettingsSnapshot ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase), _auditLedgerService);
+        _petTaskAdapterPreviewDispatcher = new PetTaskAdapterPreviewDispatcher(auditLedgerService: _auditLedgerService, killSwitchService: _killSwitchService);
+        _autonomousTaskScheduler = new AutonomousTaskScheduler(_runtimeSupervisorService, _runtimeBudgetMeter, _auditLedgerService, _killSwitchService);
         _screenCaptureExecutionAdapter = new ScreenCaptureExecutionAdapter(new WindowsGraphicsCaptureBackend(() => _homeWindow));
         _tickTimer = new DispatcherTimer(DispatcherPriority.Render)
         {
@@ -1904,6 +1906,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         hydrated.TryAdd("webtools_visible", bool.FalseString);
         hydrated.TryAdd("pet_model_adapter_enabled", bool.FalseString);
         hydrated.TryAdd("pet_model_first_call_approved", bool.FalseString);
+        hydrated.TryAdd(KillSwitchService.KillSwitchSetting, bool.FalseString);
         hydrated.TryAdd(ModelProviderModeService.ProviderModeSetting, "disabled");
         hydrated.TryAdd(ModelProviderModeService.LocalProviderIdSetting, "deterministic-local");
         hydrated.TryAdd(ModelProviderModeService.LocalProviderAvailableSetting, bool.FalseString);

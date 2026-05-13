@@ -159,6 +159,7 @@ public partial class ToolPopupWindow : Window
         ShowPetNamesCheckBox.IsChecked = GetSettingBool(state, "show_pet_names");
         ShowStatusSummaryCheckBox.IsChecked = GetSettingBool(state, "show_status_summary", true);
         RuntimeQuietModeCheckBox.IsChecked = GetSettingBool(state, RuntimeSupervisorService.QuietModeSetting);
+        RuntimeKillSwitchCheckBox.IsChecked = GetSettingBool(state, KillSwitchService.KillSwitchSetting);
         RuntimePetOnlyModeCheckBox.IsChecked = GetSettingBool(state, RuntimeSupervisorService.PetOnlyModeSetting);
         RuntimeBackgroundWorkAllowedCheckBox.IsChecked = GetSettingBool(state, RuntimeSupervisorService.BackgroundWorkAllowedSetting);
         SchedulerEnabledCheckBox.IsChecked = GetSettingBool(state, AutonomousTaskScheduler.SchedulerEnabledSetting);
@@ -253,6 +254,7 @@ public partial class ToolPopupWindow : Window
             if (TryToggleCheckBox(CompactHudCheckBox, localPoint)) { return true; }
             if (TryToggleCheckBox(ShowPetNamesCheckBox, localPoint)) { return true; }
             if (TryToggleCheckBox(ShowStatusSummaryCheckBox, localPoint)) { return true; }
+            if (TryToggleCheckBox(RuntimeKillSwitchCheckBox, localPoint)) { return true; }
             if (TryToggleCheckBox(RuntimeQuietModeCheckBox, localPoint)) { return true; }
             if (TryToggleCheckBox(RuntimePetOnlyModeCheckBox, localPoint)) { return true; }
             if (TryToggleCheckBox(RuntimeBackgroundWorkAllowedCheckBox, localPoint)) { return true; }
@@ -893,6 +895,11 @@ public partial class ToolPopupWindow : Window
     private void SchedulerEnabledCheckBox_OnChanged(object sender, RoutedEventArgs e)
     {
         PublishSetting(AutonomousTaskScheduler.SchedulerEnabledSetting, SchedulerEnabledCheckBox.IsChecked == true);
+    }
+
+    private void RuntimeKillSwitchCheckBox_OnChanged(object sender, RoutedEventArgs e)
+    {
+        PublishSetting(KillSwitchService.KillSwitchSetting, RuntimeKillSwitchCheckBox.IsChecked == true);
     }
 
     private void RuntimeNoFocusStealCheckBox_OnChanged(object sender, RoutedEventArgs e)
