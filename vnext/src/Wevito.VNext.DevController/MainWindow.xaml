@@ -27,6 +27,7 @@
         </Style>
     </Window.Resources>
 
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
     <Grid Margin="14">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -99,6 +100,23 @@
                     <Button Content="Clear Force" Click="ClearAnimationButton_OnClick" />
                     <Button Content="Show Asset Source" Click="AssetSourceButton_OnClick" />
                 </WrapPanel>
+                <WrapPanel Margin="0,8,0,0">
+                    <TextBlock Text="Issue" VerticalAlignment="Center" />
+                    <ComboBox x:Name="IssueTagCombo" MinWidth="150" />
+                    <TextBox x:Name="IssueNotesTextBox"
+                             Width="360"
+                             Margin="4"
+                             MinHeight="30"
+                             TextWrapping="Wrap"
+                             AcceptsReturn="True"
+                             VerticalScrollBarVisibility="Auto" />
+                    <Button Content="Tag Issue" Click="TagIssueButton_OnClick" />
+                </WrapPanel>
+                <WrapPanel Margin="0,8,0,0">
+                    <Button Content="Reset To Egg Choice" Click="ResetEggChoiceButton_OnClick" Background="#5A431F" BorderBrush="#CFA64A" />
+                    <Button Content="Empty Save" Click="EmptySaveButton_OnClick" Background="#4A2424" BorderBrush="#A36565" />
+                    <Button Content="Seed 3 Test Pets" Click="SeedPetsButton_OnClick" Background="#254B36" BorderBrush="#62A97B" />
+                </WrapPanel>
                 <TextBlock TextWrapping="Wrap"
                            Foreground="#BAD8F0"
                            Text="Use Force Loop to pin a selected pet to an animation while you inspect its frames in-game. Show Asset Source reports which runtime row is feeding the current visual." />
@@ -111,4 +129,5 @@
                    Foreground="#B7E4C7"
                    TextWrapping="Wrap" />
     </Grid>
+    </ScrollViewer>
 </Window>

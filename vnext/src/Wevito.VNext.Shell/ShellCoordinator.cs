@@ -2164,6 +2164,8 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             VisualQaCommandTypes.ForceAnimation => await ForceAnimationForVisualQaAsync(DevControlPipeMessage.DeserializePayload<VisualQaForceAnimationRequest>(envelope.Payload)),
             VisualQaCommandTypes.ClearForcedAnimation => await ClearAnimationForVisualQaAsync(DevControlPipeMessage.DeserializePayload<VisualQaClearForcedAnimationRequest>(envelope.Payload)),
             VisualQaCommandTypes.GetAssetSource => GetAssetSourceForVisualQa(DevControlPipeMessage.DeserializePayload<VisualQaGetAssetSourceRequest>(envelope.Payload)),
+            VisualQaCommandTypes.TagIssue => TagIssueForVisualQa(DevControlPipeMessage.DeserializePayload<VisualQaIssueTagRequest>(envelope.Payload)),
+            VisualQaCommandTypes.ResetSaveSandbox => await ResetSaveSandboxForVisualQaAsync(DevControlPipeMessage.DeserializePayload<VisualQaResetSaveSandboxRequest>(envelope.Payload)),
             _ => DevControlFailure($"Unsupported dev-control command: {envelope.CommandType}.")
         };
     }
@@ -2405,6 +2407,57 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         return DevControlSuccess($"Asset source for {pet.Name}: {frames[0]} ({frames.Count} frame(s)).");
     }
 
+    internal DevControlResponseEnvelope TagIssueForVisualQa(VisualQaIssueTagRequest request)
+    {
+        if (_state is null || _content is null)
+        {
+            return DevControlFailure("Shell state is not ready.");
+        }
+
+        if (!DevControlSnapshotBuilder.TryResolveSlot(_state.ActivePets, request.SlotIndex, request.ExpectedPetId, out _, out var message) &&
+            request.ExpectedPetId is not null)
+        {
+            return DevControlFailure(message);
+        }
+
+        var writer = new VisualQaIssueReportWriter(Path.Combine(ResolveRepoRootOrBaseDirectory(), "vnext", "artifacts", "visual-qa-cockpit"));
+        var result = writer.WriteIssue(request, GetDevControlSnapshot());
+        return DevControlSuccess($"Tagged visual QA issue: {result.PacketPath}");
+    }
+
+    internal async Task<DevControlResponseEnvelope> ResetSaveSandboxForVisualQaAsync(VisualQaResetSaveSandboxRequest request)
+    {
+        if (_state is null || _content is null)
+        {
+            return DevControlFailure("Shell state is not ready.");
+        }
+
+        var mode = request.Mode.Trim().ToLowerInvariant();
+        _state = mode switch
+        {
+            "fresh_start_egg_choice" => new DefaultStateFactory(_petSimulationEngine).Create(_content),
+            "empty_three_slots" => _state with
+            {
+                ActivePets = [],
+                ActiveTool = new ToolSession("settings", false),
+                SettingsSnapshot = WithSetting(_state.SettingsSnapshot, "starter_egg_pending", bool.FalseString)
+            },
+            "three_random_alive_pets" => SeedThreeVisualQaPets(_state),
+            _ => _state
+        };
+
+        if (mode is not ("fresh_start_egg_choice" or "empty_three_slots" or "three_random_alive_pets"))
+        {
+            return DevControlFailure($"Unknown save sandbox mode: {request.Mode}.");
+        }
+
+        _state = HydrateLoadedState(_state, _content);
+        _state = ApplyCurrentLayout(_state);
+        SetFeedback($"Visual QA reset save sandbox: {mode}.");
+        await PersistAndRenderAsync();
+        return DevControlSuccess($"Reset save sandbox: {mode}.");
+    }
+
     private DevControlResponseEnvelope DevControlSuccess(string message)
     {
         return new DevControlResponseEnvelope(true, message, GetDevControlSnapshot());
@@ -2437,6 +2490,42 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         }
 
         return _assetService.GetAnimationFramePaths(pet, "idle").Count > 0;
+    }
+
+    private CompanionState SeedThreeVisualQaPets(CompanionState state)
+    {
+        if (_content is null)
+        {
+            return state;
+        }
+
+        var speciesIds = new[] { "goose", "fox", "frog" };
+        var pets = new List<PetActor>();
+        for (var index = 0; index < speciesIds.Length; index++)
+        {
+            var species = ResolveSpecies(speciesIds[index]);
+            var color = ResolveColor(species, index switch
+            {
+                0 => "yellow",
+                1 => "red",
+                _ => "blue"
+            });
+            pets.Add(_petSimulationEngine.CreatePet(
+                species,
+                PetAgeStage.Baby,
+                index == 1 ? PetGender.Male : PetGender.Female,
+                color,
+                $"{species.DisplayName} {index + 1}",
+                DateTimeOffset.UtcNow,
+                activeStatuses: [PetStatusType.Comforted]));
+        }
+
+        return state with
+        {
+            ActivePets = pets,
+            ActiveTool = new ToolSession("settings", false),
+            SettingsSnapshot = WithSetting(state.SettingsSnapshot, "starter_egg_pending", bool.FalseString)
+        };
     }
 
     private static bool TryParseEnum<TEnum>(string value, out TEnum result)

@@ -49,6 +49,16 @@ internal sealed class DevControlClient
         return SendAsync(VisualQaCommandTypes.GetAssetSource, request);
     }
 
+    public Task<DevControlResponseEnvelope> TagIssueAsync(VisualQaIssueTagRequest request)
+    {
+        return SendAsync(VisualQaCommandTypes.TagIssue, request);
+    }
+
+    public Task<DevControlResponseEnvelope> ResetSaveSandboxAsync(VisualQaResetSaveSandboxRequest request)
+    {
+        return SendAsync(VisualQaCommandTypes.ResetSaveSandbox, request);
+    }
+
     private static async Task<DevControlResponseEnvelope> SendAsync<TPayload>(string commandType, TPayload payload)
     {
         using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(2));

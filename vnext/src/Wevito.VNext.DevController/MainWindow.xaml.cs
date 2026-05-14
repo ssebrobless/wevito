@@ -56,6 +56,7 @@ public partial class MainWindow : Window
         RenderSlots();
         PopulateOptions();
         PopulateAnimationOptions();
+        PopulateIssueTagOptions();
         StatusText.Text = response.Message;
         StatusText.Foreground = response.Success ? Brushes.LightGreen : Brushes.Orange;
     }
@@ -101,6 +102,12 @@ public partial class MainWindow : Window
     {
         var values = new[] { "idle", "walk", "eat", "happy", "sad", "sleep", "sick", "bathe", "waving", "jumping", "waiting", "review" };
         SetItemsIfChanged(AnimationCombo, values, "idle");
+    }
+
+    private void PopulateIssueTagOptions()
+    {
+        var values = new[] { "white_box", "cropped", "blurry", "wrong_scale", "static_animation", "bad_motion", "wrong_baseline", "duplicate_sprite", "bad_opacity", "missing_frame", "wrong_asset_source", "needs_redraw" };
+        SetItemsIfChanged(IssueTagCombo, values, "needs_redraw");
     }
 
     private void SlotButton_OnClick(object sender, RoutedEventArgs e)
@@ -204,6 +211,49 @@ public partial class MainWindow : Window
             _selectedSlotIndex,
             slot.PetId,
             SelectedComboValue(AnimationCombo, "idle")));
+        ApplyResponse(response);
+    }
+
+    private async void TagIssueButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        var slot = SelectedSlot();
+        var tag = SelectedComboValue(IssueTagCombo, "needs_redraw");
+        var notes = string.IsNullOrWhiteSpace(IssueNotesTextBox.Text)
+            ? $"Visual QA issue tagged as {tag}."
+            : IssueNotesTextBox.Text.Trim();
+        var response = await _client.TagIssueAsync(new VisualQaIssueTagRequest(
+            _selectedSlotIndex,
+            slot.PetId,
+            [tag],
+            notes,
+            AttachCurrentScreenshot: false));
+        ApplyResponse(response);
+    }
+
+    private async void ResetEggChoiceButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        await ResetSaveSandboxAsync("fresh_start_egg_choice", "Reset save to the fresh egg-choice screen?");
+    }
+
+    private async void EmptySaveButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        await ResetSaveSandboxAsync("empty_three_slots", "Clear all pets without creating ghosts?");
+    }
+
+    private async void SeedPetsButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        await ResetSaveSandboxAsync("three_random_alive_pets", "Replace the save with three visual QA test pets?");
+    }
+
+    private async Task ResetSaveSandboxAsync(string mode, string prompt)
+    {
+        var confirmed = MessageBox.Show(this, prompt, "Visual QA save sandbox", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
+        if (!confirmed)
+        {
+            return;
+        }
+
+        var response = await _client.ResetSaveSandboxAsync(new VisualQaResetSaveSandboxRequest(mode));
         ApplyResponse(response);
     }
 
