@@ -59,6 +59,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private readonly ToolPopupWindow _toolPopupWindow = new();
     private SpriteWorkflowV2Window? _spriteWorkflowV2Window;
     private CreativeLearningLabWindow? _creativeLearningLabWindow;
+    private DevControlServer? _devControlServer;
 
     private BrokerClient? _brokerClient;
     private Process? _brokerProcess;
@@ -217,6 +218,16 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         await _brokerClient.SendCommandAsync(ShellCommandTypes.RegisterDropTarget, new RegisterDropTargetCommand(WindowRole.HomePanel));
         await _brokerClient.SendCommandAsync(ShellCommandTypes.RegisterDropTarget, new RegisterDropTargetCommand(WindowRole.ToolPopup));
         await _brokerClient.SendCommandAsync(ShellCommandTypes.SetPinned, new SetPinnedCommand(_state.IsPinned));
+
+        if (_devToolsEnabled)
+        {
+            _devControlServer = new DevControlServer(
+                DevControlServer.DefaultPipeName,
+                _application.Dispatcher,
+                HandleDevControlCommandAsync);
+            _devControlServer.Start();
+            TraceLog.Write("dev-control", $"server-started pipe={DevControlServer.DefaultPipeName}");
+        }
 
         _lastTickAtUtc = DateTimeOffset.UtcNow;
         ApplyModeAndLayout();
@@ -1785,6 +1796,11 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             await PersistAsync();
         }
 
+        if (_devControlServer is not null)
+        {
+            await _devControlServer.DisposeAsync();
+        }
+
         if (_brokerClient is not null)
         {
             try
@@ -2129,6 +2145,304 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         };
         SetFeedback($"Dev command applied: {command.Kind}");
         await PersistAndRenderAsync();
+    }
+
+    internal async Task<DevControlResponseEnvelope> HandleDevControlCommandAsync(DevControlCommandEnvelope envelope)
+    {
+        if (!_devToolsEnabled || _state is null || _content is null)
+        {
+            return DevControlFailure("Dev-control is available only after the dev Shell is ready.");
+        }
+
+        return envelope.CommandType switch
+        {
+            DevControlCommandTypes.GetSnapshot => DevControlSuccess("Snapshot refreshed."),
+            DevControlCommandTypes.DeletePet => await DeletePetForDevControlAsync(DevControlPipeMessage.DeserializePayload<DevControlDeletePetRequest>(envelope.Payload)),
+            DevControlCommandTypes.SpawnOrReplacePet => await SpawnOrReplacePetForDevControlAsync(DevControlPipeMessage.DeserializePayload<DevControlSpawnOrReplacePetRequest>(envelope.Payload)),
+            DevControlCommandTypes.ApplyAction => await ApplyActionForDevControlAsync(DevControlPipeMessage.DeserializePayload<DevControlApplyActionRequest>(envelope.Payload)),
+            DevControlCommandTypes.Roam => await StartRoamForDevControlAsync(DevControlPipeMessage.DeserializePayload<DevControlRoamRequest>(envelope.Payload)),
+            VisualQaCommandTypes.ForceAnimation => await ForceAnimationForVisualQaAsync(DevControlPipeMessage.DeserializePayload<VisualQaForceAnimationRequest>(envelope.Payload)),
+            VisualQaCommandTypes.ClearForcedAnimation => await ClearAnimationForVisualQaAsync(DevControlPipeMessage.DeserializePayload<VisualQaClearForcedAnimationRequest>(envelope.Payload)),
+            VisualQaCommandTypes.GetAssetSource => GetAssetSourceForVisualQa(DevControlPipeMessage.DeserializePayload<VisualQaGetAssetSourceRequest>(envelope.Payload)),
+            _ => DevControlFailure($"Unsupported dev-control command: {envelope.CommandType}.")
+        };
+    }
+
+    internal DevControlSnapshot GetDevControlSnapshot()
+    {
+        if (_state is null || _content is null)
+        {
+            return DevControlSnapshot.Empty(DateTimeOffset.UtcNow);
+        }
+
+        return DevControlSnapshotBuilder.Build(_state.ActivePets, _content, DateTimeOffset.UtcNow);
+    }
+
+    internal async Task<DevControlResponseEnvelope> DeletePetForDevControlAsync(DevControlDeletePetRequest request)
+    {
+        if (_state is null || _content is null)
+        {
+            return DevControlFailure("Shell state is not ready.");
+        }
+
+        if (!DevControlSnapshotBuilder.TryResolveSlot(_state.ActivePets, request.SlotIndex, request.ExpectedPetId, out var pet, out var message) || pet is null)
+        {
+            return DevControlFailure(message);
+        }
+
+        _state = RemoveDevPet(_state, pet.Id);
+        _state = ApplyCurrentLayout(_state);
+        SetFeedback($"Dev controller removed {pet.Name} without creating a ghost.");
+        await PersistAndRenderAsync();
+        return DevControlSuccess($"Removed {pet.Name}.");
+    }
+
+    internal async Task<DevControlResponseEnvelope> SpawnOrReplacePetForDevControlAsync(DevControlSpawnOrReplacePetRequest request)
+    {
+        if (_state is null || _content is null)
+        {
+            return DevControlFailure("Shell state is not ready.");
+        }
+
+        if (request.SlotIndex < 0 || request.SlotIndex > 2)
+        {
+            return DevControlFailure("Slot must be 1, 2, or 3.");
+        }
+
+        var occupied = request.SlotIndex < _state.ActivePets.Count;
+        if (occupied && !request.ReplaceIfOccupied)
+        {
+            return DevControlFailure("Replacement confirmation required.");
+        }
+
+        if (!TryParseEnum(request.LifeStage, out PetAgeStage ageStage))
+        {
+            return DevControlFailure($"Unknown life stage: {request.LifeStage}.");
+        }
+
+        if (!TryParseEnum(request.Gender, out PetGender gender))
+        {
+            return DevControlFailure($"Unknown gender: {request.Gender}.");
+        }
+
+        var species = ResolveSpecies(request.SpeciesId);
+        var color = ResolveColor(species, request.ColorVariant);
+        var newPet = _petSimulationEngine.CreatePet(
+            species,
+            ageStage,
+            gender,
+            color,
+            $"{species.DisplayName} {request.SlotIndex + 1}",
+            DateTimeOffset.UtcNow,
+            activeStatuses: [PetStatusType.Comforted]);
+
+        if (!HasRuntimeSprite(newPet))
+        {
+            return DevControlFailure($"No runtime idle sprites found for {species.Id}/{ageStage}/{gender}/{color}.");
+        }
+
+        var pets = _state.ActivePets.Take(3).ToList();
+        if (!occupied && request.SlotIndex > pets.Count)
+        {
+            return DevControlFailure("Add pets to earlier empty slots first.");
+        }
+
+        if (occupied)
+        {
+            pets[request.SlotIndex] = newPet;
+        }
+        else
+        {
+            pets.Add(newPet);
+        }
+
+        _state = _state with
+        {
+            ActivePets = pets.Take(3).ToList(),
+            ActiveEnvironmentId = string.IsNullOrWhiteSpace(_state.ActiveEnvironmentId) ? species.DefaultEnvironmentId : _state.ActiveEnvironmentId,
+            SettingsSnapshot = WithSetting(_state.SettingsSnapshot, "dev_selected_pet_id", newPet.Id.ToString())
+        };
+        _state = ApplyCurrentLayout(_state);
+        SetFeedback($"Dev controller spawned {newPet.Name}: {species.Id} {ageStage} {gender} {color}.");
+        await PersistAndRenderAsync();
+        return DevControlSuccess($"Spawned {newPet.Name}.");
+    }
+
+    internal async Task<DevControlResponseEnvelope> ApplyActionForDevControlAsync(DevControlApplyActionRequest request)
+    {
+        if (_state is null || _content is null)
+        {
+            return DevControlFailure("Shell state is not ready.");
+        }
+
+        if (!DevControlSnapshotBuilder.TryResolveSlot(_state.ActivePets, request.SlotIndex, request.ExpectedPetId, out var pet, out var message) || pet is null)
+        {
+            return DevControlFailure(message);
+        }
+
+        var actionDefinition = _content.Actions.FirstOrDefault(action => string.Equals(action.Id, request.ActionId, StringComparison.OrdinalIgnoreCase));
+        if (actionDefinition is null)
+        {
+            return DevControlFailure($"Unknown action: {request.ActionId}.");
+        }
+
+        var updatedPet = _petSimulationEngine.ApplyAction(actionDefinition, [pet], DateTimeOffset.UtcNow)[0];
+        var pets = _state.ActivePets.Select(existing => existing.Id == pet.Id ? updatedPet : existing).ToList();
+        _state = _state with { ActivePets = pets };
+        SetFeedback($"Dev controller applied {actionDefinition.DisplayName} to {pet.Name}.");
+        await PersistAndRenderAsync();
+        return DevControlSuccess($"Applied {actionDefinition.DisplayName} to {pet.Name}.");
+    }
+
+    internal async Task<DevControlResponseEnvelope> StartRoamForDevControlAsync(DevControlRoamRequest request)
+    {
+        if (_state is null)
+        {
+            return DevControlFailure("Shell state is not ready.");
+        }
+
+        if (!DevControlSnapshotBuilder.TryResolveSlot(_state.ActivePets, request.SlotIndex, request.ExpectedPetId, out var pet, out var message) || pet is null)
+        {
+            return DevControlFailure(message);
+        }
+
+        var now = DateTimeOffset.UtcNow;
+        var durationSeconds = Math.Clamp(request.DurationSeconds <= 0 ? 10 : request.DurationSeconds, 1, 30);
+        var targetX = pet.CurrentX <= pet.HomeX ? pet.HomeX + 180 : pet.HomeX - 180;
+        var pets = _state.ActivePets.Select(existing => existing.Id == pet.Id
+            ? existing with
+            {
+                BehaviorState = PetBehaviorState.Roaming,
+                TargetX = targetX,
+                TargetY = pet.HomeY,
+                CurrentAnimationState = PetAnimationState.Walk,
+                OverrideAnimationState = PetAnimationState.Walk,
+                OverrideAnimationEndsAtUtc = now.AddSeconds(durationSeconds),
+                AnimationStartedAtUtc = now
+            }
+            : existing).ToList();
+
+        _state = _state with { ActivePets = pets };
+        SetFeedback($"Dev controller started a {durationSeconds}s roam for {pet.Name}.");
+        await PersistAndRenderAsync();
+        return DevControlSuccess($"Roaming {pet.Name} for {durationSeconds}s.");
+    }
+
+    internal async Task<DevControlResponseEnvelope> ForceAnimationForVisualQaAsync(VisualQaForceAnimationRequest request)
+    {
+        if (_state is null)
+        {
+            return DevControlFailure("Shell state is not ready.");
+        }
+
+        if (!DevControlSnapshotBuilder.TryResolveSlot(_state.ActivePets, request.SlotIndex, request.ExpectedPetId, out var pet, out var message) || pet is null)
+        {
+            return DevControlFailure(message);
+        }
+
+        if (!TryParseEnum(request.AnimationFamily, out PetAnimationState animationState))
+        {
+            return DevControlFailure($"Unknown animation: {request.AnimationFamily}.");
+        }
+
+        var now = DateTimeOffset.UtcNow;
+        var durationSeconds = request.Loop ? 600 : 8;
+        var pets = _state.ActivePets.Select(existing => existing.Id == pet.Id
+            ? existing with
+            {
+                CurrentAnimationState = animationState,
+                OverrideAnimationState = animationState,
+                OverrideAnimationEndsAtUtc = now.AddSeconds(durationSeconds),
+                AnimationStartedAtUtc = now
+            }
+            : existing).ToList();
+
+        _state = _state with { ActivePets = pets };
+        SetFeedback($"Visual QA forced {animationState} on {pet.Name}.");
+        await PersistAndRenderAsync();
+        return DevControlSuccess($"Forced {animationState} on {pet.Name}.");
+    }
+
+    internal async Task<DevControlResponseEnvelope> ClearAnimationForVisualQaAsync(VisualQaClearForcedAnimationRequest request)
+    {
+        if (_state is null)
+        {
+            return DevControlFailure("Shell state is not ready.");
+        }
+
+        if (!DevControlSnapshotBuilder.TryResolveSlot(_state.ActivePets, request.SlotIndex, request.ExpectedPetId, out var pet, out var message) || pet is null)
+        {
+            return DevControlFailure(message);
+        }
+
+        _state = ClearDevAnimation(_state, pet.Id);
+        SetFeedback($"Visual QA cleared forced animation on {pet.Name}.");
+        await PersistAndRenderAsync();
+        return DevControlSuccess($"Cleared forced animation on {pet.Name}.");
+    }
+
+    internal DevControlResponseEnvelope GetAssetSourceForVisualQa(VisualQaGetAssetSourceRequest request)
+    {
+        if (_state is null || _assetService is null)
+        {
+            return DevControlFailure("Shell state or asset service is not ready.");
+        }
+
+        if (!DevControlSnapshotBuilder.TryResolveSlot(_state.ActivePets, request.SlotIndex, request.ExpectedPetId, out var pet, out var message) || pet is null)
+        {
+            return DevControlFailure(message);
+        }
+
+        var animationId = string.IsNullOrWhiteSpace(request.AnimationFamily)
+            ? pet.CurrentAnimationState.ToString().ToLowerInvariant()
+            : request.AnimationFamily.ToLowerInvariant();
+        var frames = _assetService.GetAnimationFramePaths(pet, animationId);
+        if (frames.Count == 0)
+        {
+            return DevControlFailure($"No frames found for {pet.SpeciesId}/{pet.AgeStage}/{pet.Gender}/{pet.ColorVariant}/{animationId}.");
+        }
+
+        return DevControlSuccess($"Asset source for {pet.Name}: {frames[0]} ({frames.Count} frame(s)).");
+    }
+
+    private DevControlResponseEnvelope DevControlSuccess(string message)
+    {
+        return new DevControlResponseEnvelope(true, message, GetDevControlSnapshot());
+    }
+
+    private DevControlResponseEnvelope DevControlFailure(string message)
+    {
+        return new DevControlResponseEnvelope(false, message, GetDevControlSnapshot());
+    }
+
+    private CompanionState ApplyCurrentLayout(CompanionState state)
+    {
+        var stageRect = _homeWindow.GetStageRect();
+        return state with
+        {
+            ActivePets = _petSimulationEngine.ApplyLayout(
+                state.ActivePets,
+                _homeWindow.Left + stageRect.X + 24,
+                _homeWindow.Top + stageRect.Y + 20,
+                stageRect.Width - 48,
+                stageRect.Height - 36)
+        };
+    }
+
+    private bool HasRuntimeSprite(PetActor pet)
+    {
+        if (_assetService is null)
+        {
+            return true;
+        }
+
+        return _assetService.GetAnimationFramePaths(pet, "idle").Count > 0;
+    }
+
+    private static bool TryParseEnum<TEnum>(string value, out TEnum result)
+        where TEnum : struct, Enum
+    {
+        return Enum.TryParse(value, true, out result);
     }
 
     private async Task AddStarterEggAsync(string colorVariant)
