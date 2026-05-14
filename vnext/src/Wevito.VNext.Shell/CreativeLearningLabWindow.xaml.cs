@@ -18,6 +18,7 @@ public partial class CreativeLearningLabWindow : Window
         InitializeComponent();
         LabelComboBox.ItemsSource = LearningLabLabelStore.AllowedLabels;
         LabelComboBox.SelectedItem = "defer";
+        Loaded += (_, _) => WindowPlacementHelper.FitInsideWorkArea(this);
     }
 
     public void LoadProject(string repoRoot)

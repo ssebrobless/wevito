@@ -17,7 +17,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private const double HomeWindowCompactHeight = 560;
     private const double HomeWindowPassiveHeight = 340;
     private const double ToolWindowWidth = 520;
-    private const double ToolWindowHeight = 420;
+    private const double ToolWindowHeight = 720;
     private const double DevToolWindowWidth = 520;
     private const double DevToolWindowHeight = 760;
     private const double RoamBandHeight = 118;
@@ -457,7 +457,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _homeWindow.Width = HomeWindowWidth;
         _homeWindow.Height = homeHeight;
 
-        var (toolWidth, toolHeight) = GetToolWindowSize();
+        var (toolWidth, toolHeight) = GetToolWindowSize(workArea);
         var toolRect = ResolveToolPopupRect(workArea, homeLeft, homeTop, HomeWindowWidth, homeHeight, toolWidth, toolHeight);
         _toolPopupWindow.Left = toolRect.X;
         _toolPopupWindow.Top = toolRect.Y;
@@ -2141,14 +2141,21 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         return GetSettingBool("compact_hud") ? HomeWindowCompactHeight : HomeWindowFullHeight;
     }
 
-    private (double Width, double Height) GetToolWindowSize()
+    private (double Width, double Height) GetToolWindowSize(RectInt workArea)
     {
         if (_state is not null && string.Equals(_state.ActiveTool.ToolId, "dev", StringComparison.OrdinalIgnoreCase) && _devToolsEnabled)
         {
-            return (DevToolWindowWidth, DevToolWindowHeight);
+            return (DevToolWindowWidth, ResolveToolWindowHeight(workArea, DevToolWindowHeight));
         }
 
-        return (ToolWindowWidth, ToolWindowHeight);
+        return (ToolWindowWidth, ResolveToolWindowHeight(workArea, ToolWindowHeight));
+    }
+
+    internal static double ResolveToolWindowHeight(RectInt workArea, double requestedHeight)
+    {
+        const double margin = 20;
+        var available = Math.Max(320, workArea.Height - margin);
+        return Math.Min(requestedHeight, available);
     }
 
     private bool GetSettingBool(string key, bool defaultValue = false)

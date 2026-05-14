@@ -87,6 +87,26 @@ public sealed class ShellPresentationRulesTests
         Assert.Equal(350, tool.Y);
     }
 
+    [Fact]
+    public void ResolveToolWindowHeight_PrefersTallReadableToolWindowInsideWorkArea()
+    {
+        var workArea = new RectInt(0, 0, 1920, 1040);
+
+        var height = ShellCoordinator.ResolveToolWindowHeight(workArea, 720);
+
+        Assert.Equal(720, height);
+    }
+
+    [Fact]
+    public void ResolveToolWindowHeight_ClampsForShortWorkAreas()
+    {
+        var workArea = new RectInt(0, 0, 1280, 500);
+
+        var height = ShellCoordinator.ResolveToolWindowHeight(workArea, 720);
+
+        Assert.Equal(480, height);
+    }
+
     [Theory]
     [InlineData("actions", true, true)]
     [InlineData("action:feed", true, true)]

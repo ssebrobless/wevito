@@ -28,6 +28,7 @@ public partial class SpriteWorkflowV2Window : Window
     public SpriteWorkflowV2Window()
     {
         InitializeComponent();
+        Loaded += (_, _) => WindowPlacementHelper.FitInsideWorkArea(this);
     }
 
     public void LoadProject(string repoRoot)
