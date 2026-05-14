@@ -54,6 +54,39 @@ public sealed class ShellPresentationRulesTests
         Assert.Equal(88, motion.Height);
     }
 
+    [Fact]
+    public void ResolveToolPopupRect_WhenHomeIsTall_OpensBesideHomeInsteadOfBehindIt()
+    {
+        var workArea = new RectInt(0, 0, 1920, 1040);
+        var homeLeft = 1232;
+        var homeTop = 110;
+        var homeWidth = 660;
+        var homeHeight = 910;
+        var toolWidth = 520;
+        var toolHeight = 420;
+
+        var tool = ShellCoordinator.ResolveToolPopupRect(workArea, homeLeft, homeTop, homeWidth, homeHeight, toolWidth, toolHeight);
+
+        Assert.Equal(702, tool.X);
+        Assert.Equal(110, tool.Y);
+        Assert.Equal(520, tool.Width);
+        Assert.Equal(420, tool.Height);
+        Assert.True(tool.Right <= homeLeft);
+    }
+
+    [Fact]
+    public void ResolveToolPopupRect_WhenThereIsRoom_OpensAboveHome()
+    {
+        var workArea = new RectInt(0, 0, 1920, 1040);
+        var homeLeft = 1232;
+        var homeTop = 600;
+
+        var tool = ShellCoordinator.ResolveToolPopupRect(workArea, homeLeft, homeTop, 660, 340, 520, 240);
+
+        Assert.Equal(1372, tool.X);
+        Assert.Equal(350, tool.Y);
+    }
+
     [Theory]
     [InlineData("actions", true, true)]
     [InlineData("action:feed", true, true)]

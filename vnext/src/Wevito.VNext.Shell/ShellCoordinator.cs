@@ -458,10 +458,11 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _homeWindow.Height = homeHeight;
 
         var (toolWidth, toolHeight) = GetToolWindowSize();
-        _toolPopupWindow.Left = homeLeft + (HomeWindowWidth - toolWidth);
-        _toolPopupWindow.Width = toolWidth;
-        _toolPopupWindow.Height = toolHeight;
-        _toolPopupWindow.Top = Math.Max(workArea.Y + 10, homeTop - toolHeight - 10);
+        var toolRect = ResolveToolPopupRect(workArea, homeLeft, homeTop, HomeWindowWidth, homeHeight, toolWidth, toolHeight);
+        _toolPopupWindow.Left = toolRect.X;
+        _toolPopupWindow.Top = toolRect.Y;
+        _toolPopupWindow.Width = toolRect.Width;
+        _toolPopupWindow.Height = toolRect.Height;
 
         _roamBandWindow.Left = roamBandRect.X;
         _roamBandWindow.Top = roamBandRect.Y;
@@ -487,6 +488,39 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         var monitor = _desktopContext?.PrimaryMonitorBounds
             ?? new RectInt(0, 0, (int)SystemParameters.PrimaryScreenWidth, (int)SystemParameters.PrimaryScreenHeight);
         return new RectInt(monitor.X, monitor.Bottom - (int)RoamBandHeight, monitor.Width, (int)RoamBandHeight);
+    }
+
+    internal static RectInt ResolveToolPopupRect(
+        RectInt workArea,
+        double homeLeft,
+        double homeTop,
+        double homeWidth,
+        double homeHeight,
+        double toolWidth,
+        double toolHeight)
+    {
+        const double margin = 10;
+        var alignedRight = homeLeft + homeWidth - toolWidth;
+        var aboveTop = homeTop - toolHeight - margin;
+        if (aboveTop >= workArea.Y + margin)
+        {
+            return new RectInt(
+                (int)Math.Round(Math.Clamp(alignedRight, workArea.X + margin, workArea.Right - toolWidth - margin)),
+                (int)Math.Round(aboveTop),
+                (int)Math.Round(toolWidth),
+                (int)Math.Round(toolHeight));
+        }
+
+        var leftOfHome = homeLeft - toolWidth - margin;
+        var sideLeft = leftOfHome >= workArea.X + margin
+            ? leftOfHome
+            : workArea.X + margin;
+        var sideTop = Math.Clamp(homeTop, workArea.Y + margin, workArea.Bottom - toolHeight - margin);
+        return new RectInt(
+            (int)Math.Round(sideLeft),
+            (int)Math.Round(sideTop),
+            (int)Math.Round(toolWidth),
+            (int)Math.Round(toolHeight));
     }
 
     private RectInt ResolvePetMotionBounds(RectInt roamBandRect, RectInt homeStageRect)
