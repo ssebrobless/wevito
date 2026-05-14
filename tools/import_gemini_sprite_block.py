@@ -79,6 +79,33 @@ def is_dark_grid_pixel(pixel: tuple[int, int, int, int], threshold: int = 120) -
     return (r + g + b) / 3 <= threshold
 
 
+def is_blue_gray_grid_pixel(pixel: tuple[int, int, int, int]) -> bool:
+    r, g, b, a = pixel
+    if a < 200:
+        return False
+
+    return 95 <= r <= 150 and abs((g - r) - 10) <= 8 and abs((b - g) - 12) <= 8
+
+
+def cluster_indices(indices: list[int]) -> list[tuple[int, int]]:
+    clusters: list[tuple[int, int]] = []
+    start: int | None = None
+    previous: int | None = None
+    for value in indices:
+        if start is None:
+            start = previous = value
+        elif previous is not None and value == previous + 1:
+            previous = value
+        else:
+            clusters.append((start, previous if previous is not None else start))
+            start = previous = value
+
+    if start is not None:
+        clusters.append((start, previous if previous is not None else start))
+
+    return clusters
+
+
 def detect_grid_boundaries(image: Image.Image) -> tuple[list[int], list[int]]:
     width, height = image.size
     pixels = image.load()
@@ -115,6 +142,49 @@ def detect_grid_boundaries(image: Image.Image) -> tuple[list[int], list[int]]:
         raise ValueError(f"Expected 7 row boundaries, found {len(y_bounds)}")
 
     return x_bounds, y_bounds
+
+
+def detect_editable_board_cells(image: Image.Image) -> list[tuple[int, int, int, int]]:
+    width, height = image.size
+    pixels = image.load()
+    scan_top = min(55, height)
+
+    separator_cols: list[int] = []
+    for x in range(width):
+        line_pixels = 0
+        for y in range(scan_top, height):
+            if is_blue_gray_grid_pixel(pixels[x, y]):
+                line_pixels += 1
+        if line_pixels >= int((height - scan_top) * 0.25):
+            separator_cols.append(x)
+
+    separator_rows: list[int] = []
+    for y in range(scan_top, height):
+        line_pixels = 0
+        for x in range(width):
+            if is_blue_gray_grid_pixel(pixels[x, y]):
+                line_pixels += 1
+        if line_pixels >= int(width * 0.8):
+            separator_rows.append(y)
+
+    x_clusters = cluster_indices(separator_cols)
+    y_clusters = cluster_indices(separator_rows)
+    if len(x_clusters) != 6 or len(y_clusters) < 12:
+        raise ValueError(
+            f"Expected editable-board separators, found {len(x_clusters)} vertical and {len(y_clusters)} horizontal"
+        )
+
+    x_bounds = [round((start + end) / 2) for start, end in x_clusters]
+    row_lines = [round((start + end) / 2) for start, end in y_clusters]
+
+    cells: list[tuple[int, int, int, int]] = []
+    for row in range(6):
+        top = row_lines[row * 2]
+        bottom = row_lines[row * 2 + 1]
+        for col in range(5):
+            cells.append((x_bounds[col] + 2, top + 2, x_bounds[col + 1] - 2, bottom - 2))
+
+    return cells
 
 
 def is_connected_background(pixel: tuple[int, int, int, int]) -> bool:
@@ -182,22 +252,33 @@ def fit_sprite_to_frame(sprite: Image.Image, frame_size: tuple[int, int]) -> Ima
 
 def import_block(source: Path, output_dir: Path, label_reserve: int = 70) -> None:
     image = Image.open(source).convert("RGBA")
-    x_bounds, y_bounds = detect_grid_boundaries(image)
+    editable_cells: list[tuple[int, int, int, int]] | None = None
+    try:
+        x_bounds, y_bounds = detect_grid_boundaries(image)
+    except ValueError:
+        editable_cells = detect_editable_board_cells(image)
+        x_bounds = []
+        y_bounds = []
 
     output_dir.mkdir(parents=True, exist_ok=True)
 
     for index, frame_name in enumerate(FRAME_ORDER):
-        row = index // 5
-        col = index % 5
+        if editable_cells is not None:
+            cell = image.crop(editable_cells[index])
+            work_region = cell
+        else:
+            row = index // 5
+            col = index % 5
 
-        left = x_bounds[col] + 2
-        right = x_bounds[col + 1] - 2
-        top = y_bounds[row] + 2
-        bottom = y_bounds[row + 1] - 2
+            left = x_bounds[col] + 2
+            right = x_bounds[col + 1] - 2
+            top = y_bounds[row] + 2
+            bottom = y_bounds[row + 1] - 2
 
-        cell = image.crop((left, top, right, bottom))
-        crop_bottom = max(1, cell.height - label_reserve)
-        work_region = cell.crop((0, 0, cell.width, crop_bottom))
+            cell = image.crop((left, top, right, bottom))
+            crop_bottom = max(1, cell.height - label_reserve)
+            work_region = cell.crop((0, 0, cell.width, crop_bottom))
+
         work_region = strip_background(work_region)
 
         bbox = work_region.getbbox()
@@ -209,9 +290,9 @@ def import_block(source: Path, output_dir: Path, label_reserve: int = 70) -> Non
         bx0 = max(0, bx0 - pad)
         by0 = max(0, by0 - pad)
         bx1 = min(cell.width, bx1 + pad)
-        by1 = min(crop_bottom, by1 + pad)
+        by1 = min(work_region.height, by1 + pad)
 
-        sprite = cell.crop((bx0, by0, bx1, by1))
+        sprite = work_region.crop((bx0, by0, bx1, by1))
         frame = fit_sprite_to_frame(sprite, (28, 24))
         frame.save(output_dir / f"{frame_name}.png")
 
