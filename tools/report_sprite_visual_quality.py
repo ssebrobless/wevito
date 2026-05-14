@@ -155,11 +155,22 @@ def analyze_row(root: Path, key: tuple[str, str, str, str, str], paths: list[Pat
         add("critical", "mixed_geometry", f"row has {len(dimensions)} frame dimensions: {sorted(dimensions)}", [m.frame_id for m in metrics])
     if empty_frames:
         add("critical", "empty_frame", f"{len(empty_frames)} frame(s) have no visible alpha", empty_frames)
-    if edge_frames:
-        touched_sides = sorted({side for metric in edge_metrics for side in metric.edge_sides})
+    non_ground_edge_metrics = [
+        metric
+        for metric in edge_metrics
+        if any(side in {"left", "top", "right"} for side in metric.edge_sides)
+    ]
+    if non_ground_edge_metrics:
+        non_ground_edge_frames = [metric.frame_id for metric in non_ground_edge_metrics]
+        touched_sides = sorted({side for metric in non_ground_edge_metrics for side in metric.edge_sides})
         severe_sides = [side for side in touched_sides if side in {"left", "top", "right"}]
-        severity = "high" if severe_sides and len(edge_frames) >= 2 else "medium"
-        add(severity, "edge_touch", f"{len(edge_frames)} frame(s) touch canvas edge(s): {', '.join(touched_sides)}", edge_frames)
+        severity = "high" if severe_sides and len(non_ground_edge_frames) >= 2 else "medium"
+        add(
+            severity,
+            "edge_touch",
+            f"{len(non_ground_edge_frames)} non-grounded frame(s) touch canvas edge(s): {', '.join(touched_sides)}",
+            non_ground_edge_frames,
+        )
     if sparse_frames:
         add("medium", "sparse_frame", f"{len(sparse_frames)} frame(s) have unusually low visible coverage", sparse_frames)
     if len(paths) > 1 and unique_hash_count <= 1:
