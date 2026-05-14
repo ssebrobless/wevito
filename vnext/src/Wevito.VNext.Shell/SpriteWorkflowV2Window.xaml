@@ -28,7 +28,10 @@
         </Style>
     </Window.Resources>
 
-    <Grid Margin="16">
+    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                  HorizontalScrollBarVisibility="Auto"
+                  automation:AutomationProperties.AutomationId="SpriteWorkflowV2RootScrollViewer">
+    <Grid Margin="16" MinWidth="1120" MinHeight="640">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -243,4 +246,5 @@
             </Border>
         </Grid>
     </Grid>
+    </ScrollViewer>
 </Window>
