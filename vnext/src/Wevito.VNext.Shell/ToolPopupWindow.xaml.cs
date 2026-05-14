@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Windows.Input;
 using Wevito.VNext.Contracts;
 using Wevito.VNext.Core;
 
@@ -13,6 +14,7 @@ namespace Wevito.VNext.Shell;
 
 public partial class ToolPopupWindow : Window
 {
+    internal const string ActionOptionDragFormat = "Wevito.ActionOption";
     private bool _closingSilently;
     private bool _suppressSettingEvents;
     private Guid? _lastRenderedDevPetId;
@@ -144,17 +146,12 @@ public partial class ToolPopupWindow : Window
             var optionItems = habitatLoadout.ActionOptions.TryGetValue(actionDefinition.Id, out var options)
                 ? options
                 : [];
+            var buttonLabel = BuildActionOptionButtonLabel(state.ActivePets);
             _actionRows = optionItems
-                .Select(item => ActionOptionRowItem.From(actionDefinition.Id, item, ResolveActionOptionPreview(assetService, actionDefinition.Id, item)))
+                .Select(item => ActionOptionRowItem.From(actionDefinition.Id, item, ResolveActionOptionPreview(assetService, actionDefinition.Id, item), buttonLabel))
                 .ToList();
             ActionGrid.ItemsSource = _actionRows;
-            var targetSummary = FormatLivingPetTargets(state.ActivePets);
-            ActionSummaryText.Text = _actionRows.Count switch
-            {
-                0 => $"No specific {actionDefinition.DisplayName.ToLowerInvariant()} options are ready right now. Target: {targetSummary}.",
-                1 => $"Use the prepared {actionDefinition.DisplayName.ToLowerInvariant()} option below. Target: {targetSummary}.",
-                _ => $"Choose how to {actionDefinition.DisplayName.ToLowerInvariant()} from {_actionRows.Count} prepared options. Target: {targetSummary}."
-            };
+            ActionSummaryText.Text = FormatActionSummary(actionDefinition.DisplayName, _actionRows.Count, state.ActivePets);
         }
         else if (showingPetCommand)
         {
@@ -833,12 +830,24 @@ public partial class ToolPopupWindow : Window
     {
         if ((sender as FrameworkElement)?.Tag is string key)
         {
-            var parts = key.Split('|', 2, StringSplitOptions.TrimEntries);
-            if (parts.Length == 2 && ActionOptionRequested is not null)
+            if (TryParseActionOptionDragPayload(key, out var actionId, out var itemId) && ActionOptionRequested is not null)
             {
-                await ActionOptionRequested.Invoke(parts[0], parts[1]);
+                await ActionOptionRequested.Invoke(actionId, itemId);
             }
         }
+    }
+
+    private void ActionGrid_OnPreviewMouseMove(object sender, MouseEventArgs e)
+    {
+        if (e.LeftButton != MouseButtonState.Pressed || ActionGrid.SelectedItem is not ActionOptionRowItem row)
+        {
+            return;
+        }
+
+        var data = new DataObject();
+        data.SetData(ActionOptionDragFormat, row.Key);
+        data.SetData(DataFormats.Text, $"{row.Label} - {row.ButtonLabel}");
+        DragDrop.DoDragDrop(ActionGrid, data, DragDropEffects.Copy);
     }
 
     private async void ActionMenuButton_OnClick(object sender, RoutedEventArgs e)
@@ -1335,6 +1344,48 @@ public partial class ToolPopupWindow : Window
         };
 
         return preview ?? assetService.GetItem(item.CategoryFolder, item.AssetId);
+    }
+
+    internal static string FormatActionSummary(string actionDisplayName, int optionCount, IReadOnlyList<PetActor> pets)
+    {
+        var targetSummary = FormatLivingPetTargets(pets);
+        var actionName = string.IsNullOrWhiteSpace(actionDisplayName)
+            ? "action"
+            : actionDisplayName.ToLowerInvariant();
+        var prefix = optionCount switch
+        {
+            0 => $"No specific {actionName} options are ready right now.",
+            1 => $"Use or drag the prepared {actionName} option below.",
+            _ => $"Choose, drag, or use one of {optionCount} prepared {actionName} options."
+        };
+
+        return $"{prefix} Target: {targetSummary}. Drag and drop an item onto the pet, or click the target button.";
+    }
+
+    internal static string BuildActionOptionButtonLabel(IReadOnlyList<PetActor> pets)
+    {
+        var firstLivingPet = pets.FirstOrDefault(pet => !pet.IsDead);
+        return firstLivingPet is null ? "Use" : $"Use on {firstLivingPet.Name}";
+    }
+
+    internal static bool TryParseActionOptionDragPayload(string? payload, out string actionId, out string itemId)
+    {
+        actionId = "";
+        itemId = "";
+        if (string.IsNullOrWhiteSpace(payload))
+        {
+            return false;
+        }
+
+        var parts = payload.Split('|', 2, StringSplitOptions.TrimEntries);
+        if (parts.Length != 2 || string.IsNullOrWhiteSpace(parts[0]) || string.IsNullOrWhiteSpace(parts[1]))
+        {
+            return false;
+        }
+
+        actionId = parts[0];
+        itemId = parts[1];
+        return true;
     }
 
     private static string FormatLivingPetTargets(IReadOnlyList<PetActor> pets)
@@ -1961,9 +2012,10 @@ internal sealed record ActionOptionRowItem(
     string Label,
     string DetailLabel,
     string CategoryLabel,
+    string ButtonLabel,
     ImageSource? Preview)
 {
-    public static ActionOptionRowItem From(string actionId, HabitatDisplayItem item, ImageSource? preview)
+    public static ActionOptionRowItem From(string actionId, HabitatDisplayItem item, ImageSource? preview, string buttonLabel)
     {
         return new ActionOptionRowItem(
             $"{actionId}|{item.Id}",
@@ -1972,6 +2024,7 @@ internal sealed record ActionOptionRowItem(
             item.Label,
             string.IsNullOrWhiteSpace(item.PreferenceHint) ? item.Purpose : $"{item.Purpose} - {item.PreferenceHint}",
             BuildCategoryLabel(item.CategoryFolder),
+            buttonLabel,
             preview);
     }
 

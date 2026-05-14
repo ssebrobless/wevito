@@ -400,6 +400,7 @@
                               RowHeaderWidth="0"
                               SelectionMode="Single"
                               SelectionUnit="FullRow"
+                              PreviewMouseMove="ActionGrid_OnPreviewMouseMove"
                               RowHeight="38"
                               ColumnHeaderHeight="28"
                               Background="#192026"
@@ -439,16 +440,17 @@
                             </Style>
                         </DataGrid.Resources>
                         <DataGrid.Columns>
-                            <DataGridTemplateColumn Header="USE"
-                                                    Width="58">
+                            <DataGridTemplateColumn Header="TARGET"
+                                                    Width="112">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <Button Padding="8,3"
                                                 Style="{StaticResource PopupMiniButtonStyle}"
                                                 automation:AutomationProperties.AutomationId="ActionOptionButton"
+                                                automation:AutomationProperties.Name="{Binding ButtonLabel}"
                                                 Tag="{Binding Key}"
                                                 Click="ActionOptionButton_OnClick"
-                                                Content="USE" />
+                                                Content="{Binding ButtonLabel}" />
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
