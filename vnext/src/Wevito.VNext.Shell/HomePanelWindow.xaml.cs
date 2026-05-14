@@ -365,17 +365,12 @@ public partial class HomePanelWindow : Window
         }
 
         var renderedHeight = spriteHeight * baseScale;
-        var scale = baseScale;
         if (renderedHeight > 144)
         {
-            scale = 144 / spriteHeight;
-        }
-        else if (renderedHeight < 108)
-        {
-            scale = 108 / spriteHeight;
+            return Math.Round(Math.Clamp(144 / spriteHeight, 1.0, baseScale), 2);
         }
 
-        return Math.Round(Math.Clamp(scale, 1.6, 3.0), 2);
+        return Math.Round(Math.Clamp(baseScale, 1.0, 3.0), 2);
     }
 
     internal static Point ResolveCalmLineupPlacement(
