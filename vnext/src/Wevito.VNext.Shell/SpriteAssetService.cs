@@ -66,11 +66,27 @@ public sealed class SpriteAssetService
             return null;
         }
 
-        var animationStart = pet.AnimationStartedAtUtc == default ? now : pet.AnimationStartedAtUtc;
         var frameDuration = GetFrameDuration(pet.CurrentAnimationState);
-        var elapsed = Math.Max(0, (now - animationStart).TotalMilliseconds);
-        var frameIndex = (int)(elapsed / frameDuration) % frames.Count;
+        var frameIndex = ResolveFrameIndex(pet, frames.Count, now, frameDuration);
         return LoadImage(frames[frameIndex]);
+    }
+
+    internal static int ResolveFrameIndex(PetActor pet, int frameCount, DateTimeOffset now, double frameDuration)
+    {
+        if (frameCount <= 0)
+        {
+            return 0;
+        }
+
+        if (pet.VisualQaForcedFrameIndex is { } forcedFrameIndex)
+        {
+            return Math.Clamp(forcedFrameIndex, 0, frameCount - 1);
+        }
+
+        var animationStart = pet.AnimationStartedAtUtc == default ? now : pet.AnimationStartedAtUtc;
+        var playbackSpeed = pet.VisualQaPlaybackSpeed > 0 ? pet.VisualQaPlaybackSpeed : 1;
+        var elapsed = Math.Max(0, (now - animationStart).TotalMilliseconds) * playbackSpeed;
+        return (int)(elapsed / frameDuration) % frameCount;
     }
 
     public ImageSource? GetGhostPetFrame(PetActor pet, DateTimeOffset now)

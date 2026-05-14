@@ -96,6 +96,17 @@
                 <WrapPanel>
                     <TextBlock Text="Animation" VerticalAlignment="Center" />
                     <ComboBox x:Name="AnimationCombo" MinWidth="140" />
+                    <TextBlock Text="Frame" VerticalAlignment="Center" />
+                    <TextBox x:Name="FrameIndexTextBox"
+                             Width="54"
+                             Margin="4"
+                             ToolTip="Optional zero-based frame index. Leave blank to loop." />
+                    <TextBlock Text="Speed" VerticalAlignment="Center" />
+                    <TextBox x:Name="PlaybackSpeedTextBox"
+                             Width="54"
+                             Margin="4"
+                             Text="1"
+                             ToolTip="Playback multiplier when no exact frame is pinned." />
                     <Button Content="Force Loop" Click="ForceAnimationButton_OnClick" />
                     <Button Content="Clear Force" Click="ClearAnimationButton_OnClick" />
                     <Button Content="Show Asset Source" Click="AssetSourceButton_OnClick" />

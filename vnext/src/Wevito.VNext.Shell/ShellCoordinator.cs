@@ -2349,20 +2349,24 @@ internal sealed class ShellCoordinator : IAsyncDisposable
 
         var now = DateTimeOffset.UtcNow;
         var durationSeconds = request.Loop ? 600 : 8;
+        var playbackSpeed = request.PlaybackSpeed > 0 ? request.PlaybackSpeed : 1;
         var pets = _state.ActivePets.Select(existing => existing.Id == pet.Id
             ? existing with
             {
                 CurrentAnimationState = animationState,
                 OverrideAnimationState = animationState,
                 OverrideAnimationEndsAtUtc = now.AddSeconds(durationSeconds),
-                AnimationStartedAtUtc = now
+                AnimationStartedAtUtc = now,
+                VisualQaForcedFrameIndex = request.FrameIndex,
+                VisualQaPlaybackSpeed = playbackSpeed
             }
             : existing).ToList();
 
         _state = _state with { ActivePets = pets };
-        SetFeedback($"Visual QA forced {animationState} on {pet.Name}.");
+        var frameLabel = request.FrameIndex is { } frameIndex ? $" frame {frameIndex}" : " loop";
+        SetFeedback($"Visual QA forced {animationState}{frameLabel} on {pet.Name}.");
         await PersistAndRenderAsync();
-        return DevControlSuccess($"Forced {animationState} on {pet.Name}.");
+        return DevControlSuccess($"Forced {animationState}{frameLabel} on {pet.Name}.");
     }
 
     internal async Task<DevControlResponseEnvelope> ClearAnimationForVisualQaAsync(VisualQaClearForcedAnimationRequest request)
@@ -3064,6 +3068,8 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             {
                 OverrideAnimationState = null,
                 OverrideAnimationEndsAtUtc = null,
+                VisualQaForcedFrameIndex = null,
+                VisualQaPlaybackSpeed = 1,
                 AnimationStartedAtUtc = DateTimeOffset.UtcNow
             };
         }).ToList();

@@ -318,7 +318,9 @@ public sealed record PetActor(
     DateTimeOffset? MemorialExpiresAtUtc = null,
     string MemorialObjectId = "",
     double MemorialX = 0,
-    double MemorialY = 0);
+    double MemorialY = 0,
+    int? VisualQaForcedFrameIndex = null,
+    double VisualQaPlaybackSpeed = 1);
 
 public sealed record ToolSession(
     string ToolId,

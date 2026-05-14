@@ -40,6 +40,7 @@ Create a dev-only controller for testing the pet-simulator side of Wevito withou
 - Added cockpit issue tagging that writes timestamped JSON/Markdown packets under `vnext/artifacts/visual-qa-cockpit/`.
 - Added save sandbox controls for fresh egg-choice, empty save, and three visual-QA test pets.
 - Fixed the starter egg-choice prompt layout so the seven ROYGBIV egg buttons stay within the visible stage and scroll instead of getting clipped.
+- Added exact frame proof controls so a selected pet can be pinned to a specific zero-based frame index or looped at a playback-speed multiplier.
 - Updated `tools/build-vnext.ps1` so debug publish emits both the Shell and Dev Controller.
 - Added `tools/export_pet_runtime_contact_sheets.py` for broad visual review of all runtime pet rows.
 
@@ -90,12 +91,12 @@ Live smoke:
 
 - Empty slots are represented through the current compact active-pet list. Deleting slot 1 shifts later pets forward rather than preserving a stable empty hole.
 - Roam currently starts a selected-pet roam state but is not yet a full ping-pong frame-scrub proof runner.
-- Animation forcing pins a family loop but does not yet expose exact frame stepping in the Shell render path.
 - Visual overlays, automated screenshot batch matrix runner, exact frame scrub, and soak observer are planned but not fully implemented in this slice.
+- Exact frame proof is command-driven and zero-based; it does not yet include next/previous frame buttons.
 
 ## Next Cockpit Improvements
 
 - Add stable three-slot identity so empty slots can remain empty until explicitly filled.
-- Add exact frame scrubber and playback speed control.
+- Add next/previous frame buttons on top of the exact frame index field.
 - Add debug overlays for sprite bounds, alpha bounds, ground line, taskbar line, and anchor points.
 - Add batch matrix runner for selected species/color/stage/gender/action combinations.
