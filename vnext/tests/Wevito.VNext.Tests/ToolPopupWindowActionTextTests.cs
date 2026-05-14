@@ -6,6 +6,18 @@ namespace Wevito.VNext.Tests;
 public sealed class ToolPopupWindowActionTextTests
 {
     [Fact]
+    public void PetTasksPanelHasOwnScrollViewerForReportControls()
+    {
+        var xaml = File.ReadAllText(FindRepoFile("vnext", "src", "Wevito.VNext.Shell", "ToolPopupWindow.xaml"));
+
+        Assert.Contains("x:Name=\"PetCommandPanel\"", xaml);
+        Assert.Contains("AutomationId=\"PetCommandScrollViewer\"", xaml);
+        Assert.Contains("VerticalScrollBarVisibility=\"Auto\"", xaml);
+        Assert.Contains("PetTaskOpenReportButton", xaml);
+        Assert.Contains("PetTaskExecuteButton", xaml);
+    }
+
+    [Fact]
     public void FormatActionSummaryNamesPrimaryTargetAndDragPath()
     {
         var pets = new[]
@@ -43,5 +55,22 @@ public sealed class ToolPopupWindowActionTextTests
         Assert.True(parsed);
         Assert.Equal("water", actionId);
         Assert.Equal("pond_dish", itemId);
+    }
+
+    private static string FindRepoFile(params string[] relativeParts)
+    {
+        var directory = new DirectoryInfo(AppContext.BaseDirectory);
+        while (directory is not null)
+        {
+            var candidate = Path.Combine(new[] { directory.FullName }.Concat(relativeParts).ToArray());
+            if (File.Exists(candidate))
+            {
+                return candidate;
+            }
+
+            directory = directory.Parent;
+        }
+
+        throw new FileNotFoundException($"Could not find {string.Join(Path.DirectorySeparatorChar, relativeParts)} from {AppContext.BaseDirectory}.");
     }
 }
