@@ -1,0 +1,109 @@
+{
+  "target": "snake/baby/female/blue/walk",
+  "status": "applied_with_successful_rollback_drill",
+  "scope": [
+    "sprites_runtime/snake/baby/female/blue/walk_00.png",
+    "sprites_runtime/snake/baby/female/blue/walk_01.png",
+    "sprites_runtime/snake/baby/female/blue/walk_02.png",
+    "sprites_runtime/snake/baby/female/blue/walk_03.png",
+    "sprites_runtime/snake/baby/female/blue/walk_04.png",
+    "sprites_runtime/snake/baby/female/blue/walk_05.png"
+  ],
+  "pre": [
+    {
+      "file": "sprites_runtime/snake/baby/female/blue/walk_00.png",
+      "sha256": "5b9c463a314df5fb448ec18feb9062d42b410101c708cad83f44dc02267f4a80",
+      "backup": "vnext/artifacts/snake-walk-apply-20260514/backup-before-apply/sprites_runtime/snake/baby/female/blue/walk_00.png"
+    },
+    {
+      "file": "sprites_runtime/snake/baby/female/blue/walk_01.png",
+      "sha256": "16f6ed6f08b6abfbf44af045e7888266ff7eb5d19173d0a8250c3dcd3889d1a1",
+      "backup": "vnext/artifacts/snake-walk-apply-20260514/backup-before-apply/sprites_runtime/snake/baby/female/blue/walk_01.png"
+    },
+    {
+      "file": "sprites_runtime/snake/baby/female/blue/walk_02.png",
+      "sha256": "0ab1a89ae4ad0855c87c67befc5b387e69d76b0d682179f4b742854cff39b1d9",
+      "backup": "vnext/artifacts/snake-walk-apply-20260514/backup-before-apply/sprites_runtime/snake/baby/female/blue/walk_02.png"
+    },
+    {
+      "file": "sprites_runtime/snake/baby/female/blue/walk_03.png",
+      "sha256": "e8e47cdee79569599f46d09f35009a4b37fc1358da160c6e0567d85a1dcd6540",
+      "backup": "vnext/artifacts/snake-walk-apply-20260514/backup-before-apply/sprites_runtime/snake/baby/female/blue/walk_03.png"
+    },
+    {
+      "file": "sprites_runtime/snake/baby/female/blue/walk_04.png",
+      "sha256": "e19dae669dbccc2977eb98793e2c04a62c5d04fea01c5b17cbdf2faf5baad1cf",
+      "backup": "vnext/artifacts/snake-walk-apply-20260514/backup-before-apply/sprites_runtime/snake/baby/female/blue/walk_04.png"
+    },
+    {
+      "file": "sprites_runtime/snake/baby/female/blue/walk_05.png",
+      "sha256": "2cefdc3ef34a6f4df914ef2659f4d497521d1305280fe81a0bb7b05d527f0bb0",
+      "backup": "vnext/artifacts/snake-walk-apply-20260514/backup-before-apply/sprites_runtime/snake/baby/female/blue/walk_05.png"
+    }
+  ],
+  "post": [
+    {
+      "file": "sprites_runtime/snake/baby/female/blue/walk_00.png",
+      "sha256": "d21247d39e508937da48ce90b93b06a14bc26456a47e68ffb762e2274d2363a3",
+      "candidate_sha256": "d21247d39e508937da48ce90b93b06a14bc26456a47e68ffb762e2274d2363a3"
+    },
+    {
+      "file": "sprites_runtime/snake/baby/female/blue/walk_01.png",
+      "sha256": "b1f5e70fd92d4b78ec1cca5bb747b7d27d8008523637f33f665020b2e318c3f5",
+      "candidate_sha256": "b1f5e70fd92d4b78ec1cca5bb747b7d27d8008523637f33f665020b2e318c3f5"
+    },
+    {
+      "file": "sprites_runtime/snake/baby/female/blue/walk_02.png",
+      "sha256": "fde2d7099c1cf21e8d51b8b05b643ff3118783686102cbbbe5f4866df698fb2c",
+      "candidate_sha256": "fde2d7099c1cf21e8d51b8b05b643ff3118783686102cbbbe5f4866df698fb2c"
+    },
+    {
+      "file": "sprites_runtime/snake/baby/female/blue/walk_03.png",
+      "sha256": "66a8a3babba35acabf70cfc0e79d386372b661e4d097a416465a1adc11858dbf",
+      "candidate_sha256": "66a8a3babba35acabf70cfc0e79d386372b661e4d097a416465a1adc11858dbf"
+    },
+    {
+      "file": "sprites_runtime/snake/baby/female/blue/walk_04.png",
+      "sha256": "4f1c52ece17e045255d89c78e0a120942b8e6816317af8470de8e2d1499472b1",
+      "candidate_sha256": "4f1c52ece17e045255d89c78e0a120942b8e6816317af8470de8e2d1499472b1"
+    },
+    {
+      "file": "sprites_runtime/snake/baby/female/blue/walk_05.png",
+      "sha256": "989eb5b318c19acba183fcd4dd78125110bf66eb1a9807849054c34dd7060370",
+      "candidate_sha256": "989eb5b318c19acba183fcd4dd78125110bf66eb1a9807849054c34dd7060370"
+    }
+  ],
+  "rollback_drill": [
+    {
+      "file": "walk_00.png",
+      "restored_sha256": "5b9c463a314df5fb448ec18feb9062d42b410101c708cad83f44dc02267f4a80",
+      "matches_pre": true
+    },
+    {
+      "file": "walk_01.png",
+      "restored_sha256": "16f6ed6f08b6abfbf44af045e7888266ff7eb5d19173d0a8250c3dcd3889d1a1",
+      "matches_pre": true
+    },
+    {
+      "file": "walk_02.png",
+      "restored_sha256": "0ab1a89ae4ad0855c87c67befc5b387e69d76b0d682179f4b742854cff39b1d9",
+      "matches_pre": true
+    },
+    {
+      "file": "walk_03.png",
+      "restored_sha256": "e8e47cdee79569599f46d09f35009a4b37fc1358da160c6e0567d85a1dcd6540",
+      "matches_pre": true
+    },
+    {
+      "file": "walk_04.png",
+      "restored_sha256": "e19dae669dbccc2977eb98793e2c04a62c5d04fea01c5b17cbdf2faf5baad1cf",
+      "matches_pre": true
+    },
+    {
+      "file": "walk_05.png",
+      "restored_sha256": "2cefdc3ef34a6f4df914ef2659f4d497521d1305280fe81a0bb7b05d527f0bb0",
+      "matches_pre": true
+    }
+  ],
+  "post_apply_contact_sheet": "vnext/artifacts/snake-walk-apply-20260514/post-apply-contact-sheet.png"
+}
