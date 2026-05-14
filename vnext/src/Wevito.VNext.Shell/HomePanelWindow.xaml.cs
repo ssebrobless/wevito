@@ -402,11 +402,13 @@ public partial class HomePanelWindow : Window
 
         var choices = new UniformGrid
         {
-            Columns = 3
+            Columns = 4
         };
-        AddStarterEggButton(choices, "Goose egg", "goose");
-        AddStarterEggButton(choices, "Fox egg", "fox");
-        AddStarterEggButton(choices, "Frog egg", "frog");
+        foreach (var egg in StarterEggCatalog.Eggs)
+        {
+            AddStarterEggButton(choices, egg);
+        }
+
         stack.Children.Add(choices);
         panel.Child = stack;
 
@@ -416,30 +418,60 @@ public partial class HomePanelWindow : Window
         HomePetCanvas.Children.Add(panel);
     }
 
-    private void AddStarterEggButton(Panel parent, string label, string speciesId)
+    private void AddStarterEggButton(Panel parent, StarterEggOption egg)
     {
         var button = new Button
         {
-            Content = label,
-            Tag = speciesId,
+            Content = BuildStarterEggButtonContent(egg),
+            Tag = egg.ColorVariant,
+            IsEnabled = egg.IsEnabled,
             MinHeight = 44,
             Margin = new Thickness(4),
             Padding = new Thickness(8, 6, 8, 6),
-            Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#26374B")),
-            BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#8EB4E8")),
+            Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(egg.IsEnabled ? "#26374B" : "#202733")),
+            BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(egg.IsEnabled ? egg.HexColor : "#56616F")),
             Foreground = Brushes.White,
             FontWeight = FontWeights.SemiBold,
-            Cursor = System.Windows.Input.Cursors.Hand
+            Cursor = egg.IsEnabled ? System.Windows.Input.Cursors.Hand : System.Windows.Input.Cursors.Arrow,
+            ToolTip = egg.IsEnabled
+                ? "The species inside is already chosen, but stays hidden until hatch."
+                : egg.DisabledReason
         };
         button.Click += StarterEggButton_OnClick;
         parent.Children.Add(button);
     }
 
+    private static StackPanel BuildStarterEggButtonContent(StarterEggOption egg)
+    {
+        var stack = new StackPanel
+        {
+            Orientation = Orientation.Horizontal,
+            HorizontalAlignment = HorizontalAlignment.Center
+        };
+        stack.Children.Add(new Ellipse
+        {
+            Width = 13,
+            Height = 13,
+            Margin = new Thickness(0, 0, 6, 0),
+            Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString(egg.HexColor)),
+            Stroke = Brushes.White,
+            StrokeThickness = 1,
+            Opacity = egg.IsEnabled ? 1.0 : 0.44
+        });
+        stack.Children.Add(new TextBlock
+        {
+            Text = egg.Label,
+            Foreground = Brushes.White,
+            Opacity = egg.IsEnabled ? 1.0 : 0.58
+        });
+        return stack;
+    }
+
     private async void StarterEggButton_OnClick(object sender, RoutedEventArgs e)
     {
-        if (sender is FrameworkElement { Tag: string speciesId } && StarterEggRequested is not null)
+        if (sender is FrameworkElement { Tag: string colorVariant } && StarterEggRequested is not null)
         {
-            await StarterEggRequested.Invoke(speciesId);
+            await StarterEggRequested.Invoke(colorVariant);
         }
     }
 
