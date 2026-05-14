@@ -1,0 +1,11 @@
+﻿{
+    "shell":  "C:\\Users\\fishe\\.codex\\worktrees\\ab46\\wevito\\vnext\\artifacts\\shell\\Wevito.VNext.Shell.exe",
+    "petId":  "ff1220d5-e3ef-4709-9578-d2a4dc847058",
+    "idleForce":  "Forced Idle loop on Snake 1.",
+    "walkForce":  "Forced Walk loop on Snake 1.",
+    "idleAsset":  "Asset source for Snake 1: C:\\Users\\fishe\\.codex\\worktrees\\ab46\\wevito\\vnext\\artifacts\\shell\\sprites_runtime\\snake\\baby\\female\\blue\\idle_00.png (4 frame(s)).",
+    "walkAsset":  "Asset source for Snake 1: C:\\Users\\fishe\\.codex\\worktrees\\ab46\\wevito\\vnext\\artifacts\\shell\\sprites_runtime\\snake\\baby\\female\\blue\\walk_00.png (6 frame(s)).",
+    "idleScreenshot":  "desktop-proof-after-placement-idle.png",
+    "walkScreenshot":  "desktop-proof-after-placement-walk.png",
+    "ranAt":  "2026-05-14T18:40:45.8425464-04:00"
+}

@@ -41,7 +41,7 @@ public sealed class HomePanelWindowRenderingTests
     [Fact]
     public void ResolveCalmLineupPlacement_SpreadsThreePetsSideBySideOnOneBaseline()
     {
-        var stage = new RectInt(0, 0, 612, 330);
+        var stage = new RectInt(35, 460, 612, 330);
 
         var first = HomePanelWindow.ResolveCalmLineupPlacement(index: 0, livingPetCount: 3, stage, spriteWidth: 80, spriteHeight: 96);
         var second = HomePanelWindow.ResolveCalmLineupPlacement(index: 1, livingPetCount: 3, stage, spriteWidth: 80, spriteHeight: 96);
@@ -51,6 +51,9 @@ public sealed class HomePanelWindowRenderingTests
         Assert.True(second.X < third.X);
         Assert.Equal(first.Y, second.Y);
         Assert.Equal(second.Y, third.Y);
+        Assert.InRange(first.X, 0, stage.Width);
+        Assert.InRange(third.X, 0, stage.Width);
+        Assert.InRange(first.Y, 0, stage.Height);
     }
 
     [Fact]
@@ -71,26 +74,28 @@ public sealed class HomePanelWindowRenderingTests
     [Fact]
     public void ComputeStarterEggPromptLayout_KeepsSevenEggGridInsideStage()
     {
-        var stage = new RectInt(0, 0, 360, 220);
+        var stage = new RectInt(25, 440, 360, 220);
 
         var layout = HomePanelWindow.ComputeStarterEggPromptLayout(stage, eggCount: 7);
 
         Assert.True(layout.Width <= stage.Width - 16);
         Assert.True(layout.MaxHeight <= stage.Height - 16);
-        Assert.True(layout.Top >= stage.Y + 8);
-        Assert.True(layout.Top + layout.MaxHeight <= stage.Y + stage.Height - 8);
+        Assert.True(layout.Top >= 8);
+        Assert.True(layout.Top + layout.MaxHeight <= stage.Height - 8);
+        Assert.True(layout.Left >= 0);
+        Assert.True(layout.Left + layout.Width <= stage.Width);
         Assert.InRange(layout.Columns, 2, 3);
     }
 
     [Fact]
     public void ComputeStarterEggPromptLayout_UsesCompactColumnsForSevenEggs()
     {
-        var stage = new RectInt(0, 0, 612, 300);
+        var stage = new RectInt(25, 440, 612, 300);
 
         var layout = HomePanelWindow.ComputeStarterEggPromptLayout(stage, eggCount: 7);
 
         Assert.Equal(3, layout.Columns);
         Assert.True(layout.Width <= 460);
-        Assert.True(layout.Top + layout.MaxHeight <= stage.Bottom - 8);
+        Assert.True(layout.Top + layout.MaxHeight <= stage.Height - 8);
     }
 }
