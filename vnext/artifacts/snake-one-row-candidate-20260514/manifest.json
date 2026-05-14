@@ -1,0 +1,59 @@
+{
+  "target": "snake/baby/female/blue/walk",
+  "status": "candidate_only_not_applied",
+  "frame_count": 6,
+  "geometry": [
+    108,
+    64
+  ],
+  "frames": [
+    {
+      "file": "walk_00.png",
+      "sha256": "d21247d39e508937da48ce90b93b06a14bc26456a47e68ffb762e2274d2363a3",
+      "size": [
+        108,
+        64
+      ]
+    },
+    {
+      "file": "walk_01.png",
+      "sha256": "b1f5e70fd92d4b78ec1cca5bb747b7d27d8008523637f33f665020b2e318c3f5",
+      "size": [
+        108,
+        64
+      ]
+    },
+    {
+      "file": "walk_02.png",
+      "sha256": "fde2d7099c1cf21e8d51b8b05b643ff3118783686102cbbbe5f4866df698fb2c",
+      "size": [
+        108,
+        64
+      ]
+    },
+    {
+      "file": "walk_03.png",
+      "sha256": "66a8a3babba35acabf70cfc0e79d386372b661e4d097a416465a1adc11858dbf",
+      "size": [
+        108,
+        64
+      ]
+    },
+    {
+      "file": "walk_04.png",
+      "sha256": "4f1c52ece17e045255d89c78e0a120942b8e6816317af8470de8e2d1499472b1",
+      "size": [
+        108,
+        64
+      ]
+    },
+    {
+      "file": "walk_05.png",
+      "sha256": "989eb5b318c19acba183fcd4dd78125110bf66eb1a9807849054c34dd7060370",
+      "size": [
+        108,
+        64
+      ]
+    }
+  ]
+}
