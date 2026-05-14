@@ -82,59 +82,58 @@ def image_sha256(image: Image.Image) -> str:
 
 def age_dimensions(age: str) -> tuple[int, int, float]:
     scale = AGE_SCALE.get(age, 1.0)
-    width = int(round(138 * scale))
-    height = int(round(58 * scale))
-    return max(width, 92), 64, scale
+    width = int(round(150 * scale))
+    return max(width, 104), 64, scale
 
 
 def body_points(family: str, frame_index: int, frame_count: int, width: int, height: int, scale: float) -> list[tuple[float, float]]:
     phase = (frame_index / max(1, frame_count)) * math.tau
-    base_y = height * 0.62
-    length = width * 0.62
-    start_x = width * 0.13
+    base_y = height * 0.66
+    length = width * 0.70
+    start_x = width * 0.10
     points: list[tuple[float, float]] = []
 
     if family in {"idle", "eat", "happy", "sick", "bathe"}:
-        coils = 2.25 if family != "happy" else 2.55
-        radius_x = length / (coils * 2.35)
-        amp = height * (0.09 if family != "sick" else 0.055)
-        for i in range(28):
-            t = i / 27
+        coils = 1.65 if family != "happy" else 1.95
+        amp = height * (0.052 if family != "sick" else 0.035)
+        head_lift = height * (0.10 if family in {"eat", "happy"} else 0.04)
+        for i in range(44):
+            t = i / 43
             x = start_x + t * length
-            wave = math.sin(t * math.tau * coils + phase)
+            wave = math.sin(t * math.tau * coils + phase * 0.7)
             y = base_y + wave * amp
-            if i > 21:
-                y -= (i - 21) * height * 0.035
+            if i > 34:
+                y -= ((i - 34) / 9) * head_lift
             points.append((x, y))
         if family == "eat":
             points[-1] = (points[-1][0] + 2 * scale, points[-1][1] - 5 * scale)
         return points
 
     if family == "walk":
-        amp = height * 0.115
-        for i in range(32):
-            t = i / 31
-            x = start_x + t * (width * 0.66)
-            y = base_y + math.sin(t * math.tau * 2.8 + phase) * amp
+        amp = height * 0.075
+        for i in range(52):
+            t = i / 51
+            x = start_x + t * (width * 0.73)
+            y = base_y + math.sin(t * math.tau * 2.15 + phase) * amp
             points.append((x, y))
         return points
 
     if family == "sleep":
-        breath = math.sin(phase) * height * 0.012
-        for i in range(28):
-            t = i / 27
+        breath = math.sin(phase) * height * 0.01
+        for i in range(44):
+            t = i / 43
             x = start_x + t * length
-            y = base_y + breath + math.sin(t * math.tau * 1.8 + phase * 0.15) * height * 0.045
+            y = base_y + breath + math.sin(t * math.tau * 1.2 + phase * 0.15) * height * 0.03
             points.append((x, y))
         return points
 
     if family == "sad":
-        for i in range(28):
-            t = i / 27
-            x = start_x + t * (width * 0.68)
-            y = base_y + math.sin(t * math.tau * 1.5 + phase * 0.4) * height * 0.06
-            if i > 22:
-                y += (i - 22) * height * 0.018
+        for i in range(44):
+            t = i / 43
+            x = start_x + t * (width * 0.70)
+            y = base_y + math.sin(t * math.tau * 1.25 + phase * 0.4) * height * 0.04
+            if i > 35:
+                y += ((i - 35) / 8) * height * 0.05
             points.append((x, y))
         return points
 
@@ -153,8 +152,8 @@ def draw_polyline(draw: ImageDraw.ImageDraw, points: list[tuple[float, float]], 
 def render_frame(age: str, gender: str, color: str, family: str, frame_index: int, frame_count: int) -> Image.Image:
     width, height, scale = age_dimensions(age)
     base, highlight, outline = COLOR_VARIANTS.get(color, COLOR_VARIANTS["blue"])
-    body_w = max(5, int(round(9 * scale)))
-    outline_w = body_w + max(2, int(round(3 * scale)))
+    body_w = max(4, int(round(6.5 * scale)))
+    outline_w = body_w + max(2, int(round(2.5 * scale)))
     points = body_points(family, frame_index, frame_count, width, height, scale)
 
     image = Image.new("RGBA", (width, height), (0, 0, 0, 0))
@@ -163,21 +162,21 @@ def render_frame(age: str, gender: str, color: str, family: str, frame_index: in
     draw_polyline(draw, points, outline_w, (*outline, 255))
     draw_polyline(draw, points, body_w, (*base, 255))
 
-    # Dorsal highlights: short staggered pixels along the back.
-    for i, (x, y) in enumerate(points[3:-3:3], start=3):
+    # Dorsal highlights: sparse, low-contrast scales instead of noisy blobs.
+    for i, (x, y) in enumerate(points[4:-4:5], start=4):
         if i % 2 == 0:
             draw.rectangle(
                 (
                     int(round(x - 1 * scale)),
-                    int(round(y - body_w * 0.45)),
-                    int(round(x + 3 * scale)),
+                    int(round(y - body_w * 0.40)),
+                    int(round(x + 2 * scale)),
                     int(round(y - body_w * 0.18)),
                 ),
                 fill=(*highlight, 255),
             )
 
     head_x, head_y = points[-1]
-    head_r = max(4, int(round(6 * scale)))
+    head_r = max(3, int(round(4.8 * scale)))
     if gender == "male":
         head_r += 1
     head_box = (
