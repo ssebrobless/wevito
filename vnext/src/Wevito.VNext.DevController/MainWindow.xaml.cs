@@ -191,8 +191,8 @@ public partial class MainWindow : Window
             _selectedSlotIndex,
             slot.PetId,
             SelectedComboValue(AnimationCombo, "idle"),
-            null,
-            1,
+            ParseOptionalFrameIndex(),
+            ParsePlaybackSpeed(),
             true));
         ApplyResponse(response);
     }
@@ -266,5 +266,24 @@ public partial class MainWindow : Window
     private static string SelectedComboValue(ComboBox comboBox, string fallback)
     {
         return comboBox.SelectedItem as string ?? fallback;
+    }
+
+    private int? ParseOptionalFrameIndex()
+    {
+        if (string.IsNullOrWhiteSpace(FrameIndexTextBox.Text))
+        {
+            return null;
+        }
+
+        return int.TryParse(FrameIndexTextBox.Text.Trim(), out var frameIndex)
+            ? Math.Max(0, frameIndex)
+            : null;
+    }
+
+    private double ParsePlaybackSpeed()
+    {
+        return double.TryParse(PlaybackSpeedTextBox.Text.Trim(), out var speed) && speed > 0
+            ? speed
+            : 1;
     }
 }
