@@ -1,0 +1,133 @@
+<Window x:Class="Wevito.VNext.DevController.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Wevito Visual QA Cockpit"
+        Width="980"
+        Height="520"
+        MinWidth="820"
+        MinHeight="460"
+        Background="#101820"
+        Foreground="#F0F4F5">
+    <Window.Resources>
+        <Style TargetType="Button">
+            <Setter Property="Margin" Value="4" />
+            <Setter Property="Padding" Value="10,6" />
+            <Setter Property="Foreground" Value="#F0F4F5" />
+            <Setter Property="Background" Value="#20394A" />
+            <Setter Property="BorderBrush" Value="#5F88A1" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+        <Style TargetType="ComboBox">
+            <Setter Property="Margin" Value="4" />
+            <Setter Property="MinWidth" Value="118" />
+        </Style>
+        <Style TargetType="TextBlock">
+            <Setter Property="Margin" Value="4,2" />
+        </Style>
+    </Window.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+    <Grid Margin="14">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="128" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <DockPanel Grid.Row="0">
+            <TextBlock Text="Wevito Visual QA Cockpit"
+                       FontSize="22"
+                       FontWeight="Bold"
+                       DockPanel.Dock="Left" />
+            <TextBlock x:Name="ConnectionText"
+                       Text="Connecting..."
+                       Foreground="#A8D8FF"
+                       HorizontalAlignment="Right"
+                       DockPanel.Dock="Right" />
+        </DockPanel>
+
+        <Grid Grid.Row="1" Margin="0,10,0,8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Button x:Name="Slot0Button" Grid.Column="0" Click="SlotButton_OnClick" Tag="0" />
+            <Button x:Name="Slot1Button" Grid.Column="1" Click="SlotButton_OnClick" Tag="1" />
+            <Button x:Name="Slot2Button" Grid.Column="2" Click="SlotButton_OnClick" Tag="2" />
+        </Grid>
+
+        <WrapPanel Grid.Row="2">
+            <Button Content="Delete Selected" Click="DeleteButton_OnClick" Background="#4A2424" BorderBrush="#A36565" />
+            <Button Content="Add / Replace" Click="AddButton_OnClick" Background="#254B36" BorderBrush="#62A97B" />
+            <TextBlock Text="Stage" VerticalAlignment="Center" />
+            <ComboBox x:Name="StageCombo" />
+            <TextBlock Text="Color" VerticalAlignment="Center" />
+            <ComboBox x:Name="ColorCombo" />
+            <TextBlock Text="Species" VerticalAlignment="Center" />
+            <ComboBox x:Name="SpeciesCombo" />
+            <TextBlock Text="Gender" VerticalAlignment="Center" />
+            <ComboBox x:Name="GenderCombo" />
+        </WrapPanel>
+
+        <WrapPanel Grid.Row="3" Margin="0,8,0,8">
+            <Button Content="Feed" Tag="feed" Click="ActionButton_OnClick" />
+            <Button Content="Water" Tag="water" Click="ActionButton_OnClick" />
+            <Button Content="Rest" Tag="rest" Click="ActionButton_OnClick" />
+            <Button Content="Play" Tag="play" Click="ActionButton_OnClick" />
+            <Button Content="Groom" Tag="groom" Click="ActionButton_OnClick" />
+            <Button Content="Bath" Tag="bath" Click="ActionButton_OnClick" />
+            <Button Content="Medicine" Tag="medicine" Click="ActionButton_OnClick" />
+            <Button Content="Doctor" Tag="doctor" Click="ActionButton_OnClick" />
+            <Button Content="Home" Tag="home" Click="ActionButton_OnClick" />
+            <Button Content="Roam 10s" Click="RoamButton_OnClick" Background="#2F3B5C" BorderBrush="#8398E8" />
+        </WrapPanel>
+
+        <GroupBox Grid.Row="4"
+                  Header="Visual QA Tools"
+                  Foreground="#F0F4F5"
+                  BorderBrush="#384E5D"
+                  Padding="8">
+            <StackPanel>
+                <WrapPanel>
+                    <TextBlock Text="Animation" VerticalAlignment="Center" />
+                    <ComboBox x:Name="AnimationCombo" MinWidth="140" />
+                    <Button Content="Force Loop" Click="ForceAnimationButton_OnClick" />
+                    <Button Content="Clear Force" Click="ClearAnimationButton_OnClick" />
+                    <Button Content="Show Asset Source" Click="AssetSourceButton_OnClick" />
+                </WrapPanel>
+                <WrapPanel Margin="0,8,0,0">
+                    <TextBlock Text="Issue" VerticalAlignment="Center" />
+                    <ComboBox x:Name="IssueTagCombo" MinWidth="150" />
+                    <TextBox x:Name="IssueNotesTextBox"
+                             Width="360"
+                             Margin="4"
+                             MinHeight="30"
+                             TextWrapping="Wrap"
+                             AcceptsReturn="True"
+                             VerticalScrollBarVisibility="Auto" />
+                    <Button Content="Tag Issue" Click="TagIssueButton_OnClick" />
+                </WrapPanel>
+                <WrapPanel Margin="0,8,0,0">
+                    <Button Content="Reset To Egg Choice" Click="ResetEggChoiceButton_OnClick" Background="#5A431F" BorderBrush="#CFA64A" />
+                    <Button Content="Empty Save" Click="EmptySaveButton_OnClick" Background="#4A2424" BorderBrush="#A36565" />
+                    <Button Content="Seed 3 Test Pets" Click="SeedPetsButton_OnClick" Background="#254B36" BorderBrush="#62A97B" />
+                </WrapPanel>
+                <TextBlock TextWrapping="Wrap"
+                           Foreground="#BAD8F0"
+                           Text="Use Force Loop to pin a selected pet to an animation while you inspect its frames in-game. Show Asset Source reports which runtime row is feeding the current visual." />
+            </StackPanel>
+        </GroupBox>
+
+        <TextBlock x:Name="StatusText"
+                   Grid.Row="5"
+                   Text="Ready."
+                   Foreground="#B7E4C7"
+                   TextWrapping="Wrap" />
+    </Grid>
+    </ScrollViewer>
+</Window>

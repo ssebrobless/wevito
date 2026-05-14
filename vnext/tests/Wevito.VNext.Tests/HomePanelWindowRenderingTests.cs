@@ -67,4 +67,18 @@ public sealed class HomePanelWindowRenderingTests
         Assert.False(HomePanelWindow.ShouldUseCalmLineupPlacement(calmLineup: true, dead));
         Assert.False(HomePanelWindow.ShouldUseCalmLineupPlacement(calmLineup: false, settled));
     }
+
+    [Fact]
+    public void ComputeStarterEggPromptLayout_KeepsSevenEggGridInsideStage()
+    {
+        var stage = new RectInt(0, 0, 360, 220);
+
+        var layout = HomePanelWindow.ComputeStarterEggPromptLayout(stage, eggCount: 7);
+
+        Assert.True(layout.Width <= stage.Width - 16);
+        Assert.True(layout.MaxHeight <= stage.Height - 16);
+        Assert.True(layout.Top >= stage.Y + 8);
+        Assert.True(layout.Top + layout.MaxHeight <= stage.Y + stage.Height - 8);
+        Assert.InRange(layout.Columns, 2, 4);
+    }
 }

@@ -66,6 +66,8 @@ public partial class HomePanelWindow : Window
 
     public long WindowHandle => new WindowInteropHelper(this).Handle.ToInt64();
 
+    internal sealed record StarterEggPromptLayout(double Width, double MaxHeight, double Left, double Top, int Columns);
+
     public void RegisterFocusStealCounter(FocusStealCounter counter, Func<bool> isForegroundFullscreenOther)
     {
         _focusStealCounter = counter;
@@ -368,11 +370,12 @@ public partial class HomePanelWindow : Window
 
     private void RenderStarterEggPrompt(RectInt stageRect)
     {
-        var width = Math.Min(430, Math.Max(280, stageRect.Width - 96));
+        var layout = ComputeStarterEggPromptLayout(stageRect, StarterEggCatalog.Eggs.Count);
         var panel = new Border
         {
-            Width = width,
-            Padding = new Thickness(18),
+            Width = layout.Width,
+            MaxHeight = layout.MaxHeight,
+            Padding = new Thickness(14),
             Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E6172430")),
             BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#536B88")),
             BorderThickness = new Thickness(1),
@@ -402,7 +405,7 @@ public partial class HomePanelWindow : Window
 
         var choices = new UniformGrid
         {
-            Columns = 4
+            Columns = layout.Columns
         };
         foreach (var egg in StarterEggCatalog.Eggs)
         {
@@ -410,12 +413,37 @@ public partial class HomePanelWindow : Window
         }
 
         stack.Children.Add(choices);
-        panel.Child = stack;
+        panel.Child = new ScrollViewer
+        {
+            VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+            HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
+            Content = stack
+        };
 
-        Canvas.SetLeft(panel, Math.Round(stageRect.X + Math.Max(8.0, (stageRect.Width - width) / 2.0)));
-        Canvas.SetTop(panel, Math.Round(stageRect.Y + Math.Max(16, stageRect.Height * 0.18)));
+        Canvas.SetLeft(panel, layout.Left);
+        Canvas.SetTop(panel, layout.Top);
         Canvas.SetZIndex(panel, HabitatDepthOrder.GetZIndex(DepthBand.UiOverlay));
         HomePetCanvas.Children.Add(panel);
+    }
+
+    internal static StarterEggPromptLayout ComputeStarterEggPromptLayout(RectInt stageRect, int eggCount)
+    {
+        var width = Math.Min(460, Math.Max(260, stageRect.Width - 24));
+        var columns = width switch
+        {
+            < 330 => 2,
+            < 420 => 3,
+            _ => 4
+        };
+        if (eggCount <= 4)
+        {
+            columns = Math.Min(columns, Math.Max(1, eggCount));
+        }
+
+        var maxHeight = Math.Max(150, stageRect.Height - 16);
+        var left = Math.Round(stageRect.X + Math.Max(8.0, (stageRect.Width - width) / 2.0));
+        var top = Math.Round((double)stageRect.Y + 8);
+        return new StarterEggPromptLayout(width, maxHeight, left, top, columns);
     }
 
     private void AddStarterEggButton(Panel parent, StarterEggOption egg)
