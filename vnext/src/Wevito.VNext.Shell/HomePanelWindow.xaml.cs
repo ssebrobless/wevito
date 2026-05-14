@@ -59,6 +59,8 @@ public partial class HomePanelWindow : Window
 
     public event Action<string>? ActionRequested;
 
+    public event Func<string, string, Task>? ActionOptionRequested;
+
     public long WindowHandle => new WindowInteropHelper(this).Handle.ToInt64();
 
     public void RegisterFocusStealCounter(FocusStealCounter counter, Func<bool> isForegroundFullscreenOther)
@@ -2321,4 +2323,25 @@ public partial class HomePanelWindow : Window
     private void DoctorButton_OnClick(object sender, RoutedEventArgs e) => ActionRequested?.Invoke("doctor");
 
     private void HomeButton_OnClick(object sender, RoutedEventArgs e) => ActionRequested?.Invoke("home");
+
+    private void StageBorder_OnDragOver(object sender, DragEventArgs e)
+    {
+        e.Effects = e.Data.GetDataPresent(ToolPopupWindow.ActionOptionDragFormat)
+            ? DragDropEffects.Copy
+            : DragDropEffects.None;
+        e.Handled = true;
+    }
+
+    private async void StageBorder_OnDrop(object sender, DragEventArgs e)
+    {
+        if (ActionOptionRequested is null ||
+            e.Data.GetData(ToolPopupWindow.ActionOptionDragFormat) is not string payload ||
+            !ToolPopupWindow.TryParseActionOptionDragPayload(payload, out var actionId, out var itemId))
+        {
+            return;
+        }
+
+        await ActionOptionRequested.Invoke(actionId, itemId);
+        e.Handled = true;
+    }
 }

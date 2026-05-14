@@ -127,6 +127,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _homeWindow.ToggleDevRequested += async () => await ToggleDevAsync();
         _homeWindow.StopEverythingRequested += async () => await ActivateKillSwitchAsync();
         _homeWindow.ActionRequested += HandleAction;
+        _homeWindow.ActionOptionRequested += async (actionId, itemId) => await ApplyActionSelectionAsync(actionId, itemId);
         _homeWindow.Closed += (_, _) => _application.Shutdown();
         _homeWindow.RegisterFocusStealCounter(_focusStealCounter, () => _fullscreenMonitor.IsFullscreenOther);
         _roamBandWindow.RegisterFocusStealCounter(_focusStealCounter, () => _fullscreenMonitor.IsFullscreenOther);
