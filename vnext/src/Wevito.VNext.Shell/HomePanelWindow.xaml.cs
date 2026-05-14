@@ -353,8 +353,7 @@ public partial class HomePanelWindow : Window
     {
         return calmLineup &&
                !pet.IsGhost &&
-               !pet.IsDead &&
-               pet.BehaviorState == PetBehaviorState.Home;
+               !pet.IsDead;
     }
 
     internal static double ResolveCalmLineupScale(double spriteHeight, double baseScale)
@@ -831,11 +830,7 @@ public partial class HomePanelWindow : Window
     private void RenderStageBackdrop(PetActor? focusPet)
     {
         _ = focusPet;
-        AddBackdropElement(CreateBackdropPatch(326, 112, "#344632", "#667957", 0.28), 24, 142);
-        AddBackdropElement(CreateBackdropPatch(218, 64, "#574330", "#7C6040", 0.26), 116, 180);
-        AddBackdropElement(CreateGrassCluster(92, 48, "#78934C", "#9CB45F"), 40, 190);
-        AddBackdropElement(CreateGrassCluster(88, 46, "#6F8845", "#8EA354"), 286, 190);
-        AddBackdropElement(CreateLeafScatter(84, 32, "#A58347", "#6A7131", "#7D5B36"), 172, 204);
+        // Keep the focused home stage visually quiet: the beds and pets should be the point.
     }
 
     private bool TryResolveInteractionVisual(
@@ -2099,64 +2094,7 @@ public partial class HomePanelWindow : Window
         var speciesId = focusPet?.SpeciesId ?? string.Empty;
         var template = speciesId switch
         {
-            "rat" => new[]
-            {
-                new StagePropSpec("toys_b", "crate_hideout", 90, 132, 70, 64, 0.94),
-                new StagePropSpec("toys_b", "hay_bed", 286, 182, 88, 42, 0.98),
-                new StagePropSpec("containers", "shallow_water_dish", 176, 192, 68, 24, 0.94)
-            },
-            "crow" => new[]
-            {
-                new StagePropSpec("toys_a", "branch_perch", 200, 54, 176, 50, 0.94),
-                new StagePropSpec("toys_b", "nest_bed", 286, 176, 72, 38, 0.9)
-            },
-            "fox" => new[]
-            {
-                new StagePropSpec("toys_b", "moss_bed", 244, 176, 112, 48, 0.98),
-                new StagePropSpec("toys_a", "leaf_pile", 108, 190, 56, 34, 0.9),
-                new StagePropSpec("containers", "shallow_water_dish", 154, 192, 70, 24, 0.94)
-            },
-            "snake" => new[]
-            {
-                new StagePropSpec("toys_b", "rock_basking_spot", 250, 176, 106, 44, 0.96),
-                new StagePropSpec("containers", "shallow_water_dish", 188, 192, 70, 24, 0.92)
-            },
-            "deer" => new[]
-            {
-                new StagePropSpec("toys_b", "hay_bed", 282, 182, 92, 42, 0.98),
-                new StagePropSpec("toys_a", "leaf_pile", 108, 190, 58, 36, 0.9),
-                new StagePropSpec("containers", "shallow_water_dish", 174, 192, 72, 26, 0.94)
-            },
-            "frog" => new[]
-            {
-                new StagePropSpec("toys_b", "moss_bed", 274, 176, 90, 40, 0.98),
-                new StagePropSpec("toys_b", "rock_basking_spot", 116, 188, 66, 30, 0.92),
-                new StagePropSpec("containers", "pond_dish", 166, 190, 74, 26, 0.92)
-            },
-            "pigeon" => new[]
-            {
-                new StagePropSpec("toys_a", "branch_perch", 196, 56, 174, 48, 0.94),
-                new StagePropSpec("toys_b", "nest_bed", 284, 178, 70, 36, 0.9)
-            },
-            "raccoon" => new[]
-            {
-                new StagePropSpec("toys_b", "stump_perch", 88, 158, 70, 58, 0.92),
-                new StagePropSpec("toys_b", "log_shelter", 272, 154, 98, 60, 0.92),
-                new StagePropSpec("containers", "shallow_water_dish", 184, 192, 68, 24, 0.92)
-            },
-            "squirrel" => new[]
-            {
-                new StagePropSpec("toys_a", "branch_perch", 194, 56, 184, 48, 0.94),
-                new StagePropSpec("toys_b", "stump_perch", 330, 162, 62, 52, 0.90),
-                new StagePropSpec("toys_b", "nest_bed", 122, 182, 66, 34, 0.9),
-                new StagePropSpec("containers", "shallow_water_dish", 144, 192, 64, 24, 0.92)
-            },
-            "goose" => new[]
-            {
-                new StagePropSpec("toys_b", "hay_bed", 284, 182, 92, 42, 0.98),
-                new StagePropSpec("toys_a", "leaf_pile", 112, 190, 56, 34, 0.88),
-                new StagePropSpec("containers", "pond_dish", 170, 190, 74, 26, 0.92)
-            },
+            "rat" or "crow" or "fox" or "snake" or "deer" or "frog" or "pigeon" or "raccoon" or "squirrel" or "goose" => UniversalBedSpecs(),
             _ => Array.Empty<StagePropSpec>()
         };
 
@@ -2166,6 +2104,16 @@ public partial class HomePanelWindow : Window
         }
 
         return dynamicStageProps;
+    }
+
+    private static StagePropSpec[] UniversalBedSpecs()
+    {
+        return
+        [
+            new StagePropSpec("toys_b", "moss_bed", 82, 206, 34, 12, 0.98, DepthBand.GroundContact, OcclusionMode.None, ContactShadowMode.Soft, "bed-left"),
+            new StagePropSpec("toys_b", "moss_bed", 190, 206, 34, 12, 0.98, DepthBand.GroundContact, OcclusionMode.None, ContactShadowMode.Soft, "bed-center"),
+            new StagePropSpec("toys_b", "moss_bed", 298, 206, 34, 12, 0.98, DepthBand.GroundContact, OcclusionMode.None, ContactShadowMode.Soft, "bed-right")
+        ];
     }
 
     private static string BuildLeadPetSummary(PetActor? pet, int basketCount)
