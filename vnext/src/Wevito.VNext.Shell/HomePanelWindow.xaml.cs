@@ -374,8 +374,9 @@ public partial class HomePanelWindow : Window
         var panel = new Border
         {
             Width = layout.Width,
+            Height = layout.MaxHeight,
             MaxHeight = layout.MaxHeight,
-            Padding = new Thickness(14),
+            Padding = new Thickness(10),
             Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E6172430")),
             BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#536B88")),
             BorderThickness = new Thickness(1),
@@ -391,16 +392,17 @@ public partial class HomePanelWindow : Window
         {
             Text = "Choose your first egg",
             Foreground = Brushes.White,
-            FontSize = 18,
+            FontSize = 16,
             FontWeight = FontWeights.SemiBold,
-            Margin = new Thickness(0, 0, 0, 4)
+            Margin = new Thickness(0, 0, 0, 2)
         });
         stack.Children.Add(new TextBlock
         {
-            Text = "Fresh saves now start empty. Pick one starter; more pets can be added later.",
+            Text = "Pick a ROYGBIV egg. The pet inside stays hidden until it hatches.",
             Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#B9D5FF")),
             TextWrapping = TextWrapping.Wrap,
-            Margin = new Thickness(0, 0, 0, 14)
+            FontSize = 11,
+            Margin = new Thickness(0, 0, 0, 8)
         });
 
         var choices = new UniformGrid
@@ -417,6 +419,7 @@ public partial class HomePanelWindow : Window
         {
             VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
             HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
+            Padding = new Thickness(0, 0, 4, 0),
             Content = stack
         };
 
@@ -431,16 +434,15 @@ public partial class HomePanelWindow : Window
         var width = Math.Min(460, Math.Max(260, stageRect.Width - 24));
         var columns = width switch
         {
-            < 330 => 2,
-            < 420 => 3,
-            _ => 4
+            < 360 => 2,
+            _ => 3
         };
         if (eggCount <= 4)
         {
             columns = Math.Min(columns, Math.Max(1, eggCount));
         }
 
-        var maxHeight = Math.Max(150, stageRect.Height - 16);
+        var maxHeight = Math.Max(180, stageRect.Height - 16);
         var left = Math.Round(stageRect.X + Math.Max(8.0, (stageRect.Width - width) / 2.0));
         var top = Math.Round((double)stageRect.Y + 8);
         return new StarterEggPromptLayout(width, maxHeight, left, top, columns);
@@ -453,9 +455,9 @@ public partial class HomePanelWindow : Window
             Content = BuildStarterEggButtonContent(egg),
             Tag = egg.ColorVariant,
             IsEnabled = egg.IsEnabled,
-            MinHeight = 44,
-            Margin = new Thickness(4),
-            Padding = new Thickness(8, 6, 8, 6),
+            MinHeight = 34,
+            Margin = new Thickness(3),
+            Padding = new Thickness(6, 4, 6, 4),
             Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(egg.IsEnabled ? "#26374B" : "#202733")),
             BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(egg.IsEnabled ? egg.HexColor : "#56616F")),
             Foreground = Brushes.White,
@@ -490,6 +492,7 @@ public partial class HomePanelWindow : Window
         {
             Text = egg.Label,
             Foreground = Brushes.White,
+            FontSize = 11,
             Opacity = egg.IsEnabled ? 1.0 : 0.58
         });
         return stack;

@@ -79,6 +79,18 @@ public sealed class HomePanelWindowRenderingTests
         Assert.True(layout.MaxHeight <= stage.Height - 16);
         Assert.True(layout.Top >= stage.Y + 8);
         Assert.True(layout.Top + layout.MaxHeight <= stage.Y + stage.Height - 8);
-        Assert.InRange(layout.Columns, 2, 4);
+        Assert.InRange(layout.Columns, 2, 3);
+    }
+
+    [Fact]
+    public void ComputeStarterEggPromptLayout_UsesCompactColumnsForSevenEggs()
+    {
+        var stage = new RectInt(0, 0, 612, 300);
+
+        var layout = HomePanelWindow.ComputeStarterEggPromptLayout(stage, eggCount: 7);
+
+        Assert.Equal(3, layout.Columns);
+        Assert.True(layout.Width <= 460);
+        Assert.True(layout.Top + layout.MaxHeight <= stage.Bottom - 8);
     }
 }
