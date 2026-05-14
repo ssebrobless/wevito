@@ -126,6 +126,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _homeWindow.SaveRequested += async () => await SaveAsync();
         _homeWindow.ToggleDevRequested += async () => await ToggleDevAsync();
         _homeWindow.StopEverythingRequested += async () => await ActivateKillSwitchAsync();
+        _homeWindow.StarterEggRequested += async speciesId => await AddStarterEggAsync(speciesId);
         _homeWindow.ActionRequested += HandleAction;
         _homeWindow.ActionOptionRequested += async (actionId, itemId) => await ApplyActionSelectionAsync(actionId, itemId);
         _homeWindow.Closed += (_, _) => _application.Shutdown();
@@ -174,13 +175,17 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         var contentRoot = BrokerProcessManager.ResolveContentRoot();
         _contentRepository = new ContentRepository(contentRoot);
         var preferAuthored = string.Equals(Environment.GetEnvironmentVariable("WEVITO_VNEXT_PREFER_AUTHORED"), "1", StringComparison.OrdinalIgnoreCase);
+        var preferAuthoredLocomotion = preferAuthored ||
+                                       string.Equals(Environment.GetEnvironmentVariable("WEVITO_VNEXT_PREFER_AUTHORED_LOCOMOTION"), "1", StringComparison.OrdinalIgnoreCase);
         var disableVerifiedLocomotion = string.Equals(Environment.GetEnvironmentVariable("WEVITO_VNEXT_DISABLE_AUTHORED_LOCOMOTION"), "1", StringComparison.OrdinalIgnoreCase);
+        var preferVerifiedLocomotion = preferAuthoredLocomotion && !disableVerifiedLocomotion;
+        TraceLog.Write("sprite-source", $"preferAuthored={preferAuthored} preferVerifiedLocomotion={preferVerifiedLocomotion}");
         _assetService = new SpriteAssetService(
             BrokerProcessManager.ResolveSpriteAuthoredRoot(),
             BrokerProcessManager.ResolveSpriteRuntimeRoot(),
             BrokerProcessManager.ResolveSharedSpriteRuntimeRoot(),
             BrokerProcessManager.ResolveSpriteRoot(),
-            !disableVerifiedLocomotion,
+            preferVerifiedLocomotion,
             preferAuthored);
         _content = await _contentRepository.LoadAsync();
         TraceLog.Write("shell", $"content-loaded path={contentRoot} species={_content.Species.Count} environments={_content.Environments.Count}");
@@ -2123,6 +2128,51 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             ActivePets = _petSimulationEngine.Tick(_state.ActivePets, _state.Mode, roamBandRect, DateTimeOffset.UtcNow, 0)
         };
         SetFeedback($"Dev command applied: {command.Kind}");
+        await PersistAndRenderAsync();
+    }
+
+    private async Task AddStarterEggAsync(string speciesId)
+    {
+        if (_state is null || _content is null)
+        {
+            return;
+        }
+
+        var species = _content.Species.FirstOrDefault(candidate => string.Equals(candidate.Id, speciesId, StringComparison.OrdinalIgnoreCase))
+            ?? _content.Species.FirstOrDefault();
+        if (species is null)
+        {
+            return;
+        }
+
+        var ageStage = species.SupportedAgeStages?.Contains(PetAgeStage.Baby) == true
+            ? PetAgeStage.Baby
+            : species.SupportedAgeStages?.FirstOrDefault() ?? PetAgeStage.Baby;
+        var gender = species.SupportedGenders?.Contains(PetGender.Female) == true
+            ? PetGender.Female
+            : species.SupportedGenders?.FirstOrDefault() ?? PetGender.Female;
+        var color = ResolveColor(species, "blue");
+        _state = AddDevPet(_state, new DevToolCommand(
+            DevToolCommandKind.AddPet,
+            SpeciesId: species.Id,
+            AgeStage: ageStage,
+            Gender: gender,
+            ColorVariant: color));
+        _state = _state with
+        {
+            ActivePets = _petSimulationEngine.ApplyLayout(
+                _state.ActivePets,
+                _homeWindow.Left + _homeWindow.GetStageRect().X + 24,
+                _homeWindow.Top + _homeWindow.GetStageRect().Y + 20,
+                _homeWindow.GetStageRect().Width - 48,
+                _homeWindow.GetStageRect().Height - 36)
+        };
+        _state = _state with
+        {
+            ActiveTool = new ToolSession("basket", false),
+            SettingsSnapshot = WithSetting(_state.SettingsSnapshot, "starter_egg_pending", string.Empty)
+        };
+        SetFeedback($"{species.DisplayName} egg hatched. Open ACTIONS when you want to feed, water, or play.");
         await PersistAndRenderAsync();
     }
 

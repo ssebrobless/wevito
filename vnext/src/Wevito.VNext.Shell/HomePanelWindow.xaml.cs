@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -56,6 +57,8 @@ public partial class HomePanelWindow : Window
     public event Func<Task>? ToggleDevRequested;
 
     public event Func<Task>? StopEverythingRequested;
+
+    public event Func<string, Task>? StarterEggRequested;
 
     public event Action<string>? ActionRequested;
 
@@ -237,6 +240,11 @@ public partial class HomePanelWindow : Window
         var stageSpecs = RenderStageProps(environment, habitatLoadout, focusPet, assetService);
         HomePetCanvas.Children.Clear();
         var stageRect = GetStageRect();
+        if (state.ActivePets.Count == 0)
+        {
+            RenderStarterEggPrompt(stageRect);
+        }
+
         var now = DateTimeOffset.UtcNow;
         var renderedInteractionCue = false;
         var calmLineup = !ShellPresentationRules.IsActionsSurfaceOpen(state.ActiveTool);
@@ -356,6 +364,83 @@ public partial class HomePanelWindow : Window
         return calmLineup &&
                !pet.IsGhost &&
                !pet.IsDead;
+    }
+
+    private void RenderStarterEggPrompt(RectInt stageRect)
+    {
+        var width = Math.Min(430, Math.Max(280, stageRect.Width - 96));
+        var panel = new Border
+        {
+            Width = width,
+            Padding = new Thickness(18),
+            Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E6172430")),
+            BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#536B88")),
+            BorderThickness = new Thickness(1),
+            CornerRadius = new CornerRadius(18),
+            IsHitTestVisible = true
+        };
+
+        var stack = new StackPanel
+        {
+            Orientation = Orientation.Vertical
+        };
+        stack.Children.Add(new TextBlock
+        {
+            Text = "Choose your first egg",
+            Foreground = Brushes.White,
+            FontSize = 18,
+            FontWeight = FontWeights.SemiBold,
+            Margin = new Thickness(0, 0, 0, 4)
+        });
+        stack.Children.Add(new TextBlock
+        {
+            Text = "Fresh saves now start empty. Pick one starter; more pets can be added later.",
+            Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#B9D5FF")),
+            TextWrapping = TextWrapping.Wrap,
+            Margin = new Thickness(0, 0, 0, 14)
+        });
+
+        var choices = new UniformGrid
+        {
+            Columns = 3
+        };
+        AddStarterEggButton(choices, "Goose egg", "goose");
+        AddStarterEggButton(choices, "Fox egg", "fox");
+        AddStarterEggButton(choices, "Frog egg", "frog");
+        stack.Children.Add(choices);
+        panel.Child = stack;
+
+        Canvas.SetLeft(panel, Math.Round(stageRect.X + Math.Max(8.0, (stageRect.Width - width) / 2.0)));
+        Canvas.SetTop(panel, Math.Round(stageRect.Y + Math.Max(16, stageRect.Height * 0.18)));
+        Canvas.SetZIndex(panel, HabitatDepthOrder.GetZIndex(DepthBand.UiOverlay));
+        HomePetCanvas.Children.Add(panel);
+    }
+
+    private void AddStarterEggButton(Panel parent, string label, string speciesId)
+    {
+        var button = new Button
+        {
+            Content = label,
+            Tag = speciesId,
+            MinHeight = 44,
+            Margin = new Thickness(4),
+            Padding = new Thickness(8, 6, 8, 6),
+            Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#26374B")),
+            BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#8EB4E8")),
+            Foreground = Brushes.White,
+            FontWeight = FontWeights.SemiBold,
+            Cursor = System.Windows.Input.Cursors.Hand
+        };
+        button.Click += StarterEggButton_OnClick;
+        parent.Children.Add(button);
+    }
+
+    private async void StarterEggButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is FrameworkElement { Tag: string speciesId } && StarterEggRequested is not null)
+        {
+            await StarterEggRequested.Invoke(speciesId);
+        }
     }
 
     internal static double ResolveCalmLineupScale(double spriteHeight, double baseScale)
