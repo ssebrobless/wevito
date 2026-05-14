@@ -26,7 +26,10 @@
         </Style>
     </Window.Resources>
 
-    <Grid Margin="18">
+    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                  HorizontalScrollBarVisibility="Auto"
+                  automation:AutomationProperties.AutomationId="CreativeLearningLabRootScrollViewer">
+    <Grid Margin="18" MinWidth="1040" MinHeight="640">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -237,4 +240,5 @@
             </StackPanel>
         </Grid>
     </Grid>
+    </ScrollViewer>
 </Window>

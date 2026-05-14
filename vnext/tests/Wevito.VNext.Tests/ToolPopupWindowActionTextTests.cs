@@ -17,6 +17,18 @@ public sealed class ToolPopupWindowActionTextTests
         Assert.Contains("PetTaskExecuteButton", xaml);
     }
 
+    [Theory]
+    [InlineData("CreativeLearningLabWindow.xaml", "CreativeLearningLabRootScrollViewer")]
+    [InlineData("SpriteWorkflowV2Window.xaml", "SpriteWorkflowV2RootScrollViewer")]
+    public void DenseToolWindowsHaveRootScrollViewerSoBottomControlsRemainReachable(string fileName, string automationId)
+    {
+        var xaml = File.ReadAllText(FindRepoFile("vnext", "src", "Wevito.VNext.Shell", fileName));
+
+        Assert.Contains("VerticalScrollBarVisibility=\"Auto\"", xaml);
+        Assert.Contains("HorizontalScrollBarVisibility=\"Auto\"", xaml);
+        Assert.Contains($"AutomationId=\"{automationId}\"", xaml);
+    }
+
     [Fact]
     public void FormatActionSummaryNamesPrimaryTargetAndDragPath()
     {
