@@ -126,7 +126,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _homeWindow.SaveRequested += async () => await SaveAsync();
         _homeWindow.ToggleDevRequested += async () => await ToggleDevAsync();
         _homeWindow.StopEverythingRequested += async () => await ActivateKillSwitchAsync();
-        _homeWindow.StarterEggRequested += async speciesId => await AddStarterEggAsync(speciesId);
+        _homeWindow.StarterEggRequested += async colorVariant => await AddStarterEggAsync(colorVariant);
         _homeWindow.ActionRequested += HandleAction;
         _homeWindow.ActionOptionRequested += async (actionId, itemId) => await ApplyActionSelectionAsync(actionId, itemId);
         _homeWindow.Closed += (_, _) => _application.Shutdown();
@@ -2131,14 +2131,27 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         await PersistAndRenderAsync();
     }
 
-    private async Task AddStarterEggAsync(string speciesId)
+    private async Task AddStarterEggAsync(string colorVariant)
     {
         if (_state is null || _content is null)
         {
             return;
         }
 
-        var species = _content.Species.FirstOrDefault(candidate => string.Equals(candidate.Id, speciesId, StringComparison.OrdinalIgnoreCase))
+        var egg = StarterEggCatalog.Resolve(colorVariant);
+        if (egg is null)
+        {
+            SetFeedback("That egg is not available.");
+            return;
+        }
+
+        if (!egg.IsEnabled)
+        {
+            SetFeedback(egg.DisabledReason);
+            return;
+        }
+
+        var species = _content.Species.FirstOrDefault(candidate => string.Equals(candidate.Id, egg.SpeciesId, StringComparison.OrdinalIgnoreCase))
             ?? _content.Species.FirstOrDefault();
         if (species is null)
         {
@@ -2151,7 +2164,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         var gender = species.SupportedGenders?.Contains(PetGender.Female) == true
             ? PetGender.Female
             : species.SupportedGenders?.FirstOrDefault() ?? PetGender.Female;
-        var color = ResolveColor(species, "blue");
+        var color = ResolveColor(species, egg.ColorVariant);
         _state = AddDevPet(_state, new DevToolCommand(
             DevToolCommandKind.AddPet,
             SpeciesId: species.Id,
@@ -2172,7 +2185,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             ActiveTool = new ToolSession("basket", false),
             SettingsSnapshot = WithSetting(_state.SettingsSnapshot, "starter_egg_pending", string.Empty)
         };
-        SetFeedback($"{species.DisplayName} egg hatched. Open ACTIONS when you want to feed, water, or play.");
+        SetFeedback($"{egg.Label} hatched. Open ACTIONS when you want to feed, water, or play.");
         await PersistAndRenderAsync();
     }
 
