@@ -54,13 +54,17 @@ public sealed class HomePanelWindowRenderingTests
     }
 
     [Fact]
-    public void ShouldUseCalmLineup_OnlyForPetsAlreadySettledAtHome()
+    public void ShouldUseCalmLineup_ImmediatelyPlacesLivingPetsRegardlessOfMotionState()
     {
         var settled = new PetActor(Guid.NewGuid(), "Fox 1", "fox", BehaviorState: PetBehaviorState.Home, ActiveStatuses: []);
         var returning = settled with { BehaviorState = PetBehaviorState.Recalling };
+        var roaming = settled with { BehaviorState = PetBehaviorState.Roaming };
+        var dead = settled with { IsDead = true, IsGhost = true };
 
         Assert.True(HomePanelWindow.ShouldUseCalmLineupPlacement(calmLineup: true, settled));
-        Assert.False(HomePanelWindow.ShouldUseCalmLineupPlacement(calmLineup: true, returning));
+        Assert.True(HomePanelWindow.ShouldUseCalmLineupPlacement(calmLineup: true, returning));
+        Assert.True(HomePanelWindow.ShouldUseCalmLineupPlacement(calmLineup: true, roaming));
+        Assert.False(HomePanelWindow.ShouldUseCalmLineupPlacement(calmLineup: true, dead));
         Assert.False(HomePanelWindow.ShouldUseCalmLineupPlacement(calmLineup: false, settled));
     }
 }
