@@ -443,8 +443,10 @@ public partial class HomePanelWindow : Window
         }
 
         var maxHeight = Math.Max(180, stageRect.Height - 16);
-        var left = Math.Round(stageRect.X + Math.Max(8.0, (stageRect.Width - width) / 2.0));
-        var top = Math.Round((double)stageRect.Y + 8);
+        // The egg prompt is rendered inside HomePetCanvas, so coordinates must be
+        // local to the stage instead of re-adding the stage's window offset.
+        var left = Math.Round(Math.Max(8.0, (stageRect.Width - width) / 2.0));
+        var top = 8.0;
         return new StarterEggPromptLayout(width, maxHeight, left, top, columns);
     }
 
@@ -532,11 +534,13 @@ public partial class HomePanelWindow : Window
         var count = Math.Max(1, livingPetCount);
         var safeWidth = Math.Max(1, stageRect.Width - 56);
         var slotWidth = safeWidth / count;
-        var x = stageRect.X + 28 + slotWidth * Math.Clamp(index, 0, count - 1) + slotWidth / 2 - spriteWidth / 2;
-        var y = stageRect.Y + stageRect.Height - spriteHeight - 54;
+        // HomePetCanvas is already positioned inside StageBorder. Returning
+        // window-relative coordinates here pushes pets below the visible stage.
+        var x = 28 + slotWidth * Math.Clamp(index, 0, count - 1) + slotWidth / 2 - spriteWidth / 2;
+        var y = stageRect.Height - spriteHeight - 54;
         return new Point(
-            Math.Round(Math.Clamp(x, stageRect.X + 8, stageRect.X + Math.Max(8, stageRect.Width - spriteWidth - 8))),
-            Math.Round(Math.Clamp(y, stageRect.Y + 8, stageRect.Y + Math.Max(8, stageRect.Height - spriteHeight - 8))));
+            Math.Round(Math.Clamp(x, 8, Math.Max(8, stageRect.Width - spriteWidth - 8))),
+            Math.Round(Math.Clamp(y, 8, Math.Max(8, stageRect.Height - spriteHeight - 8))));
     }
 
     private void RenderMemorialIfActive(PetActor pet, DateTimeOffset now, RectInt stageRect, SpriteAssetService assetService)

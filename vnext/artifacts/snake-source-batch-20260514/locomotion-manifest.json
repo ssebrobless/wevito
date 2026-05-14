@@ -1,0 +1,412 @@
+{
+  "target": "snake/baby/female/blue",
+  "families": [
+    "idle",
+    "walk"
+  ],
+  "source_kind": "explicit_cell_extraction_from_baby_identity_and_approved_slither_recolored_blue",
+  "mutation_scope": [
+    "sprites_runtime/snake/baby/female/blue/idle_00.png",
+    "sprites_runtime/snake/baby/female/blue/idle_01.png",
+    "sprites_runtime/snake/baby/female/blue/idle_02.png",
+    "sprites_runtime/snake/baby/female/blue/idle_03.png",
+    "sprites_runtime/snake/baby/female/blue/walk_00.png",
+    "sprites_runtime/snake/baby/female/blue/walk_01.png",
+    "sprites_runtime/snake/baby/female/blue/walk_02.png",
+    "sprites_runtime/snake/baby/female/blue/walk_03.png",
+    "sprites_runtime/snake/baby/female/blue/walk_04.png",
+    "sprites_runtime/snake/baby/female/blue/walk_05.png"
+  ],
+  "records": [
+    {
+      "frame_id": "idle_00",
+      "family": "idle",
+      "source": "incoming_sprites/gemini_handoff_motion/snake/baby/female/locomotion/5-save-edited-board-here/snake-baby-female-locomotion-extracted-board-import.png",
+      "candidate": "vnext/artifacts/snake-source-batch-20260514/candidate-frames/snake/baby/female/blue/idle_00.png",
+      "candidate_sha256": "cc6b0a9a395d20b28d69bfe57fe17358b596ce9cd5e2be3c110b9bc2b8caa689",
+      "extraction": {
+        "source_cell_box": [
+          33,
+          124,
+          269,
+          353
+        ],
+        "foreground_bbox": [
+          7,
+          80,
+          225,
+          225
+        ],
+        "source_sprite_size": [
+          210,
+          137
+        ],
+        "scaled_size": [
+          89,
+          58
+        ],
+        "placement": [
+          9,
+          3
+        ]
+      },
+      "runtime_geometry": {
+        "width": 108,
+        "height": 64,
+        "mode": "RGBA"
+      },
+      "note": "baby female identity source, blue recolor"
+    },
+    {
+      "frame_id": "idle_01",
+      "family": "idle",
+      "source": "incoming_sprites/gemini_handoff_motion/snake/baby/female/locomotion/5-save-edited-board-here/snake-baby-female-locomotion-extracted-board-import.png",
+      "candidate": "vnext/artifacts/snake-source-batch-20260514/candidate-frames/snake/baby/female/blue/idle_01.png",
+      "candidate_sha256": "29852eac3dac7ae44cdcb58dae927dd1720c575f354d4948f6fbbd9d575553cf",
+      "extraction": {
+        "source_cell_box": [
+          277,
+          124,
+          515,
+          353
+        ],
+        "foreground_bbox": [
+          8,
+          80,
+          227,
+          225
+        ],
+        "source_sprite_size": [
+          211,
+          137
+        ],
+        "scaled_size": [
+          89,
+          58
+        ],
+        "placement": [
+          9,
+          3
+        ]
+      },
+      "runtime_geometry": {
+        "width": 108,
+        "height": 64,
+        "mode": "RGBA"
+      },
+      "note": "baby female identity source, blue recolor"
+    },
+    {
+      "frame_id": "idle_02",
+      "family": "idle",
+      "source": "incoming_sprites/gemini_handoff_motion/snake/baby/female/locomotion/5-save-edited-board-here/snake-baby-female-locomotion-extracted-board-import.png",
+      "candidate": "vnext/artifacts/snake-source-batch-20260514/candidate-frames/snake/baby/female/blue/idle_02.png",
+      "candidate_sha256": "1058c9be231d0820aaedb21bc96d241d1ac789d07b8d2bf111633f2c7fc3e2f4",
+      "extraction": {
+        "source_cell_box": [
+          523,
+          124,
+          761,
+          353
+        ],
+        "foreground_bbox": [
+          6,
+          80,
+          227,
+          225
+        ],
+        "source_sprite_size": [
+          213,
+          137
+        ],
+        "scaled_size": [
+          90,
+          58
+        ],
+        "placement": [
+          9,
+          3
+        ]
+      },
+      "runtime_geometry": {
+        "width": 108,
+        "height": 64,
+        "mode": "RGBA"
+      },
+      "note": "baby female identity source, blue recolor"
+    },
+    {
+      "frame_id": "idle_03",
+      "family": "idle",
+      "source": "incoming_sprites/gemini_handoff_motion/snake/baby/female/locomotion/5-save-edited-board-here/snake-baby-female-locomotion-extracted-board-import.png",
+      "candidate": "vnext/artifacts/snake-source-batch-20260514/candidate-frames/snake/baby/female/blue/idle_03.png",
+      "candidate_sha256": "49ff997695577d51e51101b6eb42b9b761449a30c9db1bbc5479eacc42f3b79a",
+      "extraction": {
+        "source_cell_box": [
+          769,
+          124,
+          1006,
+          353
+        ],
+        "foreground_bbox": [
+          6,
+          80,
+          225,
+          225
+        ],
+        "source_sprite_size": [
+          211,
+          137
+        ],
+        "scaled_size": [
+          89,
+          58
+        ],
+        "placement": [
+          9,
+          3
+        ]
+      },
+      "runtime_geometry": {
+        "width": 108,
+        "height": 64,
+        "mode": "RGBA"
+      },
+      "note": "baby female identity source, blue recolor"
+    },
+    {
+      "frame_id": "walk_00",
+      "family": "walk",
+      "source": "incoming_sprites/gemini_handoff_motion/snake/baby/female/locomotion/approved-motion-reference.png",
+      "candidate": "vnext/artifacts/snake-source-batch-20260514/candidate-frames/snake/baby/female/blue/walk_00.png",
+      "candidate_sha256": "b10a916d239053d6b17b9e92e0417fa8b25139bdeb6e168262223e24fde2f44b",
+      "extraction": {
+        "source_cell_box": [
+          620,
+          79,
+          758,
+          216
+        ],
+        "foreground_bbox": [
+          0,
+          67,
+          138,
+          136
+        ],
+        "source_sprite_size": [
+          133,
+          61
+        ],
+        "scaled_size": [
+          100,
+          46
+        ],
+        "placement": [
+          4,
+          15
+        ]
+      },
+      "runtime_geometry": {
+        "width": 108,
+        "height": 64,
+        "mode": "RGBA"
+      },
+      "note": "approved slither source, blue recolor"
+    },
+    {
+      "frame_id": "walk_01",
+      "family": "walk",
+      "source": "incoming_sprites/gemini_handoff_motion/snake/baby/female/locomotion/approved-motion-reference.png",
+      "candidate": "vnext/artifacts/snake-source-batch-20260514/candidate-frames/snake/baby/female/blue/walk_01.png",
+      "candidate_sha256": "4288a3b75d956f5469b02151790c0c44183ce6c4afdc00fbcafa89a7ff596caa",
+      "extraction": {
+        "source_cell_box": [
+          22,
+          253,
+          163,
+          377
+        ],
+        "foreground_bbox": [
+          0,
+          60,
+          139,
+          124
+        ],
+        "source_sprite_size": [
+          131,
+          60
+        ],
+        "scaled_size": [
+          100,
+          46
+        ],
+        "placement": [
+          4,
+          15
+        ]
+      },
+      "runtime_geometry": {
+        "width": 108,
+        "height": 64,
+        "mode": "RGBA"
+      },
+      "note": "approved slither source, blue recolor"
+    },
+    {
+      "frame_id": "walk_02",
+      "family": "walk",
+      "source": "incoming_sprites/gemini_handoff_motion/snake/baby/female/locomotion/approved-motion-reference.png",
+      "candidate": "vnext/artifacts/snake-source-batch-20260514/candidate-frames/snake/baby/female/blue/walk_02.png",
+      "candidate_sha256": "e8e0f96f972f420cb326ce5232a113048e9fd272cca95e9ce7581df27f809aae",
+      "extraction": {
+        "source_cell_box": [
+          171,
+          253,
+          313,
+          377
+        ],
+        "foreground_bbox": [
+          0,
+          56,
+          140,
+          124
+        ],
+        "source_sprite_size": [
+          133,
+          64
+        ],
+        "scaled_size": [
+          100,
+          48
+        ],
+        "placement": [
+          4,
+          13
+        ]
+      },
+      "runtime_geometry": {
+        "width": 108,
+        "height": 64,
+        "mode": "RGBA"
+      },
+      "note": "approved slither source, blue recolor"
+    },
+    {
+      "frame_id": "walk_03",
+      "family": "walk",
+      "source": "incoming_sprites/gemini_handoff_motion/snake/baby/female/locomotion/approved-motion-reference.png",
+      "candidate": "vnext/artifacts/snake-source-batch-20260514/candidate-frames/snake/baby/female/blue/walk_03.png",
+      "candidate_sha256": "f06c50360f402742e68d27235bd0f054ab32b05e35115f6f8f8be3c46cf69795",
+      "extraction": {
+        "source_cell_box": [
+          321,
+          253,
+          462,
+          377
+        ],
+        "foreground_bbox": [
+          0,
+          53,
+          141,
+          124
+        ],
+        "source_sprite_size": [
+          136,
+          67
+        ],
+        "scaled_size": [
+          100,
+          49
+        ],
+        "placement": [
+          4,
+          12
+        ]
+      },
+      "runtime_geometry": {
+        "width": 108,
+        "height": 64,
+        "mode": "RGBA"
+      },
+      "note": "approved slither source, blue recolor"
+    },
+    {
+      "frame_id": "walk_04",
+      "family": "walk",
+      "source": "incoming_sprites/gemini_handoff_motion/snake/baby/female/locomotion/approved-motion-reference.png",
+      "candidate": "vnext/artifacts/snake-source-batch-20260514/candidate-frames/snake/baby/female/blue/walk_04.png",
+      "candidate_sha256": "308e8819a0d959d07968023bb84556d8dbf963fdec81a61efc2283c55df012d7",
+      "extraction": {
+        "source_cell_box": [
+          470,
+          253,
+          612,
+          377
+        ],
+        "foreground_bbox": [
+          0,
+          66,
+          140,
+          124
+        ],
+        "source_sprite_size": [
+          133,
+          54
+        ],
+        "scaled_size": [
+          100,
+          41
+        ],
+        "placement": [
+          4,
+          20
+        ]
+      },
+      "runtime_geometry": {
+        "width": 108,
+        "height": 64,
+        "mode": "RGBA"
+      },
+      "note": "approved slither source, blue recolor"
+    },
+    {
+      "frame_id": "walk_05",
+      "family": "walk",
+      "source": "incoming_sprites/gemini_handoff_motion/snake/baby/female/locomotion/approved-motion-reference.png",
+      "candidate": "vnext/artifacts/snake-source-batch-20260514/candidate-frames/snake/baby/female/blue/walk_05.png",
+      "candidate_sha256": "1cabfdd8f7d88918a5b313446a249edf348e9d2f2b762d2c65181b0db3f69006",
+      "extraction": {
+        "source_cell_box": [
+          620,
+          253,
+          758,
+          377
+        ],
+        "foreground_bbox": [
+          0,
+          69,
+          138,
+          124
+        ],
+        "source_sprite_size": [
+          133,
+          51
+        ],
+        "scaled_size": [
+          100,
+          38
+        ],
+        "placement": [
+          4,
+          23
+        ]
+      },
+      "runtime_geometry": {
+        "width": 108,
+        "height": 64,
+        "mode": "RGBA"
+      },
+      "note": "approved slither source, blue recolor"
+    }
+  ]
+}

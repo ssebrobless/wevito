@@ -1,4 +1,6 @@
 using Wevito.VNext.Core;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace Wevito.VNext.Tests;
 
@@ -53,9 +55,10 @@ public sealed class OnnxEmbeddingBackendTests
     private static float[] BuildVector(string text, int dimensions)
     {
         var vector = new float[dimensions];
-        var seed = text.GetHashCode(StringComparison.Ordinal);
+        var seedBytes = SHA256.HashData(Encoding.UTF8.GetBytes(text));
         for (var index = 0; index < vector.Length; index++)
         {
+            var seed = BitConverter.ToInt32(seedBytes, (index * 4) % (seedBytes.Length - 4));
             vector[index] = ((seed + (index * 31)) % 97) - 48;
         }
 

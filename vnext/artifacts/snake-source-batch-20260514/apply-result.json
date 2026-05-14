@@ -1,0 +1,105 @@
+﻿{
+    "target":  "snake/baby/female/blue",
+    "families":  [
+                     "idle",
+                     "walk"
+                 ],
+    "backup_path":  "C:\\Users\\fishe\\.codex\\worktrees\\ab46\\wevito\\vnext\\artifacts\\snake-source-batch-20260514\\backup-before-apply-20260514-181825",
+    "mutation_scope":  [
+                           "sprites_runtime/snake/baby/female/blue/idle_00.png",
+                           "sprites_runtime/snake/baby/female/blue/idle_01.png",
+                           "sprites_runtime/snake/baby/female/blue/idle_02.png",
+                           "sprites_runtime/snake/baby/female/blue/idle_03.png",
+                           "sprites_runtime/snake/baby/female/blue/walk_00.png",
+                           "sprites_runtime/snake/baby/female/blue/walk_01.png",
+                           "sprites_runtime/snake/baby/female/blue/walk_02.png",
+                           "sprites_runtime/snake/baby/female/blue/walk_03.png",
+                           "sprites_runtime/snake/baby/female/blue/walk_04.png",
+                           "sprites_runtime/snake/baby/female/blue/walk_05.png"
+                       ],
+    "applied_count":  10,
+    "rollback_drill":  "passed",
+    "final_state":  "candidate_applied",
+    "records":  [
+                    {
+                        "frame":  "idle_00.png",
+                        "target":  "C:\\Users\\fishe\\.codex\\worktrees\\ab46\\wevito\\sprites_runtime\\snake\\baby\\female\\blue\\idle_00.png",
+                        "candidate":  "C:\\Users\\fishe\\.codex\\worktrees\\ab46\\wevito\\vnext\\artifacts\\snake-source-batch-20260514\\candidate-frames\\snake\\baby\\female\\blue\\idle_00.png",
+                        "pre_sha256":  "21fd4100b44d6a42bdc8a15cff7e014344c29fb6105d620704f8fd897c4f193e",
+                        "candidate_sha256":  "cc6b0a9a395d20b28d69bfe57fe17358b596ce9cd5e2be3c110b9bc2b8caa689",
+                        "post_sha256":  "cc6b0a9a395d20b28d69bfe57fe17358b596ce9cd5e2be3c110b9bc2b8caa689"
+                    },
+                    {
+                        "frame":  "idle_01.png",
+                        "target":  "C:\\Users\\fishe\\.codex\\worktrees\\ab46\\wevito\\sprites_runtime\\snake\\baby\\female\\blue\\idle_01.png",
+                        "candidate":  "C:\\Users\\fishe\\.codex\\worktrees\\ab46\\wevito\\vnext\\artifacts\\snake-source-batch-20260514\\candidate-frames\\snake\\baby\\female\\blue\\idle_01.png",
+                        "pre_sha256":  "70273a2382d3d4da9005cf6184c954b900afcb872129c39396d6919213dd0050",
+                        "candidate_sha256":  "29852eac3dac7ae44cdcb58dae927dd1720c575f354d4948f6fbbd9d575553cf",
+                        "post_sha256":  "29852eac3dac7ae44cdcb58dae927dd1720c575f354d4948f6fbbd9d575553cf"
+                    },
+                    {
+                        "frame":  "idle_02.png",
+                        "target":  "C:\\Users\\fishe\\.codex\\worktrees\\ab46\\wevito\\sprites_runtime\\snake\\baby\\female\\blue\\idle_02.png",
+                        "candidate":  "C:\\Users\\fishe\\.codex\\worktrees\\ab46\\wevito\\vnext\\artifacts\\snake-source-batch-20260514\\candidate-frames\\snake\\baby\\female\\blue\\idle_02.png",
+                        "pre_sha256":  "94a71e43101d0d808dd2c5372403c2ef29a3eefb8f0ba8aa64da77a3b3d1ca84",
+                        "candidate_sha256":  "1058c9be231d0820aaedb21bc96d241d1ac789d07b8d2bf111633f2c7fc3e2f4",
+                        "post_sha256":  "1058c9be231d0820aaedb21bc96d241d1ac789d07b8d2bf111633f2c7fc3e2f4"
+                    },
+                    {
+                        "frame":  "idle_03.png",
+                        "target":  "C:\\Users\\fishe\\.codex\\worktrees\\ab46\\wevito\\sprites_runtime\\snake\\baby\\female\\blue\\idle_03.png",
+                        "candidate":  "C:\\Users\\fishe\\.codex\\worktrees\\ab46\\wevito\\vnext\\artifacts\\snake-source-batch-20260514\\candidate-frames\\snake\\baby\\female\\blue\\idle_03.png",
+                        "pre_sha256":  "46784f92566343ec36b24e970e3c5d5ee4ec0bf4a2b466ab32dcd3e679a57a4c",
+                        "candidate_sha256":  "49ff997695577d51e51101b6eb42b9b761449a30c9db1bbc5479eacc42f3b79a",
+                        "post_sha256":  "49ff997695577d51e51101b6eb42b9b761449a30c9db1bbc5479eacc42f3b79a"
+                    },
+                    {
+                        "frame":  "walk_00.png",
+                        "target":  "C:\\Users\\fishe\\.codex\\worktrees\\ab46\\wevito\\sprites_runtime\\snake\\baby\\female\\blue\\walk_00.png",
+                        "candidate":  "C:\\Users\\fishe\\.codex\\worktrees\\ab46\\wevito\\vnext\\artifacts\\snake-source-batch-20260514\\candidate-frames\\snake\\baby\\female\\blue\\walk_00.png",
+                        "pre_sha256":  "d21247d39e508937da48ce90b93b06a14bc26456a47e68ffb762e2274d2363a3",
+                        "candidate_sha256":  "b10a916d239053d6b17b9e92e0417fa8b25139bdeb6e168262223e24fde2f44b",
+                        "post_sha256":  "b10a916d239053d6b17b9e92e0417fa8b25139bdeb6e168262223e24fde2f44b"
+                    },
+                    {
+                        "frame":  "walk_01.png",
+                        "target":  "C:\\Users\\fishe\\.codex\\worktrees\\ab46\\wevito\\sprites_runtime\\snake\\baby\\female\\blue\\walk_01.png",
+                        "candidate":  "C:\\Users\\fishe\\.codex\\worktrees\\ab46\\wevito\\vnext\\artifacts\\snake-source-batch-20260514\\candidate-frames\\snake\\baby\\female\\blue\\walk_01.png",
+                        "pre_sha256":  "b1f5e70fd92d4b78ec1cca5bb747b7d27d8008523637f33f665020b2e318c3f5",
+                        "candidate_sha256":  "4288a3b75d956f5469b02151790c0c44183ce6c4afdc00fbcafa89a7ff596caa",
+                        "post_sha256":  "4288a3b75d956f5469b02151790c0c44183ce6c4afdc00fbcafa89a7ff596caa"
+                    },
+                    {
+                        "frame":  "walk_02.png",
+                        "target":  "C:\\Users\\fishe\\.codex\\worktrees\\ab46\\wevito\\sprites_runtime\\snake\\baby\\female\\blue\\walk_02.png",
+                        "candidate":  "C:\\Users\\fishe\\.codex\\worktrees\\ab46\\wevito\\vnext\\artifacts\\snake-source-batch-20260514\\candidate-frames\\snake\\baby\\female\\blue\\walk_02.png",
+                        "pre_sha256":  "fde2d7099c1cf21e8d51b8b05b643ff3118783686102cbbbe5f4866df698fb2c",
+                        "candidate_sha256":  "e8e0f96f972f420cb326ce5232a113048e9fd272cca95e9ce7581df27f809aae",
+                        "post_sha256":  "e8e0f96f972f420cb326ce5232a113048e9fd272cca95e9ce7581df27f809aae"
+                    },
+                    {
+                        "frame":  "walk_03.png",
+                        "target":  "C:\\Users\\fishe\\.codex\\worktrees\\ab46\\wevito\\sprites_runtime\\snake\\baby\\female\\blue\\walk_03.png",
+                        "candidate":  "C:\\Users\\fishe\\.codex\\worktrees\\ab46\\wevito\\vnext\\artifacts\\snake-source-batch-20260514\\candidate-frames\\snake\\baby\\female\\blue\\walk_03.png",
+                        "pre_sha256":  "66a8a3babba35acabf70cfc0e79d386372b661e4d097a416465a1adc11858dbf",
+                        "candidate_sha256":  "f06c50360f402742e68d27235bd0f054ab32b05e35115f6f8f8be3c46cf69795",
+                        "post_sha256":  "f06c50360f402742e68d27235bd0f054ab32b05e35115f6f8f8be3c46cf69795"
+                    },
+                    {
+                        "frame":  "walk_04.png",
+                        "target":  "C:\\Users\\fishe\\.codex\\worktrees\\ab46\\wevito\\sprites_runtime\\snake\\baby\\female\\blue\\walk_04.png",
+                        "candidate":  "C:\\Users\\fishe\\.codex\\worktrees\\ab46\\wevito\\vnext\\artifacts\\snake-source-batch-20260514\\candidate-frames\\snake\\baby\\female\\blue\\walk_04.png",
+                        "pre_sha256":  "4f1c52ece17e045255d89c78e0a120942b8e6816317af8470de8e2d1499472b1",
+                        "candidate_sha256":  "308e8819a0d959d07968023bb84556d8dbf963fdec81a61efc2283c55df012d7",
+                        "post_sha256":  "308e8819a0d959d07968023bb84556d8dbf963fdec81a61efc2283c55df012d7"
+                    },
+                    {
+                        "frame":  "walk_05.png",
+                        "target":  "C:\\Users\\fishe\\.codex\\worktrees\\ab46\\wevito\\sprites_runtime\\snake\\baby\\female\\blue\\walk_05.png",
+                        "candidate":  "C:\\Users\\fishe\\.codex\\worktrees\\ab46\\wevito\\vnext\\artifacts\\snake-source-batch-20260514\\candidate-frames\\snake\\baby\\female\\blue\\walk_05.png",
+                        "pre_sha256":  "989eb5b318c19acba183fcd4dd78125110bf66eb1a9807849054c34dd7060370",
+                        "candidate_sha256":  "1cabfdd8f7d88918a5b313446a249edf348e9d2f2b762d2c65181b0db3f69006",
+                        "post_sha256":  "1cabfdd8f7d88918a5b313446a249edf348e9d2f2b762d2c65181b0db3f69006"
+                    }
+                ]
+}
