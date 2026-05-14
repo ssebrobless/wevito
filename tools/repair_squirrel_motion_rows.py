@@ -24,14 +24,15 @@ ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_RUNTIME_ROOT = ROOT / "sprites_runtime"
 MOTION_PATTERNS = {
     "idle": [(0, 0), (0, -1), (0, 0), (0, 1)],
-    "walk": [(-2, 0), (0, -1), (2, 0), (1, 1), (-1, 0), (0, -1)],
-    "eat": [(0, 0), (0, 1), (0, 2), (0, 1)],
+    "walk": [(-3, 0), (-1, -1), (2, -1), (3, 0), (1, 1), (-2, 0)],
+    "eat": [(0, 0), (1, -1), (2, -2), (1, -1)],
     "happy": [(0, 0), (0, -2), (0, -4), (0, -2)],
-    "sad": [(0, 1), (0, 2)],
-    "sleep": [(0, 1), (0, 2)],
-    "sick": [(0, 0), (0, 1), (0, 0), (0, 1)],
+    "sad": [(-1, 0), (1, -1)],
+    "sleep": [(-1, 0), (1, -1)],
+    "sick": [(0, 0), (-1, -1), (1, 0), (0, -1)],
     "bathe": [(0, 0), (0, -1), (0, 0), (0, -1)],
 }
+MIN_MARGIN = 2
 
 
 @dataclass(frozen=True)
@@ -71,22 +72,21 @@ def shifted_copy(source_path: Path, requested_dx: int, requested_dy: int) -> tup
     if bbox is None:
         return source, 0, 0
 
-    if requested_dx < 0:
-        applied_dx = -min(abs(requested_dx), bbox[0])
-    elif requested_dx > 0:
-        applied_dx = min(requested_dx, source.width - bbox[2])
-    else:
-        applied_dx = 0
+    sprite = source.crop(bbox)
+    sprite_w = bbox[2] - bbox[0]
+    sprite_h = bbox[3] - bbox[1]
 
-    if requested_dy < 0:
-        applied_dy = -min(abs(requested_dy), bbox[1])
-    elif requested_dy > 0:
-        applied_dy = min(requested_dy, source.height - bbox[3])
-    else:
-        applied_dy = 0
+    base_x = max(MIN_MARGIN, min(source.width - sprite_w - MIN_MARGIN, (source.width - sprite_w) // 2))
+    base_y = max(MIN_MARGIN, source.height - sprite_h - MIN_MARGIN)
+
+    target_x = max(MIN_MARGIN, min(source.width - sprite_w - MIN_MARGIN, base_x + requested_dx))
+    target_y = max(MIN_MARGIN, min(source.height - sprite_h - MIN_MARGIN, base_y + requested_dy))
+
+    applied_dx = target_x - base_x
+    applied_dy = target_y - base_y
 
     output = Image.new("RGBA", source.size, (0, 0, 0, 0))
-    output.alpha_composite(source, (applied_dx, applied_dy))
+    output.alpha_composite(sprite, (target_x, target_y))
     return output, applied_dx, applied_dy
 
 
