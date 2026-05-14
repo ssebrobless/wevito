@@ -20,13 +20,14 @@ public sealed class DefaultStateFactory
             CompanionMode.Focused,
             false,
             environment,
-            new ToolSession("basket", false),
-            _petSimulationEngine.CreateDefaultPets(content),
+            new ToolSession("settings", false),
+            [],
             [],
             new Dictionary<string, string>
             {
                 ["theme"] = "slate",
-                ["roamBandHeight"] = "112"
+                ["roamBandHeight"] = "112",
+                ["starter_egg_pending"] = bool.TrueString
             },
             []);
     }

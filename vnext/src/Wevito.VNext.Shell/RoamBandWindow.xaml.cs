@@ -132,10 +132,11 @@ public partial class RoamBandWindow : Window
         var localY = Math.Round(petScreenY - windowTop - height);
         if (double.IsNaN(localY) || double.IsInfinity(localY))
         {
-            localY = actualHeight - height - 8;
+            localY = 0;
         }
 
-        return Math.Clamp(localY, 0, Math.Max(0, actualHeight - height - 8));
+        var maxTop = Math.Min(10, Math.Max(0, actualHeight - height - 8));
+        return Math.Clamp(localY, 0, maxTop);
     }
 
     private void ShowGhostName(string petName, Point cursorPoint)

@@ -34,11 +34,11 @@ public sealed class ShellPresentationRulesTests
     }
 
     [Fact]
-    public void ResolvePetTopInBand_UsesPetScreenYAndClampsInsideBand()
+    public void ResolvePetTopInBand_KeepsDesktopPetsOnTaskbarTopEdge()
     {
-        Assert.Equal(54, RoamBandWindow.ResolvePetTopInBand(petScreenY: 990, windowTop: 900, height: 36, actualHeight: 118));
+        Assert.Equal(10, RoamBandWindow.ResolvePetTopInBand(petScreenY: 990, windowTop: 900, height: 36, actualHeight: 118));
         Assert.Equal(0, RoamBandWindow.ResolvePetTopInBand(petScreenY: 880, windowTop: 900, height: 36, actualHeight: 118));
-        Assert.Equal(74, RoamBandWindow.ResolvePetTopInBand(petScreenY: 1400, windowTop: 900, height: 36, actualHeight: 118));
+        Assert.Equal(10, RoamBandWindow.ResolvePetTopInBand(petScreenY: 1400, windowTop: 900, height: 36, actualHeight: 118));
     }
 
     [Fact]
