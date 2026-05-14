@@ -895,13 +895,19 @@
                     </UniformGrid>
                 </StackPanel>
 
-                <StackPanel x:Name="PetCommandPanel"
-                            Visibility="Collapsed">
-                    <StackPanel.LayoutTransform>
-                        <ScaleTransform ScaleX="1"
-                                        ScaleY="0.86" />
-                    </StackPanel.LayoutTransform>
-                    <Grid>
+                <ScrollViewer x:Name="PetCommandPanel"
+                              Visibility="Collapsed"
+                              VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Disabled"
+                              PanningMode="VerticalOnly"
+                              CanContentScroll="False"
+                              automation:AutomationProperties.AutomationId="PetCommandScrollViewer">
+                    <StackPanel>
+                        <StackPanel.LayoutTransform>
+                            <ScaleTransform ScaleX="1"
+                                            ScaleY="0.86" />
+                        </StackPanel.LayoutTransform>
+                        <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
@@ -1197,12 +1203,13 @@
                         </StackPanel>
                     </Border>
 
-                    <TextBlock Margin="0,5,0,0"
-                               Foreground="#FFE1D6A8"
-                               FontSize="10"
-                               TextWrapping="Wrap"
-                               Text="Safety: PET TASKS is report-first. Most cards cannot run. Approved execution is limited to the small allowlist shown above and never imports/generates/mutates sprites from this surface." />
-                </StackPanel>
+                        <TextBlock Margin="0,5,0,0"
+                                   Foreground="#FFE1D6A8"
+                                   FontSize="10"
+                                   TextWrapping="Wrap"
+                                   Text="Safety: PET TASKS is report-first. Most cards cannot run. Approved execution is limited to the small allowlist shown above and never imports/generates/mutates sprites from this surface." />
+                    </StackPanel>
+                </ScrollViewer>
 
                 <ScrollViewer x:Name="DevPanel"
                               Visibility="Collapsed"
