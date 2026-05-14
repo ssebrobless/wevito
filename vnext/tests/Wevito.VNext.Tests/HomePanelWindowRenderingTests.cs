@@ -35,7 +35,7 @@ public sealed class HomePanelWindowRenderingTests
     public void ResolveCalmLineupScale_NormalizesLargeSpritesWithoutUpscalingTinySprites()
     {
         Assert.Equal(2.0, HomePanelWindow.ResolveCalmLineupScale(spriteHeight: 72, baseScale: 3.0));
-        Assert.Equal(2.7, HomePanelWindow.ResolveCalmLineupScale(spriteHeight: 40, baseScale: 2.0));
+        Assert.Equal(2.0, HomePanelWindow.ResolveCalmLineupScale(spriteHeight: 40, baseScale: 2.0));
     }
 
     [Fact]
