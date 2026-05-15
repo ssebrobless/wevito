@@ -37,15 +37,15 @@ FRAME_LAYOUT_OVERRIDES: dict[str, dict[str, dict[str, dict[str, tuple[int, int]]
         "walk": {
             "baby": {
                 "canvas_size": (104, 64),
-                "target_size": (92, 26),
+                "target_size": (92, 34),
             },
             "teen": {
                 "canvas_size": (112, 64),
-                "target_size": (102, 30),
+                "target_size": (102, 40),
             },
             "adult": {
                 "canvas_size": (120, 64),
-                "target_size": (112, 34),
+                "target_size": (112, 48),
             },
         },
     },
