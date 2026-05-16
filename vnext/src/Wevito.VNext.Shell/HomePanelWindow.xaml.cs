@@ -58,6 +58,8 @@ public partial class HomePanelWindow : Window
 
     public event Func<Task>? StopEverythingRequested;
 
+    public event Func<Task>? ToggleDoNotDisturbRequested;
+
     public event Func<string, Task>? StarterEggRequested;
 
     public event Action<string>? ActionRequested;
@@ -186,6 +188,9 @@ public partial class HomePanelWindow : Window
         StopEverythingButton.ToolTip = killSwitchActive
             ? "Stop Everything is active. Re-enable helpers from Settings after confirming."
             : "Immediately block helper work. Re-enable from Settings only.";
+        var dndActive = DoNotDisturbScheduleService.EvaluateStatic(state.SettingsSnapshot, DateTimeOffset.UtcNow).IsActive;
+        DoNotDisturbButton.Content = dndActive ? "DND ON" : "DND";
+        DoNotDisturbButton.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(dndActive ? "#315A77" : "#263B4D"));
         EvidenceBadge.Visibility = evidenceStatus?.Active == true ? Visibility.Visible : Visibility.Collapsed;
         EvidenceBadgeText.Text = evidenceStatus?.Active == true
             ? $"Evidence: Day {evidenceStatus.DayN} of {evidenceStatus.DayMax}"
@@ -652,6 +657,11 @@ public partial class HomePanelWindow : Window
         }
 
         if (await TryInvokeButtonAsync(ActionsButton, localPoint, ToggleActionsRequested))
+        {
+            return true;
+        }
+
+        if (await TryInvokeButtonAsync(DoNotDisturbButton, localPoint, ToggleDoNotDisturbRequested))
         {
             return true;
         }
@@ -2465,6 +2475,14 @@ public partial class HomePanelWindow : Window
         if (StopEverythingRequested is not null)
         {
             await StopEverythingRequested.Invoke();
+        }
+    }
+
+    private async void DoNotDisturbButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (ToggleDoNotDisturbRequested is not null)
+        {
+            await ToggleDoNotDisturbRequested.Invoke();
         }
     }
 

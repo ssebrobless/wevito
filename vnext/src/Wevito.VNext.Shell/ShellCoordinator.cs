@@ -40,6 +40,8 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private readonly PetTaskAdapterPreviewDispatcher _petTaskAdapterPreviewDispatcher;
     private readonly RuntimeSupervisorService _runtimeSupervisorService = new();
     private readonly RuntimeBudgetMeter _runtimeBudgetMeter = new();
+    private readonly CoexistenceTriggerService _coexistenceTriggerService;
+    private readonly DoNotDisturbScheduleService _doNotDisturbScheduleService;
     private readonly WindowsForegroundFullscreenMonitor _fullscreenMonitor;
     private readonly WindowsPowerHandler _powerHandler;
     private readonly FocusStealCounter _focusStealCounter = new();
@@ -74,7 +76,9 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private DateTimeOffset _lastTickAtUtc;
     private DateTimeOffset _lastSchedulerPollAtUtc;
     private DateTimeOffset _lastForegroundPollAtUtc;
+    private DateTimeOffset _lastForcedPetAnimationAtUtc;
     private string _feedbackText = "";
+    private string _lastForcedPetAnimationReason = "";
     private CompanionMode? _lastLoggedMode;
     private string _lastPublishedRegionsKey = "";
     private PetCommandBarState? _petCommandBarState;
@@ -86,6 +90,8 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _activitySummaryService = new ActivitySummaryService(_auditLedgerService, plainLanguageExplainer);
         _liveStatusFeed = new LiveStatusFeed(_auditLedgerService, plainLanguageExplainer);
         _killSwitchService = new KillSwitchService(() => _state?.SettingsSnapshot ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase), _auditLedgerService);
+        _coexistenceTriggerService = new CoexistenceTriggerService(_auditLedgerService, _killSwitchService);
+        _doNotDisturbScheduleService = new DoNotDisturbScheduleService(_auditLedgerService, _killSwitchService);
         _ollamaModelBootstrapService = new OllamaModelBootstrapService(
             probeService: new LocalRuntimeProbeService(killSwitchService: _killSwitchService),
             auditLedgerService: _auditLedgerService,
@@ -137,6 +143,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _homeWindow.SaveRequested += async () => await SaveAsync();
         _homeWindow.ToggleDevRequested += async () => await ToggleDevAsync();
         _homeWindow.StopEverythingRequested += async () => await ActivateKillSwitchAsync();
+        _homeWindow.ToggleDoNotDisturbRequested += async () => await ToggleDoNotDisturbAsync();
         _homeWindow.StarterEggRequested += async colorVariant => await AddStarterEggAsync(colorVariant);
         _homeWindow.ActionRequested += HandleAction;
         _homeWindow.ActionOptionRequested += async (actionId, itemId) => await ApplyActionSelectionAsync(actionId, itemId);
@@ -212,6 +219,8 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _state = await _repository.LoadAsync() ?? defaultStateFactory.Create(_content);
         _state = HydrateLoadedState(_state, _content);
         _state = ApplyAuditScenarioOverride(_state, _content);
+        _coexistenceTriggerService.EnsureDefaultAppListFile();
+        _doNotDisturbScheduleService.EnsureDefaultScheduleFile();
         var bootstrapStatus = await _ollamaModelBootstrapService.ProbeStartupAsync(
             _state.SettingsSnapshot,
             EvaluateRuntimeSupervisor(isUserInitiatedToolOpen: false),
@@ -351,7 +360,6 @@ internal sealed class ShellCoordinator : IAsyncDisposable
                 homeStageRect.Height - 36)
         };
 
-        _state = ApplyAmbientWorkCompanionState(_state, now);
         TryPollForegroundContext(now);
         _runtimeBudgetMeter.FlushIfDue();
         _runtimeSessionTracker.Tick(now, _state.SettingsSnapshot);
@@ -369,6 +377,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         {
             ActivePets = _petSimulationEngine.Tick(_state.ActivePets, petMotionMode, petMotionBounds, now, deltaSeconds)
         };
+        _state = ApplyAmbientWorkCompanionState(_state, now);
 
         Render();
     }
@@ -658,13 +667,42 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         await PersistAndRenderAsync();
     }
 
+    private async Task ToggleDoNotDisturbAsync()
+    {
+        if (_state is null)
+        {
+            return;
+        }
+
+        var now = DateTimeOffset.UtcNow;
+        var current = _doNotDisturbScheduleService.Evaluate(_state.SettingsSnapshot, now);
+        var next = _doNotDisturbScheduleService.ApplyQuickToggle(
+            _state.SettingsSnapshot,
+            current.IsActive ? DoNotDisturbQuickToggle.Off : DoNotDisturbQuickToggle.OneHour,
+            now);
+        _state = _state with { SettingsSnapshot = next.SettingsSnapshot };
+        _feedbackText = next.IsActive
+            ? "Do Not Disturb is on. Helpers pause while pets stay visible."
+            : "Do Not Disturb is off. Helpers may resume when other gates allow.";
+        await PersistAndRenderAsync();
+    }
+
     private RuntimeSupervisorStatus EvaluateRuntimeSupervisor(bool isUserInitiatedToolOpen)
     {
+        var now = DateTimeOffset.UtcNow;
+        var coexistence = _coexistenceTriggerService.Evaluate(
+            _state?.SettingsSnapshot,
+            _desktopContext,
+            new CoexistenceResourceSnapshot(),
+            now);
+        var dnd = _doNotDisturbScheduleService.Evaluate(_state?.SettingsSnapshot, now);
         return _runtimeSupervisorService.Evaluate(
             _state?.SettingsSnapshot,
             _desktopContext,
             isUserInitiatedToolOpen,
-            fullscreenOtherOverride: _fullscreenMonitor.IsFullscreenOther);
+            fullscreenOtherOverride: _fullscreenMonitor.IsFullscreenOther,
+            coexistenceTriggers: coexistence,
+            doNotDisturbState: dnd);
     }
 
     private PetCommandBarState EnsurePetCommandBarState(IReadOnlyList<PetActor> pets, IReadOnlyList<TaskCard>? taskCards)
@@ -1742,9 +1780,37 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         Render();
     }
 
-    private static CompanionState ApplyAmbientWorkCompanionState(CompanionState state, DateTimeOffset now)
+    private CompanionState ApplyAmbientWorkCompanionState(CompanionState state, DateTimeOffset now)
     {
-        return state;
+        var coexistence = _coexistenceTriggerService.Evaluate(
+            state.SettingsSnapshot,
+            _desktopContext,
+            new CoexistenceResourceSnapshot(),
+            now);
+        var dnd = _doNotDisturbScheduleService.Evaluate(state.SettingsSnapshot, now);
+        if (!coexistence.IsQuieting && !dnd.IsActive)
+        {
+            return state;
+        }
+
+        var pets = state.ActivePets
+            .Select(pet => pet with
+            {
+                CurrentAnimationState = PetAnimationState.Sleep,
+                OverrideAnimationState = PetAnimationState.Sleep,
+                OverrideAnimationEndsAtUtc = now.AddSeconds(3)
+            })
+            .ToList();
+        var reason = coexistence.IsQuieting ? coexistence.Reason : dnd.Reason;
+        if (!string.Equals(reason, _lastForcedPetAnimationReason, StringComparison.OrdinalIgnoreCase) ||
+            now - _lastForcedPetAnimationAtUtc > TimeSpan.FromMinutes(5))
+        {
+            _coexistenceTriggerService.RecordPetAnimationForced(now, reason);
+            _lastForcedPetAnimationReason = reason;
+            _lastForcedPetAnimationAtUtc = now;
+        }
+
+        return state with { ActivePets = pets };
     }
 
     private async Task PersistAndRenderAsync()
@@ -2699,6 +2765,15 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         hydrated.TryAdd(RuntimeSupervisorService.MaxBackgroundTasksPerHourSetting, "4");
         hydrated.TryAdd(RuntimeSupervisorService.CpuBudgetPercentSetting, "20");
         hydrated.TryAdd(RuntimeSupervisorService.MemoryBudgetMbSetting, "512");
+        hydrated.TryAdd(CoexistenceTriggerService.FullscreenEnabledSetting, bool.TrueString);
+        hydrated.TryAdd(CoexistenceTriggerService.AppListEnabledSetting, bool.TrueString);
+        hydrated.TryAdd(CoexistenceTriggerService.CpuEnabledSetting, bool.TrueString);
+        hydrated.TryAdd(CoexistenceTriggerService.NetworkEnabledSetting, bool.TrueString);
+        hydrated.TryAdd(CoexistenceTriggerService.CpuThresholdSetting, "80");
+        hydrated.TryAdd(CoexistenceTriggerService.NetworkThresholdSetting, "80");
+        hydrated.TryAdd(DoNotDisturbScheduleService.EnabledSetting, bool.FalseString);
+        hydrated.TryAdd(DoNotDisturbScheduleService.ScheduleSetting, "[]");
+        hydrated.TryAdd(DoNotDisturbScheduleService.QuickToggleUntilUtcSetting, string.Empty);
         hydrated.TryAdd(AutonomousTaskScheduler.SchedulerEnabledSetting, bool.FalseString);
         hydrated.TryAdd(AutonomousTaskScheduler.SchedulerPreviewDispatchApprovedSetting, bool.FalseString);
         hydrated.TryAdd(AutonomousOperationsConfig.EnabledSetting, bool.FalseString);

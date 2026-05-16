@@ -148,6 +148,16 @@
                             automation:AutomationProperties.AutomationId="StopEverythingButton"
                             Content="STOP"
                             Click="StopEverythingButton_OnClick" />
+                    <Button x:Name="DoNotDisturbButton"
+                            Margin="6,0,0,0"
+                            Style="{StaticResource HudButtonStyle}"
+                            MinWidth="52"
+                            Background="#263B4D"
+                            BorderBrush="#76A9C8"
+                            automation:AutomationProperties.AutomationId="DoNotDisturbButton"
+                            Content="DND"
+                            ToolTip="Toggle Do Not Disturb for one hour"
+                            Click="DoNotDisturbButton_OnClick" />
                     <Border x:Name="EvidenceBadge"
                             Margin="6,0,0,0"
                             Padding="8,4"
