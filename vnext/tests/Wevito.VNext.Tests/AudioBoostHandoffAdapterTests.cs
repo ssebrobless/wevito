@@ -105,7 +105,7 @@ public sealed class AudioBoostHandoffAdapterTests
     {
         var tempRoot = CreateTempRoot();
         var artifactRoot = Path.Combine(tempRoot, "vnext", "artifacts", "pet-tasks", "20260507-audio-boost-handoff");
-        var dispatcher = new PetTaskAdapterPreviewDispatcher(
+        var dispatcher = new AgentToolDispatcher(
             audioBoostHandoffAdapter: new AudioBoostHandoffAdapter(new FakeAudioBoostEnvironment([], [], [], [])));
 
         var result = dispatcher.BuildPreview(BuildRequest(artifactRoot));

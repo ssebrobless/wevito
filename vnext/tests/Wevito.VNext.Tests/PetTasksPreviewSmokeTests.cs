@@ -17,9 +17,9 @@ public sealed class PetTasksPreviewSmokeTests
         File.WriteAllBytes(pngPath, BuildPngHeaderBytes(width: 24, height: 28));
         var beforeBytes = File.ReadAllBytes(pngPath);
 
-        var parser = new PetCommandParser();
-        var dispatcher = new PetTaskAdapterPreviewDispatcher();
-        var helper = new PetHelperProfile(AgentSlotService.BuildSlotId(0), "Bean", 0);
+        var parser = new ChatPromptParser();
+        var dispatcher = new AgentToolDispatcher();
+        var helper = new AgentSlotProfile(AgentSlotService.BuildSlotId(0), "Bean", 0);
         var intent = parser.Parse("Bean, review goose baby female blue sprites", [helper]);
         var card = parser.CreateDraftTaskCard(intent, [helper]);
         var policy = new ToolPolicy(

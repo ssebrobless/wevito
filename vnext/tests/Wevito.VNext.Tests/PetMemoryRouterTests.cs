@@ -55,7 +55,7 @@ public sealed class PetMemoryRouterTests
         var helpers = Helpers();
         var visualAgent = helpers.Single(helper => helper.PetNameSnapshot == "goose 1");
         store.AddExample(visualAgent.PetId, "spriteAudit", "goose baby female blue sprite review", "goose sprite QA");
-        var service = new PetCommandBarService(new PetCommandParser(), new ToolPolicyEvaluator(), new PetMemoryRouter(store));
+        var service = new ChatInputBarService(new ChatPromptParser(), new ToolPolicyEvaluator(), new PetMemoryRouter(store));
 
         var state = service.SubmitDraft(
             "review goose baby female blue sprites",
@@ -67,13 +67,13 @@ public sealed class PetMemoryRouterTests
         Assert.Equal(ToolPolicyDecisionStatus.Allowed, state.LastPolicyDecision?.Status);
     }
 
-    private static IReadOnlyList<PetHelperProfile> Helpers()
+    private static IReadOnlyList<AgentSlotProfile> Helpers()
     {
         return
         [
-            new PetHelperProfile(AgentSlotService.BuildSlotId(0), "goose 1", 0),
-            new PetHelperProfile(AgentSlotService.BuildSlotId(1), "fox 1", 1),
-            new PetHelperProfile(AgentSlotService.BuildSlotId(2), "frog 1", 2)
+            new AgentSlotProfile(AgentSlotService.BuildSlotId(0), "goose 1", 0),
+            new AgentSlotProfile(AgentSlotService.BuildSlotId(1), "fox 1", 1),
+            new AgentSlotProfile(AgentSlotService.BuildSlotId(2), "frog 1", 2)
         ];
     }
 

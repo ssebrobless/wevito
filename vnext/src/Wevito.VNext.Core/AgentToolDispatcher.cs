@@ -2,7 +2,7 @@ using Wevito.VNext.Contracts;
 
 namespace Wevito.VNext.Core;
 
-public sealed class PetTaskAdapterPreviewDispatcher
+public sealed class AgentToolDispatcher
 {
     private const string LocalDocsToolFamily = "localDocs";
     private const string LocalResearchToolFamily = "localResearch";
@@ -37,7 +37,7 @@ public sealed class PetTaskAdapterPreviewDispatcher
     private readonly AuditLedgerService? _auditLedgerService;
     private readonly KillSwitchService? _killSwitchService;
 
-    public PetTaskAdapterPreviewDispatcher(
+    public AgentToolDispatcher(
         LocalDocsPreviewAdapter? localDocsPreviewAdapter = null,
         LocalResearchPreviewAdapter? localResearchPreviewAdapter = null,
         SpriteAuditPreviewAdapter? spriteAuditPreviewAdapter = null,

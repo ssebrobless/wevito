@@ -209,6 +209,7 @@
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
@@ -248,7 +249,24 @@
                         Click="CloseButton_OnClick" />
             </Grid>
 
-            <Grid Grid.Row="1"
+            <ScrollViewer Grid.Row="1"
+                          Margin="0,8,0,0"
+                          HorizontalScrollBarVisibility="Auto"
+                          VerticalScrollBarVisibility="Disabled">
+                <StackPanel x:Name="TopTabStrip"
+                            Orientation="Horizontal"
+                            automation:AutomationProperties.AutomationId="ToolPopupTopTabStrip">
+                    <Button Margin="0,0,6,0" Padding="7,4" Style="{StaticResource PopupMiniButtonStyle}" Content="Chat" Tag="helpers" Click="ToolTabButton_OnClick" />
+                    <Button Margin="0,0,6,0" Padding="7,4" Style="{StaticResource PopupMiniButtonStyle}" Content="Activity" Tag="activity" Click="ToolTabButton_OnClick" />
+                    <Button Margin="0,0,6,0" Padding="7,4" Style="{StaticResource PopupMiniButtonStyle}" Content="Agents" Tag="helpers" Click="ToolTabButton_OnClick" />
+                    <Button Margin="0,0,6,0" Padding="7,4" Style="{StaticResource PopupMiniButtonStyle}" Content="Tools" Tag="basket" Click="ToolTabButton_OnClick" />
+                    <Button Margin="0,0,6,0" Padding="7,4" Style="{StaticResource PopupMiniButtonStyle}" Content="Benchmarks" Tag="benchmarks" Click="ToolTabButton_OnClick" />
+                    <Button Margin="0,0,6,0" Padding="7,4" Style="{StaticResource PopupMiniButtonStyle}" Content="Creative Lab" Tag="creative-lab" Click="ToolTabButton_OnClick" />
+                    <Button Padding="7,4" Style="{StaticResource PopupMiniButtonStyle}" Content="Settings" Tag="settings" Click="ToolTabButton_OnClick" />
+                </StackPanel>
+            </ScrollViewer>
+
+            <Grid Grid.Row="2"
                   Margin="0,10,0,10">
                 <Grid x:Name="BasketPanel">
                     <Grid.RowDefinitions>
@@ -834,6 +852,13 @@
                                        Foreground="#FF9FB7C4"
                                        FontSize="10"
                                        TextWrapping="Wrap" />
+                            <Button x:Name="RunFirstLaunchWizardButton"
+                                    Margin="0,8,0,0"
+                                    HorizontalAlignment="Left"
+                                    Style="{StaticResource PopupButtonStyle}"
+                                    automation:AutomationProperties.AutomationId="RunFirstLaunchWizardButton"
+                                    Content="Run first-launch wizard again"
+                                    Click="RunFirstLaunchWizardButton_OnClick" />
                         </StackPanel>
                     </Border>
                     <Border Margin="0,12,0,0"
@@ -1044,7 +1069,7 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <StackPanel>
-                            <TextBlock Text="PET TASKS command bar"
+                            <TextBlock Text="Chat command bar"
                                        Foreground="#FFF0F4F5"
                                        FontSize="13"
                                        FontWeight="SemiBold" />
@@ -1741,7 +1766,7 @@
             </Grid>
 
             <UniformGrid x:Name="BasketButtons"
-                         Grid.Row="2"
+                         Grid.Row="3"
                          Columns="2">
                 <Button x:Name="PasteButton"
                         Margin="0,0,6,0"

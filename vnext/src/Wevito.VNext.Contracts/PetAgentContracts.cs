@@ -1,6 +1,6 @@
 namespace Wevito.VNext.Contracts;
 
-public enum PetHelperAvailability
+public enum AgentSlotAvailability
 {
     Available,
     Drafting,
@@ -235,12 +235,12 @@ public enum ScreenCaptureCapabilityStatus
     NotImplemented
 }
 
-public sealed record PetHelperProfile(
+public sealed record AgentSlotProfile(
     Guid PetId,
     string PetNameSnapshot,
     int SlotIndex,
     AgentSlotStatus AgentStatus = AgentSlotStatus.Idle,
-    PetHelperAvailability Availability = PetHelperAvailability.Available,
+    AgentSlotAvailability Availability = AgentSlotAvailability.Available,
     Guid? CurrentTaskCardId = null,
     IReadOnlyList<string>? AllowedToolFamilies = null,
     IReadOnlyDictionary<string, string>? PreferenceSnapshot = null);
@@ -277,7 +277,7 @@ public static class PetAgentContractLimits
 }
 
 public sealed record ActiveHelperRoster(
-    IReadOnlyList<PetHelperProfile> Helpers,
+    IReadOnlyList<AgentSlotProfile> Helpers,
     DateTimeOffset UpdatedAtUtc = default);
 
 public sealed record TaskIntent(
@@ -322,8 +322,8 @@ public sealed record ToolPolicyDecision(
     ToolPolicy? PolicySnapshot = null,
     string Reason = "");
 
-public sealed record PetCommandBarState(
-    IReadOnlyList<PetHelperProfile> ActiveHelpers,
+public sealed record ChatInputBarState(
+    IReadOnlyList<AgentSlotProfile> ActiveHelpers,
     string InputText = "",
     TaskIntent? LastIntent = null,
     TaskCard? LastTaskCard = null,

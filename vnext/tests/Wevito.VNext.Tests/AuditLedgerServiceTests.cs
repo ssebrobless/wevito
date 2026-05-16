@@ -72,7 +72,7 @@ public sealed class AuditLedgerServiceTests
         Directory.CreateDirectory(docsRoot);
         File.WriteAllText(Path.Combine(docsRoot, "plan.md"), "local docs plan");
         var ledger = new AuditLedgerService(Path.Combine(root, "audit", "ledger.sqlite"));
-        var dispatcher = new PetTaskAdapterPreviewDispatcher(auditLedgerService: ledger);
+        var dispatcher = new AgentToolDispatcher(auditLedgerService: ledger);
 
         var result = dispatcher.BuildPreview(BuildRequest("localDocs", TaskKind.SummarizeDocs, docsRoot, [docsRoot]));
 

@@ -3,9 +3,9 @@ using Wevito.VNext.Core;
 
 namespace Wevito.VNext.Tests;
 
-public sealed class PetCommandBarServiceTests
+public sealed class ChatInputBarServiceTests
 {
-    private readonly PetCommandBarService _service = new();
+    private readonly ChatInputBarService _service = new();
     private readonly Guid _beanId = Guid.Parse("10000000-0000-0000-0000-000000000001");
     private readonly Guid _pipId = Guid.Parse("10000000-0000-0000-0000-000000000002");
     private readonly Guid _nixId = Guid.Parse("10000000-0000-0000-0000-000000000003");
@@ -14,10 +14,10 @@ public sealed class PetCommandBarServiceTests
     public void BuildInitialState_CapsActiveHelpersAtThree()
     {
         var state = _service.BuildInitialState([
-            new PetHelperProfile(_beanId, "Bean", 0),
-            new PetHelperProfile(_pipId, "Pip", 1),
-            new PetHelperProfile(_nixId, "Nix", 2),
-            new PetHelperProfile(Guid.NewGuid(), "Juniper", 3)
+            new AgentSlotProfile(_beanId, "Bean", 0),
+            new AgentSlotProfile(_pipId, "Pip", 1),
+            new AgentSlotProfile(_nixId, "Nix", 2),
+            new AgentSlotProfile(Guid.NewGuid(), "Juniper", 3)
         ]);
 
         Assert.Equal(PetAgentContractLimits.MaxActiveHelpers, state.ActiveHelpers.Count);
@@ -97,13 +97,13 @@ public sealed class PetCommandBarServiceTests
         Assert.Equal(ApprovalRequirement.HandOffRequired, state.LastPolicyDecision?.ApprovalRequirement);
     }
 
-    private IReadOnlyList<PetHelperProfile> Helpers()
+    private IReadOnlyList<AgentSlotProfile> Helpers()
     {
         return
         [
-            new PetHelperProfile(_beanId, "Bean", 0),
-            new PetHelperProfile(_pipId, "Pip", 1),
-            new PetHelperProfile(_nixId, "Nix", 2)
+            new AgentSlotProfile(_beanId, "Bean", 0),
+            new AgentSlotProfile(_pipId, "Pip", 1),
+            new AgentSlotProfile(_nixId, "Nix", 2)
         ];
     }
 

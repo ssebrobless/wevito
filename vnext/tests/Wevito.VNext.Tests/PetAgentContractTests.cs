@@ -11,9 +11,9 @@ public sealed class PetAgentContractTests
     {
         var helpers = new[]
         {
-            new PetHelperProfile(Guid.NewGuid(), "Bean", 0),
-            new PetHelperProfile(Guid.NewGuid(), "Pip", 1),
-            new PetHelperProfile(Guid.NewGuid(), "Nix", 2)
+            new AgentSlotProfile(Guid.NewGuid(), "Bean", 0),
+            new AgentSlotProfile(Guid.NewGuid(), "Pip", 1),
+            new AgentSlotProfile(Guid.NewGuid(), "Nix", 2)
         };
 
         var roster = new ActiveHelperRoster(helpers);
@@ -85,7 +85,7 @@ public sealed class PetAgentContractTests
     }
 
     [Fact]
-    public void PetCommandBarState_RoundTripsQueuedTaskCards()
+    public void ChatInputBarState_RoundTripsQueuedTaskCards()
     {
         var petId = Guid.Parse("66666666-6666-6666-6666-666666666666");
         var intent = new TaskIntent(
@@ -103,8 +103,8 @@ public sealed class PetAgentContractTests
             AssignedPetId: petId,
             AssignedPetNameSnapshot: "Bean",
             ToolFamily: "spriteAudit");
-        var state = new PetCommandBarState(
-            [new PetHelperProfile(petId, "Bean", 0)],
+        var state = new ChatInputBarState(
+            [new AgentSlotProfile(petId, "Bean", 0)],
             LastIntent: intent,
             LastTaskCard: card,
             StatusMessage: "1 saved",
@@ -132,7 +132,7 @@ public sealed class PetAgentContractTests
             ]);
 
         var json = JsonSerializer.Serialize(state, JsonDefaults.Options);
-        var roundTrip = JsonSerializer.Deserialize<PetCommandBarState>(json, JsonDefaults.Options);
+        var roundTrip = JsonSerializer.Deserialize<ChatInputBarState>(json, JsonDefaults.Options);
 
         Assert.Contains("\"queuedTaskCards\"", json);
         Assert.Contains("\"wellbeingSnapshots\"", json);

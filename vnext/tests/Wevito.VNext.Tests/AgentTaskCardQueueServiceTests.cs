@@ -3,12 +3,12 @@ using Wevito.VNext.Core;
 
 namespace Wevito.VNext.Tests;
 
-public sealed class PetTaskCardQueueServiceTests
+public sealed class AgentTaskCardQueueServiceTests
 {
     [Fact]
     public void AppendDraft_AddsNewestCardFirstAndCapsQueue()
     {
-        var service = new PetTaskCardQueueService(maxCards: 2);
+        var service = new AgentTaskCardQueueService(maxCards: 2);
         var older = BuildCard("older", DateTimeOffset.Parse("2026-05-05T10:00:00Z"));
         var middle = BuildCard("middle", DateTimeOffset.Parse("2026-05-05T10:01:00Z"));
         var newer = BuildCard("newer", DateTimeOffset.Parse("2026-05-05T10:02:00Z"));
@@ -24,7 +24,7 @@ public sealed class PetTaskCardQueueServiceTests
     [Fact]
     public void AppendDraft_ReplacesExistingCardWithSameId()
     {
-        var service = new PetTaskCardQueueService();
+        var service = new AgentTaskCardQueueService();
         var createdAt = DateTimeOffset.Parse("2026-05-05T10:00:00Z");
         var original = BuildCard("review sprites", createdAt);
         var updated = original with
@@ -44,7 +44,7 @@ public sealed class PetTaskCardQueueServiceTests
     [Fact]
     public void TryTransitionStatus_ApprovesWaitingCardWithoutRunningIt()
     {
-        var service = new PetTaskCardQueueService();
+        var service = new AgentTaskCardQueueService();
         var timestamp = DateTimeOffset.Parse("2026-05-05T10:00:00Z");
         var card = BuildCard("run build proof", timestamp) with
         {
@@ -70,7 +70,7 @@ public sealed class PetTaskCardQueueServiceTests
     [Fact]
     public void TryTransitionStatus_BlocksApprovalWhenCardIsOnlyDraft()
     {
-        var service = new PetTaskCardQueueService();
+        var service = new AgentTaskCardQueueService();
         var timestamp = DateTimeOffset.Parse("2026-05-05T10:00:00Z");
         var card = BuildCard("review sprites", timestamp);
 
@@ -92,7 +92,7 @@ public sealed class PetTaskCardQueueServiceTests
     [Fact]
     public void TryTransitionStatus_CancelsDraftWithoutExecution()
     {
-        var service = new PetTaskCardQueueService();
+        var service = new AgentTaskCardQueueService();
         var timestamp = DateTimeOffset.Parse("2026-05-05T10:00:00Z");
         var card = BuildCard("review sprites", timestamp);
 
@@ -113,7 +113,7 @@ public sealed class PetTaskCardQueueServiceTests
     [Fact]
     public void TryApplyAdapterResult_MovesDraftPreviewToReviewingWithAuditPath()
     {
-        var service = new PetTaskCardQueueService();
+        var service = new AgentTaskCardQueueService();
         var timestamp = DateTimeOffset.Parse("2026-05-05T13:30:00Z");
         var card = BuildCard("review sprites", timestamp);
         var result = new TaskAdapterResult(
@@ -139,7 +139,7 @@ public sealed class PetTaskCardQueueServiceTests
     [Fact]
     public void TryApplyAdapterResult_BlocksPreviewFromWaitingForApproval()
     {
-        var service = new PetTaskCardQueueService();
+        var service = new AgentTaskCardQueueService();
         var timestamp = DateTimeOffset.Parse("2026-05-05T13:30:00Z");
         var card = BuildCard("run build proof", timestamp) with
         {
@@ -164,7 +164,7 @@ public sealed class PetTaskCardQueueServiceTests
     [Fact]
     public void TryApplyAdapterResult_MovesReviewingExecutionToDoneWithAuditPath()
     {
-        var service = new PetTaskCardQueueService();
+        var service = new AgentTaskCardQueueService();
         var timestamp = DateTimeOffset.Parse("2026-05-05T14:45:00Z");
         var card = BuildCard("translate Hello goose to Spanish", timestamp) with
         {
@@ -205,7 +205,7 @@ public sealed class PetTaskCardQueueServiceTests
         Directory.CreateDirectory(Path.GetDirectoryName(reportPath)!);
         File.WriteAllText(reportPath, "# report");
 
-        var resolution = PetTaskCardQueueService.ResolveArtifactReportPath(reportPath, repoRoot);
+        var resolution = AgentTaskCardQueueService.ResolveArtifactReportPath(reportPath, repoRoot);
 
         Assert.True(resolution.IsAllowed, resolution.BlockReason);
         Assert.Equal(Path.GetFullPath(reportPath), resolution.ReportPath);
@@ -219,7 +219,7 @@ public sealed class PetTaskCardQueueServiceTests
         var artifactFolder = Path.Combine(repoRoot, "vnext", "artifacts", "pet-tasks", "20260506-local-docs");
         Directory.CreateDirectory(artifactFolder);
 
-        var resolution = PetTaskCardQueueService.ResolveArtifactReportPath(artifactFolder, repoRoot);
+        var resolution = AgentTaskCardQueueService.ResolveArtifactReportPath(artifactFolder, repoRoot);
 
         Assert.True(resolution.IsAllowed, resolution.BlockReason);
         Assert.Equal(Path.Combine(Path.GetFullPath(artifactFolder), "run-summary.md"), resolution.ReportPath);
@@ -232,7 +232,7 @@ public sealed class PetTaskCardQueueServiceTests
         var repoRoot = Path.Combine(Path.GetTempPath(), "wevito-artifact-control-tests", Guid.NewGuid().ToString("N"));
         var outsideReport = Path.Combine(repoRoot, "docs", "run-summary.md");
 
-        var resolution = PetTaskCardQueueService.ResolveArtifactReportPath(outsideReport, repoRoot);
+        var resolution = AgentTaskCardQueueService.ResolveArtifactReportPath(outsideReport, repoRoot);
 
         Assert.False(resolution.IsAllowed);
         Assert.Contains("outside artifact root", resolution.BlockReason);

@@ -28,16 +28,18 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private readonly PetSimulationEngine _petSimulationEngine = new();
     private readonly PetWellbeingInterpreter _petWellbeingInterpreter = new();
     private readonly BasketService _basketService = new(5);
-    private readonly PetCommandBarService _petCommandBarService = new();
+    private readonly ChatInputBarService _petCommandBarService = new();
     private readonly AgentSlotService _agentSlotService = new();
-    private readonly PetTaskCardQueueService _petTaskCardQueueService = new();
+    private readonly AgentTaskCardQueueService _petTaskCardQueueService = new();
     private readonly AuditLedgerService _auditLedgerService = new();
     private readonly ActivitySummaryService _activitySummaryService;
     private readonly LiveStatusFeed _liveStatusFeed;
     private readonly EvidenceCollectionStatusService _evidenceCollectionStatusService;
     private readonly KillSwitchService _killSwitchService;
+    private readonly AiIdentityService _aiIdentityService;
+    private readonly FirstLaunchWizardStateService _firstLaunchWizardStateService;
     private readonly OllamaModelBootstrapService _ollamaModelBootstrapService;
-    private readonly PetTaskAdapterPreviewDispatcher _petTaskAdapterPreviewDispatcher;
+    private readonly AgentToolDispatcher _petTaskAdapterPreviewDispatcher;
     private readonly RuntimeSupervisorService _runtimeSupervisorService = new();
     private readonly RuntimeBudgetMeter _runtimeBudgetMeter = new();
     private readonly CoexistenceTriggerService _coexistenceTriggerService;
@@ -81,7 +83,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private string _lastForcedPetAnimationReason = "";
     private CompanionMode? _lastLoggedMode;
     private string _lastPublishedRegionsKey = "";
-    private PetCommandBarState? _petCommandBarState;
+    private ChatInputBarState? _petCommandBarState;
 
     public ShellCoordinator(Application application)
     {
@@ -90,6 +92,8 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _activitySummaryService = new ActivitySummaryService(_auditLedgerService, plainLanguageExplainer);
         _liveStatusFeed = new LiveStatusFeed(_auditLedgerService, plainLanguageExplainer);
         _killSwitchService = new KillSwitchService(() => _state?.SettingsSnapshot ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase), _auditLedgerService);
+        _aiIdentityService = new AiIdentityService(_auditLedgerService, _killSwitchService);
+        _firstLaunchWizardStateService = new FirstLaunchWizardStateService(_aiIdentityService, _auditLedgerService, _killSwitchService);
         _coexistenceTriggerService = new CoexistenceTriggerService(_auditLedgerService, _killSwitchService);
         _doNotDisturbScheduleService = new DoNotDisturbScheduleService(_auditLedgerService, _killSwitchService);
         _ollamaModelBootstrapService = new OllamaModelBootstrapService(
@@ -120,7 +124,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             deterministicAdapter: new LocalModelAdapter(_killSwitchService),
             onnxPhiWeightsPresent: () => onnxPhiAdapter.HasWeights);
         _toolPopupWindow.ConfigureChatServices(activeLocalModelAdapter, _auditLedgerService, _killSwitchService, ResolveRepoRootOrBaseDirectory());
-        _petTaskAdapterPreviewDispatcher = new PetTaskAdapterPreviewDispatcher(activeLocalModelAdapter: activeLocalModelAdapter, auditLedgerService: _auditLedgerService, killSwitchService: _killSwitchService);
+        _petTaskAdapterPreviewDispatcher = new AgentToolDispatcher(activeLocalModelAdapter: activeLocalModelAdapter, auditLedgerService: _auditLedgerService, killSwitchService: _killSwitchService);
         _autonomousTaskScheduler = new AutonomousTaskScheduler(_runtimeSupervisorService, _runtimeBudgetMeter, _auditLedgerService, _killSwitchService);
         _autonomousBetaDecisionService = new AutonomousBetaDecisionService(_auditLedgerService);
         _autonomousOperationsLoop = new AutonomousOperationsLoop(_autonomousBetaDecisionService, _auditLedgerService, _killSwitchService);
@@ -174,6 +178,8 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _toolPopupWindow.DeleteRequested += async ids => await DeleteBasketItemsAsync(ids);
         _toolPopupWindow.LinksDropped += async urls => await AddLinksAsync(urls, "drop");
         _toolPopupWindow.SettingChanged += OnSettingChanged;
+        _toolPopupWindow.ToolTabRequested += async toolId => await OpenToolTabAsync(toolId);
+        _toolPopupWindow.RunFirstLaunchWizardRequested += async () => await RunFirstLaunchWizardAsync(force: true);
         _toolPopupWindow.AutonomousBetaConsentConfirmed += async () => await EnableAutonomousBetaAfterConsentAsync();
         _toolPopupWindow.DevToolCommandRequested += async command => await HandleDevToolCommandAsync(command);
         _toolPopupWindow.ActionMenuRequested += actionId =>
@@ -232,6 +238,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _homeWindow.Show();
         _roamBandWindow.Show();
         _toolPopupWindow.Show();
+        await RunFirstLaunchWizardAsync(force: false);
 
         _brokerProcess = BrokerProcessManager.Start(_pipeName);
         TraceLog.Write("shell", $"broker-started pid={_brokerProcess.Id} pipe={_pipeName}");
@@ -431,7 +438,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         var taskCards = _petTaskCardQueueService.AppendDraft(_state.TaskCards, result.TaskCard);
         _state = _state with { TaskCards = taskCards };
         var helpers = BuildHelperProfiles(_state.ActivePets);
-        _petCommandBarState = new PetCommandBarState(
+        _petCommandBarState = new ChatInputBarState(
             helpers,
             result.TaskCard.Intent.RawText,
             result.TaskCard.Intent,
@@ -619,7 +626,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             .Where(action => action.IsPrimaryAction)
             .ToDictionary(action => action.Id, action => _petSimulationEngine.IsActionEnabled(action.Id, _state.ActivePets), StringComparer.OrdinalIgnoreCase);
         var habitatLoadout = HabitatLoadoutResolver.Resolve(_state, _content);
-        var petCommandBarState = EnsurePetCommandBarState(_state.ActivePets, _state.TaskCards);
+        var petCommandBarState = EnsureChatInputBarState(_state.ActivePets, _state.TaskCards);
         var now = DateTimeOffset.UtcNow;
         var supervisorStatus = EvaluateRuntimeSupervisor(isUserInitiatedToolOpen: _state.ActiveTool.IsOpen);
         var activitySummary = _activitySummaryService.BuildDaily(now);
@@ -706,19 +713,19 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             doNotDisturbState: dnd);
     }
 
-    private PetCommandBarState EnsurePetCommandBarState(IReadOnlyList<PetActor> pets, IReadOnlyList<TaskCard>? taskCards)
+    private ChatInputBarState EnsureChatInputBarState(IReadOnlyList<PetActor> pets, IReadOnlyList<TaskCard>? taskCards)
     {
         var helpers = BuildHelperProfiles(pets);
         var snapshots = _petWellbeingInterpreter.BuildSnapshots(pets);
         if (_petCommandBarState is null || !SameHelperRoster(_petCommandBarState.ActiveHelpers, helpers))
         {
-            _petCommandBarState = BuildPetCommandBarState(helpers, taskCards, snapshots);
+            _petCommandBarState = BuildChatInputBarState(helpers, taskCards, snapshots);
         }
 
         return _petCommandBarState with { WellbeingSnapshots = snapshots };
     }
 
-    private PetCommandBarState BuildPetCommandBarState(IReadOnlyList<PetHelperProfile> helpers, IReadOnlyList<TaskCard>? taskCards, IReadOnlyList<PetWellbeingSnapshot> snapshots)
+    private ChatInputBarState BuildChatInputBarState(IReadOnlyList<AgentSlotProfile> helpers, IReadOnlyList<TaskCard>? taskCards, IReadOnlyList<PetWellbeingSnapshot> snapshots)
     {
         var cards = (taskCards ?? [])
             .OrderByDescending(card => card.UpdatedAtUtc == default ? card.CreatedAtUtc : card.UpdatedAtUtc)
@@ -730,7 +737,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         }
 
         var latest = cards[0];
-        return new PetCommandBarState(
+        return new ChatInputBarState(
             helpers,
             latest.Intent.RawText,
             latest.Intent,
@@ -742,7 +749,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             WellbeingSnapshots: snapshots);
     }
 
-    private static bool SameHelperRoster(IReadOnlyList<PetHelperProfile> current, IReadOnlyList<PetHelperProfile> next)
+    private static bool SameHelperRoster(IReadOnlyList<AgentSlotProfile> current, IReadOnlyList<AgentSlotProfile> next)
     {
         if (current.Count != next.Count)
         {
@@ -760,7 +767,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         return true;
     }
 
-    private IReadOnlyList<PetHelperProfile> BuildHelperProfiles(IReadOnlyList<PetActor> pets)
+    private IReadOnlyList<AgentSlotProfile> BuildHelperProfiles(IReadOnlyList<PetActor> pets)
     {
         var previousSlots = _petCommandBarState?.ActiveHelpers
             .Select(helper => new AgentSlot(
@@ -932,6 +939,61 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         await ToggleToolAsync("settings");
     }
 
+    private async Task OpenToolTabAsync(string toolId)
+    {
+        if (_state is null)
+        {
+            return;
+        }
+
+        if (string.Equals(toolId, "creative-lab", StringComparison.OrdinalIgnoreCase))
+        {
+            await OpenCreativeLearningLabAsync();
+            return;
+        }
+
+        _state = _state with
+        {
+            ActiveTool = new ToolSession(toolId, true),
+            SettingsSnapshot = WithSetting(_state.SettingsSnapshot, "webtools_visible", bool.TrueString)
+        };
+        TraceLog.Write("ui-command", $"open-tool-tab tool={toolId}");
+        ApplyModeAndLayout();
+        await PersistAndRenderAsync();
+    }
+
+    private async Task RunFirstLaunchWizardAsync(bool force)
+    {
+        if (_state is null)
+        {
+            return;
+        }
+
+        if (!force && !_firstLaunchWizardStateService.ShouldRun(_state.SettingsSnapshot))
+        {
+            return;
+        }
+
+        var wizard = new FirstLaunchWizardWindow(_firstLaunchWizardStateService)
+        {
+            Owner = _homeWindow
+        };
+        wizard.LoadSettings(_state.SettingsSnapshot, _state.ActivePets);
+        var completed = wizard.ShowDialog() == true;
+        if (!completed && !force)
+        {
+            return;
+        }
+
+        _state = _state with
+        {
+            SettingsSnapshot = wizard.ResultSettings,
+            ActiveTool = new ToolSession("helpers", true)
+        };
+        SetFeedback($"{_aiIdentityService.GetAiName(_state.SettingsSnapshot)} is ready. Chat is the primary surface; pets stay visually normal.");
+        await PersistAndRenderAsync();
+    }
+
     private async Task ActivateKillSwitchAsync()
     {
         if (_state is null)
@@ -1069,7 +1131,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _state = _state with { TaskCards = taskCards };
         var helpers = BuildHelperProfiles(_state.ActivePets);
         var snapshots = _petWellbeingInterpreter.BuildSnapshots(_state.ActivePets);
-        _petCommandBarState = new PetCommandBarState(
+        _petCommandBarState = new ChatInputBarState(
             helpers,
             updatedCard?.Intent.RawText ?? "",
             updatedCard?.Intent,
@@ -1144,7 +1206,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _state = _state with { TaskCards = taskCards };
         var helpers = BuildHelperProfiles(_state.ActivePets);
         var snapshots = _petWellbeingInterpreter.BuildSnapshots(_state.ActivePets);
-        _petCommandBarState = new PetCommandBarState(
+        _petCommandBarState = new ChatInputBarState(
             helpers,
             updatedCard?.Intent.RawText ?? "",
             updatedCard?.Intent,
@@ -1224,7 +1286,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _state = _state with { TaskCards = taskCards };
         var helpers = BuildHelperProfiles(_state.ActivePets);
         var snapshots = _petWellbeingInterpreter.BuildSnapshots(_state.ActivePets);
-        _petCommandBarState = new PetCommandBarState(
+        _petCommandBarState = new ChatInputBarState(
             helpers,
             updatedCard?.Intent.RawText ?? "",
             updatedCard?.Intent,
@@ -2752,6 +2814,8 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         hydrated.TryAdd("show_pet_names", bool.FalseString);
         hydrated.TryAdd("show_status_summary", bool.TrueString);
         hydrated.TryAdd("webtools_visible", bool.FalseString);
+        hydrated.TryAdd(AiIdentityService.AiIdentityNameSetting, AiIdentityService.DefaultAiName);
+        hydrated.TryAdd(FirstLaunchWizardStateService.CompletedSetting, bool.FalseString);
         hydrated.TryAdd("pet_model_adapter_enabled", bool.FalseString);
         hydrated.TryAdd("pet_model_first_call_approved", bool.FalseString);
         hydrated.TryAdd(KillSwitchService.KillSwitchSetting, bool.FalseString);

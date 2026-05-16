@@ -3,9 +3,9 @@ using Wevito.VNext.Core;
 
 namespace Wevito.VNext.Tests;
 
-public sealed class PetTaskAdapterPreviewDispatcherTests
+public sealed class AgentToolDispatcherTests
 {
-    private readonly PetTaskAdapterPreviewDispatcher _dispatcher = new();
+    private readonly AgentToolDispatcher _dispatcher = new();
 
     [Fact]
     public void BuildPreview_RoutesLocalDocsRequests()

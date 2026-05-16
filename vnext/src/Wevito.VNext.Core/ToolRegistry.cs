@@ -89,13 +89,13 @@ public sealed class ToolRegistry
     }
 
     public static ToolRegistry CreateDefault(
-        PetTaskAdapterPreviewDispatcher? dispatcher = null,
+        AgentToolDispatcher? dispatcher = null,
         Func<IReadOnlyDictionary<string, string>>? settingsProvider = null,
         AuditLedgerService? auditLedgerService = null,
         string? toolDefinitionsPath = null,
         DateTimeOffset? nowUtc = null)
     {
-        dispatcher ??= new PetTaskAdapterPreviewDispatcher(auditLedgerService: auditLedgerService);
+        dispatcher ??= new AgentToolDispatcher(auditLedgerService: auditLedgerService);
         var declaredFamilies = LoadDeclaredToolFamilies(toolDefinitionsPath);
         var candidates = BuildDefaultDescriptors(dispatcher);
         var undeclared = declaredFamilies.Count == 0
@@ -114,7 +114,7 @@ public sealed class ToolRegistry
         return new ToolRegistry(candidates, settingsProvider, auditLedgerService, nowUtc);
     }
 
-    public static IReadOnlyList<ToolDescriptor> BuildDefaultDescriptors(PetTaskAdapterPreviewDispatcher dispatcher)
+    public static IReadOnlyList<ToolDescriptor> BuildDefaultDescriptors(AgentToolDispatcher dispatcher)
     {
         return
         [
@@ -141,7 +141,7 @@ public sealed class ToolRegistry
         string description,
         ToolRiskLevel risk,
         bool requiresApproval,
-        PetTaskAdapterPreviewDispatcher dispatcher)
+        AgentToolDispatcher dispatcher)
     {
         return new ToolDescriptor(
             toolFamily,

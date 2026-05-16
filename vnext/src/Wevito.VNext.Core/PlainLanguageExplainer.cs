@@ -12,6 +12,7 @@ public sealed class PlainLanguageExplainer
     public static IReadOnlyList<string> KnownPacketKinds { get; } =
     [
         "activity_summary",
+        "ai_identity_set",
         "agent_slot_assigned",
         "agent_slot_renamed",
         "agent_slot_status_changed",
@@ -66,6 +67,8 @@ public sealed class PlainLanguageExplainer
         "ram_pressure_event",
         "budget_meter_snapshot",
         "focus_steal_snapshot",
+        "first_launch_completed",
+        "first_launch_step_completed",
         "image_gen_idle_guard_blocked",
         "power_resume",
         "power_sleep",
@@ -122,6 +125,7 @@ public sealed class PlainLanguageExplainer
         return packetKind switch
         {
             "activity_summary" => "Summarized Wevito's recent helper activity.",
+            "ai_identity_set" => "Updated Wevito's local AI identity name.",
             "agent_slot_assigned" => "Assigned a visible pet to an agent slot.",
             "agent_slot_renamed" => "Updated an agent slot name from the active pet roster.",
             "agent_slot_status_changed" => "Updated an agent slot status.",
@@ -176,6 +180,8 @@ public sealed class PlainLanguageExplainer
             "ram_pressure_emergency" => "Stopped helper work because memory pressure was unsafe.",
             "budget_meter_snapshot" => "Recorded the daily resource budget snapshot.",
             "focus_steal_snapshot" => "Recorded the daily focus-steal counter snapshot.",
+            "first_launch_completed" => "Completed the first-launch setup wizard.",
+            "first_launch_step_completed" => "Completed one step of the first-launch setup wizard.",
             "image_gen_idle_guard_blocked" => "Blocked background image generation because a pet was not idle.",
             "power_sleep" => "Wevito entered Quiet mode because the system slept.",
             "power_resume" => "Wevito recorded the system resuming.",
