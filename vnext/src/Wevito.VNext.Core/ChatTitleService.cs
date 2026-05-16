@@ -39,7 +39,7 @@ public sealed class ChatTitleService
         var response = await _modelAdapter.SuggestAsync(new ModelRequest(
             sessionId,
             "Wevito",
-            Wevito.VNext.Contracts.PetHelperRole.ResearchHelper,
+            "ChatAgent",
             "chatTitle",
             "Create a 5-7 word title for this chat.",
             prompt,

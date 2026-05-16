@@ -19,7 +19,7 @@ public sealed class PetTasksPreviewSmokeTests
 
         var parser = new PetCommandParser();
         var dispatcher = new PetTaskAdapterPreviewDispatcher();
-        var helper = new PetHelperProfile(Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), "Bean", PetHelperRole.SpriteReviewHelper);
+        var helper = new PetHelperProfile(AgentSlotService.BuildSlotId(0), "Bean", 0);
         var intent = parser.Parse("Bean, review goose baby female blue sprites", [helper]);
         var card = parser.CreateDraftTaskCard(intent, [helper]);
         var policy = new ToolPolicy(

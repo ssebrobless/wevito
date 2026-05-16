@@ -115,7 +115,7 @@ public sealed class OllamaLocalModelAdapterTests
         return new ModelRequest(
             Guid.Parse("70000000-0000-0000-0000-000000000001"),
             "Scout",
-            PetHelperRole.ResearchHelper,
+            "ResearchAgent",
             "localResearch",
             "research local docs",
             "localResearch preview ready",

@@ -69,7 +69,7 @@ public sealed class KillSwitchServiceTests
         Assert.Equal("kill_switch=true", eval.Message);
 
         var model = new LocalModelAdapter(killSwitch);
-        var response = await model.SuggestAsync(new ModelRequest(Guid.NewGuid(), "goose 1", PetHelperRole.ResearchHelper, "localDocs", "task", "summary"));
+        var response = await model.SuggestAsync(new ModelRequest(Guid.NewGuid(), "goose 1", "ResearchAgent", "localDocs", "task", "summary"));
         Assert.False(response.DidCallProvider);
         Assert.Equal("kill_switch=true", response.BlockReason);
     }

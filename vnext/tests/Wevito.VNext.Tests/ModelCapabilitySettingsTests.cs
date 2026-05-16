@@ -50,7 +50,7 @@ public sealed class ModelCapabilitySettingsTests
         var service = new PetModelSummaryService(fake);
         var request = BuildRequest();
         var result = BuildResult(request);
-        var helper = new PetHelperProfile(Guid.NewGuid(), "goose 1", PetHelperRole.SpriteReviewHelper);
+        var helper = new PetHelperProfile(Guid.NewGuid(), "goose 1", 0);
 
         var enriched = await service.AppendIfAllowedAsync(request, result, helper, approvedForModelCall: false);
 
@@ -65,7 +65,7 @@ public sealed class ModelCapabilitySettingsTests
         var service = new PetModelSummaryService(fake);
         var request = BuildRequest();
         var result = BuildResult(request);
-        var helper = new PetHelperProfile(Guid.NewGuid(), "goose 1", PetHelperRole.SpriteReviewHelper);
+        var helper = new PetHelperProfile(Guid.NewGuid(), "goose 1", 0);
 
         var enriched = await service.AppendIfAllowedAsync(request, result, helper, approvedForModelCall: true);
 

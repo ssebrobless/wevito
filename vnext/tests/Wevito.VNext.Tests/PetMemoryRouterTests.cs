@@ -11,8 +11,8 @@ public sealed class PetMemoryRouterTests
         var root = CreateTempRoot();
         var store = new PetMemoryStore(root);
         var helpers = Helpers();
-        var inspector = helpers.Single(helper => helper.PetNameSnapshot == "Inspector");
-        store.AddExample(inspector.PetId, "spriteAudit", "review goose baby female blue sprites", "goose sprite QA");
+        var visualAgent = helpers.Single(helper => helper.PetNameSnapshot == "goose 1");
+        store.AddExample(visualAgent.PetId, "spriteAudit", "review goose baby female blue sprites", "goose sprite QA");
         var router = new PetMemoryRouter(store);
         var intent = new TaskIntent(
             Guid.NewGuid(),
@@ -24,7 +24,7 @@ public sealed class PetMemoryRouterTests
         var decision = router.Route(intent, helpers);
 
         Assert.True(decision.UsedMemory);
-        Assert.Equal("Inspector", decision.Helper?.PetNameSnapshot);
+        Assert.Equal("goose 1", decision.Helper?.PetNameSnapshot);
     }
 
     [Fact]
@@ -53,8 +53,8 @@ public sealed class PetMemoryRouterTests
         var root = CreateTempRoot();
         var store = new PetMemoryStore(root);
         var helpers = Helpers();
-        var inspector = helpers.Single(helper => helper.PetNameSnapshot == "Inspector");
-        store.AddExample(inspector.PetId, "spriteAudit", "goose baby female blue sprite review", "goose sprite QA");
+        var visualAgent = helpers.Single(helper => helper.PetNameSnapshot == "goose 1");
+        store.AddExample(visualAgent.PetId, "spriteAudit", "goose baby female blue sprite review", "goose sprite QA");
         var service = new PetCommandBarService(new PetCommandParser(), new ToolPolicyEvaluator(), new PetMemoryRouter(store));
 
         var state = service.SubmitDraft(
@@ -62,7 +62,7 @@ public sealed class PetMemoryRouterTests
             helpers,
             [new ToolPolicy("sprite-audit-policy", "spriteAudit", ToolAccessMode.ReadOnly, ToolRiskLevel.Low, ApprovalRequirement.None)]);
 
-        Assert.Equal("Inspector", state.LastTaskCard?.AssignedPetNameSnapshot);
+        Assert.Equal("goose 1", state.LastTaskCard?.AssignedPetNameSnapshot);
         Assert.Contains(state.LastTaskCard?.Timeline ?? [], entry => entry.StartsWith("memory_routed:", StringComparison.Ordinal));
         Assert.Equal(ToolPolicyDecisionStatus.Allowed, state.LastPolicyDecision?.Status);
     }
@@ -71,9 +71,9 @@ public sealed class PetMemoryRouterTests
     {
         return
         [
-            new PetHelperProfile(Guid.Parse("11111111-1111-1111-1111-111111111111"), "Scout", PetHelperRole.ResearchHelper),
-            new PetHelperProfile(Guid.Parse("22222222-2222-2222-2222-222222222222"), "Inspector", PetHelperRole.SpriteReviewHelper),
-            new PetHelperProfile(Guid.Parse("33333333-3333-3333-3333-333333333333"), "Builder", PetHelperRole.ChecklistHelper)
+            new PetHelperProfile(AgentSlotService.BuildSlotId(0), "goose 1", 0),
+            new PetHelperProfile(AgentSlotService.BuildSlotId(1), "fox 1", 1),
+            new PetHelperProfile(AgentSlotService.BuildSlotId(2), "frog 1", 2)
         ];
     }
 

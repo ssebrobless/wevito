@@ -627,7 +627,7 @@
                                       Margin="0,8,0,0"
                                       Style="{StaticResource PopupCheckBoxStyle}"
                                       automation:AutomationProperties.AutomationId="RuntimeKillSwitchCheckBox"
-                                      Content="STOP all helper work immediately"
+                                      Content="STOP all agent work immediately"
                                       Foreground="#FFFFC7C7"
                                       Checked="RuntimeKillSwitchCheckBox_OnChanged"
                                       Unchecked="RuntimeKillSwitchCheckBox_OnChanged" />
@@ -635,7 +635,7 @@
                                       Margin="0,8,0,0"
                                       Style="{StaticResource PopupCheckBoxStyle}"
                                       automation:AutomationProperties.AutomationId="RuntimeQuietModeCheckBox"
-                                      Content="Quiet mode pauses helper work"
+                                      Content="Quiet mode pauses agent work"
                                       Foreground="#FFF0F4F5"
                                       Checked="RuntimeQuietModeCheckBox_OnChanged"
                                       Unchecked="RuntimeQuietModeCheckBox_OnChanged" />
@@ -643,7 +643,7 @@
                                       Margin="0,8,0,0"
                                       Style="{StaticResource PopupCheckBoxStyle}"
                                       automation:AutomationProperties.AutomationId="RuntimePetOnlyModeCheckBox"
-                                      Content="Pet-only mode hides helper tools"
+                                      Content="Pet-only mode hides agent tools"
                                       Foreground="#FFF0F4F5"
                                       Checked="RuntimePetOnlyModeCheckBox_OnChanged"
                                       Unchecked="RuntimePetOnlyModeCheckBox_OnChanged" />
@@ -651,7 +651,7 @@
                                       Margin="0,8,0,0"
                                       Style="{StaticResource PopupCheckBoxStyle}"
                                       automation:AutomationProperties.AutomationId="RuntimeBackgroundWorkAllowedCheckBox"
-                                      Content="Allow background helper previews"
+                                      Content="Allow background agent previews"
                                       Foreground="#FFF0F4F5"
                                       Checked="RuntimeBackgroundWorkAllowedCheckBox_OnChanged"
                                       Unchecked="RuntimeBackgroundWorkAllowedCheckBox_OnChanged" />
@@ -725,7 +725,7 @@
                         <StackPanel>
                             <TextBlock x:Name="PetModelCapabilityStatusText"
                                        automation:AutomationProperties.AutomationId="PetModelCapabilityStatusText"
-                                       Text="AI helper summaries: Disabled"
+                                       Text="AI agent summaries: Disabled"
                                        Foreground="#FFF0F4F5"
                                        FontSize="12"
                                        FontWeight="SemiBold" />
@@ -739,7 +739,7 @@
                                       Margin="0,8,0,0"
                                       Style="{StaticResource PopupCheckBoxStyle}"
                                       automation:AutomationProperties.AutomationId="PetModelAdapterEnabledCheckBox"
-                                      Content="Enable AI helper summaries after consent"
+                                      Content="Enable AI agent summaries after consent"
                                       Foreground="#FFF0F4F5"
                                       Checked="PetModelAdapterEnabledCheckBox_OnChanged"
                                       Unchecked="PetModelAdapterEnabledCheckBox_OnChanged" />
@@ -820,7 +820,7 @@
                             <TextBlock x:Name="ActivityRecentText"
                                        Margin="0,4,0,0"
                                        automation:AutomationProperties.AutomationId="ActivityRecentText"
-                                       Text="Recent activity appears here after helpers produce evidence packets."
+                                       Text="Recent activity appears here after agents produce evidence packets."
                                        Foreground="#FF9FB7C4"
                                        FontSize="10"
                                        TextWrapping="Wrap" />
@@ -935,7 +935,7 @@
                                        Foreground="#FFF0F4F5"
                                        FontSize="13"
                                        FontWeight="SemiBold" />
-                            <TextBlock Text="Type one request. A helper pet prepares a safe task card first."
+                            <TextBlock Text="Type one request. An agent slot prepares a safe task card first."
                                        Foreground="#FF9FB7C4"
                                        FontSize="10" />
                         </StackPanel>
@@ -944,7 +944,7 @@
                                    VerticalAlignment="Center"
                                    Foreground="#FFE1D6A8"
                                    FontSize="10"
-                                   Text="3 helpers max" />
+                                   Text="3 agent slots" />
                     </Grid>
                     <Grid Margin="0,4,0,0">
                         <Grid.ColumnDefinitions>
@@ -979,7 +979,7 @@
                                TextWrapping="Wrap" />
 
                     <TextBlock Margin="0,6,0,0"
-                               Text="Helper strip"
+                               Text="Agents"
                                Foreground="#FFF0F4F5"
                                FontSize="11"
                                FontWeight="SemiBold" />
@@ -1052,7 +1052,7 @@
                                        Foreground="#FFBFE7FF"
                                        FontSize="11"
                                        TextWrapping="Wrap"
-                                       Text="Ready for a helper pet task." />
+                                       Text="Ready for an agent task." />
                             <StackPanel x:Name="PetCommandResultPanel"
                                         Visibility="Collapsed"
                                         Margin="0,4,0,0">

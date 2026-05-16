@@ -5,7 +5,7 @@ namespace Wevito.VNext.Core;
 public sealed record ModelRequest(
     Guid PetId,
     string PetName,
-    PetHelperRole HelperRole,
+    string AgentRole,
     string ToolFamily,
     string UserTask,
     string ToolSummary,

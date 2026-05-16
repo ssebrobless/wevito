@@ -12,6 +12,9 @@ public sealed class PlainLanguageExplainer
     public static IReadOnlyList<string> KnownPacketKinds { get; } =
     [
         "activity_summary",
+        "agent_slot_assigned",
+        "agent_slot_renamed",
+        "agent_slot_status_changed",
         "assetInventory",
         "audioAssist",
         "buildProof",
@@ -87,6 +90,9 @@ public sealed class PlainLanguageExplainer
         return packetKind switch
         {
             "activity_summary" => "Summarized Wevito's recent helper activity.",
+            "agent_slot_assigned" => "Assigned a visible pet to an agent slot.",
+            "agent_slot_renamed" => "Updated an agent slot name from the active pet roster.",
+            "agent_slot_status_changed" => "Updated an agent slot status.",
             "assetInventory" => "Reviewed the local asset inventory.",
             "audioAssist" => "Prepared an audio helper result.",
             "buildProof" => "Prepared or ran a build proof.",

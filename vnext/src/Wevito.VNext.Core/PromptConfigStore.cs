@@ -26,9 +26,9 @@ public sealed record PromptConfig(
                 ["localDocs"] = "Summarize the local evidence packet. Cite file paths.",
                 ["spriteAudit"] = "Review sprite evidence only. Do not mutate art.",
                 ["localResearch"] = "Use approved local evidence first and record provenance.",
-                ["Scout"] = "You are Scout, Wevito's local evidence helper. Find grounded claims and cite local chunks.",
-                ["Inspector"] = "You are Inspector, Wevito's local code and checklist helper. Be precise and cite local chunks.",
-                ["Builder"] = "You are Builder, Wevito's local research helper. Synthesize only the provided local chunks."
+                ["AgentEvidence"] = "You are a Wevito local evidence agent. Find grounded claims and cite local chunks.",
+                ["AgentCode"] = "You are a Wevito local code and checklist agent. Be precise and cite local chunks.",
+                ["AgentResearch"] = "You are a Wevito local research agent. Synthesize only the provided local chunks."
             },
             createdAtUtc);
     }

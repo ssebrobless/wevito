@@ -29,6 +29,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private readonly PetWellbeingInterpreter _petWellbeingInterpreter = new();
     private readonly BasketService _basketService = new(5);
     private readonly PetCommandBarService _petCommandBarService = new();
+    private readonly AgentSlotService _agentSlotService = new();
     private readonly PetTaskCardQueueService _petTaskCardQueueService = new();
     private readonly AuditLedgerService _auditLedgerService = new();
     private readonly ActivitySummaryService _activitySummaryService;
@@ -718,44 +719,28 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         return true;
     }
 
-    private static IReadOnlyList<PetHelperProfile> BuildHelperProfiles(IReadOnlyList<PetActor> pets)
+    private IReadOnlyList<PetHelperProfile> BuildHelperProfiles(IReadOnlyList<PetActor> pets)
     {
-        var defaultHelpers = new[]
-        {
-            new { Id = PetCommandBarService.ScoutHelperId, Name = "Scout", Species = "frog", Role = PetHelperRole.ResearchHelper },
-            new { Id = PetCommandBarService.InspectorHelperId, Name = "Inspector", Species = "pigeon", Role = PetHelperRole.SpriteReviewHelper },
-            new { Id = PetCommandBarService.BuilderHelperId, Name = "Builder", Species = "rat", Role = PetHelperRole.ChecklistHelper }
-        };
-
-        return defaultHelpers
-            .Select(helper => new PetHelperProfile(
-                helper.Id,
-                helper.Name,
-                helper.Role,
-                AllowedToolFamilies: BuildAllowedToolFamilies(helper.Role),
-                PreferenceSnapshot: new Dictionary<string, string>
-                {
-                    ["species"] = helper.Species,
-                    ["display_role"] = helper.Role switch
-                    {
-                        PetHelperRole.ResearchHelper => "docs/research",
-                        PetHelperRole.SpriteReviewHelper => "sprite QA",
-                        PetHelperRole.ChecklistHelper => "code/proofs",
-                        _ => "helper"
-                    }
-                }))
+        var previousSlots = _petCommandBarState?.ActiveHelpers
+            .Select(helper => new AgentSlot(
+                helper.PetId,
+                helper.SlotIndex,
+                helper.PetNameSnapshot,
+                helper.AgentStatus,
+                helper.CurrentTaskCardId,
+                DateTimeOffset.UtcNow,
+                helper.PetId,
+                helper.PreferenceSnapshot is not null && helper.PreferenceSnapshot.TryGetValue("species", out var species) ? species : "pet",
+                helper.PreferenceSnapshot is not null && helper.PreferenceSnapshot.TryGetValue("tool_icon", out var icon) ? icon : "",
+                helper.PreferenceSnapshot is not null && helper.PreferenceSnapshot.TryGetValue("active_tool_family", out var family) ? family : ""))
             .ToList();
-    }
-
-    private static IReadOnlyList<string> BuildAllowedToolFamilies(PetHelperRole role)
-    {
-        return role switch
+        var roster = _agentSlotService.BuildRoster(pets, previousSlots, DateTimeOffset.UtcNow);
+        foreach (var packet in roster.RenamePackets)
         {
-            PetHelperRole.SpriteReviewHelper => ["spriteAudit", "assetInventory", "proofCapture", "localDocs", "petState"],
-            PetHelperRole.ChecklistHelper => ["codeReview", "codePatchPlan", "checklist", "buildProof", "localDocs", "basket", "petState"],
-            PetHelperRole.ResearchHelper => ["localDocs", "localResearch", "translateText", "audioAssist", "screenCapture", "assetInventory", "basket", "proofCapture", "petState"],
-            _ => ["localDocs"]
-        };
+            _auditLedgerService.Record(packet);
+        }
+
+        return roster.Slots.Select(AgentSlotService.ToProfile).ToList();
     }
 
     private static IReadOnlyList<ToolPolicy> BuildPetCommandPolicies()

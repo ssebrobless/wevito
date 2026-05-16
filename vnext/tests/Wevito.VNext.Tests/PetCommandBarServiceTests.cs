@@ -14,55 +14,30 @@ public sealed class PetCommandBarServiceTests
     public void BuildInitialState_CapsActiveHelpersAtThree()
     {
         var state = _service.BuildInitialState([
-            new PetHelperProfile(_beanId, "Bean", PetHelperRole.SpriteReviewHelper),
-            new PetHelperProfile(_pipId, "Pip", PetHelperRole.ChecklistHelper),
-            new PetHelperProfile(_nixId, "Nix", PetHelperRole.ResearchHelper),
-            new PetHelperProfile(Guid.NewGuid(), "Juniper", PetHelperRole.ReminderHelper)
+            new PetHelperProfile(_beanId, "Bean", 0),
+            new PetHelperProfile(_pipId, "Pip", 1),
+            new PetHelperProfile(_nixId, "Nix", 2),
+            new PetHelperProfile(Guid.NewGuid(), "Juniper", 3)
         ]);
 
         Assert.Equal(PetAgentContractLimits.MaxActiveHelpers, state.ActiveHelpers.Count);
         Assert.DoesNotContain(state.ActiveHelpers, helper => helper.PetNameSnapshot == "Juniper");
-        Assert.Contains("3 helper pet", state.StatusMessage);
+        Assert.Contains("3 agent task slots", state.StatusMessage);
     }
 
     [Fact]
-    public void BuildDefaultRoster_UsesStableThreeHelperNamesAndSpecies()
+    public void AgentSlotService_UsesPetNamesAndAgentFallbacks()
     {
-        var roster = _service.BuildDefaultRoster();
+        var service = new AgentSlotService();
+        var pet = new PetActor(Guid.NewGuid(), "Pebble", "goose");
+        var roster = service.BuildRoster([pet]);
 
-        Assert.Equal(PetAgentContractLimits.MaxActiveHelpers, roster.Count);
+        Assert.Equal(PetAgentContractLimits.MaxActiveHelpers, roster.Slots.Count);
         Assert.Collection(
-            roster,
-            helper =>
-            {
-                Assert.Equal("Scout", helper.Name);
-                Assert.Equal("frog", helper.Species);
-                Assert.Equal(PetHelperRole.ResearchHelper, helper.Role);
-                Assert.Equal(HelperPetState.Available, helper.State);
-            },
-            helper =>
-            {
-                Assert.Equal("Inspector", helper.Name);
-                Assert.Equal("pigeon", helper.Species);
-                Assert.Equal(PetHelperRole.SpriteReviewHelper, helper.Role);
-            },
-            helper =>
-            {
-                Assert.Equal("Builder", helper.Name);
-                Assert.Equal("rat", helper.Species);
-                Assert.Equal(PetHelperRole.ChecklistHelper, helper.Role);
-            });
-    }
-
-    [Fact]
-    public void AddHelper_RejectsWhenRosterAlreadyHasThreeHelpers()
-    {
-        var roster = _service.BuildDefaultRoster();
-        var extra = new HelperPet(Guid.NewGuid(), "Juniper", "fox", PetHelperRole.ReminderHelper);
-
-        var exception = Assert.Throws<InvalidOperationException>(() => _service.AddHelper(roster, extra));
-
-        Assert.Contains("3 active helper pets", exception.Message);
+            roster.Slots,
+            slot => Assert.Equal("Pebble", slot.Name),
+            slot => Assert.Equal("Agent 2", slot.Name),
+            slot => Assert.Equal("Agent 3", slot.Name));
     }
 
     [Fact]
@@ -126,9 +101,9 @@ public sealed class PetCommandBarServiceTests
     {
         return
         [
-            new PetHelperProfile(_beanId, "Bean", PetHelperRole.SpriteReviewHelper),
-            new PetHelperProfile(_pipId, "Pip", PetHelperRole.ChecklistHelper),
-            new PetHelperProfile(_nixId, "Nix", PetHelperRole.ResearchHelper)
+            new PetHelperProfile(_beanId, "Bean", 0),
+            new PetHelperProfile(_pipId, "Pip", 1),
+            new PetHelperProfile(_nixId, "Nix", 2)
         ];
     }
 

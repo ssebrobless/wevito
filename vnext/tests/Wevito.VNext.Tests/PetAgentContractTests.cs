@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Wevito.VNext.Contracts;
+using Wevito.VNext.Core;
 
 namespace Wevito.VNext.Tests;
 
@@ -10,9 +11,9 @@ public sealed class PetAgentContractTests
     {
         var helpers = new[]
         {
-            new PetHelperProfile(Guid.NewGuid(), "Bean", PetHelperRole.SpriteReviewHelper),
-            new PetHelperProfile(Guid.NewGuid(), "Pip", PetHelperRole.ChecklistHelper),
-            new PetHelperProfile(Guid.NewGuid(), "Nix", PetHelperRole.ResearchHelper)
+            new PetHelperProfile(Guid.NewGuid(), "Bean", 0),
+            new PetHelperProfile(Guid.NewGuid(), "Pip", 1),
+            new PetHelperProfile(Guid.NewGuid(), "Nix", 2)
         };
 
         var roster = new ActiveHelperRoster(helpers);
@@ -80,7 +81,7 @@ public sealed class PetAgentContractTests
         Assert.Equal("Nix", card.AssignedPetNameSnapshot);
         Assert.Equal(ToolAccessMode.ReadOnly, card.PolicySnapshot?.AccessMode);
         Assert.Equal(ApprovalRequirement.None, card.PolicySnapshot?.ApprovalRequirement);
-        Assert.Equal(PetHelperRole.ResearchHelper, PetHelperRole.ResearchHelper);
+        Assert.True(AgentSlotService.BuildSlotId(0) != Guid.Empty);
     }
 
     [Fact]
@@ -103,7 +104,7 @@ public sealed class PetAgentContractTests
             AssignedPetNameSnapshot: "Bean",
             ToolFamily: "spriteAudit");
         var state = new PetCommandBarState(
-            [new PetHelperProfile(petId, "Bean", PetHelperRole.SpriteReviewHelper)],
+            [new PetHelperProfile(petId, "Bean", 0)],
             LastIntent: intent,
             LastTaskCard: card,
             StatusMessage: "1 saved",

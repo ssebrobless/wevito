@@ -196,7 +196,11 @@ public sealed class PetCommandParser
         }
 
         var classification = Classify(rawText);
-        var best = helpers.FirstOrDefault(helper => RoleMatches(helper.Role, classification.TaskKind)) ??
+        var best = helpers.FirstOrDefault(helper =>
+                (helper.AllowedToolFamilies is { Count: > 0 }
+                    ? helper.AllowedToolFamilies
+                    : AgentSlotService.BuildAllowedToolFamilies(helper.SlotIndex))
+                .Contains(classification.ToolFamily, StringComparer.OrdinalIgnoreCase)) ??
             helpers.FirstOrDefault();
 
         return new TargetResolution(
@@ -472,32 +476,6 @@ public sealed class PetCommandParser
             ToolRiskLevel.Low,
             NeedsApproval: false,
             ExpectedOutput: "Draft task card for user review");
-    }
-
-    private static bool RoleMatches(PetHelperRole role, TaskKind taskKind)
-    {
-        return (role, taskKind) switch
-        {
-            (PetHelperRole.SpriteReviewHelper, TaskKind.ReviewSprites) => true,
-            (PetHelperRole.SpriteReviewHelper, TaskKind.InventoryAssets) => true,
-            (PetHelperRole.ChecklistHelper, TaskKind.ReviewPetState) => true,
-            (PetHelperRole.ResearchHelper, TaskKind.ReviewPetState) => true,
-            (PetHelperRole.ResearchHelper, TaskKind.Research) => true,
-            (PetHelperRole.ResearchHelper, TaskKind.TranslateText) => true,
-            (PetHelperRole.ResearchHelper, TaskKind.AudioAssist) => true,
-            (PetHelperRole.ResearchHelper, TaskKind.ScreenCapture) => true,
-            (PetHelperRole.ResearchHelper, TaskKind.UpdatePetMemory) => true,
-            (PetHelperRole.SpriteReviewHelper, TaskKind.UpdatePetMemory) => true,
-            (PetHelperRole.ChecklistHelper, TaskKind.UpdatePetMemory) => true,
-            (PetHelperRole.ResearchHelper, TaskKind.SummarizeDocs) => true,
-            (PetHelperRole.ChecklistHelper, TaskKind.ReviewCode) => true,
-            (PetHelperRole.ChecklistHelper, TaskKind.PlanCodePatch) => true,
-            (PetHelperRole.ChecklistHelper, TaskKind.CreateChecklistDraft) => true,
-            (PetHelperRole.BuildProofHelper, TaskKind.BuildProof) => true,
-            (PetHelperRole.FileOrganizerHelper, TaskKind.OpenLocalDocument) => true,
-            (PetHelperRole.ReminderHelper, TaskKind.SaveLinkToBasket) => true,
-            _ => false
-        };
     }
 
     private static PetHelperProfile? FindHelper(TaskIntent intent, IReadOnlyList<PetHelperProfile> helpers)

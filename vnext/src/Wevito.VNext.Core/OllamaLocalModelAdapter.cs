@@ -201,7 +201,7 @@ public sealed class OllamaLocalModelAdapter : IModelAdapter
                 {
                     role = "user",
                     content = $"""
-                    Helper: {request.PetName} ({request.HelperRole})
+                    Helper: {request.PetName} ({request.AgentRole})
                     Tool family: {request.ToolFamily}
                     User task: {request.UserTask}
 
@@ -313,7 +313,7 @@ public sealed class OllamaLocalModelAdapter : IModelAdapter
             "1",
             request.PetId,
             request.PetName,
-            request.HelperRole.ToString(),
+            request.AgentRole,
             request.ToolFamily,
             Provider,
             model,
@@ -336,7 +336,7 @@ public sealed class OllamaLocalModelAdapter : IModelAdapter
         {
             request.PetId,
             request.PetName,
-            helperRole = request.HelperRole.ToString(),
+            helperRole = request.AgentRole,
             request.ToolFamily,
             request.UserTask,
             request.ToolSummary,

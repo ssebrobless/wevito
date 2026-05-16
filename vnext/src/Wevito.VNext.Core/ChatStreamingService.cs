@@ -185,7 +185,7 @@ public sealed class ChatStreamingService
         return new ModelRequest(
             sessionId,
             "Wevito",
-            PetHelperRole.ResearchHelper,
+            "ChatAgent",
             "chat",
             userText ?? "",
             "Multi-turn local chat response.",
