@@ -85,6 +85,26 @@ public sealed class AutonomousOperationsLoopTests
         Assert.Equal("kill_switch=true", result.BlockReason);
     }
 
+    [Fact]
+    public void TryRunIteration_BlocksDuringGodotPetInteractionWindow()
+    {
+        var root = Path.Combine(Path.GetTempPath(), "wevito-autonomous-loop-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(root);
+        var ledger = new AuditLedgerService(Path.Combine(root, "ledger.sqlite"));
+        SeedPassingRows(ledger);
+        var interaction = new UserInteractingWithPetState(ledger);
+        interaction.EnterFromGodotPetInput(Now, "pointer_down");
+        var loop = new AutonomousOperationsLoop(
+            new AutonomousBetaDecisionService(ledger),
+            ledger,
+            userInteractingWithPetState: interaction);
+
+        var result = loop.TryRunIteration(Request(Settings(enabled: true), RuntimeSupervisorMode.Active, Path.Combine(root, "artifacts")));
+
+        Assert.False(result.Ran);
+        Assert.Equal("user_interacting_with_pet=true", result.BlockReason);
+    }
+
     private static Harness BuildHarness(bool seedPassingRows, bool killSwitchActive = false)
     {
         var root = Path.Combine(Path.GetTempPath(), "wevito-autonomous-loop-tests", Guid.NewGuid().ToString("N"));

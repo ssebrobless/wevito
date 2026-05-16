@@ -119,6 +119,24 @@ public sealed class RuntimeSupervisorTests
         Assert.Contains("384 MB", status.UserStatus);
     }
 
+    [Fact]
+    public void ApplyUserInteractingWithPet_BlocksBackgroundForFiveSeconds()
+    {
+        var now = DateTimeOffset.Parse("2026-05-15T12:00:00Z");
+        var service = new RuntimeSupervisorService();
+        var interaction = new UserInteractingWithPetState();
+        interaction.EnterFromGodotPetInput(now, "pointer_down");
+        var active = service.Evaluate(new Dictionary<string, string>
+        {
+            [RuntimeSupervisorService.BackgroundWorkAllowedSetting] = bool.TrueString
+        });
+
+        var blocked = service.ApplyUserInteractingWithPet(active, interaction, now.AddSeconds(2));
+
+        Assert.False(blocked.BackgroundWorkAllowed);
+        Assert.Equal(RuntimeSupervisorService.UserInteractingWithPetBlockReason, blocked.BlockReason);
+    }
+
     private static DesktopContext BuildDesktopContext(bool isFullscreen)
     {
         return new DesktopContext(

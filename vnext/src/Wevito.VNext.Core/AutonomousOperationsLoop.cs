@@ -23,13 +23,19 @@ public sealed class AutonomousOperationsLoop
     private readonly AutonomousBetaDecisionService _decisionService;
     private readonly AuditLedgerService _ledger;
     private readonly KillSwitchService? _killSwitchService;
+    private readonly UserInteractingWithPetState? _userInteractingWithPetState;
     private DateTimeOffset _lastIterationAtUtc;
 
-    public AutonomousOperationsLoop(AutonomousBetaDecisionService decisionService, AuditLedgerService ledger, KillSwitchService? killSwitchService = null)
+    public AutonomousOperationsLoop(
+        AutonomousBetaDecisionService decisionService,
+        AuditLedgerService ledger,
+        KillSwitchService? killSwitchService = null,
+        UserInteractingWithPetState? userInteractingWithPetState = null)
     {
         _decisionService = decisionService;
         _ledger = ledger;
         _killSwitchService = killSwitchService;
+        _userInteractingWithPetState = userInteractingWithPetState;
     }
 
     public AutonomousOperationsResult TryRunIteration(AutonomousOperationsRequest request)
@@ -53,6 +59,11 @@ public sealed class AutonomousOperationsLoop
         if (!request.RuntimeStatus.BackgroundWorkAllowed)
         {
             return Block("Runtime supervisor background work must be allowed.");
+        }
+
+        if (_userInteractingWithPetState?.IsActive(request.RequestedAtUtc) == true)
+        {
+            return Block("user_interacting_with_pet=true");
         }
 
         if (_lastIterationAtUtc != default && request.RequestedAtUtc - _lastIterationAtUtc < config.TickInterval)

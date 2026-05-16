@@ -252,6 +252,11 @@ public sealed record HelperPet(
     HelperPetState State = HelperPetState.Available,
     Guid? CurrentTaskId = null);
 
+public sealed record PetFpsSample(
+    double FramesPerSecond,
+    DateTimeOffset CapturedAtUtc,
+    string Source = "godot");
+
 public static class PetAgentContractLimits
 {
     public const int MaxActiveHelpers = 3;

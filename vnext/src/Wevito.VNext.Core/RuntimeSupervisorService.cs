@@ -36,6 +36,7 @@ public sealed class RuntimeSupervisorService
     public const string MaxBackgroundTasksPerHourSetting = "runtime_max_background_tasks_per_hour";
     public const string CpuBudgetPercentSetting = "runtime_cpu_budget_percent";
     public const string MemoryBudgetMbSetting = "runtime_memory_budget_mb";
+    public const string UserInteractingWithPetBlockReason = "user_interacting_with_pet=true";
 
     public RuntimeSupervisorSettings ReadSettings(IReadOnlyDictionary<string, string>? settings)
     {
@@ -103,6 +104,24 @@ public sealed class RuntimeSupervisorService
             ? "Background PET TASKS are paused by the runtime supervisor."
             : status.BlockReason;
         return false;
+    }
+
+    public RuntimeSupervisorStatus ApplyUserInteractingWithPet(
+        RuntimeSupervisorStatus status,
+        UserInteractingWithPetState userInteractingWithPetState,
+        DateTimeOffset nowUtc)
+    {
+        if (!userInteractingWithPetState.IsActive(nowUtc))
+        {
+            return status;
+        }
+
+        return status with
+        {
+            BackgroundWorkAllowed = false,
+            BlockReason = UserInteractingWithPetBlockReason,
+            UserStatus = "Pet interaction active: AI background work is paused for 5 seconds."
+        };
     }
 
     public bool CanStartUserInitiatedWork(RuntimeSupervisorStatus status, out string reason)
