@@ -12,6 +12,7 @@ internal sealed class BrokerApplicationContext : ApplicationContext
     private readonly HotkeyWindow _hotkeyWindow;
     private readonly PipeServer _pipeServer;
     private readonly DesktopContextService _desktopContextService;
+    private readonly CodexLoopWatchdogService _codexLoopWatchdogService;
     private readonly System.Windows.Forms.Timer _desktopPollTimer;
     private readonly System.Windows.Forms.Timer _overlayClickTimer;
     private readonly ToolStripMenuItem _pinMenuItem;
@@ -33,6 +34,7 @@ internal sealed class BrokerApplicationContext : ApplicationContext
         _pipeServer.ClientDisconnected += OnClientDisconnected;
 
         _desktopContextService = new DesktopContextService();
+        _codexLoopWatchdogService = new CodexLoopWatchdogService();
         _hotkeyWindow = new HotkeyWindow();
         _hotkeyWindow.ActionPressed += PublishHotkey;
 

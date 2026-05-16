@@ -106,6 +106,22 @@ public sealed class PlainLanguageExplainerTests
     }
 
     [Theory]
+    [InlineData(CodexLoopRunnerService.LoopHeartbeatPacketKind)]
+    [InlineData(CodexPhaseQueueService.PhaseStartedPacketKind)]
+    [InlineData(CodexPhaseQueueService.PhaseRetriedPacketKind)]
+    [InlineData(CodexPhaseQueueService.PhaseBlockedPacketKind)]
+    [InlineData(CodexPhaseQueueService.PhaseCompletedPacketKind)]
+    [InlineData(CodexPhaseQueueService.LoopPausedPacketKind)]
+    [InlineData(CodexPhaseQueueService.LoopResumedPacketKind)]
+    public void CoversAllCodexLoopKinds(string packetKind)
+    {
+        var text = new PlainLanguageExplainer().ExplainPacketKind(packetKind);
+
+        Assert.Contains("Codex", text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Unknown", text, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Theory]
     [InlineData(ToolInvocationService.ToolInvocationStartedPacketKind)]
     [InlineData(ToolInvocationService.ToolInvocationCompletedPacketKind)]
     [InlineData("tool_registry_loaded")]

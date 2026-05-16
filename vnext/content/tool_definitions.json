@@ -381,5 +381,25 @@
       "promotion_decision",
       "runtime_autonomous_beta_user_consent"
     ]
+  },
+  {
+    "id": "codex_loop",
+    "displayName": "Codex Loop",
+    "capacity": 0,
+    "toolFamily": "codexLoop",
+    "defaultState": "off",
+    "requiresUserReviewForAutoContinueFalse": true,
+    "idleDetector": "tools/idle-detector",
+    "stateFiles": [
+      "docs/codex-phase-queue.json",
+      "docs/codex-loop-status.json",
+      "docs/codex-phase-history.jsonl"
+    ],
+    "outputs": [
+      "codex_loop_heartbeat",
+      "codex_phase_started",
+      "codex_phase_completed",
+      "codex_phase_blocked"
+    ]
   }
 ]
