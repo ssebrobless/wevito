@@ -12,6 +12,9 @@ public sealed class ChatStreamingService
     private readonly ChatHistoryStore _store;
     private readonly IModelAdapter _modelAdapter;
     private readonly ChatTitleService? _titleService;
+    private readonly ChatContextBudgetService _contextBudgetService;
+    private readonly RollingSummarizerService? _rollingSummarizerService;
+    private readonly RetrievalAutomaticInjector? _retrievalAutomaticInjector;
     private readonly AuditLedgerService? _auditLedgerService;
     private readonly KillSwitchService? _killSwitchService;
     private readonly Func<ModelRequest, CancellationToken, IAsyncEnumerable<string>>? _tokenSource;
@@ -20,6 +23,9 @@ public sealed class ChatStreamingService
         ChatHistoryStore? store = null,
         IModelAdapter? modelAdapter = null,
         ChatTitleService? titleService = null,
+        ChatContextBudgetService? contextBudgetService = null,
+        RollingSummarizerService? rollingSummarizerService = null,
+        RetrievalAutomaticInjector? retrievalAutomaticInjector = null,
         AuditLedgerService? auditLedgerService = null,
         KillSwitchService? killSwitchService = null,
         Func<ModelRequest, CancellationToken, IAsyncEnumerable<string>>? tokenSource = null)
@@ -27,6 +33,9 @@ public sealed class ChatStreamingService
         _store = store ?? new ChatHistoryStore(killSwitchService: killSwitchService);
         _modelAdapter = modelAdapter ?? new LocalModelAdapter(killSwitchService);
         _titleService = titleService;
+        _contextBudgetService = contextBudgetService ?? new ChatContextBudgetService(_store, auditLedgerService, killSwitchService);
+        _rollingSummarizerService = rollingSummarizerService;
+        _retrievalAutomaticInjector = retrievalAutomaticInjector;
         _auditLedgerService = auditLedgerService;
         _killSwitchService = killSwitchService;
         _tokenSource = tokenSource;
@@ -45,6 +54,15 @@ public sealed class ChatStreamingService
 
         var now = DateTimeOffset.UtcNow;
         _store.AppendTurn(new ChatTurn(sessionId, Guid.NewGuid(), "user", userText ?? "", null, null, now, "", EstimateTokens(userText)));
+        _ = _contextBudgetService.Snapshot(sessionId, now);
+        if (_rollingSummarizerService is not null)
+        {
+            _ = await _rollingSummarizerService.RunIfNeededAsync(
+                sessionId,
+                Path.Combine("vnext", "artifacts", "summarization-runs"),
+                now,
+                cancellationToken).ConfigureAwait(false);
+        }
 
         var assistantText = new List<string>();
         var modelId = "";
@@ -180,8 +198,18 @@ public sealed class ChatStreamingService
         }
     }
 
-    private static ModelRequest BuildRequest(Guid sessionId, string userText)
+    private ModelRequest BuildRequest(Guid sessionId, string userText)
     {
+        var retrieval = _retrievalAutomaticInjector?.RetrieveForUserTurn(sessionId, userText);
+        var trustedContext = new List<string>
+        {
+            "Wevito chat is local-first. Tool calls are placeholders until C-PHASE 109."
+        };
+        if (retrieval is { ContextLines.Count: > 0 })
+        {
+            trustedContext.AddRange(retrieval.ContextLines.Take(3));
+        }
+
         return new ModelRequest(
             sessionId,
             "Wevito",
@@ -189,7 +217,7 @@ public sealed class ChatStreamingService
             "chat",
             userText ?? "",
             "Multi-turn local chat response.",
-            TrustedContext: ["Wevito chat is local-first. Tool calls are placeholders until C-PHASE 109."],
+            TrustedContext: trustedContext,
             UntrustedContext: [],
             ApprovedForModelCall: true,
             ArtifactRoot: Path.Combine("vnext", "artifacts", "chat-sessions", sessionId.ToString("N")),

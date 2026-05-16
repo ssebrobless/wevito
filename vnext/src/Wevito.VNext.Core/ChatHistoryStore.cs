@@ -134,6 +134,48 @@ public sealed class ChatHistoryStore
         return turns;
     }
 
+    public IReadOnlyList<ChatTurn> GetOldestTurnsWithinTokenBudget(Guid sessionId, int maxTokens)
+    {
+        var remaining = Math.Max(1, maxTokens);
+        Directory.CreateDirectory(Path.GetDirectoryName(_databasePath) ?? ".");
+        using var connection = OpenConnection();
+        Initialize(connection);
+        using var command = connection.CreateCommand();
+        command.CommandText = """
+            SELECT session_id, turn_id, role, content, tool_call_json, tool_result_id, created_at_utc, model_id, tokens_used
+            FROM chat_turns
+            WHERE session_id=$session_id
+            ORDER BY created_at_utc ASC, id ASC;
+            """;
+        command.Parameters.AddWithValue("$session_id", sessionId.ToString());
+        var turns = ReadTurns(command);
+        var selected = new List<ChatTurn>();
+        foreach (var turn in turns)
+        {
+            var cost = Math.Max(1, turn.TokensUsed);
+            if (selected.Count > 0 && remaining - cost < 0)
+            {
+                break;
+            }
+
+            selected.Add(turn);
+            remaining -= cost;
+        }
+
+        return selected;
+    }
+
+    public int GetTurnTokenTotal(Guid sessionId)
+    {
+        Directory.CreateDirectory(Path.GetDirectoryName(_databasePath) ?? ".");
+        using var connection = OpenConnection();
+        Initialize(connection);
+        using var command = connection.CreateCommand();
+        command.CommandText = "SELECT COALESCE(SUM(tokens_used), 0) FROM chat_turns WHERE session_id=$session_id;";
+        command.Parameters.AddWithValue("$session_id", sessionId.ToString());
+        return Convert.ToInt32(command.ExecuteScalar() ?? 0, CultureInfo.InvariantCulture);
+    }
+
     public IReadOnlyList<ChatSessionSummary> ListSessions(int limit = 20)
     {
         Directory.CreateDirectory(Path.GetDirectoryName(_databasePath) ?? ".");
@@ -151,6 +193,87 @@ public sealed class ChatHistoryStore
             """;
         command.Parameters.AddWithValue("$limit", Math.Max(1, limit));
         return ReadSessionSummaries(command);
+    }
+
+    public IReadOnlyList<ChatSessionSummary> ListSessionsInactiveBefore(DateTimeOffset cutoffUtc, int limit = 100)
+    {
+        Directory.CreateDirectory(Path.GetDirectoryName(_databasePath) ?? ".");
+        using var connection = OpenConnection();
+        Initialize(connection);
+        using var command = connection.CreateCommand();
+        command.CommandText = """
+            SELECT s.session_id, s.title, s.created_at_utc, s.updated_at_utc, COUNT(t.id) AS turn_count
+            FROM chat_sessions s
+            LEFT JOIN chat_turns t ON t.session_id = s.session_id
+            WHERE s.soft_deleted=0 AND s.updated_at_utc < $cutoff
+            GROUP BY s.session_id, s.title, s.created_at_utc, s.updated_at_utc
+            ORDER BY s.updated_at_utc ASC
+            LIMIT $limit;
+            """;
+        command.Parameters.AddWithValue("$cutoff", cutoffUtc.ToString("O", CultureInfo.InvariantCulture));
+        command.Parameters.AddWithValue("$limit", Math.Max(1, limit));
+        return ReadSessionSummaries(command);
+    }
+
+    public void CopySessionFrom(ChatHistoryStore source, Guid sessionId)
+    {
+        if (_killSwitchService?.IsActive() == true)
+        {
+            throw new InvalidOperationException("kill_switch=true");
+        }
+
+        var summary = source.ListSessions(int.MaxValue).FirstOrDefault(session => session.SessionId == sessionId);
+        var turns = source.GetTurns(sessionId, int.MaxValue);
+        Directory.CreateDirectory(Path.GetDirectoryName(_databasePath) ?? ".");
+        using var connection = OpenConnection();
+        Initialize(connection);
+        if (summary is not null)
+        {
+            using var sessionCommand = connection.CreateCommand();
+            sessionCommand.CommandText = """
+                INSERT OR IGNORE INTO chat_sessions(session_id, title, created_at_utc, updated_at_utc, soft_deleted)
+                VALUES($session_id, $title, $created_at_utc, $updated_at_utc, 0);
+                """;
+            sessionCommand.Parameters.AddWithValue("$session_id", summary.SessionId.ToString());
+            sessionCommand.Parameters.AddWithValue("$title", summary.Title);
+            sessionCommand.Parameters.AddWithValue("$created_at_utc", summary.CreatedAtUtc.ToString("O", CultureInfo.InvariantCulture));
+            sessionCommand.Parameters.AddWithValue("$updated_at_utc", summary.UpdatedAtUtc.ToString("O", CultureInfo.InvariantCulture));
+            sessionCommand.ExecuteNonQuery();
+        }
+
+        foreach (var turn in turns)
+        {
+            using var command = connection.CreateCommand();
+            command.CommandText = """
+                INSERT OR IGNORE INTO chat_turns(
+                    session_id, turn_id, role, content, tool_call_json, tool_result_id, created_at_utc, model_id, tokens_used)
+                VALUES(
+                    $session_id, $turn_id, $role, $content, $tool_call_json, $tool_result_id, $created_at_utc, $model_id, $tokens_used);
+                """;
+            AddTurnParameters(command, turn);
+            command.ExecuteNonQuery();
+        }
+    }
+
+    public void SoftDeleteSession(Guid sessionId, DateTimeOffset? nowUtc = null)
+    {
+        if (_killSwitchService?.IsActive() == true)
+        {
+            throw new InvalidOperationException("kill_switch=true");
+        }
+
+        Directory.CreateDirectory(Path.GetDirectoryName(_databasePath) ?? ".");
+        using var connection = OpenConnection();
+        Initialize(connection);
+        using var command = connection.CreateCommand();
+        command.CommandText = """
+            UPDATE chat_sessions
+            SET soft_deleted=1, updated_at_utc=$updated_at_utc
+            WHERE session_id=$session_id;
+            """;
+        command.Parameters.AddWithValue("$session_id", sessionId.ToString());
+        command.Parameters.AddWithValue("$updated_at_utc", (nowUtc ?? DateTimeOffset.UtcNow).ToString("O", CultureInfo.InvariantCulture));
+        command.ExecuteNonQuery();
     }
 
     public IReadOnlyList<ChatTurn> SearchTurns(string query, int limit = 50)

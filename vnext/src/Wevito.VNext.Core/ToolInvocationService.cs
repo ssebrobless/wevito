@@ -10,6 +10,7 @@ public sealed class ToolInvocationService
 
     private readonly ToolRegistry _registry;
     private readonly UnifiedPolicyService _unifiedPolicyService;
+    private readonly ToolResultBudgetService _toolResultBudgetService;
     private readonly AuditLedgerService? _auditLedgerService;
     private readonly KillSwitchService? _killSwitchService;
     private readonly Func<TaskIntent, IReadOnlyList<ToolPolicy>, ToolPolicyDecision>? _policyEvaluator;
@@ -17,12 +18,14 @@ public sealed class ToolInvocationService
     public ToolInvocationService(
         ToolRegistry registry,
         UnifiedPolicyService? unifiedPolicyService = null,
+        ToolResultBudgetService? toolResultBudgetService = null,
         AuditLedgerService? auditLedgerService = null,
         KillSwitchService? killSwitchService = null,
         Func<TaskIntent, IReadOnlyList<ToolPolicy>, ToolPolicyDecision>? policyEvaluator = null)
     {
         _registry = registry;
         _unifiedPolicyService = unifiedPolicyService ?? new UnifiedPolicyService(killSwitchService: killSwitchService);
+        _toolResultBudgetService = toolResultBudgetService ?? new ToolResultBudgetService(auditLedgerService: auditLedgerService, killSwitchService: killSwitchService);
         _auditLedgerService = auditLedgerService;
         _killSwitchService = killSwitchService;
         _policyEvaluator = policyEvaluator;
@@ -68,7 +71,7 @@ public sealed class ToolInvocationService
             var request = new TaskAdapterRequest(taskCardId, intent, decision.PolicySnapshot, ArtifactRoot: BuildArtifactRoot(descriptor.ToolFamily), RequestedAtUtc: timestamp);
             var adapterResult = await descriptor.Adapter(request, cancellationToken).ConfigureAwait(false);
             cancellationToken.ThrowIfCancellationRequested();
-            var json = JsonSerializer.Serialize(new
+            var rawJson = JsonSerializer.Serialize(new
             {
                 adapterResult.Status,
                 adapterResult.ToolFamily,
@@ -77,11 +80,12 @@ public sealed class ToolInvocationService
                 adapterResult.AuditLogPath,
                 adapterResult.BlockReason
             }, JsonDefaults.Options);
+            var budgeted = _toolResultBudgetService.FormatToolResult(descriptor.ToolFamily, rawJson, DateTimeOffset.UtcNow);
             var summary = string.IsNullOrWhiteSpace(adapterResult.ResultSummary)
                 ? adapterResult.PreviewSummary
                 : adapterResult.ResultSummary;
             Record(ToolInvocationCompletedPacketKind, descriptor.ToolFamily, taskCardId, DateTimeOffset.UtcNow, summary, adapterResult.Status.ToString(), adapterResult.BlockReason);
-            return new ToolInvocationResult(descriptor.ToolFamily, adapterResult.Status, json, summary, adapterResult.AuditLogPath, adapterResult.BlockReason);
+            return new ToolInvocationResult(descriptor.ToolFamily, adapterResult.Status, budgeted.Truncated, summary, string.IsNullOrWhiteSpace(budgeted.FullPath) ? adapterResult.AuditLogPath : budgeted.FullPath, adapterResult.BlockReason);
         }
         catch (OperationCanceledException)
         {

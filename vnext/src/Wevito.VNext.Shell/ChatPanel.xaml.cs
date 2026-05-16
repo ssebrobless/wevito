@@ -23,6 +23,8 @@ public partial class ChatPanel : UserControl
 
     public event Func<string, Task>? BenchmarkBookmarkRequested;
 
+    public event Func<string, Task>? PinMessageRequested;
+
     public bool IsBenchmarkBookmarkEditorVisibleForTest => BookmarkEditorPanel.Visibility == Visibility.Visible;
 
     public void Configure(ChatSessionService sessionService, ChatHistoryStore historyStore, ChatStreamingService streamingService)
@@ -80,6 +82,21 @@ public partial class ChatPanel : UserControl
         {
             OpenBenchmarkBookmarkEditor(message);
         }
+    }
+
+    private async void PinMessageButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is not Button { Tag: ChatMessageViewModel message })
+        {
+            return;
+        }
+
+        if (PinMessageRequested is not null)
+        {
+            await PinMessageRequested.Invoke(message.Content);
+        }
+
+        _viewModel.StatusText = "Pinned message into the local context budget.";
     }
 
     private async void BenchmarkBookmarkSaveButton_OnClick(object sender, RoutedEventArgs e)
