@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Wevito.VNext.Contracts\Wevito.VNext.Contracts.csproj" />
+    <ProjectReference Include="..\..\src\Wevito.VNext.Broker\Wevito.VNext.Broker.csproj" />
     <ProjectReference Include="..\..\src\Wevito.VNext.Core\Wevito.VNext.Core.csproj" />
     <ProjectReference Include="..\..\src\Wevito.VNext.Shell\Wevito.VNext.Shell.csproj" />
   </ItemGroup>

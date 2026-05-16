@@ -320,7 +320,8 @@ public sealed record PetActor(
     double MemorialX = 0,
     double MemorialY = 0,
     int? VisualQaForcedFrameIndex = null,
-    double VisualQaPlaybackSpeed = 1);
+    double VisualQaPlaybackSpeed = 1,
+    DateTimeOffset IdleSince = default);
 
 public sealed record ToolSession(
     string ToolId,
