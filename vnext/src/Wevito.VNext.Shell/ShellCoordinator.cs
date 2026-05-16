@@ -46,6 +46,12 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private readonly DoNotDisturbScheduleService _doNotDisturbScheduleService;
     private readonly ProcessPriorityManagerService _processPriorityManagerService;
     private readonly GameModeDetectorService _gameModeDetectorService;
+    private readonly NotificationPolicyService _notificationPolicyService;
+    private readonly FocusDisciplineService _focusDisciplineService;
+    private readonly AudioOutputPolicyService _audioOutputPolicyService;
+    private readonly MultiMonitorService _multiMonitorService;
+    private readonly CursorReactivityService _cursorReactivityService;
+    private readonly TrayIconDisciplineService _trayIconDisciplineService = new();
     private readonly WindowsForegroundFullscreenMonitor _fullscreenMonitor;
     private readonly WindowsPowerHandler _powerHandler;
     private readonly FocusStealCounter _focusStealCounter = new();
@@ -100,6 +106,11 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _doNotDisturbScheduleService = new DoNotDisturbScheduleService(_auditLedgerService, _killSwitchService);
         _processPriorityManagerService = new ProcessPriorityManagerService(_auditLedgerService, _killSwitchService);
         _gameModeDetectorService = new GameModeDetectorService(auditLedgerService: _auditLedgerService, killSwitchService: _killSwitchService);
+        _notificationPolicyService = new NotificationPolicyService(_auditLedgerService, _killSwitchService);
+        _focusDisciplineService = new FocusDisciplineService(_auditLedgerService, _killSwitchService);
+        _audioOutputPolicyService = new AudioOutputPolicyService(_auditLedgerService, _killSwitchService);
+        _multiMonitorService = new MultiMonitorService(_auditLedgerService, _killSwitchService);
+        _cursorReactivityService = new CursorReactivityService(_auditLedgerService, _killSwitchService);
         _ollamaModelBootstrapService = new OllamaModelBootstrapService(
             probeService: new LocalRuntimeProbeService(killSwitchService: _killSwitchService),
             auditLedgerService: _auditLedgerService,
@@ -239,10 +250,11 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             DateTimeOffset.UtcNow);
         TraceLog.Write("local-ai", $"ollama-bootstrap kind={bootstrapStatus.PacketKind} summary={bootstrapStatus.Summary}");
         TraceLog.Write("shell", $"state-ready pinned={_state.IsPinned} pets={_state.ActivePets.Count} basket={_state.BasketItems.Count}");
+        TraceDisciplinePolicySnapshot(_state.SettingsSnapshot);
 
-        _homeWindow.Show();
-        _roamBandWindow.Show();
-        _toolPopupWindow.Show();
+        ShowWindowWithFocusDiscipline(_homeWindow, "HomePanel", userInitiated: false);
+        ShowWindowWithFocusDiscipline(_roamBandWindow, "RoamBand", userInitiated: false);
+        ShowWindowWithFocusDiscipline(_toolPopupWindow, "ToolPopup", userInitiated: false);
         await RunFirstLaunchWizardAsync(force: false);
 
         _brokerProcess = BrokerProcessManager.Start(_pipeName);
@@ -917,8 +929,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         }
 
         _spriteWorkflowV2Window.LoadProject(ResolveRepoRootOrBaseDirectory());
-        _spriteWorkflowV2Window.Show();
-        _spriteWorkflowV2Window.Activate();
+        ShowWindowWithFocusDiscipline(_spriteWorkflowV2Window, "SpriteWorkflowV2", userInitiated: true);
         TraceLog.Write("sprite-workflow-v2", "opened read-only workbench");
         return Task.CompletedTask;
     }
@@ -935,8 +946,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         }
 
         _creativeLearningLabWindow.LoadProject(ResolveRepoRootOrBaseDirectory());
-        _creativeLearningLabWindow.Show();
-        _creativeLearningLabWindow.Activate();
+        ShowWindowWithFocusDiscipline(_creativeLearningLabWindow, "CreativeLearningLab", userInitiated: true);
         TraceLog.Write("creative-learning-lab", "opened read-only artifact index");
         return Task.CompletedTask;
     }
@@ -985,6 +995,10 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         {
             Owner = _homeWindow
         };
+        var focusDecision = _focusDisciplineService.Decide(
+            new WindowShowRequest("FirstLaunchWizard", UserInitiated: force, IsFirstLaunchWizard: true),
+            DateTimeOffset.UtcNow);
+        wizard.ShowActivated = focusDecision.ShowActivated;
         wizard.LoadSettings(_state.SettingsSnapshot, _state.ActivePets);
         var completed = wizard.ShowDialog() == true;
         if (!completed && !force)
@@ -2851,6 +2865,11 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         hydrated.TryAdd(ProcessPriorityManagerService.EnabledSetting, bool.TrueString);
         hydrated.TryAdd(DiskIoBudgetService.EnabledSetting, bool.TrueString);
         hydrated.TryAdd(CodexCompileThrottleService.ActiveProcessorCapSetting, "2");
+        hydrated.TryAdd(NotificationPolicyService.DeferDuringActivitySetting, bool.TrueString);
+        hydrated.TryAdd(AudioOutputPolicyService.PetSoundEffectsEnabledSetting, bool.FalseString);
+        hydrated.TryAdd(CursorReactivityService.EnabledSetting, bool.TrueString);
+        hydrated.TryAdd(TrayIconDisciplineService.AnimationEnabledSetting, bool.FalseString);
+        hydrated.TryAdd(MultiMonitorService.PreferredMonitorSetting, string.Empty);
         hydrated.TryAdd(CoexistenceTriggerService.CpuThresholdSetting, "80");
         hydrated.TryAdd(CoexistenceTriggerService.NetworkThresholdSetting, "80");
         hydrated.TryAdd(DoNotDisturbScheduleService.EnabledSetting, bool.FalseString);
@@ -2891,6 +2910,42 @@ internal sealed class ShellCoordinator : IAsyncDisposable
 
         window.Visibility = visibility;
         TraceLog.Write("visibility", $"window={name} visibility={visibility}");
+    }
+
+    private void TraceDisciplinePolicySnapshot(IReadOnlyDictionary<string, string> settings)
+    {
+        var audioDecision = _audioOutputPolicyService.Evaluate(
+            new AudioOutputRequest("startup", UserTriggered: false, IsTextToSpeech: false),
+            settings,
+            DateTimeOffset.UtcNow);
+        var trayDecision = _trayIconDisciplineService.DecideAnimation(settings);
+        var monitorDecision = _multiMonitorService.ResolvePreferredMonitor(
+            settings,
+            [new MonitorDescriptor("primary", IsPrimary: true)]);
+        var cursorDecision = _cursorReactivityService.Evaluate(
+            new CursorReactivityRequest("startup", 0, 0, 999, 999, DateTimeOffset.UtcNow),
+            settings);
+        var notificationDefers = NotificationPolicyService.ShouldDefer(
+            new NotificationContext(UserTypingRecently: true, ForegroundFullscreen: false, CoexistenceActive: false, DoNotDisturbActive: false, DateTimeOffset.UtcNow),
+            settings);
+        TraceLog.Write(
+            "discipline-policy",
+            $"audio={audioDecision.Reason} tray={trayDecision.Reason} monitor={monitorDecision.Reason} cursor={cursorDecision.Reason} notificationDefers={notificationDefers}");
+    }
+
+    private void ShowWindowWithFocusDiscipline(Window window, string name, bool userInitiated)
+    {
+        var decision = _focusDisciplineService.Decide(
+            new WindowShowRequest(name, userInitiated, IsFirstLaunchWizard: false),
+            DateTimeOffset.UtcNow);
+        window.ShowActivated = decision.ShowActivated;
+        window.Show();
+        if (decision.ShowActivated)
+        {
+            window.Activate();
+        }
+
+        TraceLog.Write("focus-discipline", $"window={name} activated={decision.ShowActivated} reason={decision.Reason}");
     }
 
     private IReadOnlyDictionary<string, string> WithSetting(IReadOnlyDictionary<string, string> settings, string key, string value)

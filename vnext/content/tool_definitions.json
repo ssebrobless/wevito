@@ -84,6 +84,8 @@
     "defaultState": "report-only",
     "networkDefault": "disabled",
     "hostedAiDefault": "disabled",
+    "ttsPolicy": "banned-in-v1",
+    "unpromptedAudioDefault": "disabled",
     "mayMutate": false
   },
   {
