@@ -12,6 +12,7 @@ public partial class ChatPanel : UserControl
     private ChatStreamingService? _streamingService;
     private CancellationTokenSource? _streamCancellation;
     private Guid _sessionId;
+    private string _pendingBookmarkText = "";
 
     public ChatPanel()
     {
@@ -20,6 +21,10 @@ public partial class ChatPanel : UserControl
         PreviewKeyDown += ChatPanel_OnPreviewKeyDown;
     }
 
+    public event Func<string, Task>? BenchmarkBookmarkRequested;
+
+    public bool IsBenchmarkBookmarkEditorVisibleForTest => BookmarkEditorPanel.Visibility == Visibility.Visible;
+
     public void Configure(ChatSessionService sessionService, ChatHistoryStore historyStore, ChatStreamingService streamingService)
     {
         _sessionService = sessionService;
@@ -27,6 +32,11 @@ public partial class ChatPanel : UserControl
         _sessionId = _sessionService.GetCurrentSessionId();
         _viewModel.RenderTurns(_sessionService.GetTurns(_sessionId));
         _viewModel.StatusText = "Local chat ready. Tool calls are preview-only until C-PHASE 109.";
+    }
+
+    public void OpenBenchmarkBookmarkEditorForTest(ChatMessageViewModel message)
+    {
+        OpenBenchmarkBookmarkEditor(message);
     }
 
     private async void SendButton_OnClick(object sender, RoutedEventArgs e)
@@ -62,6 +72,48 @@ public partial class ChatPanel : UserControl
         var query = SearchTextBox.Text ?? "";
         _viewModel.SearchText = query;
         _viewModel.RenderSearchResults(_sessionService.SearchTurns(query, limit: 50));
+    }
+
+    private void BookmarkBenchmarkButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button { Tag: ChatMessageViewModel message })
+        {
+            OpenBenchmarkBookmarkEditor(message);
+        }
+    }
+
+    private async void BenchmarkBookmarkSaveButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        var expectedText = BenchmarkBookmarkExpectedTextBox.Text?.Trim() ?? "";
+        if (string.IsNullOrWhiteSpace(expectedText))
+        {
+            _viewModel.StatusText = "Benchmark expected answer is required.";
+            return;
+        }
+
+        var content = string.IsNullOrWhiteSpace(_pendingBookmarkText) ? expectedText : expectedText;
+        if (BenchmarkBookmarkRequested is not null)
+        {
+            await BenchmarkBookmarkRequested.Invoke(content);
+        }
+
+        BookmarkEditorPanel.Visibility = Visibility.Collapsed;
+        _pendingBookmarkText = "";
+        _viewModel.StatusText = "Benchmark draft saved for review.";
+    }
+
+    private void OpenBenchmarkBookmarkEditor(ChatMessageViewModel message)
+    {
+        if (!message.CanBookmarkForBenchmark)
+        {
+            _viewModel.StatusText = "Only assistant messages can become benchmark drafts.";
+            return;
+        }
+
+        _pendingBookmarkText = message.Content;
+        BenchmarkBookmarkExpectedTextBox.Text = message.Content;
+        BookmarkEditorPanel.Visibility = Visibility.Visible;
+        _viewModel.StatusText = "Benchmark bookmark editor opened.";
     }
 
     private async Task SendAsync()

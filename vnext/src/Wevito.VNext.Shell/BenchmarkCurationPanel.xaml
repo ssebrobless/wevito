@@ -1,0 +1,173 @@
+<UserControl x:Class="Wevito.VNext.Shell.BenchmarkCurationPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:automation="clr-namespace:System.Windows.Automation;assembly=PresentationCore"
+             MinHeight="320">
+    <UserControl.Resources>
+        <Style x:Key="CurationButtonStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="#FFF0F4F5" />
+            <Setter Property="Background" Value="#263844" />
+            <Setter Property="BorderBrush" Value="#52656F" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="8,5" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+        <Style x:Key="CurationTextBoxStyle" TargetType="TextBox">
+            <Setter Property="Background" Value="#111A20" />
+            <Setter Property="BorderBrush" Value="#4A6672" />
+            <Setter Property="Foreground" Value="#FFF0F4F5" />
+            <Setter Property="CaretBrush" Value="#FFF0F4F5" />
+            <Setter Property="Padding" Value="7,5" />
+        </Style>
+        <Style x:Key="CurationLabelStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#FFBFD2DC" />
+            <Setter Property="FontSize" Value="10" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0"
+                   Text="Curation: draft cases wait here until you approve them. Adversarial cases are human-authored and go straight to approved."
+                   Foreground="#FFDCE9EF"
+                   FontSize="10"
+                   TextWrapping="Wrap" />
+
+        <Grid Grid.Row="1"
+              Margin="0,8,0,8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.9*" />
+                <ColumnDefinition Width="1.1*" />
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0"
+                    Margin="0,0,8,0"
+                    Padding="8"
+                    Background="#14202A"
+                    BorderBrush="#425D78"
+                    BorderThickness="1"
+                    CornerRadius="8">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top"
+                               Text="Pending drafts"
+                               Foreground="#FFF0F4F5"
+                               FontWeight="SemiBold"
+                               FontSize="11" />
+                    <ListBox x:Name="PendingDraftsList"
+                             Margin="0,6,0,0"
+                             Background="#101920"
+                             BorderBrush="#344A56"
+                             Foreground="#FFEAF6F7"
+                             automation:AutomationProperties.AutomationId="BenchmarkPendingDraftsList"
+                             ItemsSource="{Binding PendingDrafts}"
+                             SelectedItem="{Binding SelectedDraft, Mode=TwoWay}"
+                             DisplayMemberPath="DisplayName" />
+                </DockPanel>
+            </Border>
+
+            <Border Grid.Column="1"
+                    Padding="8"
+                    Background="#14202A"
+                    BorderBrush="#425D78"
+                    BorderThickness="1"
+                    CornerRadius="8">
+                <StackPanel>
+                    <TextBlock Text="Inline editor"
+                               Foreground="#FFF0F4F5"
+                               FontWeight="SemiBold"
+                               FontSize="11" />
+                    <TextBlock Margin="0,8,0,2"
+                               Style="{StaticResource CurationLabelStyle}"
+                               Text="Axis" />
+                    <TextBox x:Name="BenchmarkAxisTextBox"
+                             Style="{StaticResource CurationTextBoxStyle}"
+                             automation:AutomationProperties.AutomationId="BenchmarkAxisTextBox"
+                             Text="{Binding EditorAxis, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBlock Margin="0,8,0,2"
+                               Style="{StaticResource CurationLabelStyle}"
+                               Text="Prompt" />
+                    <TextBox x:Name="BenchmarkPromptTextBox"
+                             MinHeight="52"
+                             Style="{StaticResource CurationTextBoxStyle}"
+                             automation:AutomationProperties.AutomationId="BenchmarkPromptTextBox"
+                             Text="{Binding EditorPrompt, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             TextWrapping="Wrap"
+                             AcceptsReturn="True" />
+                    <TextBlock Margin="0,8,0,2"
+                               Style="{StaticResource CurationLabelStyle}"
+                               Text="Expected answer / behavior" />
+                    <TextBox x:Name="BenchmarkExpectedTextBox"
+                             MinHeight="64"
+                             Style="{StaticResource CurationTextBoxStyle}"
+                             automation:AutomationProperties.AutomationId="BenchmarkExpectedTextBox"
+                             Text="{Binding EditorExpectedText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             TextWrapping="Wrap"
+                             AcceptsReturn="True" />
+                    <UniformGrid Margin="0,8,0,0"
+                                 Columns="3">
+                        <Button Content="REVISE"
+                                Margin="0,0,4,0"
+                                Style="{StaticResource CurationButtonStyle}"
+                                automation:AutomationProperties.AutomationId="BenchmarkReviseButton"
+                                Click="ReviseButton_OnClick" />
+                        <Button Content="APPROVE"
+                                Margin="2,0,2,0"
+                                Style="{StaticResource CurationButtonStyle}"
+                                automation:AutomationProperties.AutomationId="BenchmarkApproveButton"
+                                Click="ApproveButton_OnClick" />
+                        <Button Content="REJECT"
+                                Margin="4,0,0,0"
+                                Style="{StaticResource CurationButtonStyle}"
+                                automation:AutomationProperties.AutomationId="BenchmarkRejectButton"
+                                Click="RejectButton_OnClick" />
+                    </UniformGrid>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <Border Grid.Row="2"
+                Padding="8"
+                Background="#16212C"
+                BorderBrush="#425D78"
+                BorderThickness="1"
+                CornerRadius="8">
+            <StackPanel>
+                <TextBlock Text="Add adversarial case"
+                           Foreground="#FFF0F4F5"
+                           FontWeight="SemiBold"
+                           FontSize="11" />
+                <TextBlock Margin="0,6,0,2"
+                           Style="{StaticResource CurationLabelStyle}"
+                           Text="Hostile prompt" />
+                <TextBox x:Name="AdversarialPromptTextBox"
+                         Style="{StaticResource CurationTextBoxStyle}"
+                         automation:AutomationProperties.AutomationId="AdversarialPromptTextBox"
+                         Text="{Binding AdversarialPrompt, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBlock Margin="0,6,0,2"
+                           Style="{StaticResource CurationLabelStyle}"
+                           Text="Expected Wevito behavior" />
+                <TextBox x:Name="AdversarialExpectedTextBox"
+                         Style="{StaticResource CurationTextBoxStyle}"
+                         automation:AutomationProperties.AutomationId="AdversarialExpectedTextBox"
+                         Text="{Binding AdversarialExpectedBehavior, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                <Button Margin="0,8,0,0"
+                        Content="ADD APPROVED ADVERSARIAL CASE"
+                        Style="{StaticResource CurationButtonStyle}"
+                        automation:AutomationProperties.AutomationId="AddAdversarialCaseButton"
+                        Click="AddAdversarialCaseButton_OnClick" />
+                <TextBlock x:Name="BenchmarkCurationStatusText"
+                           Margin="0,8,0,0"
+                           Foreground="#FFBFD2DC"
+                           FontSize="10"
+                           Text="{Binding StatusText}"
+                           TextWrapping="Wrap" />
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

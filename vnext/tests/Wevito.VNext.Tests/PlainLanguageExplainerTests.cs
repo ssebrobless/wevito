@@ -92,6 +92,20 @@ public sealed class PlainLanguageExplainerTests
     }
 
     [Theory]
+    [InlineData(BenchmarkCaseDraftService.CaseDraftedPacketKind)]
+    [InlineData(BenchmarkCaseDraftService.BookmarkedFromChatPacketKind)]
+    [InlineData(BenchmarkCaseCurationStore.CaseApprovedPacketKind)]
+    [InlineData(BenchmarkCaseCurationStore.CaseRejectedPacketKind)]
+    [InlineData(BenchmarkCaseCurationStore.CaseRevisedPacketKind)]
+    public void CoversAllCurationKinds(string packetKind)
+    {
+        var text = new PlainLanguageExplainer().ExplainPacketKind(packetKind);
+
+        Assert.Contains("benchmark", text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Unknown", text, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Theory]
     [InlineData(ToolInvocationService.ToolInvocationStartedPacketKind)]
     [InlineData(ToolInvocationService.ToolInvocationCompletedPacketKind)]
     [InlineData("tool_registry_loaded")]

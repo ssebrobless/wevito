@@ -94,7 +94,11 @@
                                                 Padding="6,2"
                                                 Style="{StaticResource ChatButtonStyle}"
                                                 FontSize="10"
-                                                ToolTip="Benchmark bookmarking is wired in C-PHASE 113." />
+                                                Visibility="{Binding BenchmarkBookmarkVisibility}"
+                                                Tag="{Binding}"
+                                                automation:AutomationProperties.AutomationId="ChatBenchmarkBookmarkButton"
+                                                ToolTip="Save this assistant response as a draft benchmark case."
+                                                Click="BookmarkBenchmarkButton_OnClick" />
                                     </DockPanel>
                                     <TextBlock Text="{Binding Content}"
                                                Margin="0,5,0,0"
@@ -121,8 +125,53 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <Grid Grid.Row="0">
+            <Border x:Name="BookmarkEditorPanel"
+                    Grid.Row="0"
+                    Margin="0,0,0,8"
+                    Padding="8"
+                    Background="#16212C"
+                    BorderBrush="#425D78"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Visibility="Collapsed">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="Benchmark draft editor: expected answer"
+                               Foreground="#FFF0F4F5"
+                               FontWeight="SemiBold"
+                               FontSize="11" />
+                    <Grid Grid.Row="1"
+                          Margin="0,6,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBox x:Name="BenchmarkBookmarkExpectedTextBox"
+                                 MinHeight="44"
+                                 Background="#111A20"
+                                 BorderBrush="#4A6672"
+                                 Foreground="#FFF0F4F5"
+                                 CaretBrush="#FFF0F4F5"
+                                 TextWrapping="Wrap"
+                                 AcceptsReturn="True"
+                                 automation:AutomationProperties.AutomationId="BenchmarkBookmarkExpectedTextBox" />
+                        <Button Grid.Column="1"
+                                Margin="8,0,0,0"
+                                Padding="10,5"
+                                Style="{StaticResource ChatButtonStyle}"
+                                Content="Save Draft"
+                                automation:AutomationProperties.AutomationId="BenchmarkBookmarkSaveButton"
+                                Click="BenchmarkBookmarkSaveButton_OnClick" />
+                    </Grid>
+                </Grid>
+            </Border>
+
+            <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
@@ -149,7 +198,7 @@
                         Click="SendButton_OnClick" />
             </Grid>
             <TextBlock x:Name="StatusText"
-                       Grid.Row="1"
+                       Grid.Row="2"
                        Margin="0,5,0,0"
                        Foreground="#FFB8CED6"
                        TextWrapping="Wrap"

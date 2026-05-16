@@ -80,13 +80,25 @@ public partial class ToolPopupWindow : Window
 
     public long WindowHandle => new WindowInteropHelper(this).Handle.ToInt64();
 
-    public void ConfigureChatServices(IModelAdapter modelAdapter, AuditLedgerService auditLedgerService, KillSwitchService killSwitchService)
+    public void ConfigureChatServices(IModelAdapter modelAdapter, AuditLedgerService auditLedgerService, KillSwitchService killSwitchService, string repoRoot)
     {
         var historyStore = new ChatHistoryStore(killSwitchService: killSwitchService);
         var titleService = new ChatTitleService(historyStore, modelAdapter, auditLedgerService, killSwitchService);
         var sessionService = new ChatSessionService(historyStore, auditLedgerService, killSwitchService);
         var streamingService = new ChatStreamingService(historyStore, modelAdapter, titleService, auditLedgerService, killSwitchService);
         ChatPanel.Configure(sessionService, historyStore, streamingService);
+        var draftRoot = Path.Combine(repoRoot, "vnext", "content", "benchmarks", "v1", "draft");
+        var approvedRoot = Path.Combine(repoRoot, "vnext", "content", "benchmarks", "v1", "approved");
+        var draftService = new BenchmarkCaseDraftService(auditLedgerService, killSwitchService);
+        var curationStore = new BenchmarkCaseCurationStore(auditLedgerService: auditLedgerService, killSwitchService: killSwitchService);
+        var curationViewModel = new BenchmarkCurationViewModel(draftRoot, approvedRoot, draftService, curationStore);
+        BenchmarkCurationPanel.Configure(curationViewModel);
+        ChatPanel.BenchmarkBookmarkRequested += text =>
+        {
+            curationViewModel.BookmarkFromChat(text);
+            BenchmarkCurationPanel.Refresh();
+            return Task.CompletedTask;
+        };
     }
 
     internal void Render(

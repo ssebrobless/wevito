@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows;
 using Wevito.VNext.Core;
 
 namespace Wevito.VNext.Shell;
@@ -124,6 +125,10 @@ public sealed class ChatMessageViewModel : INotifyPropertyChanged
         : Role.Equals("assistant", StringComparison.OrdinalIgnoreCase)
             ? "Wevito"
             : Role;
+
+    public bool CanBookmarkForBenchmark => Role.Equals("assistant", StringComparison.OrdinalIgnoreCase) && !IsToolCall;
+
+    public Visibility BenchmarkBookmarkVisibility => CanBookmarkForBenchmark ? Visibility.Visible : Visibility.Collapsed;
 
     public static ChatMessageViewModel FromTurn(ChatTurn turn)
     {
