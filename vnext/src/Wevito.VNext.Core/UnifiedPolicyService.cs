@@ -47,6 +47,27 @@ public sealed class UnifiedPolicyService
         return decision;
     }
 
+    public PolicyDecision EvaluatePetStateRead(
+        int petSlot,
+        Guid? taskCardId = null,
+        DateTimeOffset? nowUtc = null)
+    {
+        var timestamp = nowUtc ?? DateTimeOffset.UtcNow;
+        var subject = $"pet_slot:{Math.Max(0, petSlot)}";
+        var decision = _killSwitchService?.IsActive() == true
+            ? Block(PolicyDecisionScope.PetStateRead, subject, "kill_switch=true")
+            : new PolicyDecision(
+                PolicyDecisionScope.PetStateRead,
+                subject,
+                ToolPolicyDecisionStatus.Allowed,
+                ToolRiskLevel.Low,
+                ApprovalRequirement.None,
+                "Pet state read is local, read-only, and does not inspect user files.",
+                subject);
+        Record(decision, taskCardId, timestamp);
+        return decision;
+    }
+
     public ToolPolicyDecision EvaluateToolPolicy(TaskIntent intent, IReadOnlyList<ToolPolicy> policies)
     {
         if (intent.RiskLevel == ToolRiskLevel.Blocked ||

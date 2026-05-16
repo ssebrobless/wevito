@@ -121,7 +121,7 @@ public sealed class ToolRegistry
             Preview("localDocs", "summarize_local_docs", "Summarize approved local Wevito documents.", ToolRiskLevel.Low, false, dispatcher),
             Preview("localResearch", "local_research_packet", "Prepare an offline/local research evidence packet.", ToolRiskLevel.Low, false, dispatcher),
             Preview("spriteAudit", "sprite_audit_report", "Audit sprite/runtime assets and write a report-only packet.", ToolRiskLevel.Low, false, dispatcher),
-            Preview("petState", "pet_state_report", "Summarize current pet state without changing pets.", ToolRiskLevel.Low, false, dispatcher),
+            Preview("petState", "get_pet_state", "Read current pet state without changing pets.", ToolRiskLevel.Low, false, dispatcher),
             Preview("assetInventory", "asset_inventory_report", "Inventory local Wevito assets.", ToolRiskLevel.Low, false, dispatcher),
             Preview("codeReview", "code_review_report", "Review local code and prepare a report.", ToolRiskLevel.Low, false, dispatcher),
             Preview("codePatchPlan", "code_patch_plan", "Plan a code change without editing files.", ToolRiskLevel.Low, false, dispatcher),

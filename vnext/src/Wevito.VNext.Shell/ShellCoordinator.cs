@@ -2874,6 +2874,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         hydrated.TryAdd(PetVisualPolishLogger.IdleMicroBehaviorsSetting, bool.TrueString);
         hydrated.TryAdd(PetVisualPolishLogger.ParticleEffectsSetting, bool.TrueString);
         hydrated.TryAdd(PetVisualPolishLogger.WindowShakeReactionSetting, bool.TrueString);
+        hydrated.TryAdd(PetStateContextInjector.AiMentionsPetStateSetting, bool.TrueString);
         hydrated.TryAdd(MultiMonitorService.PreferredMonitorSetting, string.Empty);
         hydrated.TryAdd(CoexistenceTriggerService.CpuThresholdSetting, "80");
         hydrated.TryAdd(CoexistenceTriggerService.NetworkThresholdSetting, "80");

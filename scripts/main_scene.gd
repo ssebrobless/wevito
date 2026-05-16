@@ -2805,6 +2805,35 @@ func get_pet_home_position_for_node(pet_node: Pet, action_family: String = "home
 		slot.position.y + (slot.size.y * clamp(anchor.y, 0.15, 0.95))
 	)
 
+func get_pet_goal_zone_position_for_node(pet_node: Pet, goal: String) -> Vector2:
+	var floor_y = float(get_window().size.y) - PET_FLOOR_INSET
+	if game_manager == null or pet_node == null:
+		return Vector2(float(get_window().size.x) * 0.5, floor_y)
+	var pet_index = game_manager.pets.find(pet_node)
+	if pet_index < 0:
+		return Vector2(float(get_window().size.x) * 0.5, floor_y)
+	var slots = _get_environment_slot_rects(float(get_window().size.x), float(get_window().size.y), game_manager.get_pet_count())
+	if pet_index >= slots.size():
+		return Vector2(float(get_window().size.x) * 0.5, floor_y)
+	var slot = slots[pet_index]
+	var anchor = Vector2(0.5, 0.82)
+	match goal:
+		"seek_food_zone":
+			anchor = Vector2(0.32, 0.82)
+		"seek_water_zone":
+			anchor = Vector2(0.68, 0.82)
+		"rest_zone":
+			anchor = Vector2(0.5, 0.78)
+		"follow_cursor":
+			var mouse_position = get_global_mouse_position()
+			return Vector2(clamp(mouse_position.x, slot.position.x + 8.0, slot.end.x - 8.0), floor_y)
+		_:
+			anchor = Vector2(randf_range(0.22, 0.78), 0.82)
+	return Vector2(
+		slot.position.x + (slot.size.x * clamp(anchor.x, 0.05, 0.95)),
+		slot.position.y + (slot.size.y * clamp(anchor.y, 0.15, 0.95))
+	)
+
 func _ellipse_polygon(radius: Vector2, segments: int = 28) -> PackedVector2Array:
 	var points := PackedVector2Array()
 	var safe_segments = max(8, segments)

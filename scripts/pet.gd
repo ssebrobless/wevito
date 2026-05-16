@@ -77,6 +77,8 @@ const EGG_TINTS := {
 
 signal micro_behavior_triggered(behavior: String)
 signal particle_effect_played(effect_name: String)
+signal goal_changed(goal: String)
+signal cursor_curiosity_fired(distance_px: float)
 
 # State machine
 enum PetState { WANDERING, MOVING_TO_ENV, ACTING }
@@ -113,6 +115,8 @@ var _idle_jump_timer: float = 6.0
 var _home_lock_timer: float = 0.0
 var _resume_wandering_after_home_lock: bool = false
 var _current_action_family: String = "home"
+var current_goal: String = "wander"
+var _cursor_curiosity_hold_timer: float = 0.0
 var fetch_stage: int = FetchStage.NONE
 var _fetch_stage_timer: float = 0.0
 var _fetch_ball_position: Vector2 = Vector2.ZERO
@@ -184,15 +188,25 @@ func _update_cursor_reactivity(delta: float):
 	if not cursor_reactivity_enabled:
 		return
 
+	if _cursor_curiosity_hold_timer > 0.0:
+		_cursor_curiosity_hold_timer = max(0.0, _cursor_curiosity_hold_timer - delta)
+
 	if _cursor_reactivity_timer > 0.0:
 		_cursor_reactivity_timer = max(0.0, _cursor_reactivity_timer - delta)
 		return
 
 	var mouse_position = get_global_mouse_position()
-	if position.distance_to(mouse_position) > cursor_reactivity_distance_px:
+	var distance = position.distance_to(mouse_position)
+	if distance > min(cursor_reactivity_distance_px, 80.0):
 		return
 
 	_set_horizontal_facing(mouse_position.x - position.x)
+	pause_wandering()
+	_set_current_goal("follow_cursor")
+	_cursor_curiosity_hold_timer = randf_range(1.0, 3.0)
+	if distance <= 40.0:
+		_set_current_animation("happy")
+	cursor_curiosity_fired.emit(distance)
 	_cursor_reactivity_timer = 10.0
 
 func _egg_tint() -> Color:
@@ -484,6 +498,9 @@ func update_wandering(delta):
 	if _home_lock_timer > 0.0:
 		return
 
+	if _cursor_curiosity_hold_timer > 0.0:
+		return
+
 	if _resume_wandering_after_home_lock and not _wandering:
 		_resume_wandering_after_home_lock = false
 		_interaction_timer = 999.0
@@ -508,13 +525,13 @@ func start_wandering():
 	_wandering = true
 	_wander_timer = randf_range(2.0, 5.0)
 	pet_data.is_wandering = true
-	
-	# Pick random position within bounds
-	var new_x = randf_range(_bounds.position.x, _bounds.end.x)
-	var new_y = _floor_y
-	pet_data.target_position = Vector2(new_x, new_y)
-	
-	_set_horizontal_facing(new_x - position.x)
+
+	var next_goal = _select_behavior_goal()
+	_set_current_goal(next_goal)
+	var target = _select_goal_target(next_goal)
+	pet_data.target_position = target
+
+	_set_horizontal_facing(target.x - position.x)
 
 func pause_wandering():
 	_wandering = false
@@ -545,7 +562,35 @@ func update_movement(delta):
 	
 	# Check if reached target
 	if position.distance_to(target) < 5.0:
+		if current_goal != "wander":
+			_set_current_goal("wander")
 		pause_wandering()
+
+func _select_behavior_goal() -> String:
+	if pet_data == null:
+		return "wander"
+	if pet_data.hydration < 35.0:
+		return "seek_water_zone"
+	if pet_data.hunger < 35.0:
+		return "seek_food_zone"
+	if pet_data.energy < 30.0 or pet_data.is_sleeping:
+		return "rest_zone"
+	return "wander"
+
+func _select_goal_target(goal: String) -> Vector2:
+	var main_scene = get_parent()
+	if main_scene and main_scene.has_method("get_pet_goal_zone_position_for_node"):
+		var zone_target = main_scene.get_pet_goal_zone_position_for_node(self, goal)
+		if zone_target != Vector2.ZERO:
+			return Vector2(clamp(zone_target.x, _bounds.position.x, _bounds.end.x), _floor_y)
+	var new_x = randf_range(_bounds.position.x, _bounds.end.x)
+	return Vector2(new_x, _floor_y)
+
+func _set_current_goal(goal: String):
+	if goal == "" or goal == current_goal:
+		return
+	current_goal = goal
+	goal_changed.emit(goal)
 
 func update_animation_state():
 	var new_anim = "idle"

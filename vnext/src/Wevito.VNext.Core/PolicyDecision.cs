@@ -9,7 +9,8 @@ public enum PolicyDecisionScope
     Capture,
     ProofExecution,
     FileRead,
-    LocalToolExecution
+    LocalToolExecution,
+    PetStateRead
 }
 
 public sealed record PolicyDecision(
