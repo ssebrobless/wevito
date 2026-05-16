@@ -2,19 +2,36 @@ extends Node2D
 class_name Pet
 
 const PetData = preload("res://scripts/pet_data.gd")
+const ParticleEffectsLayer = preload("res://scripts/particle_effects_layer.gd")
 
 var pet_data: PetData
 var sprite: Sprite2D
+var _transition_sprite: Sprite2D
 var click_area: Area2D
 var current_animation: String = "idle"
 var animation_frame: int = 0
 var animation_timer: float = 0.0
 var animation_speed: float = 0.25  # seconds per frame
+var animation_blending_enabled: bool = true
+var position_interpolation_enabled: bool = true
+var idle_micro_behaviors_enabled: bool = true
+var particle_effects_enabled: bool = true
+var window_shake_reaction_enabled: bool = true
 var cursor_reactivity_enabled: bool = true
 var cursor_reactivity_distance_px: float = 200.0
 var _cursor_reactivity_timer: float = 0.0
+var _transition_timer: float = 0.0
+var _micro_behavior_timer: float = 0.0
+var _micro_behavior_name: String = ""
+var _micro_behavior_remaining: float = 0.0
+var _micro_behavior_restore_flip: bool = false
+var _micro_behavior_restore_offset: Vector2 = Vector2.ZERO
+var _particle_frame_gate: int = -1
+var _window_shake_timer: float = 0.0
+var particle_effects_layer: ParticleEffectsLayer
 const SPRITE_SCALE := Vector2(3, 3)
 const HATCH_DURATION_SEC := 3.0
+const TRANSITION_SECONDS := 0.12
 const PET_SPRITE_ROOTS := ["res://sprites_runtime", "res://sprites"]
 const SHARED_SPRITE_ROOTS := ["res://sprites_shared_runtime", "res://sprites"]
 const REQUIRED_ANIMATIONS := ["idle", "walk", "eat", "happy", "sad", "sleep", "sick", "bathe"]
@@ -57,6 +74,9 @@ const EGG_TINTS := {
 	"indigo": Color(0.45, 0.56, 0.99),
 	"violet": Color(0.85, 0.47, 0.95)
 }
+
+signal micro_behavior_triggered(behavior: String)
+signal particle_effect_played(effect_name: String)
 
 # State machine
 enum PetState { WANDERING, MOVING_TO_ENV, ACTING }
@@ -109,8 +129,16 @@ var _last_hatching_state: bool = false
 
 func _ready():
 	_idle_jump_timer = randf_range(6.0, 12.0)
+	_micro_behavior_timer = randf_range(8.0, 12.0)
 
 	# Create sprite
+	_transition_sprite = Sprite2D.new()
+	_transition_sprite.position = Vector2.ZERO
+	_transition_sprite.scale = SPRITE_SCALE
+	_transition_sprite.visible = false
+	_transition_sprite.modulate.a = 0.0
+	add_child(_transition_sprite)
+
 	sprite = Sprite2D.new()
 	sprite.position = Vector2.ZERO  # Local position, Pet node moves instead
 	sprite.scale = SPRITE_SCALE  # Larger for readability and easier interaction
@@ -126,10 +154,13 @@ func _ready():
 	click_area.input_event.connect(_on_click_area_input_event)
 	add_child(click_area)
 
+	particle_effects_layer = ParticleEffectsLayer.new()
+	particle_effects_layer.z_index = 1
+	add_child(particle_effects_layer)
+
 func _on_click_area_input_event(_viewport, event, _shape_idx):
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		current_animation = "happy"
-		animation_frame = 0
+		_set_current_animation("happy")
 		_play_happy_effect()
 
 func _play_happy_effect():
@@ -185,6 +216,8 @@ func _apply_visual_scale():
 		return
 	var multiplier = float(STAGE_SCALE_MULTIPLIERS.get(pet_data.stage, 1.0))
 	sprite.scale = SPRITE_SCALE * multiplier
+	if _transition_sprite:
+		_transition_sprite.scale = sprite.scale
 
 func setup(data: PetData):
 	pet_data = data
@@ -237,7 +270,7 @@ func move_to_home(home_x: float, hold_seconds: float = 0.0, resume_wandering_aft
 	_target_position = Vector2(clamp(home_x, _bounds.position.x, _bounds.end.x), _floor_y)
 	pet_data.target_position = _target_position
 	pet_state = PetState.MOVING_TO_ENV
-	current_animation = "walk"
+	_set_current_animation("walk")
 
 func _load_texture(path: String) -> Texture2D:
 	if path == "":
@@ -345,6 +378,7 @@ func _create_placeholder_sprite():
 func _process(delta):
 	if pet_data == null:
 		return
+	_update_transition_sprite(delta)
 
 	if pet_data.is_dead:
 		_update_death_visual(delta)
@@ -363,6 +397,8 @@ func _process(delta):
 	_last_hatching_state = pet_data.is_hatching
 	_apply_visual_scale()
 	_update_cursor_reactivity(delta)
+	_update_idle_micro_behaviors(delta)
+	_update_window_shake_timer(delta)
 	
 	# Update animation timer
 	animation_timer += delta
@@ -370,6 +406,7 @@ func _process(delta):
 		animation_timer = 0
 		animation_frame = (animation_frame + 1) % get_frame_count()
 		update_sprite()
+		_maybe_play_animation_particles()
 
 	if _home_lock_timer > 0.0:
 		_home_lock_timer = max(0.0, _home_lock_timer - delta)
@@ -382,13 +419,12 @@ func _process(delta):
 	match pet_state:
 		PetState.WANDERING:
 			if not pet_data.is_sleeping:
-		update_wandering(delta)
+				update_wandering(delta)
 				update_movement(delta)
 			if not _wandering:
 				_idle_jump_timer -= delta
 				if _idle_jump_timer <= 0.0:
-					current_animation = "happy"
-					animation_frame = 0
+					_set_current_animation("happy")
 					_play_happy_effect()
 					_idle_jump_timer = randf_range(6.0, 12.0)
 		PetState.MOVING_TO_ENV:
@@ -406,7 +442,7 @@ func move_to_environment():
 		_target_position = main_scene.get_pet_home_position_for_node(self, _current_action_family)
 		pet_data.target_position = _target_position
 		pet_state = PetState.MOVING_TO_ENV
-		current_animation = "walk"
+		_set_current_animation("walk")
 		return
 
 	var game_mgr = null
@@ -416,7 +452,7 @@ func move_to_environment():
 		_target_position = game_mgr.get_environment_position(pet_data.animal_type)
 		pet_data.target_position = _target_position
 		pet_state = PetState.MOVING_TO_ENV
-		current_animation = "walk"
+		_set_current_animation("walk")
 
 func _update_movement_to_target(delta: float):
 	var speed = 80.0
@@ -529,8 +565,7 @@ func update_animation_state():
 	
 	new_anim = _first_available_animation([new_anim, "idle"])
 	if new_anim != current_animation:
-		current_animation = new_anim
-		animation_frame = 0
+		_set_current_animation(new_anim)
 
 func update_sprite():
 	if pet_data and pet_data.is_hatching and _egg_frames.size() > 0:
@@ -545,6 +580,122 @@ func update_sprite():
 		var frame_idx = animation_frame % frames.size()
 		if frame_idx < frames.size():
 			sprite.texture = frames[frame_idx]
+			if _transition_sprite:
+				_transition_sprite.flip_h = sprite.flip_h
+
+func _set_current_animation(anim: String):
+	var next_anim = _first_available_animation([anim, "idle"])
+	if next_anim == current_animation:
+		return
+	if animation_blending_enabled and sprite and sprite.texture and _transition_sprite:
+		_transition_sprite.texture = sprite.texture
+		_transition_sprite.self_modulate = sprite.self_modulate
+		_transition_sprite.flip_h = sprite.flip_h
+		_transition_sprite.scale = sprite.scale
+		_transition_sprite.visible = true
+		_transition_sprite.modulate.a = 0.55
+		_transition_timer = TRANSITION_SECONDS
+	current_animation = next_anim
+	animation_frame = 0
+	animation_timer = 0.0
+	_particle_frame_gate = -1
+	update_sprite()
+
+func _update_transition_sprite(delta: float):
+	if _transition_sprite == null or not _transition_sprite.visible:
+		return
+	_transition_timer = max(0.0, _transition_timer - delta)
+	if _transition_timer <= 0.0:
+		_transition_sprite.visible = false
+		_transition_sprite.modulate.a = 0.0
+		return
+	_transition_sprite.modulate.a = 0.55 * (_transition_timer / TRANSITION_SECONDS)
+
+func _update_idle_micro_behaviors(delta: float):
+	if not idle_micro_behaviors_enabled or pet_data == null or pet_data.is_hatching or pet_data.is_dead:
+		return
+	if current_animation != "idle" or pet_state != PetState.WANDERING or _wandering:
+		return
+	if _micro_behavior_remaining > 0.0:
+		_micro_behavior_remaining = max(0.0, _micro_behavior_remaining - delta)
+		_apply_micro_behavior_visual(delta)
+		if _micro_behavior_remaining <= 0.0:
+			_clear_micro_behavior_visual()
+		return
+	_micro_behavior_timer -= delta
+	if _micro_behavior_timer > 0.0:
+		return
+	var options = ["Blink", "LookAround", "EarTwitch", "TailWag"]
+	_micro_behavior_name = options[randi() % options.size()]
+	_micro_behavior_remaining = 0.45
+	_micro_behavior_restore_flip = sprite.flip_h
+	_micro_behavior_restore_offset = sprite.position
+	_micro_behavior_timer = randf_range(8.0, 12.0)
+	micro_behavior_triggered.emit(_micro_behavior_name)
+
+func _apply_micro_behavior_visual(_delta: float):
+	match _micro_behavior_name:
+		"Blink":
+			sprite.modulate = Color(0.78, 0.78, 0.82, sprite.modulate.a)
+		"LookAround":
+			sprite.flip_h = not _micro_behavior_restore_flip
+		"EarTwitch":
+			sprite.position = _micro_behavior_restore_offset + Vector2(0, -1)
+		"TailWag":
+			sprite.position = _micro_behavior_restore_offset + Vector2(1 if sprite.flip_h else -1, 0)
+
+func _clear_micro_behavior_visual():
+	sprite.modulate = Color.WHITE
+	sprite.flip_h = _micro_behavior_restore_flip
+	sprite.position = _micro_behavior_restore_offset
+	_micro_behavior_name = ""
+
+func _update_window_shake_timer(delta: float):
+	if _window_shake_timer <= 0.0:
+		return
+	_window_shake_timer = max(0.0, _window_shake_timer - delta)
+	if _window_shake_timer <= 0.0:
+		_set_current_animation(_first_available_animation(["idle"]))
+
+func request_window_shake_reaction():
+	if not window_shake_reaction_enabled or pet_data == null or pet_data.is_dead:
+		return
+	_window_shake_timer = 2.0
+	_set_current_animation(_first_available_animation(["sad", "idle"]))
+	_play_particle_effect("sad")
+
+func _maybe_play_animation_particles():
+	if not particle_effects_enabled:
+		return
+	if _particle_frame_gate == animation_frame:
+		return
+	match current_animation:
+		"sleep":
+			if animation_frame == 0:
+				_play_particle_effect("sleep")
+		"happy":
+			if animation_frame == 0:
+				_play_particle_effect("happy")
+		"eat":
+			if animation_frame == 1:
+				_play_particle_effect("eat")
+		"bathe":
+			if animation_frame == 1 or animation_frame == 3:
+				_play_particle_effect("bathe")
+		"sad":
+			if animation_frame == 0:
+				_play_particle_effect("sad")
+		"walk":
+			if animation_frame % 3 == 0:
+				_play_particle_effect("walk")
+	_particle_frame_gate = animation_frame
+
+func _play_particle_effect(effect_name: String):
+	if particle_effects_layer == null:
+		return
+	var facing = -1 if sprite and sprite.flip_h else 1
+	particle_effects_layer.play_effect(effect_name, Vector2.ZERO, facing)
+	particle_effect_played.emit(effect_name)
 
 func _lifecycle_tint() -> Color:
 	if pet_data == null:
@@ -562,10 +713,10 @@ func _update_death_visual(delta: float):
 		return
 	pet_data.death_elapsed_sec += delta
 	if pet_data.death_elapsed_sec < 2.5:
-		current_animation = _first_available_animation(["sad", "idle"])
+		_set_current_animation(_first_available_animation(["sad", "idle"]))
 	else:
 		pet_data.is_ghost = true
-		current_animation = _first_available_animation(["ghost", "idle"])
+		_set_current_animation(_first_available_animation(["ghost", "idle"]))
 	animation_timer += delta
 	if animation_timer >= animation_speed:
 		animation_timer = 0
@@ -615,10 +766,10 @@ func _set_fetch_stage(next_stage: int):
 		_wander_timer = 2.0
 		if pet_data:
 			pet_data.is_wandering = false
-		current_animation = _first_available_animation(["happy", "idle"])
+		_set_current_animation(_first_available_animation(["happy", "idle"]))
 		pet_state = PetState.WANDERING
 		return
-	current_animation = _first_available_animation(FETCH_STAGE_ANIMATIONS.get(fetch_stage, ["idle"]))
+	_set_current_animation(_first_available_animation(FETCH_STAGE_ANIMATIONS.get(fetch_stage, ["idle"])))
 
 func _advance_fetch_stage():
 	match fetch_stage:
@@ -682,9 +833,9 @@ func perform_action(action: String):
 	pet_state = PetState.ACTING
 	
 	if action == "rest" and pet_data and not pet_data.is_sleeping:
-		current_animation = _first_available_animation(["idle"])
+		_set_current_animation(_first_available_animation(["idle"]))
 	else:
-		current_animation = _first_available_animation(ACTION_ANIMATION_FALLBACKS.get(action, [action, "idle"]))
+		_set_current_animation(_first_available_animation(ACTION_ANIMATION_FALLBACKS.get(action, [action, "idle"])))
 	
 	animation_frame = 0
 	_wander_timer = 1.0

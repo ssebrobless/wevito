@@ -230,6 +230,11 @@ public partial class ToolPopupWindow : Window
         PetSoundsCheckBox.IsChecked = GetSettingBool(state, AudioOutputPolicyService.PetSoundEffectsEnabledSetting);
         PetCursorReactivityCheckBox.IsChecked = GetSettingBool(state, CursorReactivityService.EnabledSetting, true);
         TrayIconAnimationCheckBox.IsChecked = GetSettingBool(state, TrayIconDisciplineService.AnimationEnabledSetting);
+        AnimationBlendingCheckBox.IsChecked = GetSettingBool(state, PetVisualPolishLogger.AnimationBlendingSetting, true);
+        PositionInterpolationCheckBox.IsChecked = GetSettingBool(state, PetVisualPolishLogger.PositionInterpolationSetting, true);
+        IdleMicroBehaviorsCheckBox.IsChecked = GetSettingBool(state, PetVisualPolishLogger.IdleMicroBehaviorsSetting, true);
+        ParticleEffectsCheckBox.IsChecked = GetSettingBool(state, PetVisualPolishLogger.ParticleEffectsSetting, true);
+        WindowShakeReactionCheckBox.IsChecked = GetSettingBool(state, PetVisualPolishLogger.WindowShakeReactionSetting, true);
         RuntimeSupervisorStatusText.Text = runtimeSupervisorStatus?.UserStatus ?? "Runtime supervisor: waiting for shell state.";
         var modelEnabled = GetSettingBool(state, "pet_model_adapter_enabled");
         var modelFirstCallApproved = GetSettingBool(state, "pet_model_first_call_approved");
@@ -353,6 +358,11 @@ public partial class ToolPopupWindow : Window
             if (TryToggleCheckBox(PetSoundsCheckBox, localPoint)) { return true; }
             if (TryToggleCheckBox(PetCursorReactivityCheckBox, localPoint)) { return true; }
             if (TryToggleCheckBox(TrayIconAnimationCheckBox, localPoint)) { return true; }
+            if (TryToggleCheckBox(AnimationBlendingCheckBox, localPoint)) { return true; }
+            if (TryToggleCheckBox(PositionInterpolationCheckBox, localPoint)) { return true; }
+            if (TryToggleCheckBox(IdleMicroBehaviorsCheckBox, localPoint)) { return true; }
+            if (TryToggleCheckBox(ParticleEffectsCheckBox, localPoint)) { return true; }
+            if (TryToggleCheckBox(WindowShakeReactionCheckBox, localPoint)) { return true; }
             if (TryToggleCheckBox(PetModelAdapterEnabledCheckBox, localPoint)) { return true; }
             if (TryToggleCheckBox(WebSearchEnabledCheckBox, localPoint)) { return true; }
             if (await TryInvokeButtonAsync(PullDefaultModelButton, localPoint, () =>
@@ -1169,6 +1179,31 @@ public partial class ToolPopupWindow : Window
     private void TrayIconAnimationCheckBox_OnChanged(object sender, RoutedEventArgs e)
     {
         PublishSetting(TrayIconDisciplineService.AnimationEnabledSetting, TrayIconAnimationCheckBox.IsChecked == true);
+    }
+
+    private void AnimationBlendingCheckBox_OnChanged(object sender, RoutedEventArgs e)
+    {
+        PublishSetting(PetVisualPolishLogger.AnimationBlendingSetting, AnimationBlendingCheckBox.IsChecked == true);
+    }
+
+    private void PositionInterpolationCheckBox_OnChanged(object sender, RoutedEventArgs e)
+    {
+        PublishSetting(PetVisualPolishLogger.PositionInterpolationSetting, PositionInterpolationCheckBox.IsChecked == true);
+    }
+
+    private void IdleMicroBehaviorsCheckBox_OnChanged(object sender, RoutedEventArgs e)
+    {
+        PublishSetting(PetVisualPolishLogger.IdleMicroBehaviorsSetting, IdleMicroBehaviorsCheckBox.IsChecked == true);
+    }
+
+    private void ParticleEffectsCheckBox_OnChanged(object sender, RoutedEventArgs e)
+    {
+        PublishSetting(PetVisualPolishLogger.ParticleEffectsSetting, ParticleEffectsCheckBox.IsChecked == true);
+    }
+
+    private void WindowShakeReactionCheckBox_OnChanged(object sender, RoutedEventArgs e)
+    {
+        PublishSetting(PetVisualPolishLogger.WindowShakeReactionSetting, WindowShakeReactionCheckBox.IsChecked == true);
     }
 
     private void WebSearchEnabledCheckBox_OnChanged(object sender, RoutedEventArgs e)

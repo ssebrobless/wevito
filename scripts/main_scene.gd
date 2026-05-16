@@ -59,6 +59,10 @@ var basket_entries: Array[Dictionary] = []
 var portrait_texture_cache: Dictionary = {}
 var environment_texture_cache: Dictionary = {}
 var memorial_sprites: Dictionary = {}
+var visual_camera: Camera2D
+var _last_window_position: Vector2i = Vector2i.ZERO
+var _window_shake_cooldown_sec: float = 0.0
+var _window_shake_initialized: bool = false
 
 
 # Game settings
@@ -72,6 +76,11 @@ const DEFAULT_SETTINGS = {
 	"ghost_mode": false,
 	"experimental_monitor_roam": false,
 	"sound_effects": true,
+	"pet_visual_animation_blending": true,
+	"pet_visual_position_interpolation": true,
+	"pet_visual_idle_micro_behaviors": true,
+	"pet_visual_particle_effects": true,
+	"pet_visual_window_shake_reaction": true,
 	"main_menu_text_color": "#9cbd0f",
 	"detail_text_color": "#d8e0d8",
 	"status_box_palette": "classic"
@@ -966,6 +975,7 @@ func _reconcile_window_focus_state():
 func _ready():
 	position_window()
 	window_has_focus = true
+	_setup_visual_camera()
 	_ensure_runtime_input_actions()
 	_start_native_focus_watcher()
 	if get_window() and not get_window().files_dropped.is_connected(_on_window_files_dropped):
@@ -1014,6 +1024,7 @@ func _ready():
 	game_manager.pet_added.connect(_on_pet_added)
 
 	var restored_from_save = _load_save_state()
+	_apply_runtime_settings()
 	
 	create_ui()
 	_update_basket_button_state()
@@ -1044,6 +1055,15 @@ func _apply_runtime_settings():
 		game_manager.tick_rate = max(1.0, float(settings.get("tick_rate", game_manager.tick_rate)))
 	if sound_manager:
 		sound_manager.set_enabled(settings.get("sound_effects", true))
+	if game_manager:
+		for pet in game_manager.pets:
+			if pet == null:
+				continue
+			pet.animation_blending_enabled = bool(settings.get("pet_visual_animation_blending", true))
+			pet.position_interpolation_enabled = bool(settings.get("pet_visual_position_interpolation", true))
+			pet.idle_micro_behaviors_enabled = bool(settings.get("pet_visual_idle_micro_behaviors", true))
+			pet.particle_effects_enabled = bool(settings.get("pet_visual_particle_effects", true))
+			pet.window_shake_reaction_enabled = bool(settings.get("pet_visual_window_shake_reaction", true))
 
 func _automation_requested() -> bool:
 	return OS.get_environment(AUTOMATION_ENV) == "1"
@@ -1058,6 +1078,7 @@ func _finalize_startup_focus():
 func _process(delta):
 	_poll_native_focus_state(delta)
 	_reconcile_window_focus_state()
+	_detect_user_window_shake(delta)
 	_cleanup_expired_memorials()
 
 	# Pet nodes are processed automatically by Godot since they're in the scene tree
@@ -1083,6 +1104,40 @@ func _process(delta):
 	if celestial_update_timer >= 5.0:
 		celestial_update_timer = 0.0
 		_update_celestial_sprite()
+
+func _setup_visual_camera():
+	if visual_camera and is_instance_valid(visual_camera):
+		return
+	visual_camera = Camera2D.new()
+	visual_camera.name = "VisualSmoothingCamera"
+	visual_camera.position = Vector2.ZERO
+	visual_camera.position_smoothing_enabled = true
+	visual_camera.position_smoothing_speed = 8.0
+	visual_camera.make_current()
+	add_child(visual_camera)
+
+func _detect_user_window_shake(delta: float):
+	if startup_focus_guard or automation_running or _automation_requested():
+		return
+	if not window_has_focus:
+		_window_shake_initialized = false
+		return
+	_window_shake_cooldown_sec = max(0.0, _window_shake_cooldown_sec - delta)
+	var current_position = DisplayServer.window_get_position()
+	if not _window_shake_initialized:
+		_last_window_position = current_position
+		_window_shake_initialized = true
+		return
+	var window_delta = Vector2(current_position - _last_window_position).length()
+	_last_window_position = current_position
+	if window_delta < 90.0 or _window_shake_cooldown_sec > 0.0:
+		return
+	_window_shake_cooldown_sec = 4.0
+	if game_manager == null:
+		return
+	for pet in game_manager.pets:
+		if pet and pet.has_method("request_window_shake_reaction"):
+			pet.request_window_shake_reaction()
 
 func _do_auto_save():
 	# Auto-save to single file

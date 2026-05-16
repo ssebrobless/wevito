@@ -110,6 +110,24 @@ public sealed class PlainLanguageExplainerTests
         Assert.Contains(".", text);
     }
 
+    [Fact]
+    public void CoversPetMicroBehaviorKind()
+    {
+        var text = new PlainLanguageExplainer().ExplainPacketKind(PetVisualPolishLogger.PetMicroBehaviorPacketKind);
+
+        Assert.Contains("pet", text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Unknown", text, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void CoversPetParticleEffectKind()
+    {
+        var text = new PlainLanguageExplainer().ExplainPacketKind(PetVisualPolishLogger.PetParticleEffectPacketKind);
+
+        Assert.Contains("particle", text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Unknown", text, StringComparison.OrdinalIgnoreCase);
+    }
+
     [Theory]
     [InlineData(BenchmarkSuiteService.BenchmarkRunPacketKind)]
     [InlineData(BenchmarkRegressionGate.RegressionDetectedPacketKind)]
