@@ -48,6 +48,8 @@ public partial class HomePanelWindow : Window
 
     public event Func<Task>? OpenCreativeLearningLabRequested;
 
+    public event Func<Task>? OpenBenchmarksRequested;
+
     public event Func<Task>? SaveRequested;
 
     public event Func<Task>? OpenSettingsRequested;
@@ -195,6 +197,9 @@ public partial class HomePanelWindow : Window
         EvidenceBadgeText.Text = evidenceStatus?.Active == true
             ? $"Evidence: Day {evidenceStatus.DayN} of {evidenceStatus.DayMax}"
             : "Evidence: not started";
+        BenchmarkBadgeButton.Content = state.SettingsSnapshot.TryGetValue("benchmark_latest_score", out var benchmarkScore) && !string.IsNullOrWhiteSpace(benchmarkScore)
+            ? $"BENCH {benchmarkScore}"
+            : "BENCH --";
         WebToolsBar.Visibility = _isHudVisible && webToolsVisible ? Visibility.Visible : Visibility.Collapsed;
         LinkBinTabButton.Content = state.ActiveTool.IsOpen && string.Equals(state.ActiveTool.ToolId, "basket", StringComparison.OrdinalIgnoreCase) ? "LINK BIN ACTIVE" : "LINK BIN";
         LinkBinTabButton.FontWeight = state.ActiveTool.IsOpen && string.Equals(state.ActiveTool.ToolId, "basket", StringComparison.OrdinalIgnoreCase)
@@ -206,7 +211,7 @@ public partial class HomePanelWindow : Window
             : FontWeights.Normal;
         WebToolSlot3Button.Content = "SPRITES";
         WebToolSlot4Button.Content = "LAB";
-        WebToolSlot5Button.Content = "EMPTY";
+        WebToolSlot5Button.Content = state.ActiveTool.IsOpen && string.Equals(state.ActiveTool.ToolId, "benchmarks", StringComparison.OrdinalIgnoreCase) ? "BENCH ACTIVE" : "BENCH";
         WebToolsHintText.Text = state.BasketItems.Count switch
         {
             0 => "Link Bin, report-first Pet Tasks, Sprites, and Lab are ready. One slot is reserved for future tools.",
@@ -2435,6 +2440,22 @@ public partial class HomePanelWindow : Window
         if (OpenCreativeLearningLabRequested is not null)
         {
             await OpenCreativeLearningLabRequested.Invoke();
+        }
+    }
+
+    private async void WebToolSlot5Button_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (OpenBenchmarksRequested is not null)
+        {
+            await OpenBenchmarksRequested.Invoke();
+        }
+    }
+
+    private async void BenchmarkBadgeButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (OpenBenchmarksRequested is not null)
+        {
+            await OpenBenchmarksRequested.Invoke();
         }
     }
 

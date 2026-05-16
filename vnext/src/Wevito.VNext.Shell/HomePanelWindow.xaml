@@ -173,6 +173,16 @@
                                    FontWeight="SemiBold"
                                    Text="Evidence: Day 0 of 0" />
                     </Border>
+                    <Button x:Name="BenchmarkBadgeButton"
+                            Margin="6,0,0,0"
+                            Style="{StaticResource HudButtonStyle}"
+                            MinWidth="58"
+                            Background="#2C344D"
+                            BorderBrush="#7D88C8"
+                            automation:AutomationProperties.AutomationId="BenchmarkBadge"
+                            Content="BENCH --"
+                            ToolTip="Open benchmark suite"
+                            Click="BenchmarkBadgeButton_OnClick" />
                 </WrapPanel>
 
                 <WrapPanel Grid.Row="1"
@@ -246,9 +256,9 @@
                                 Click="WebToolSlot4Button_OnClick" />
                         <Button x:Name="WebToolSlot5Button"
                                 Style="{StaticResource WebToolTabStyle}"
-                                IsEnabled="False"
                                 automation:AutomationProperties.AutomationId="WebToolSlot5Button"
-                                Content="EMPTY" />
+                                Content="BENCH"
+                                Click="WebToolSlot5Button_OnClick" />
                     </UniformGrid>
                     <TextBlock x:Name="WebToolsHintText"
                                Margin="0,8,0,0"
