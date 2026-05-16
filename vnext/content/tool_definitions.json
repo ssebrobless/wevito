@@ -275,6 +275,16 @@
     "fallbackWhenUnavailable": "hashing-embedding"
   },
   {
+    "id": "retrieve_from_memory",
+    "displayName": "Retrieve From Memory",
+    "toolFamily": "retrieve_from_memory",
+    "capacity": 0,
+    "defaultState": "registered-only",
+    "networkDefault": "disabled",
+    "hostedAiDefault": "disabled",
+    "mayMutate": false
+  },
+  {
     "id": "learning_eval",
     "displayName": "Learning Eval",
     "capacity": 0,

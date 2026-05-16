@@ -89,7 +89,12 @@ public partial class ToolPopupWindow : Window
         var historyStore = new ChatHistoryStore(killSwitchService: killSwitchService);
         var titleService = new ChatTitleService(historyStore, modelAdapter, auditLedgerService, killSwitchService);
         var sessionService = new ChatSessionService(historyStore, auditLedgerService, killSwitchService);
-        var streamingService = new ChatStreamingService(historyStore, modelAdapter, titleService, auditLedgerService, killSwitchService);
+        var memoryStore = new PetMemoryStore();
+        var contextBudgetService = new ChatContextBudgetService(historyStore, auditLedgerService, killSwitchService);
+        var retrievalInjector = new RetrievalAutomaticInjector(memoryStore, auditLedgerService, killSwitchService);
+        var summarizer = new RollingSummarizerService(historyStore, contextBudgetService, memoryStore, modelAdapter, auditLedgerService, killSwitchService);
+        var streamingService = new ChatStreamingService(historyStore, modelAdapter, titleService, contextBudgetService, summarizer, retrievalInjector, auditLedgerService, killSwitchService);
+        var pinnedContextStore = new PinnedContextStore(auditLedgerService: auditLedgerService, killSwitchService: killSwitchService);
         ChatPanel.Configure(sessionService, historyStore, streamingService);
         var draftRoot = Path.Combine(repoRoot, "vnext", "content", "benchmarks", "v1", "draft");
         var approvedRoot = Path.Combine(repoRoot, "vnext", "content", "benchmarks", "v1", "approved");
@@ -101,6 +106,11 @@ public partial class ToolPopupWindow : Window
         {
             curationViewModel.BookmarkFromChat(text);
             BenchmarkCurationPanel.Refresh();
+            return Task.CompletedTask;
+        };
+        ChatPanel.PinMessageRequested += text =>
+        {
+            pinnedContextStore.Pin(text);
             return Task.CompletedTask;
         };
     }

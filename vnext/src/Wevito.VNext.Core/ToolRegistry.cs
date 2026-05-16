@@ -129,7 +129,8 @@ public sealed class ToolRegistry
             Preview("translateText", "translate_text", "Translate user-provided text locally or through approved deterministic paths.", ToolRiskLevel.Low, false, dispatcher),
             Preview("audioAssist", "audio_assist_report", "Prepare audio/volume guidance without changing system audio.", ToolRiskLevel.Low, false, dispatcher),
             Preview("screenCapture", "screen_capture_preview", "Prepare a screen-capture preview; capture execution remains approval-gated.", ToolRiskLevel.Medium, true, dispatcher),
-            Preview("petMemory", "retrieve_from_memory", "Retrieve reviewed local pet memory rows.", ToolRiskLevel.Low, false, dispatcher),
+            Preview("petMemory", "retrieve_pet_memory", "Retrieve reviewed local pet memory rows.", ToolRiskLevel.Low, false, dispatcher),
+            BuiltIn("retrieve_from_memory", "retrieve_from_memory", "Retrieve matching local memory rows for explicit chat-context deep dives."),
             BuiltIn("bookmark_for_benchmark", "bookmark_for_benchmark", "Bookmark a chat message for a later benchmark review."),
             BuiltIn("pin_message", "pin_message", "Pin a chat message into the local context budget.")
         ];

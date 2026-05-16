@@ -130,6 +130,8 @@ public sealed class ChatMessageViewModel : INotifyPropertyChanged
 
     public Visibility BenchmarkBookmarkVisibility => CanBookmarkForBenchmark ? Visibility.Visible : Visibility.Collapsed;
 
+    public Visibility PinVisibility => IsToolCall ? Visibility.Collapsed : Visibility.Visible;
+
     public static ChatMessageViewModel FromTurn(ChatTurn turn)
     {
         return new ChatMessageViewModel(
