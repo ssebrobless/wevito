@@ -1009,7 +1009,18 @@
                             Style="{StaticResource PopupButtonStyle}"
                             IsEnabled="False"
                             automation:AutomationProperties.AutomationId="RunBenchmarksNowButton"
-                            Content="RUN BENCHMARKS NOW (coming in curation phase)" />
+                            Content="RUN BENCHMARKS NOW (manual run stays disabled here)" />
+                    <TabControl Margin="0,12,0,0"
+                                Background="#101920"
+                                BorderBrush="#425D78"
+                                Foreground="#FFEAF6F7"
+                                automation:AutomationProperties.AutomationId="BenchmarkCurationTabControl">
+                        <TabItem Header="Curation">
+                            <local:BenchmarkCurationPanel x:Name="BenchmarkCurationPanel"
+                                                          Margin="6"
+                                                          automation:AutomationProperties.AutomationId="BenchmarkCurationPanel" />
+                        </TabItem>
+                    </TabControl>
                 </StackPanel>
 
                 <ScrollViewer x:Name="PetCommandPanel"

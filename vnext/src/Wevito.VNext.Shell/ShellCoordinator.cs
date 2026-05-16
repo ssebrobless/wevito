@@ -119,7 +119,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             onnxPhiAdapter: onnxPhiAdapter,
             deterministicAdapter: new LocalModelAdapter(_killSwitchService),
             onnxPhiWeightsPresent: () => onnxPhiAdapter.HasWeights);
-        _toolPopupWindow.ConfigureChatServices(activeLocalModelAdapter, _auditLedgerService, _killSwitchService);
+        _toolPopupWindow.ConfigureChatServices(activeLocalModelAdapter, _auditLedgerService, _killSwitchService, ResolveRepoRootOrBaseDirectory());
         _petTaskAdapterPreviewDispatcher = new PetTaskAdapterPreviewDispatcher(activeLocalModelAdapter: activeLocalModelAdapter, auditLedgerService: _auditLedgerService, killSwitchService: _killSwitchService);
         _autonomousTaskScheduler = new AutonomousTaskScheduler(_runtimeSupervisorService, _runtimeBudgetMeter, _auditLedgerService, _killSwitchService);
         _autonomousBetaDecisionService = new AutonomousBetaDecisionService(_auditLedgerService);
