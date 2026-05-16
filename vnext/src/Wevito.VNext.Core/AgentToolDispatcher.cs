@@ -60,7 +60,7 @@ public sealed class AgentToolDispatcher
         _localDocsPreviewAdapter = localDocsPreviewAdapter ?? new LocalDocsPreviewAdapter();
         _localResearchPreviewAdapter = localResearchPreviewAdapter ?? new LocalResearchPreviewAdapter(localModelAdapter: activeLocalModelAdapter);
         _spriteAuditPreviewAdapter = spriteAuditPreviewAdapter ?? new SpriteAuditPreviewAdapter();
-        _petStatePreviewAdapter = petStatePreviewAdapter ?? new PetStatePreviewAdapter();
+        _petStatePreviewAdapter = petStatePreviewAdapter ?? new PetStatePreviewAdapter(petStateTool: new Tools.PetStateTool(auditLedgerService: auditLedgerService));
         _assetInventoryPreviewAdapter = assetInventoryPreviewAdapter ?? new AssetInventoryPreviewAdapter();
         _codeReviewPreviewAdapter = codeReviewPreviewAdapter ?? new CodeReviewPreviewAdapter(localModelAdapter: activeLocalModelAdapter);
         _codePatchPlanPreviewAdapter = codePatchPlanPreviewAdapter ?? new CodePatchPlanPreviewAdapter();

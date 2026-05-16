@@ -69,6 +69,7 @@ var auto_save_timer: float = 0.0
 var forage_state: Dictionary = {}
 var workout_heat: Dictionary = {}
 var habitat_loadouts: Dictionary = {}
+var critical_threshold_notified: Dictionary = {}
 
 # Game settings
 var tick_rate: float = 60.0  # 1 tick per second for testing
@@ -117,6 +118,7 @@ signal pet_died(pet_data: PetData)
 signal pet_added(pet_index: int)
 signal active_pet_changed(pet_index: int)
 signal naming_needed(pet_index: int)
+signal pet_critical_threshold_crossed(pet_index: int, stat_name: String, stat_value: float)
 
 func _ready():
 	_load_habitat_loadouts()
@@ -301,9 +303,30 @@ func process_tick(pet_index: int):
 	
 	# Update emotion
 	update_emotion(pet_index)
+	_emit_threshold_notifications(pet_index)
 	
 	# Emit update signal
 	stats_updated.emit()
+
+func _emit_threshold_notifications(pet_index: int):
+	if pet_index >= pet_datas.size():
+		return
+	var pd = pet_datas[pet_index]
+	var criticals = {
+		"hunger": pd.hunger,
+		"hydration": pd.hydration,
+		"energy": pd.energy,
+		"health": pd.health
+	}
+	for stat_name in criticals.keys():
+		var value = float(criticals[stat_name])
+		var key = str(pet_index) + ":" + stat_name
+		if value < CRITICAL_THRESHOLD:
+			if not bool(critical_threshold_notified.get(key, false)):
+				critical_threshold_notified[key] = true
+				pet_critical_threshold_crossed.emit(pet_index, stat_name, value)
+		else:
+			critical_threshold_notified.erase(key)
 
 func _apply_sleep_regen(pet_index: int):
 	if pet_index >= pet_datas.size():

@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Wevito.VNext.Contracts;
+using Wevito.VNext.Core.Tools;
 
 namespace Wevito.VNext.Core;
 
@@ -8,10 +9,12 @@ public sealed class PetStatePreviewAdapter
     private const string ToolFamily = "petState";
 
     private readonly PetDebugTruthReportBuilder _reportBuilder;
+    private readonly PetStateTool _petStateTool;
 
-    public PetStatePreviewAdapter(PetDebugTruthReportBuilder? reportBuilder = null)
+    public PetStatePreviewAdapter(PetDebugTruthReportBuilder? reportBuilder = null, PetStateTool? petStateTool = null)
     {
         _reportBuilder = reportBuilder ?? new PetDebugTruthReportBuilder();
+        _petStateTool = petStateTool ?? new PetStateTool();
     }
 
     public TaskAdapterResult BuildReport(
@@ -54,7 +57,14 @@ public sealed class PetStatePreviewAdapter
         var report = _reportBuilder.Build(content, activePets, mode, timestamp);
         var jsonPath = Path.Combine(artifactRoot, "pet-state-report.json");
         var markdownPath = Path.Combine(artifactRoot, "run-summary.md");
+        var toolState = _petStateTool.GetState(new PetStateToolRequest(0, request.TaskCardId), activePets, timestamp);
+        var toolJsonPath = Path.Combine(artifactRoot, "get-pet-state.json");
         File.WriteAllText(jsonPath, JsonSerializer.Serialize(report, JsonDefaults.Options));
+        if (toolState is not null)
+        {
+            File.WriteAllText(toolJsonPath, JsonSerializer.Serialize(toolState, JsonDefaults.Options));
+        }
+
         File.WriteAllText(markdownPath, BuildMarkdown(request, report));
 
         return new TaskAdapterResult(
@@ -63,7 +73,7 @@ public sealed class PetStatePreviewAdapter
             TaskAdapterResultStatus.PreviewReady,
             DidMutate: false,
             ReadPaths: [],
-            WrittenPaths: [jsonPath, markdownPath],
+            WrittenPaths: toolState is null ? [jsonPath, markdownPath] : [jsonPath, toolJsonPath, markdownPath],
             PreviewSummary: $"Wrote petState markdown and JSON reports for {activePets.Count} active pet(s). No pet state or assets were changed.",
             ResultSummary: $"petState report ready: {markdownPath}",
             AuditLogPath: markdownPath,

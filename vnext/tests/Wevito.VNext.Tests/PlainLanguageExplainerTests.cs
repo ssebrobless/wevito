@@ -129,6 +129,19 @@ public sealed class PlainLanguageExplainerTests
     }
 
     [Theory]
+    [InlineData("pet_goal_changed")]
+    [InlineData(PetInteractionLogger.PacketKind)]
+    [InlineData("pet_cursor_curiosity_fired")]
+    [InlineData(Wevito.VNext.Core.Tools.PetStateTool.PacketKind)]
+    public void CoversAllPetBehaviorKinds(string packetKind)
+    {
+        var text = new PlainLanguageExplainer().ExplainPacketKind(packetKind);
+
+        Assert.Contains("pet", text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Unknown", text, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Theory]
     [InlineData(BenchmarkSuiteService.BenchmarkRunPacketKind)]
     [InlineData(BenchmarkRegressionGate.RegressionDetectedPacketKind)]
     [InlineData(BenchmarkRegressionGate.BaselineUpdatedPacketKind)]
