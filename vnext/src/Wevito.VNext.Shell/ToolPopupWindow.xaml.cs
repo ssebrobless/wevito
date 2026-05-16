@@ -80,6 +80,15 @@ public partial class ToolPopupWindow : Window
 
     public long WindowHandle => new WindowInteropHelper(this).Handle.ToInt64();
 
+    public void ConfigureChatServices(IModelAdapter modelAdapter, AuditLedgerService auditLedgerService, KillSwitchService killSwitchService)
+    {
+        var historyStore = new ChatHistoryStore(killSwitchService: killSwitchService);
+        var titleService = new ChatTitleService(historyStore, modelAdapter, auditLedgerService, killSwitchService);
+        var sessionService = new ChatSessionService(historyStore, auditLedgerService, killSwitchService);
+        var streamingService = new ChatStreamingService(historyStore, modelAdapter, titleService, auditLedgerService, killSwitchService);
+        ChatPanel.Configure(sessionService, historyStore, streamingService);
+    }
+
     internal void Render(
         CompanionState state,
         GameContent content,
