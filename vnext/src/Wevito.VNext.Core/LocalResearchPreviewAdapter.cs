@@ -76,7 +76,7 @@ public sealed class LocalResearchPreviewAdapter
                 request.TaskCardId,
                 request.Intent.RawText,
                 retrieval,
-                PetHelperRole.ResearchHelper,
+                "ResearchAgent",
                 ToolFamily,
                 TrustedContext: request.PolicySnapshot.ApprovedRootPaths,
                 UntrustedContext: [request.Intent.RawText],
@@ -127,7 +127,7 @@ public sealed class LocalResearchPreviewAdapter
         return _localModelAdapter.SuggestAsync(new ModelRequest(
             Guid.Empty,
             "Local Wevito",
-            PetHelperRole.ResearchHelper,
+            "ResearchAgent",
             ToolFamily,
             request.Intent.RawText,
             packet.Synthesis,

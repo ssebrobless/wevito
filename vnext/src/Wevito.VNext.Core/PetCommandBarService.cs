@@ -4,10 +4,6 @@ namespace Wevito.VNext.Core;
 
 public sealed class PetCommandBarService
 {
-    public static readonly Guid ScoutHelperId = Guid.Parse("11111111-1111-1111-1111-111111111111");
-    public static readonly Guid InspectorHelperId = Guid.Parse("22222222-2222-2222-2222-222222222222");
-    public static readonly Guid BuilderHelperId = Guid.Parse("33333333-3333-3333-3333-333333333333");
-
     private readonly PetCommandParser _parser;
     private readonly ToolPolicyEvaluator _policyEvaluator;
     private readonly PetMemoryRouter? _memoryRouter;
@@ -33,35 +29,8 @@ public sealed class PetCommandBarService
             activeHelpers,
             StatusMessage: activeHelpers.Count == 0
                 ? "No helper pets are active yet."
-                : $"Ready for {activeHelpers.Count} helper pet task slots.",
+                : $"Ready for {activeHelpers.Count} agent task slots.",
             UpdatedAtUtc: nowUtc ?? DateTimeOffset.UtcNow);
-    }
-
-    public IReadOnlyList<HelperPet> BuildDefaultRoster()
-    {
-        return
-        [
-            new HelperPet(ScoutHelperId, "Scout", "frog", PetHelperRole.ResearchHelper),
-            new HelperPet(InspectorHelperId, "Inspector", "pigeon", PetHelperRole.SpriteReviewHelper),
-            new HelperPet(BuilderHelperId, "Builder", "rat", PetHelperRole.ChecklistHelper)
-        ];
-    }
-
-    public IReadOnlyList<HelperPet> AddHelper(IReadOnlyList<HelperPet> activeHelpers, HelperPet helper)
-    {
-        if (activeHelpers.Count >= PetAgentContractLimits.MaxActiveHelpers)
-        {
-            throw new InvalidOperationException($"Only {PetAgentContractLimits.MaxActiveHelpers} active helper pets are allowed.");
-        }
-
-        return activeHelpers.Concat([helper]).ToList();
-    }
-
-    public IReadOnlyList<PetHelperProfile> BuildDefaultHelperProfiles()
-    {
-        return BuildDefaultRoster()
-            .Select(ToProfile)
-            .ToList();
     }
 
     public PetCommandBarState SubmitDraft(
@@ -105,45 +74,6 @@ public sealed class PetCommandBarService
         return helpers
             .Take(PetAgentContractLimits.MaxActiveHelpers)
             .ToList();
-    }
-
-    private static PetHelperProfile ToProfile(HelperPet helper)
-    {
-        return new PetHelperProfile(
-            helper.Id,
-            helper.Name,
-            helper.Role,
-            Availability: helper.State switch
-            {
-                HelperPetState.Drafting => PetHelperAvailability.Drafting,
-                HelperPetState.Reviewing => PetHelperAvailability.Reviewing,
-                HelperPetState.Blocked => PetHelperAvailability.Blocked,
-                _ => PetHelperAvailability.Available
-            },
-            CurrentTaskCardId: helper.CurrentTaskId,
-            AllowedToolFamilies: BuildAllowedToolFamilies(helper.Role),
-            PreferenceSnapshot: new Dictionary<string, string>
-            {
-                ["species"] = helper.Species,
-                ["display_role"] = helper.Role switch
-                {
-                    PetHelperRole.ResearchHelper => "docs/research",
-                    PetHelperRole.SpriteReviewHelper => "sprite QA",
-                    PetHelperRole.ChecklistHelper => "code/proofs",
-                    _ => "helper"
-                }
-            });
-    }
-
-    private static IReadOnlyList<string> BuildAllowedToolFamilies(PetHelperRole role)
-    {
-        return role switch
-        {
-            PetHelperRole.SpriteReviewHelper => ["spriteAudit", "assetInventory", "proofCapture", "localDocs", "petState", "petMemory"],
-            PetHelperRole.ChecklistHelper => ["codeReview", "codePatchPlan", "checklist", "localDocs", "basket", "petState", "buildProof", "petMemory"],
-            PetHelperRole.ResearchHelper => ["localDocs", "localResearch", "translateText", "audioAssist", "screenCapture", "assetInventory", "basket", "proofCapture", "petState", "petMemory"],
-            _ => ["localDocs"]
-        };
     }
 
     private static PetHelperProfile? FindHelper(TaskIntent intent, IReadOnlyList<PetHelperProfile> helpers)

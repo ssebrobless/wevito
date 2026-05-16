@@ -12,7 +12,7 @@ public sealed class LocalModelAdapterTests
         var request = new ModelRequest(
             Guid.Parse("11111111-1111-1111-1111-111111111111"),
             "Scout",
-            PetHelperRole.ResearchHelper,
+            "ResearchAgent",
             "localResearch",
             "research local sprite workflow options",
             "No tool output yet.",

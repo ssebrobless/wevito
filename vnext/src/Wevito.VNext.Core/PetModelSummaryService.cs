@@ -36,7 +36,7 @@ public sealed class PetModelSummaryService
         var modelRequest = new ModelRequest(
             helper.PetId,
             helper.PetNameSnapshot,
-            helper.Role,
+            $"Agent slot {helper.SlotIndex + 1}",
             result.ToolFamily,
             request.Intent.RawText,
             BuildToolSummary(result),

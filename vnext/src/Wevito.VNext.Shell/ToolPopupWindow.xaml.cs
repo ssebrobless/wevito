@@ -540,21 +540,10 @@ public partial class ToolPopupWindow : Window
         var task = helper.CurrentTaskCardId is Guid taskId
             ? $"task {taskId.ToString()[..8]}"
             : "no task";
-        return $"{helper.PetNameSnapshot} ({species})\n{FormatRole(helper.Role)} | {state}\n{task}";
-    }
-
-    private static string FormatRole(PetHelperRole role)
-    {
-        return role switch
-        {
-            PetHelperRole.SpriteReviewHelper => "Inspector - sprite QA",
-            PetHelperRole.ChecklistHelper => "Builder - plans",
-            PetHelperRole.ResearchHelper => "Scout - research",
-            PetHelperRole.FileOrganizerHelper => "File organizer",
-            PetHelperRole.BuildProofHelper => "Build proof",
-            PetHelperRole.ReminderHelper => "Reminder",
-            _ => role.ToString()
-        };
+        var tool = helper.PreferenceSnapshot is not null && helper.PreferenceSnapshot.TryGetValue("active_tool_family", out var toolValue) && !string.IsNullOrWhiteSpace(toolValue)
+            ? toolValue
+            : "no active tool";
+        return $"{helper.PetNameSnapshot} ({species})\nAgent slot {helper.SlotIndex + 1} | {state}\n{tool} | {task}";
     }
 
     private static string FormatSelfImprovementPanel(ActivitySummary? summary)

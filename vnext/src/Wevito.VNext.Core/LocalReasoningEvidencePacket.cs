@@ -5,7 +5,7 @@ namespace Wevito.VNext.Core;
 public sealed record LocalReasoningEvidencePacket(
     string SchemaVersion,
     Guid TaskCardId,
-    string HelperRole,
+    string AgentRole,
     string ToolFamily,
     string Question,
     IReadOnlyList<string> RetrievedChunkIds,
@@ -24,7 +24,7 @@ public sealed record LocalReasoningRequest(
     Guid TaskCardId,
     string Question,
     RetrievalResult Retrieved,
-    PetHelperRole HelperRole,
+    string AgentRole,
     string ToolFamily,
     IReadOnlyList<string>? TrustedContext = null,
     IReadOnlyList<string>? UntrustedContext = null,

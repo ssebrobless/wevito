@@ -228,6 +228,7 @@ public partial class HomePanelWindow : Window
         CleanlinessBar.Value = GetNeed(needSnapshot, "cleanliness");
 
         RenderStatusIcons(aggregateStatuses, assetService);
+        RenderAgentSlotIcons(state.ActivePets, state.TaskCards);
         RenderRecommendedItems(habitatLoadout.RecommendedItems, assetService);
         ApplyButtonState(FeedButton, FeedIcon, assetService.GetIcon("feed"), actionEnabled, "feed");
         ApplyButtonState(WaterButton, WaterIcon, assetService.GetIcon("water"), actionEnabled, "water");
@@ -353,6 +354,36 @@ public partial class HomePanelWindow : Window
             Canvas.SetTop(label, Math.Round(localY - 14));
             Canvas.SetZIndex(label, HabitatDepthOrder.GetZIndex(DepthBand.UiOverlay));
             HomePetCanvas.Children.Add(label);
+        }
+    }
+
+    private void RenderAgentSlotIcons(IReadOnlyList<PetActor> pets, IReadOnlyList<TaskCard>? taskCards)
+    {
+        AgentSlotIconPanel.Children.Clear();
+        var roster = new AgentSlotService().BuildRoster(pets);
+        foreach (var slot in roster.Slots)
+        {
+            var activeCard = (taskCards ?? []).FirstOrDefault(card => card.AssignedPetId == slot.Id && card.Status is TaskCardStatus.Running or TaskCardStatus.Reviewing);
+            var dot = activeCard is null ? "#FF62D47A" : "#FFE5C65A";
+            var label = activeCard?.ToolFamily ?? "idle";
+            var badge = new Border
+            {
+                Margin = new Thickness(0, 0, 6, 0),
+                Padding = new Thickness(6, 3, 6, 3),
+                Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#7A182A33")),
+                BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#3F5863")),
+                BorderThickness = new Thickness(1),
+                CornerRadius = new CornerRadius(8),
+                ToolTip = $"{slot.Name}: {label}"
+            };
+            badge.Child = new TextBlock
+            {
+                Text = $"● {slot.Name} · {label}",
+                Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(dot)),
+                FontSize = 9,
+                FontWeight = FontWeights.SemiBold
+            };
+            AgentSlotIconPanel.Children.Add(badge);
         }
     }
 

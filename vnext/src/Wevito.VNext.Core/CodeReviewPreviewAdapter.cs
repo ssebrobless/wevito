@@ -98,7 +98,7 @@ public sealed class CodeReviewPreviewAdapter
                 request.TaskCardId,
                 request.Intent.RawText,
                 retrieval,
-                PetHelperRole.ChecklistHelper,
+                "CodeReviewAgent",
                 ToolFamily,
                 TrustedContext: report.Files.Select(file => file.RelativePath).ToList(),
                 UntrustedContext: [request.Intent.RawText],
@@ -137,7 +137,7 @@ public sealed class CodeReviewPreviewAdapter
         return _localModelAdapter.SuggestAsync(new ModelRequest(
             Guid.Empty,
             "Local Wevito",
-            PetHelperRole.ChecklistHelper,
+            "CodeReviewAgent",
             ToolFamily,
             request.Intent.RawText,
             $"Files scanned: {report.FilesScanned}. Findings: {report.FindingCount}.",

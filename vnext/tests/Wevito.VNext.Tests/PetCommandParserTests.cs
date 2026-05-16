@@ -46,13 +46,14 @@ public sealed class PetCommandParserTests
     }
 
     [Fact]
-    public void Parse_DefaultScoutAddress_RoutesToScout()
+    public void Parse_DefaultAgentAddress_RoutesToAgentFallback()
     {
-        var intent = _parser.Parse("Scout summarize the sprite docs", new PetCommandBarService().BuildDefaultHelperProfiles());
+        var slots = new AgentSlotService().BuildRoster([]).Slots.Select(AgentSlotService.ToProfile).ToList();
+        var intent = _parser.Parse("Agent 1 summarize the local docs", slots);
 
         Assert.Equal(TaskIntentTargetMode.ExplicitPetName, intent.TargetMode);
-        Assert.Equal(PetCommandBarService.ScoutHelperId, intent.TargetPetId);
-        Assert.Equal("Scout", intent.TargetPetNameSnapshot);
+        Assert.Equal(AgentSlotService.BuildSlotId(0), intent.TargetPetId);
+        Assert.Equal("Agent 1", intent.TargetPetNameSnapshot);
         Assert.Equal(TaskKind.SummarizeDocs, intent.TaskKind);
         Assert.Equal("localDocs", intent.RequestedToolFamily);
     }
@@ -69,7 +70,7 @@ public sealed class PetCommandParserTests
     }
 
     [Fact]
-    public void Parse_WithoutName_RoutesToBestHelperByRole()
+    public void Parse_WithoutName_RoutesToFirstAvailableAgent()
     {
         var intent = _parser.Parse("review the sprite audit queue", Helpers());
 
@@ -134,7 +135,7 @@ public sealed class PetCommandParserTests
         var intent = _parser.Parse("review pet state and wellbeing", Helpers());
 
         Assert.Equal(TaskIntentTargetMode.RouteToBestHelper, intent.TargetMode);
-        Assert.Equal(_pipId, intent.TargetPetId);
+        Assert.Equal(_beanId, intent.TargetPetId);
         Assert.Equal(TaskKind.ReviewPetState, intent.TaskKind);
         Assert.Equal("petState", intent.RequestedToolFamily);
         Assert.False(intent.NeedsApproval);
@@ -298,9 +299,9 @@ public sealed class PetCommandParserTests
     {
         return
         [
-            new PetHelperProfile(_beanId, "Bean", PetHelperRole.SpriteReviewHelper),
-            new PetHelperProfile(_pipId, "Pip", PetHelperRole.ChecklistHelper),
-            new PetHelperProfile(_nixId, "Nix", PetHelperRole.ResearchHelper)
+            new PetHelperProfile(_beanId, "Bean", 0),
+            new PetHelperProfile(_pipId, "Pip", 1),
+            new PetHelperProfile(_nixId, "Nix", 2)
         ];
     }
 }

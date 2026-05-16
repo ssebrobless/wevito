@@ -89,7 +89,7 @@ public sealed class LocalReasoningServiceTests
             Guid.Parse("81000000-0000-0000-0000-000000000001"),
             "How should Wevito summarize care?",
             new RetrievalResult(chunks, new Dictionary<string, RetrievalScore>(), ["fixture"], DateTimeOffset.Parse("2026-05-13T12:00:00Z")),
-            PetHelperRole.ResearchHelper,
+            "ResearchAgent",
             "localResearch",
             TrustedContext: ["trusted"],
             UntrustedContext: ["user text"],

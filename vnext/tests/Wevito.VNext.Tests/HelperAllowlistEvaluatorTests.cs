@@ -6,16 +6,15 @@ namespace Wevito.VNext.Tests;
 public sealed class HelperAllowlistEvaluatorTests
 {
     [Theory]
-    [InlineData(PetHelperRole.ResearchHelper, "Scout", "localDocs")]
-    [InlineData(PetHelperRole.ResearchHelper, "Scout", "codeReview")]
-    [InlineData(PetHelperRole.SpriteReviewHelper, "Inspector", "spriteAudit")]
-    [InlineData(PetHelperRole.SpriteReviewHelper, "Inspector", "petState")]
-    [InlineData(PetHelperRole.ChecklistHelper, "Builder", "codePatchPlan")]
-    [InlineData(PetHelperRole.ChecklistHelper, "Builder", "codeReview")]
-    public void Evaluate_AllowsDeclaredReadOnlyHelperTools(PetHelperRole role, string helperName, string toolFamily)
+    [InlineData(0, "goose 1", "localDocs")]
+    [InlineData(1, "fox 1", "codeReview")]
+    [InlineData(0, "goose 1", "spriteAudit")]
+    [InlineData(0, "goose 1", "petState")]
+    [InlineData(1, "fox 1", "codePatchPlan")]
+    public void Evaluate_AllowsDeclaredReadOnlyAgentTools(int slotIndex, string helperName, string toolFamily)
     {
         var evaluator = new HelperAllowlistEvaluator();
-        var helper = new PetHelperProfile(Guid.NewGuid(), helperName, role);
+        var helper = new PetHelperProfile(Guid.NewGuid(), helperName, slotIndex);
 
         var decision = evaluator.Evaluate(helper, toolFamily);
 
@@ -30,7 +29,7 @@ public sealed class HelperAllowlistEvaluatorTests
             {
                 ["Scout"] = new HashSet<string>(["localDocs"], StringComparer.OrdinalIgnoreCase)
             });
-        var helper = new PetHelperProfile(Guid.NewGuid(), "Scout", PetHelperRole.ResearchHelper);
+        var helper = new PetHelperProfile(Guid.NewGuid(), "Scout", 0);
 
         var decision = evaluator.Evaluate(helper, "localDocs");
 

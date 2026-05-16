@@ -56,7 +56,7 @@ public sealed class AnthropicModelAdapterTests
         return new ModelRequest(
             Guid.Parse("10000000-0000-0000-0000-000000000001"),
             "Scout",
-            PetHelperRole.ResearchHelper,
+            "ResearchAgent",
             "localDocs",
             "summarize the local docs",
             "localDocs preview ready",

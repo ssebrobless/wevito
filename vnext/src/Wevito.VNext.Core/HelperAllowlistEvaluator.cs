@@ -10,7 +10,7 @@ public enum HelperPermissionMode
 }
 
 public sealed record HelperToolCapability(
-    PetHelperRole HelperRole,
+    string AgentLabel,
     string HelperName,
     string ToolFamily,
     bool ReadsUntrustedExternal,
@@ -59,20 +59,23 @@ public sealed class HelperAllowlistEvaluator
             return new HelperAllowlistDecision(false, $"Tool family '{toolFamily}' is denied for helper '{helper.PetNameSnapshot}'.");
         }
 
-        if (helper.AllowedToolFamilies is { Count: > 0 } &&
-            !helper.AllowedToolFamilies.Contains(toolFamily, Comparer))
+        var allowedToolFamilies = helper.AllowedToolFamilies is { Count: > 0 }
+            ? helper.AllowedToolFamilies
+            : AgentSlotService.BuildAllowedToolFamilies(helper.SlotIndex);
+        if (!allowedToolFamilies.Contains(toolFamily, Comparer))
         {
-            return new HelperAllowlistDecision(false, $"Helper '{helper.PetNameSnapshot}' does not allow tool family '{toolFamily}'.");
+            return new HelperAllowlistDecision(false, $"Agent '{helper.PetNameSnapshot}' does not allow tool family '{toolFamily}'.");
         }
 
         var capability = _capabilities.FirstOrDefault(candidate =>
             string.Equals(candidate.ToolFamily, toolFamily, StringComparison.OrdinalIgnoreCase) &&
-            (candidate.HelperRole == helper.Role ||
+            (string.Equals(candidate.AgentLabel, "*", StringComparison.OrdinalIgnoreCase) ||
+             string.Equals(candidate.AgentLabel, $"Agent slot {helper.SlotIndex + 1}", StringComparison.OrdinalIgnoreCase) ||
              string.Equals(candidate.HelperName, helper.PetNameSnapshot, StringComparison.OrdinalIgnoreCase)));
 
         if (capability is null)
         {
-            return new HelperAllowlistDecision(false, $"No read-only model capability is declared for {helper.Role} and tool family '{toolFamily}'.");
+            return new HelperAllowlistDecision(false, $"No read-only model capability is declared for agent slot {helper.SlotIndex + 1} and tool family '{toolFamily}'.");
         }
 
         if (HasLethalTrifecta(capability))
@@ -93,12 +96,11 @@ public sealed class HelperAllowlistEvaluator
     {
         return
         [
-            new HelperToolCapability(PetHelperRole.ResearchHelper, "Scout", "localDocs", ReadsUntrustedExternal: true, ReadsPrivateData: false, SendsNetwork: true),
-            new HelperToolCapability(PetHelperRole.ResearchHelper, "Scout", "codeReview", ReadsUntrustedExternal: true, ReadsPrivateData: false, SendsNetwork: true),
-            new HelperToolCapability(PetHelperRole.SpriteReviewHelper, "Inspector", "spriteAudit", ReadsUntrustedExternal: false, ReadsPrivateData: true, SendsNetwork: true),
-            new HelperToolCapability(PetHelperRole.SpriteReviewHelper, "Inspector", "petState", ReadsUntrustedExternal: false, ReadsPrivateData: true, SendsNetwork: true),
-            new HelperToolCapability(PetHelperRole.ChecklistHelper, "Builder", "codePatchPlan", ReadsUntrustedExternal: false, ReadsPrivateData: true, SendsNetwork: true),
-            new HelperToolCapability(PetHelperRole.ChecklistHelper, "Builder", "codeReview", ReadsUntrustedExternal: false, ReadsPrivateData: true, SendsNetwork: true)
+            new HelperToolCapability("*", "*", "localDocs", ReadsUntrustedExternal: true, ReadsPrivateData: false, SendsNetwork: true),
+            new HelperToolCapability("*", "*", "codeReview", ReadsUntrustedExternal: true, ReadsPrivateData: false, SendsNetwork: true),
+            new HelperToolCapability("*", "*", "spriteAudit", ReadsUntrustedExternal: false, ReadsPrivateData: true, SendsNetwork: true),
+            new HelperToolCapability("*", "*", "petState", ReadsUntrustedExternal: false, ReadsPrivateData: true, SendsNetwork: true),
+            new HelperToolCapability("*", "*", "codePatchPlan", ReadsUntrustedExternal: false, ReadsPrivateData: true, SendsNetwork: true)
         ];
     }
 

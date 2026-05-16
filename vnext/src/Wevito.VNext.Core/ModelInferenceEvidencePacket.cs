@@ -4,7 +4,7 @@ public sealed record ModelInferenceEvidencePacket(
     string SchemaVersion,
     Guid PetId,
     string PetName,
-    string HelperRole,
+    string AgentRole,
     string ToolFamily,
     string Provider,
     string Model,

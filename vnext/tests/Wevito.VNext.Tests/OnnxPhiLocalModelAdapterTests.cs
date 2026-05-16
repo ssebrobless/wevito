@@ -84,7 +84,7 @@ public sealed class OnnxPhiLocalModelAdapterTests
         return new ModelRequest(
             Guid.Parse("79000000-0000-0000-0000-000000000001"),
             "goose 1",
-            PetHelperRole.ResearchHelper,
+            "ResearchAgent",
             "localResearch",
             "research local runtime setup",
             "preview",

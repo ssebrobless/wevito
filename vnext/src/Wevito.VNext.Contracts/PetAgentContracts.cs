@@ -1,15 +1,5 @@
 namespace Wevito.VNext.Contracts;
 
-public enum PetHelperRole
-{
-    SpriteReviewHelper,
-    ResearchHelper,
-    ChecklistHelper,
-    FileOrganizerHelper,
-    BuildProofHelper,
-    ReminderHelper
-}
-
 public enum PetHelperAvailability
 {
     Available,
@@ -22,12 +12,22 @@ public enum PetHelperAvailability
     Failed
 }
 
-public enum HelperPetState
+public enum AgentSlotStatus
 {
-    Available,
+    Idle,
     Drafting,
+    Waiting,
+    RunningTool,
+    Generating,
     Reviewing,
-    Blocked
+    Blocked,
+    Failed
+}
+
+public enum TaskOrigin
+{
+    UserVisible,
+    Background
 }
 
 public enum TaskIntentTargetMode
@@ -238,19 +238,33 @@ public enum ScreenCaptureCapabilityStatus
 public sealed record PetHelperProfile(
     Guid PetId,
     string PetNameSnapshot,
-    PetHelperRole Role,
+    int SlotIndex,
+    AgentSlotStatus AgentStatus = AgentSlotStatus.Idle,
     PetHelperAvailability Availability = PetHelperAvailability.Available,
     Guid? CurrentTaskCardId = null,
     IReadOnlyList<string>? AllowedToolFamilies = null,
     IReadOnlyDictionary<string, string>? PreferenceSnapshot = null);
 
-public sealed record HelperPet(
+public sealed record AgentSlot(
     Guid Id,
+    int SlotIndex,
     string Name,
-    string Species,
-    PetHelperRole Role,
-    HelperPetState State = HelperPetState.Available,
-    Guid? CurrentTaskId = null);
+    AgentSlotStatus Status = AgentSlotStatus.Idle,
+    Guid? CurrentTaskCardId = null,
+    DateTimeOffset LastUsedAtUtc = default,
+    Guid? PetId = null,
+    string Species = "pet",
+    string ToolIcon = "",
+    string ActiveToolFamily = "");
+
+public sealed record InFlightToolCall(
+    Guid Id,
+    Guid AgentSlotId,
+    int SlotIndex,
+    string ToolFamily,
+    bool IsModelGeneration,
+    DateTimeOffset StartedAtUtc,
+    Guid? TaskCardId = null);
 
 public static class PetAgentContractLimits
 {

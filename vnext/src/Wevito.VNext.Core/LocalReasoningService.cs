@@ -49,7 +49,7 @@ public sealed class LocalReasoningService
         var response = await _modelAdapter.SuggestAsync(new ModelRequest(
             request.TaskCardId,
             "Local Wevito",
-            request.HelperRole,
+            request.AgentRole,
             request.ToolFamily,
             request.Question,
             prompt,
@@ -90,7 +90,7 @@ public sealed class LocalReasoningService
 
     private string BuildPrompt(LocalReasoningRequest request)
     {
-        var rolePrompt = ResolveRolePrompt(request.HelperRole);
+        var rolePrompt = ResolveRolePrompt(request.AgentRole);
         var chunks = request.Retrieved.Chunks
             .Select((chunk, index) => $"[{index + 1}] {chunk.Text}")
             .ToList();
@@ -120,15 +120,14 @@ public sealed class LocalReasoningService
             """;
     }
 
-    private string ResolveRolePrompt(PetHelperRole role)
+    private string ResolveRolePrompt(string role)
     {
-        var key = role switch
-        {
-            PetHelperRole.SpriteReviewHelper => "Scout",
-            PetHelperRole.ChecklistHelper => "Inspector",
-            PetHelperRole.ResearchHelper => "Builder",
-            _ => "Scout"
-        };
+        var key = role.Contains("code", StringComparison.OrdinalIgnoreCase) ||
+            role.Contains("checklist", StringComparison.OrdinalIgnoreCase)
+                ? "AgentCode"
+                : role.Contains("research", StringComparison.OrdinalIgnoreCase)
+                    ? "AgentResearch"
+                    : "AgentEvidence";
         if (_promptConfig?.Templates.TryGetValue(key, out var template) == true)
         {
             return template;
@@ -136,9 +135,9 @@ public sealed class LocalReasoningService
 
         return key switch
         {
-            "Inspector" => "You are Inspector, Wevito's local code and checklist helper. Be precise and cite local chunks.",
-            "Builder" => "You are Builder, Wevito's local research helper. Synthesize only the provided local chunks.",
-            _ => "You are Scout, Wevito's local evidence helper. Find grounded claims and cite local chunks."
+            "AgentCode" => "You are a Wevito local code and checklist agent. Be precise and cite local chunks.",
+            "AgentResearch" => "You are a Wevito local research agent. Synthesize only the provided local chunks.",
+            _ => "You are a Wevito local evidence agent. Find grounded claims and cite local chunks."
         };
     }
 
@@ -170,7 +169,7 @@ public sealed class LocalReasoningService
         var packet = new LocalReasoningEvidencePacket(
             "1",
             request.TaskCardId,
-            request.HelperRole.ToString(),
+            request.AgentRole,
             request.ToolFamily,
             request.Question,
             request.Retrieved.Chunks.Select(chunk => chunk.ChunkId).ToList(),

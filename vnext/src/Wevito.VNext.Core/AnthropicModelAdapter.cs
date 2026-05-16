@@ -85,7 +85,7 @@ public sealed class AnthropicModelAdapter : IModelAdapter
                 {
                     role = "user",
                     content = $"""
-                    Helper: {request.PetName} ({request.HelperRole})
+                    Helper: {request.PetName} ({request.AgentRole})
                     Tool family: {request.ToolFamily}
                     User task: {request.UserTask}
 
@@ -177,7 +177,7 @@ public sealed class AnthropicModelAdapter : IModelAdapter
             model = DefaultModel,
             petId = request.PetId,
             petName = request.PetName,
-            helperRole = request.HelperRole.ToString(),
+            helperRole = request.AgentRole,
             toolFamily = request.ToolFamily,
             argsHash = ComputeArgsHash(request),
             decision,
@@ -194,7 +194,7 @@ public sealed class AnthropicModelAdapter : IModelAdapter
         {
             request.PetId,
             request.PetName,
-            helperRole = request.HelperRole.ToString(),
+            helperRole = request.AgentRole,
             request.ToolFamily,
             request.UserTask,
             request.ToolSummary,

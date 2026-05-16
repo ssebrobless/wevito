@@ -11,14 +11,14 @@ public sealed class LethalTrifectaTests
         var evaluator = new HelperAllowlistEvaluator(
             [
                 new HelperToolCapability(
-                    PetHelperRole.ResearchHelper,
-                    "Scout",
+                    "Agent slot 1",
+                    "goose 1",
                     "dangerTool",
                     ReadsUntrustedExternal: true,
                     ReadsPrivateData: true,
                     SendsNetwork: true)
             ]);
-        var helper = new PetHelperProfile(Guid.NewGuid(), "Scout", PetHelperRole.ResearchHelper);
+        var helper = new PetHelperProfile(Guid.NewGuid(), "goose 1", 0, AllowedToolFamilies: ["dangerTool"]);
 
         var decision = evaluator.Evaluate(helper, "dangerTool");
 
@@ -39,7 +39,7 @@ public sealed class LethalTrifectaTests
             TaskAdapterResultStatus.PreviewReady,
             DidMutate: false,
             PreviewSummary: "Sprite audit preview ready.");
-        var helper = new PetHelperProfile(Guid.NewGuid(), "Inspector", PetHelperRole.SpriteReviewHelper);
+        var helper = new PetHelperProfile(Guid.NewGuid(), "goose 1", 0);
 
         var enriched = await service.AppendIfAllowedAsync(request, result, helper, approvedForModelCall: true);
 
@@ -60,7 +60,7 @@ public sealed class LethalTrifectaTests
             TaskAdapterResultStatus.PreviewReady,
             DidMutate: false,
             PreviewSummary: "Sprite audit preview ready.");
-        var helper = new PetHelperProfile(Guid.NewGuid(), "Scout", PetHelperRole.ResearchHelper);
+        var helper = new PetHelperProfile(Guid.NewGuid(), "fox 1", 1);
 
         var enriched = await service.AppendIfAllowedAsync(request, result, helper, approvedForModelCall: true);
 
