@@ -69,7 +69,7 @@ public sealed class LocalToolExecutionPreviewAdapterTests
                 ["local_tool_exec_enabled"] = bool.TrueString,
                 ["local_tool_exec_sha256:safe.ps1"] = hash
             });
-        var dispatcher = new PetTaskAdapterPreviewDispatcher(localToolExecutionPreviewAdapter: adapter);
+        var dispatcher = new AgentToolDispatcher(localToolExecutionPreviewAdapter: adapter);
 
         var result = dispatcher.BuildPreview(BuildRequest(root, script, artifactRoot));
 

@@ -2,30 +2,30 @@ using Wevito.VNext.Contracts;
 
 namespace Wevito.VNext.Core;
 
-public sealed class PetCommandBarService
+public sealed class ChatInputBarService
 {
-    private readonly PetCommandParser _parser;
+    private readonly ChatPromptParser _parser;
     private readonly ToolPolicyEvaluator _policyEvaluator;
     private readonly PetMemoryRouter? _memoryRouter;
 
-    public PetCommandBarService()
-        : this(new PetCommandParser(), new ToolPolicyEvaluator())
+    public ChatInputBarService()
+        : this(new ChatPromptParser(), new ToolPolicyEvaluator())
     {
     }
 
-    public PetCommandBarService(PetCommandParser parser, ToolPolicyEvaluator policyEvaluator, PetMemoryRouter? memoryRouter = null)
+    public ChatInputBarService(ChatPromptParser parser, ToolPolicyEvaluator policyEvaluator, PetMemoryRouter? memoryRouter = null)
     {
         _parser = parser;
         _policyEvaluator = policyEvaluator;
         _memoryRouter = memoryRouter;
     }
 
-    public PetCommandBarState BuildInitialState(
-        IReadOnlyList<PetHelperProfile> helpers,
+    public ChatInputBarState BuildInitialState(
+        IReadOnlyList<AgentSlotProfile> helpers,
         DateTimeOffset? nowUtc = null)
     {
         var activeHelpers = NormalizeActiveHelpers(helpers);
-        return new PetCommandBarState(
+        return new ChatInputBarState(
             activeHelpers,
             StatusMessage: activeHelpers.Count == 0
                 ? "No helper pets are active yet."
@@ -33,9 +33,9 @@ public sealed class PetCommandBarService
             UpdatedAtUtc: nowUtc ?? DateTimeOffset.UtcNow);
     }
 
-    public PetCommandBarState SubmitDraft(
+    public ChatInputBarState SubmitDraft(
         string inputText,
-        IReadOnlyList<PetHelperProfile> helpers,
+        IReadOnlyList<AgentSlotProfile> helpers,
         IReadOnlyList<ToolPolicy> policies,
         Guid? selectedPetId = null,
         DateTimeOffset? nowUtc = null)
@@ -59,7 +59,7 @@ public sealed class PetCommandBarService
         var decision = _policyEvaluator.Evaluate(intent, policies);
         var card = ApplyPolicyDecision(initialCard, decision, timestamp, routingDecision);
 
-        return new PetCommandBarState(
+        return new ChatInputBarState(
             activeHelpers,
             inputText.Trim(),
             intent,
@@ -69,14 +69,14 @@ public sealed class PetCommandBarService
             timestamp);
     }
 
-    private static IReadOnlyList<PetHelperProfile> NormalizeActiveHelpers(IReadOnlyList<PetHelperProfile> helpers)
+    private static IReadOnlyList<AgentSlotProfile> NormalizeActiveHelpers(IReadOnlyList<AgentSlotProfile> helpers)
     {
         return helpers
             .Take(PetAgentContractLimits.MaxActiveHelpers)
             .ToList();
     }
 
-    private static PetHelperProfile? FindHelper(TaskIntent intent, IReadOnlyList<PetHelperProfile> helpers)
+    private static AgentSlotProfile? FindHelper(TaskIntent intent, IReadOnlyList<AgentSlotProfile> helpers)
     {
         if (intent.TargetPetId is not null)
         {

@@ -3,7 +3,7 @@ using Wevito.VNext.Contracts;
 namespace Wevito.VNext.Core;
 
 public sealed record PetMemoryRoutingDecision(
-    PetHelperProfile? Helper,
+    AgentSlotProfile? Helper,
     bool UsedMemory,
     string Reason,
     double Score = 0);
@@ -20,8 +20,8 @@ public sealed class PetMemoryRouter
 
     public PetMemoryRoutingDecision Route(
         TaskIntent intent,
-        IReadOnlyList<PetHelperProfile> helpers,
-        PetHelperProfile? fallbackHelper = null,
+        IReadOnlyList<AgentSlotProfile> helpers,
+        AgentSlotProfile? fallbackHelper = null,
         int topK = 3)
     {
         if (helpers.Count == 0)
@@ -34,7 +34,7 @@ public sealed class PetMemoryRouter
             return new PetMemoryRoutingDecision(fallbackHelper, UsedMemory: false, "Explicit or selected helper routing bypasses memory.");
         }
 
-        PetHelperProfile? bestHelper = null;
+        AgentSlotProfile? bestHelper = null;
         PetMemorySearchResult? bestResult = null;
         foreach (var helper in helpers)
         {

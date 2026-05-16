@@ -19,7 +19,7 @@ public sealed class KillSwitchServiceTests
     public void KillSwitchBlocksPreviewDispatcher()
     {
         var root = CreateTempRoot();
-        var dispatcher = new PetTaskAdapterPreviewDispatcher(killSwitchService: ActiveKillSwitch(root));
+        var dispatcher = new AgentToolDispatcher(killSwitchService: ActiveKillSwitch(root));
 
         var result = dispatcher.BuildPreview(BuildRequest(root));
 

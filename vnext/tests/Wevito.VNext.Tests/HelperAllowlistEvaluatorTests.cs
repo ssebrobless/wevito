@@ -14,7 +14,7 @@ public sealed class HelperAllowlistEvaluatorTests
     public void Evaluate_AllowsDeclaredReadOnlyAgentTools(int slotIndex, string helperName, string toolFamily)
     {
         var evaluator = new HelperAllowlistEvaluator();
-        var helper = new PetHelperProfile(Guid.NewGuid(), helperName, slotIndex);
+        var helper = new AgentSlotProfile(Guid.NewGuid(), helperName, slotIndex);
 
         var decision = evaluator.Evaluate(helper, toolFamily);
 
@@ -29,7 +29,7 @@ public sealed class HelperAllowlistEvaluatorTests
             {
                 ["Scout"] = new HashSet<string>(["localDocs"], StringComparer.OrdinalIgnoreCase)
             });
-        var helper = new PetHelperProfile(Guid.NewGuid(), "Scout", 0);
+        var helper = new AgentSlotProfile(Guid.NewGuid(), "Scout", 0);
 
         var decision = evaluator.Evaluate(helper, "localDocs");
 

@@ -2,19 +2,19 @@ using Wevito.VNext.Contracts;
 
 namespace Wevito.VNext.Core;
 
-public sealed record PetTaskArtifactPathResolution(
+public sealed record AgentTaskArtifactPathResolution(
     bool IsAllowed,
     string ReportPath,
     string ArtifactFolder,
     string BlockReason);
 
-public sealed class PetTaskCardQueueService
+public sealed class AgentTaskCardQueueService
 {
     public const int DefaultMaxCards = 25;
 
     private readonly int _maxCards;
 
-    public PetTaskCardQueueService(int maxCards = DefaultMaxCards)
+    public AgentTaskCardQueueService(int maxCards = DefaultMaxCards)
     {
         _maxCards = Math.Max(1, maxCards);
     }
@@ -154,7 +154,7 @@ public sealed class PetTaskCardQueueService
         return true;
     }
 
-    public static PetTaskArtifactPathResolution ResolveArtifactReportPath(string auditLogPath, string repoRoot)
+    public static AgentTaskArtifactPathResolution ResolveArtifactReportPath(string auditLogPath, string repoRoot)
     {
         if (string.IsNullOrWhiteSpace(auditLogPath))
         {
@@ -202,7 +202,7 @@ public sealed class PetTaskCardQueueService
             }
         }
 
-        return new PetTaskArtifactPathResolution(
+        return new AgentTaskArtifactPathResolution(
             true,
             reportPath,
             artifactFolder,
@@ -239,9 +239,9 @@ public sealed class PetTaskCardQueueService
         return result.BlockReason;
     }
 
-    private static PetTaskArtifactPathResolution Block(string reason)
+    private static AgentTaskArtifactPathResolution Block(string reason)
     {
-        return new PetTaskArtifactPathResolution(false, "", "", reason);
+        return new AgentTaskArtifactPathResolution(false, "", "", reason);
     }
 
     private static bool IsPathUnderRoot(string path, string root)

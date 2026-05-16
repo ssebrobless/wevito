@@ -42,7 +42,7 @@ public sealed class HelperAllowlistEvaluator
         _unifiedPolicyService = unifiedPolicyService ?? new UnifiedPolicyService();
     }
 
-    public HelperAllowlistDecision Evaluate(PetHelperProfile helper, string toolFamily, HelperPermissionMode mode = HelperPermissionMode.Preview)
+    public HelperAllowlistDecision Evaluate(AgentSlotProfile helper, string toolFamily, HelperPermissionMode mode = HelperPermissionMode.Preview)
     {
         if (mode == HelperPermissionMode.Execute)
         {

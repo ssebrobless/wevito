@@ -71,9 +71,9 @@ public sealed class AgentSlotService
         return new AgentSlotRoster(slots, renamePackets);
     }
 
-    public static PetHelperProfile ToProfile(AgentSlot slot)
+    public static AgentSlotProfile ToProfile(AgentSlot slot)
     {
-        return new PetHelperProfile(
+        return new AgentSlotProfile(
             slot.Id,
             slot.Name,
             slot.SlotIndex,
@@ -164,18 +164,18 @@ public sealed class AgentSlotService
         ];
     }
 
-    private static PetHelperAvailability ToAvailability(AgentSlotStatus status)
+    private static AgentSlotAvailability ToAvailability(AgentSlotStatus status)
     {
         return status switch
         {
-            AgentSlotStatus.Drafting => PetHelperAvailability.Drafting,
-            AgentSlotStatus.Waiting => PetHelperAvailability.WaitingForApproval,
-            AgentSlotStatus.RunningTool => PetHelperAvailability.Running,
-            AgentSlotStatus.Generating => PetHelperAvailability.Running,
-            AgentSlotStatus.Reviewing => PetHelperAvailability.Reviewing,
-            AgentSlotStatus.Blocked => PetHelperAvailability.Blocked,
-            AgentSlotStatus.Failed => PetHelperAvailability.Failed,
-            _ => PetHelperAvailability.Available
+            AgentSlotStatus.Drafting => AgentSlotAvailability.Drafting,
+            AgentSlotStatus.Waiting => AgentSlotAvailability.WaitingForApproval,
+            AgentSlotStatus.RunningTool => AgentSlotAvailability.Running,
+            AgentSlotStatus.Generating => AgentSlotAvailability.Running,
+            AgentSlotStatus.Reviewing => AgentSlotAvailability.Reviewing,
+            AgentSlotStatus.Blocked => AgentSlotAvailability.Blocked,
+            AgentSlotStatus.Failed => AgentSlotAvailability.Failed,
+            _ => AgentSlotAvailability.Available
         };
     }
 }

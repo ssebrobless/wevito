@@ -72,6 +72,10 @@ public partial class ToolPopupWindow : Window
 
     public event Func<string, Task>? PetCommandSubmitted;
 
+    public event Func<string, Task>? ToolTabRequested;
+
+    public event Func<Task>? RunFirstLaunchWizardRequested;
+
     public event Func<Guid, TaskCardStatus, Task>? PetTaskStatusChangeRequested;
 
     public event Func<Guid, Task>? PetTaskPreviewRequested;
@@ -107,7 +111,7 @@ public partial class ToolPopupWindow : Window
         HabitatLoadout habitatLoadout,
         SpriteAssetService assetService,
         bool devToolsEnabled,
-        PetCommandBarState? petCommandState = null,
+        ChatInputBarState? petCommandState = null,
         RuntimeSupervisorStatus? runtimeSupervisorStatus = null,
         ActivitySummary? activitySummary = null,
         AutonomousBetaDecision? autonomousDecision = null,
@@ -118,6 +122,7 @@ public partial class ToolPopupWindow : Window
         var toolId = string.IsNullOrWhiteSpace(state.ActiveTool.ToolId) ? "basket" : state.ActiveTool.ToolId;
         var showingBasket = string.Equals(toolId, "basket", StringComparison.OrdinalIgnoreCase);
         var showingSettings = string.Equals(toolId, "settings", StringComparison.OrdinalIgnoreCase);
+        var showingActivity = string.Equals(toolId, "activity", StringComparison.OrdinalIgnoreCase);
         var showingDev = devToolsEnabled && string.Equals(toolId, "dev", StringComparison.OrdinalIgnoreCase);
         var showingPetCommand = string.Equals(toolId, "helpers", StringComparison.OrdinalIgnoreCase);
         var showingBenchmarks = string.Equals(toolId, "benchmarks", StringComparison.OrdinalIgnoreCase);
@@ -128,13 +133,13 @@ public partial class ToolPopupWindow : Window
             ? content.Actions.FirstOrDefault(action => string.Equals(action.Id, actionId, StringComparison.OrdinalIgnoreCase))
             : null;
 
-        Title = showingBasket ? "Wevito Basket" : showingDev ? "Wevito Dev Tools" : showingPetCommand ? "Wevito PET TASKS" : showingBenchmarks ? "Wevito Benchmarks" : showingActionMenu ? "Wevito Actions" : showingAction ? $"Wevito {actionDefinition?.DisplayName ?? "Action"}" : "Wevito Settings";
-        PopupTitle.Text = showingBasket ? "Basket" : showingDev ? "Dev Tools" : showingPetCommand ? "PET TASKS" : showingBenchmarks ? "Benchmarks" : showingActionMenu ? "Actions" : showingAction ? (actionDefinition?.DisplayName ?? "Action") : "Settings";
+        Title = showingBasket ? "Wevito Tools" : showingDev ? "Wevito Dev Tools" : showingPetCommand ? "Wevito Chat" : showingBenchmarks ? "Wevito Benchmarks" : showingActivity ? "Wevito Activity" : showingActionMenu ? "Wevito Actions" : showingAction ? $"Wevito {actionDefinition?.DisplayName ?? "Action"}" : "Wevito Settings";
+        PopupTitle.Text = showingBasket ? "Tools" : showingDev ? "Dev Tools" : showingPetCommand ? "Chat" : showingBenchmarks ? "Benchmarks" : showingActivity ? "Activity" : showingActionMenu ? "Actions" : showingAction ? (actionDefinition?.DisplayName ?? "Action") : "Settings";
         BasketPanel.Visibility = showingBasket ? Visibility.Visible : Visibility.Collapsed;
         BasketButtons.Visibility = showingBasket ? Visibility.Visible : Visibility.Collapsed;
         ActionMenuPanel.Visibility = showingActionMenu ? Visibility.Visible : Visibility.Collapsed;
         ActionPanel.Visibility = showingAction ? Visibility.Visible : Visibility.Collapsed;
-        SettingsPanel.Visibility = showingSettings ? Visibility.Visible : Visibility.Collapsed;
+        SettingsPanel.Visibility = showingSettings || showingActivity ? Visibility.Visible : Visibility.Collapsed;
         PetCommandPanel.Visibility = showingPetCommand ? Visibility.Visible : Visibility.Collapsed;
         BenchmarksPanel.Visibility = showingBenchmarks ? Visibility.Visible : Visibility.Collapsed;
         PetTaskReportOnlyBadge.Visibility = showingPetCommand ? Visibility.Visible : Visibility.Collapsed;
@@ -228,7 +233,7 @@ public partial class ToolPopupWindow : Window
             : ActivitySummaryService.FormatOneLine(activitySummary);
         ActivityRecentText.Text = activityRecentLines is { Count: > 0 }
             ? string.Join(Environment.NewLine, activityRecentLines)
-            : "Recent activity appears here after helpers produce evidence packets.";
+            : "Recent activity appears here after agents produce evidence packets.";
         SelfImprovementText.Text = FormatSelfImprovementPanel(activitySummary);
         EvidenceCollectionPanel.Visibility = evidenceStatus is { Active: true } or { HasManifest: true }
             ? Visibility.Visible
@@ -403,7 +408,7 @@ public partial class ToolPopupWindow : Window
         base.OnClosed(e);
     }
 
-    private void RenderPetCommandPanel(PetCommandBarState? state)
+    private void RenderPetCommandPanel(ChatInputBarState? state)
     {
         var helpers = state?.ActiveHelpers ?? [];
         PetHelperOneText.Text = FormatHelper(helpers, 0);
@@ -563,7 +568,7 @@ public partial class ToolPopupWindow : Window
         };
     }
 
-    private static string FormatHelper(IReadOnlyList<PetHelperProfile> helpers, int index)
+    private static string FormatHelper(IReadOnlyList<AgentSlotProfile> helpers, int index)
     {
         if (index >= helpers.Count)
         {
@@ -658,17 +663,17 @@ public partial class ToolPopupWindow : Window
         };
     }
 
-    private static string FormatHelperState(PetHelperAvailability availability)
+    private static string FormatHelperState(AgentSlotAvailability availability)
     {
         return availability switch
         {
-            PetHelperAvailability.Drafting => "drafting",
-            PetHelperAvailability.WaitingForApproval => "waiting",
-            PetHelperAvailability.Running => "running",
-            PetHelperAvailability.Reviewing => "reviewing",
-            PetHelperAvailability.Blocked => "blocked",
-            PetHelperAvailability.Done => "done",
-            PetHelperAvailability.Failed => "failed",
+            AgentSlotAvailability.Drafting => "drafting",
+            AgentSlotAvailability.WaitingForApproval => "waiting",
+            AgentSlotAvailability.Running => "running",
+            AgentSlotAvailability.Reviewing => "reviewing",
+            AgentSlotAvailability.Blocked => "blocked",
+            AgentSlotAvailability.Done => "done",
+            AgentSlotAvailability.Failed => "failed",
             _ => "available"
         };
     }
@@ -823,6 +828,22 @@ public partial class ToolPopupWindow : Window
         if (CloseRequested is not null)
         {
             await CloseRequested.Invoke();
+        }
+    }
+
+    private async void ToolTabButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button { Tag: string toolId } && ToolTabRequested is not null)
+        {
+            await ToolTabRequested.Invoke(toolId);
+        }
+    }
+
+    private async void RunFirstLaunchWizardButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (RunFirstLaunchWizardRequested is not null)
+        {
+            await RunFirstLaunchWizardRequested.Invoke();
         }
     }
 
@@ -1923,14 +1944,14 @@ public partial class ToolPopupWindow : Window
         return Task.CompletedTask;
     }
 
-    private PetTaskArtifactPathResolution ResolveSelectedPetTaskArtifactPath()
+    private AgentTaskArtifactPathResolution ResolveSelectedPetTaskArtifactPath()
     {
         if (PetTaskQueueComboBox.SelectedItem is not PetTaskQueueRowItem selectedRow)
         {
-            return new PetTaskArtifactPathResolution(false, "", "", "No task card is selected.");
+            return new AgentTaskArtifactPathResolution(false, "", "", "No task card is selected.");
         }
 
-        return PetTaskCardQueueService.ResolveArtifactReportPath(selectedRow.AuditLogPath, ResolveRepoRoot());
+        return AgentTaskCardQueueService.ResolveArtifactReportPath(selectedRow.AuditLogPath, ResolveRepoRoot());
     }
 
     private static string ResolveRepoRoot()

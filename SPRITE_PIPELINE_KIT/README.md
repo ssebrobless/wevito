@@ -1,6 +1,8 @@
 # Sprite Pipeline Kit
 
-Updated: 2026-03-16
+Updated: 2026-05-15
+
+This kit is reusable outside Wevito, but it now also carries the Wevito AI-app pivot: sprite work should be treated as evidence-driven local tooling, not a loose cloud-generation loop.
 
 ```text
 ╔════════════════════ Sprite Pipeline Kit ════════════════════╗
@@ -12,6 +14,14 @@ Updated: 2026-03-16
 ```
 
 This folder is the easiest place to find the reusable sprite and animation workflow we refined here.
+
+In current Wevito, the sprite pipeline is one capability of the local AI assistant. The pet visuals are important, but the workflow must remain guarded:
+
+```text
+source art -> report -> candidate packet -> dry-run apply -> backup/hash -> proof -> rollback path
+```
+
+Do not use this kit as permission to mutate `sprites_runtime/` directly. Wevito applies sprite changes only through reviewed packets and proof steps.
 
 ## Open These First
 

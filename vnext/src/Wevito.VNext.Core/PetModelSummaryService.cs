@@ -18,7 +18,7 @@ public sealed class PetModelSummaryService
     public async Task<TaskAdapterResult> AppendIfAllowedAsync(
         TaskAdapterRequest request,
         TaskAdapterResult result,
-        PetHelperProfile helper,
+        AgentSlotProfile helper,
         bool approvedForModelCall = false,
         CancellationToken cancellationToken = default)
     {

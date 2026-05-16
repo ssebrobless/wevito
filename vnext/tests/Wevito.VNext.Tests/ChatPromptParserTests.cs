@@ -3,9 +3,9 @@ using Wevito.VNext.Core;
 
 namespace Wevito.VNext.Tests;
 
-public sealed class PetCommandParserTests
+public sealed class ChatPromptParserTests
 {
-    private readonly PetCommandParser _parser = new();
+    private readonly ChatPromptParser _parser = new();
     private readonly Guid _beanId = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
     private readonly Guid _pipId = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb");
     private readonly Guid _nixId = Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccccccc");
@@ -295,13 +295,13 @@ public sealed class PetCommandParserTests
         Assert.Contains("C:\\Users\\fishe\\Documents\\projects\\wevito\\docs", intent.TargetPathsOrAssets ?? [], StringComparer.OrdinalIgnoreCase);
     }
 
-    private IReadOnlyList<PetHelperProfile> Helpers()
+    private IReadOnlyList<AgentSlotProfile> Helpers()
     {
         return
         [
-            new PetHelperProfile(_beanId, "Bean", 0),
-            new PetHelperProfile(_pipId, "Pip", 1),
-            new PetHelperProfile(_nixId, "Nix", 2)
+            new AgentSlotProfile(_beanId, "Bean", 0),
+            new AgentSlotProfile(_pipId, "Pip", 1),
+            new AgentSlotProfile(_nixId, "Nix", 2)
         ];
     }
 }

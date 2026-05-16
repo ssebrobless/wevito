@@ -56,8 +56,8 @@ public sealed class PetMemoryWriteGateTests
     [Fact]
     public void CommandParser_ClassifiesRememberAsPetMemoryApprovalTask()
     {
-        var helper = new PetHelperProfile(Guid.NewGuid(), "Scout", 0);
-        var intent = new PetCommandParser().Parse("Scout, remember that sprite reviews should check silhouettes", [helper]);
+        var helper = new AgentSlotProfile(Guid.NewGuid(), "Scout", 0);
+        var intent = new ChatPromptParser().Parse("Scout, remember that sprite reviews should check silhouettes", [helper]);
 
         Assert.Equal(TaskKind.UpdatePetMemory, intent.TaskKind);
         Assert.Equal("petMemory", intent.RequestedToolFamily);

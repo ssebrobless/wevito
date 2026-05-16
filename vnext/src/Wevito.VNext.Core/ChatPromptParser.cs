@@ -3,7 +3,7 @@ using Wevito.VNext.Contracts;
 
 namespace Wevito.VNext.Core;
 
-public sealed class PetCommandParser
+public sealed class ChatPromptParser
 {
     private static readonly string[] BlockedActionTerms =
     [
@@ -45,7 +45,7 @@ public sealed class PetCommandParser
 
     public TaskIntent Parse(
         string rawText,
-        IReadOnlyList<PetHelperProfile> helpers,
+        IReadOnlyList<AgentSlotProfile> helpers,
         Guid? selectedPetId = null,
         DateTimeOffset? nowUtc = null)
     {
@@ -103,7 +103,7 @@ public sealed class PetCommandParser
 
     public TaskCard CreateDraftTaskCard(
         TaskIntent intent,
-        IReadOnlyList<PetHelperProfile> helpers,
+        IReadOnlyList<AgentSlotProfile> helpers,
         DateTimeOffset? nowUtc = null)
     {
         var timestamp = nowUtc ?? DateTimeOffset.UtcNow;
@@ -145,7 +145,7 @@ public sealed class PetCommandParser
 
     private static TargetResolution ResolveTarget(
         string rawText,
-        IReadOnlyList<PetHelperProfile> helpers,
+        IReadOnlyList<AgentSlotProfile> helpers,
         Guid? selectedPetId)
     {
         if (rawText.StartsWith('@'))
@@ -214,7 +214,7 @@ public sealed class PetCommandParser
         string rawText,
         string petName,
         string commandBody,
-        IReadOnlyList<PetHelperProfile> helpers)
+        IReadOnlyList<AgentSlotProfile> helpers)
     {
         var helper = helpers.FirstOrDefault(candidate =>
             string.Equals(candidate.PetNameSnapshot, petName, StringComparison.OrdinalIgnoreCase));
@@ -478,7 +478,7 @@ public sealed class PetCommandParser
             ExpectedOutput: "Draft task card for user review");
     }
 
-    private static PetHelperProfile? FindHelper(TaskIntent intent, IReadOnlyList<PetHelperProfile> helpers)
+    private static AgentSlotProfile? FindHelper(TaskIntent intent, IReadOnlyList<AgentSlotProfile> helpers)
     {
         if (intent.TargetPetId is not null)
         {
@@ -551,7 +551,7 @@ public sealed class PetCommandParser
 
     private sealed record TargetResolution(
         TaskIntentTargetMode TargetMode,
-        PetHelperProfile? Helper,
+        AgentSlotProfile? Helper,
         string PetNameSnapshot,
         string CommandBody);
 
