@@ -1,0 +1,26 @@
+﻿[
+    {
+        "Handle":  1246326,
+        "Title":  "Wevito Home Panel",
+        "Left":  1232,
+        "Top":  110,
+        "Width":  660,
+        "Height":  910
+    },
+    {
+        "Handle":  1560544876,
+        "Title":  "Wevito Chat",
+        "Left":  702,
+        "Top":  110,
+        "Width":  520,
+        "Height":  720
+    },
+    {
+        "Handle":  565184104,
+        "Title":  "Wevito Roam Band",
+        "Left":  0,
+        "Top":  962,
+        "Width":  1920,
+        "Height":  118
+    }
+]

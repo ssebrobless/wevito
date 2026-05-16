@@ -1,0 +1,26 @@
+﻿[
+    {
+        "name":  "dotnet-build",
+        "command":  "dotnet build .\\vnext\\Wevito.VNext.sln",
+        "exitCode":  0,
+        "log":  "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\c-phase-125-truth\\dotnet-build.log"
+    },
+    {
+        "name":  "dotnet-test-no-build",
+        "command":  "dotnet test .\\vnext\\tests\\Wevito.VNext.Tests\\Wevito.VNext.Tests.csproj --no-build",
+        "exitCode":  0,
+        "log":  "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\c-phase-125-truth\\dotnet-test-no-build.log"
+    },
+    {
+        "name":  "build-vnext-skip-asset-prep",
+        "command":  "powershell -NoProfile -ExecutionPolicy Bypass -File .\\tools\\build-vnext.ps1 -Configuration Debug -SkipAssetPrep -SkipTests",
+        "exitCode":  0,
+        "log":  "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\c-phase-125-truth\\build-vnext-skip-asset-prep.log"
+    },
+    {
+        "name":  "git-diff-check",
+        "command":  "git diff --check",
+        "exitCode":  0,
+        "log":  "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\c-phase-125-truth\\git-diff-check.log"
+    }
+]

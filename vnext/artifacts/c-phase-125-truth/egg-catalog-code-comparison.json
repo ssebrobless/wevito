@@ -1,0 +1,27 @@
+{
+  "wpfStarterEggCatalog": {
+    "colors": [
+      "red",
+      "orange",
+      "yellow",
+      "green",
+      "blue",
+      "indigo",
+      "violet"
+    ],
+    "greenDisabled": true,
+    "mapping": {
+      "red": "fox",
+      "orange": "squirrel",
+      "yellow": "goose",
+      "green": "deer_disabled",
+      "blue": "frog",
+      "indigo": "crow",
+      "violet": "raccoon"
+    }
+  },
+  "godotGameManagerEggColorsLine": "const EGG_COLORS = [\"red\", \"orange\", \"yellow\", \"blue\", \"indigo\", \"violet\"]",
+  "godotGameManagerRandomSpeciesInAddPetWithColor": true,
+  "godotMainSceneHardcodedEggColorsLine": "var egg_colors = [\"red\", \"orange\", \"yellow\", \"blue\", \"indigo\", \"violet\"]",
+  "assertion": "mismatch_exists"
+}

@@ -1,0 +1,39 @@
+﻿COMMAND: powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\build-vnext.ps1 -Configuration Debug -SkipAssetPrep -SkipTests
+[build-vnext] Skipping sprite asset preparation; using existing runtime assets.
+[build-vnext] Skipping vNext tests.
+[build-vnext] Publish broker
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Wevito.VNext.Contracts -> C:\Users\fishe\Documents\projects\wevito\vnext\src\Wevito.VNext.Contracts\bin\Debug\net8.0\Wevito.VNext.Contracts.dll
+  Wevito.VNext.Broker -> C:\Users\fishe\Documents\projects\wevito\vnext\src\Wevito.VNext.Broker\bin\Debug\net8.0-windows\Wevito.VNext.Broker.dll
+  Wevito.VNext.Broker -> C:\Users\fishe\Documents\projects\wevito\vnext\artifacts\broker\
+[build-vnext] Publish broker completed in 1.1s
+[build-vnext] Publish shell
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Wevito.VNext.Contracts -> C:\Users\fishe\Documents\projects\wevito\vnext\src\Wevito.VNext.Contracts\bin\Debug\net8.0\Wevito.VNext.Contracts.dll
+  Wevito.VNext.Core -> C:\Users\fishe\Documents\projects\wevito\vnext\src\Wevito.VNext.Core\bin\Debug\net8.0\Wevito.VNext.Core.dll
+  Wevito.VNext.Shell -> C:\Users\fishe\Documents\projects\wevito\vnext\src\Wevito.VNext.Shell\bin\Debug\net8.0-windows10.0.19041.0\Wevito.VNext.Shell.dll
+  Wevito.VNext.Shell -> C:\Users\fishe\Documents\projects\wevito\vnext\artifacts\shell\
+[build-vnext] Publish shell completed in 12.0s
+[build-vnext] Publish dev controller
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Wevito.VNext.Contracts -> C:\Users\fishe\Documents\projects\wevito\vnext\src\Wevito.VNext.Contracts\bin\Debug\net8.0\Wevito.VNext.Contracts.dll
+  Wevito.VNext.DevController -> C:\Users\fishe\Documents\projects\wevito\vnext\src\Wevito.VNext.DevController\bin\Debug\net8.0-windows10.0.19041.0\Wevito.VNext.DevController.dll
+  Wevito.VNext.DevController -> C:\Users\fishe\Documents\projects\wevito\vnext\artifacts\dev-controller\
+[build-vnext] Publish dev controller completed in 1.2s
+[build-vnext] Publish soak driver CLI
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Wevito.VNext.Contracts -> C:\Users\fishe\Documents\projects\wevito\vnext\src\Wevito.VNext.Contracts\bin\Debug\net8.0\Wevito.VNext.Contracts.dll
+  Wevito.VNext.Core -> C:\Users\fishe\Documents\projects\wevito\vnext\src\Wevito.VNext.Core\bin\Debug\net8.0\Wevito.VNext.Core.dll
+  Wevito.VNext.SoakDriver -> C:\Users\fishe\Documents\projects\wevito\tools\soak-driver-cli\bin\Debug\net8.0\Wevito.VNext.SoakDriver.dll
+  Wevito.VNext.SoakDriver -> C:\Users\fishe\Documents\projects\wevito\vnext\artifacts\soak-driver\
+[build-vnext] Publish soak driver CLI completed in 1.5s
+[build-vnext] Copying broker output into shell output
+vNext publish complete:
+  Shell output: C:\Users\fishe\Documents\projects\wevito\vnext\artifacts\shell
+  Entry point : C:\Users\fishe\Documents\projects\wevito\vnext\artifacts\shell\Wevito.VNext.Shell.exe
+  Dev cockpit : C:\Users\fishe\Documents\projects\wevito\vnext\artifacts\dev-controller\Wevito.VNext.DevController.exe
+  Soak driver: C:\Users\fishe\Documents\projects\wevito\vnext\artifacts\soak-driver\Wevito.VNext.SoakDriver.exe
