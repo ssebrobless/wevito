@@ -183,6 +183,16 @@
                             Content="BENCH --"
                             ToolTip="Open benchmark suite"
                             Click="BenchmarkBadgeButton_OnClick" />
+                    <Button x:Name="CodexLoopBadgeButton"
+                            Margin="6,0,0,0"
+                            Style="{StaticResource HudButtonStyle}"
+                            MinWidth="68"
+                            Background="#263C35"
+                            BorderBrush="#7DB89A"
+                            automation:AutomationProperties.AutomationId="CodexLoopBadge"
+                            Content="LOOP idle"
+                            ToolTip="Open loop status in settings"
+                            Click="CodexLoopBadgeButton_OnClick" />
                 </WrapPanel>
 
                 <WrapPanel Grid.Row="1"

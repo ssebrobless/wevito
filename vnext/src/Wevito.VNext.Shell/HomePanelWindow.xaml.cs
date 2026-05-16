@@ -200,6 +200,7 @@ public partial class HomePanelWindow : Window
         BenchmarkBadgeButton.Content = state.SettingsSnapshot.TryGetValue("benchmark_latest_score", out var benchmarkScore) && !string.IsNullOrWhiteSpace(benchmarkScore)
             ? $"BENCH {benchmarkScore}"
             : "BENCH --";
+        CodexLoopBadgeButton.Content = FormatCodexLoopBadge(state.SettingsSnapshot);
         WebToolsBar.Visibility = _isHudVisible && webToolsVisible ? Visibility.Visible : Visibility.Collapsed;
         LinkBinTabButton.Content = state.ActiveTool.IsOpen && string.Equals(state.ActiveTool.ToolId, "basket", StringComparison.OrdinalIgnoreCase) ? "LINK BIN ACTIVE" : "LINK BIN";
         LinkBinTabButton.FontWeight = state.ActiveTool.IsOpen && string.Equals(state.ActiveTool.ToolId, "basket", StringComparison.OrdinalIgnoreCase)
@@ -2345,6 +2346,19 @@ public partial class HomePanelWindow : Window
         return $"{pet.Name} - {agePhase} - {traitText} - {basketText}";
     }
 
+    private static string FormatCodexLoopBadge(IReadOnlyDictionary<string, string> settings)
+    {
+        var state = settings.TryGetValue("codex_loop_state", out var rawState) && !string.IsNullOrWhiteSpace(rawState)
+            ? rawState
+            : "idle";
+        var phase = settings.TryGetValue("codex_loop_phase", out var rawPhase) && !string.IsNullOrWhiteSpace(rawPhase)
+            ? rawPhase
+            : "";
+        return string.IsNullOrWhiteSpace(phase)
+            ? $"LOOP {state}"
+            : $"LOOP {phase}";
+    }
+
     private static bool HasRollbackProposal(IReadOnlyList<TaskCard>? cards)
     {
         return cards?.Any(card =>
@@ -2456,6 +2470,14 @@ public partial class HomePanelWindow : Window
         if (OpenBenchmarksRequested is not null)
         {
             await OpenBenchmarksRequested.Invoke();
+        }
+    }
+
+    private async void CodexLoopBadgeButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (OpenSettingsRequested is not null)
+        {
+            await OpenSettingsRequested.Invoke();
         }
     }
 
