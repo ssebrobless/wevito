@@ -189,7 +189,11 @@ public partial class ToolPopupWindow : Window
                 .Select(item => ActionOptionRowItem.From(actionDefinition.Id, item, ResolveActionOptionPreview(assetService, actionDefinition.Id, item), buttonLabel))
                 .ToList();
             ActionGrid.ItemsSource = _actionRows;
-            ActionSummaryText.Text = FormatActionSummary(actionDefinition.DisplayName, _actionRows.Count, state.ActivePets);
+            ActionSummaryText.Text = FormatActionSummary(
+                actionDefinition.DisplayName,
+                actionDefinition.Description,
+                _actionRows.Count,
+                state.ActivePets);
         }
         else if (showingPetCommand)
         {
@@ -1655,6 +1659,11 @@ public partial class ToolPopupWindow : Window
 
     internal static string FormatActionSummary(string actionDisplayName, int optionCount, IReadOnlyList<PetActor> pets)
     {
+        return FormatActionSummary(actionDisplayName, "", optionCount, pets);
+    }
+
+    internal static string FormatActionSummary(string actionDisplayName, string actionDescription, int optionCount, IReadOnlyList<PetActor> pets)
+    {
         var targetSummary = FormatLivingPetTargets(pets);
         var actionName = string.IsNullOrWhiteSpace(actionDisplayName)
             ? "action"
@@ -1665,8 +1674,11 @@ public partial class ToolPopupWindow : Window
             1 => $"Use or drag the prepared {actionName} option below.",
             _ => $"Choose, drag, or use one of {optionCount} prepared {actionName} options."
         };
+        var clarity = string.IsNullOrWhiteSpace(actionDescription)
+            ? ""
+            : $" {actionDescription.Trim()}";
 
-        return $"{prefix} Target: {targetSummary}. Drag and drop an item onto the pet, or click the target button.";
+        return $"{prefix}{clarity} Target: {targetSummary}. Drag and drop an item onto the pet, or click the target button.";
     }
 
     internal static string BuildActionOptionButtonLabel(IReadOnlyList<PetActor> pets)

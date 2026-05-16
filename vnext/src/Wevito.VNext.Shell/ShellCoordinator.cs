@@ -165,6 +165,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _homeWindow.StopEverythingRequested += async () => await ActivateKillSwitchAsync();
         _homeWindow.ToggleDoNotDisturbRequested += async () => await ToggleDoNotDisturbAsync();
         _homeWindow.StarterEggRequested += async colorVariant => await AddStarterEggAsync(colorVariant);
+        _homeWindow.FirstRunChoiceRequested += async choice => await HandleFirstRunChoiceAsync(choice);
         _homeWindow.ActionRequested += HandleAction;
         _homeWindow.ActionOptionRequested += async (actionId, itemId) => await ApplyActionSelectionAsync(actionId, itemId);
         _homeWindow.Closed += (_, _) => _application.Shutdown();
@@ -1011,8 +1012,68 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             SettingsSnapshot = wizard.ResultSettings,
             ActiveTool = new ToolSession("helpers", true)
         };
+        if (TryParseFirstLaunchChoice(wizard.ResultSettings, out var choice))
+        {
+            ApplyFirstRunChoiceResult(choice, DateTimeOffset.UtcNow, openHelpers: choice == FirstLaunchBackgroundChoice.HelpWithSpriteCleanup);
+        }
+
         SetFeedback($"{_aiIdentityService.GetAiName(_state.SettingsSnapshot)} is ready. Chat is the primary surface; pets stay visually normal.");
         await PersistAndRenderAsync();
+    }
+
+    private async Task HandleFirstRunChoiceAsync(FirstLaunchBackgroundChoice choice)
+    {
+        if (_state is null)
+        {
+            return;
+        }
+
+        var timestamp = DateTimeOffset.UtcNow;
+        var result = ApplyFirstRunChoiceResult(choice, timestamp, openHelpers: choice == FirstLaunchBackgroundChoice.HelpWithSpriteCleanup);
+        SetFeedback(result.Message);
+        await PersistAndRenderAsync();
+    }
+
+    private FirstLaunchChoiceResult ApplyFirstRunChoiceResult(FirstLaunchBackgroundChoice choice, DateTimeOffset timestamp, bool openHelpers)
+    {
+        if (_state is null)
+        {
+            return new FirstLaunchChoiceResult(new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase), [], null, false, "State is not ready.");
+        }
+
+        var result = _firstLaunchWizardStateService.ApplyInlineChoice(
+            _state.SettingsSnapshot,
+            _state.TaskCards,
+            _petTaskCardQueueService,
+            choice,
+            timestamp);
+        _state = _state with
+        {
+            SettingsSnapshot = result.Settings,
+            TaskCards = result.TaskCards,
+            ActiveTool = openHelpers
+                ? new ToolSession("helpers", true)
+                : _state.ActiveTool
+        };
+        var helpers = BuildHelperProfiles(_state.ActivePets);
+        _petCommandBarState = new ChatInputBarState(
+            helpers,
+            result.DraftedCard?.Intent.RawText ?? "",
+            result.DraftedCard?.Intent,
+            result.DraftedCard,
+            LastPolicyDecision: null,
+            StatusMessage: result.Message,
+            UpdatedAtUtc: timestamp,
+            QueuedTaskCards: result.TaskCards,
+            WellbeingSnapshots: _petWellbeingInterpreter.BuildSnapshots(_state.ActivePets));
+        return result;
+    }
+
+    private static bool TryParseFirstLaunchChoice(IReadOnlyDictionary<string, string> settings, out FirstLaunchBackgroundChoice choice)
+    {
+        choice = FirstLaunchBackgroundChoice.JustChat;
+        return settings.TryGetValue(FirstLaunchWizardStateService.BackgroundChoiceSetting, out var raw) &&
+               Enum.TryParse(raw, ignoreCase: true, out choice);
     }
 
     private async Task ActivateKillSwitchAsync()

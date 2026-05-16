@@ -114,6 +114,7 @@ const EGG_COLORS = {
 	"red": Color(1.0, 0.42, 0.42),
 	"orange": Color(1.0, 0.66, 0.3),
 	"yellow": Color(1.0, 0.88, 0.4),
+	"green": Color(0.39, 0.71, 0.36),
 	"blue": Color(0.45, 0.75, 0.99),
 	"indigo": Color(0.45, 0.56, 0.99),
 	"violet": Color(0.85, 0.47, 0.95)
@@ -2314,7 +2315,7 @@ func show_egg_selection():
 	close_all_overlays()
 	egg_selection_active = true
 	
-	var modal = _create_priority_modal(Vector2(272, 260), 0.6)
+	var modal = _create_priority_modal(Vector2(304, 276), 0.6)
 	egg_selection_overlay = modal["overlay"]
 	var card = modal["card"] as Panel
 	
@@ -2325,29 +2326,35 @@ func show_egg_selection():
 	title.add_theme_color_override("font_color", _detail_text_color())
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title.position = Vector2(0, 12)
-	title.size = Vector2(272, 28)
+	title.size = Vector2(304, 28)
 	card.add_child(title)
 	
 	# Egg container
-	var egg_container = HBoxContainer.new()
-	egg_container.position = Vector2(14, 70)
-	egg_container.add_theme_constant_override("separation", 10)
-	egg_container.alignment = BoxContainer.ALIGNMENT_CENTER
+	var egg_container = GridContainer.new()
+	egg_container.columns = 4
+	egg_container.position = Vector2(14, 58)
+	egg_container.size = Vector2(276, 136)
+	egg_container.add_theme_constant_override("h_separation", 8)
+	egg_container.add_theme_constant_override("v_separation", 8)
 	card.add_child(egg_container)
 	
 	# Create egg buttons
-	var egg_colors = ["red", "orange", "yellow", "blue", "indigo", "violet"]
-	for egg_color in egg_colors:
-		var egg_btn = _create_egg_choice_button(egg_color)
+	var egg_options = game_manager.get_starter_egg_options() if game_manager and game_manager.has_method("get_starter_egg_options") else []
+	for egg in egg_options:
+		var egg_color = str(egg.get("color", ""))
+		var enabled = bool(egg.get("enabled", true))
+		var reason = str(egg.get("disabledReason", ""))
+		var egg_btn = _create_egg_choice_button(egg_color, enabled, reason)
 		egg_container.add_child(egg_btn)
 
 	var hint = Label.new()
-	hint.text = "Pick a color to hatch your next pet"
+	hint.text = "Pick a color; the pet inside is hidden until hatch. Green is reserved."
 	hint.add_theme_font_size_override("font_size", 10)
 	hint.add_theme_color_override("font_color", _detail_text_color())
 	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	hint.position = Vector2(8, 180)
-	hint.size = Vector2(256, 24)
+	hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	hint.position = Vector2(12, 202)
+	hint.size = Vector2(280, 42)
 	card.add_child(hint)
 
 func _on_egg_selected(egg_color: String):
@@ -3824,16 +3831,20 @@ func _update_celestial_sprite(force: bool = false):
 			celestial_sprite.set_meta("asset_path", path)
 	_update_celestial_layout()
 
-func _create_egg_choice_button(egg_color: String) -> Button:
+func _create_egg_choice_button(egg_color: String, enabled: bool = true, disabled_reason: String = "") -> Button:
 	var egg_btn = Button.new()
-	egg_btn.custom_minimum_size = Vector2(40, 52)
-	egg_btn.pressed.connect(_on_egg_selected.bind(egg_color))
+	egg_btn.custom_minimum_size = Vector2(60, 60)
+	egg_btn.disabled = not enabled
+	egg_btn.tooltip_text = "Species is chosen by the egg and revealed after hatch." if enabled else disabled_reason
+	if enabled:
+		egg_btn.pressed.connect(_on_egg_selected.bind(egg_color))
 
 	var egg_style = StyleBoxFlat.new()
 	egg_style.bg_color = Color(1.0, 1.0, 1.0, 0.02)
 	egg_style.set_corner_radius_all(8)
 	egg_style.set_border_width_all(1)
-	egg_style.border_color = EGG_COLORS[egg_color].darkened(0.25)
+	var color = EGG_COLORS.get(egg_color, Color.WHITE)
+	egg_style.border_color = color.darkened(0.25)
 	egg_btn.add_theme_stylebox_override("normal", egg_style)
 
 	var hover_style = egg_style.duplicate()
@@ -3850,9 +3861,10 @@ func _create_egg_choice_button(egg_color: String) -> Button:
 	egg_texture.texture = _load_egg_texture(0)
 	egg_texture.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	egg_texture.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	egg_texture.position = Vector2(4, 3)
-	egg_texture.size = Vector2(32, 40)
-	egg_texture.modulate = EGG_COLORS[egg_color]
+	egg_texture.position = Vector2(10, 5)
+	egg_texture.size = Vector2(40, 46)
+	egg_texture.modulate = color
+	egg_texture.modulate.a = 1.0 if enabled else 0.4
 	egg_btn.add_child(egg_texture)
 
 	return egg_btn

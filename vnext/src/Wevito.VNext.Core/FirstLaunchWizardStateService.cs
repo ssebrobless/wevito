@@ -6,13 +6,18 @@ public enum FirstLaunchBackgroundChoice
 {
     JustChat,
     HelpWithSpriteCleanup,
-    AddLater
+    AddLater,
+    SetUpLocalAiRuntime
 }
 
 public sealed class FirstLaunchWizardStateService
 {
     public const string CompletedSetting = "first_launch_completed";
     public const string BackgroundChoiceSetting = "first_launch_background_choice";
+    public const string InlineChoiceDismissedSetting = "first_run_choice_panel_dismissed";
+    public const string LocalRuntimeSetupRequestedSetting = "first_run_local_runtime_setup_requested";
+    public const string FirstRunChoiceRecordedPacketKind = "first_run_choice_recorded";
+    public const string SpriteCleanupHelpCardDraftedPacketKind = "sprite_cleanup_help_card_drafted";
     public const string ExperimentRegistrySeedSetting = "experiment_registry_seed";
     public const string SpriteTemplateCandidateGenerationSeed = "sprite-template-candidate-generation";
     public const string AgentSlotNameSettingPrefix = "agent_slot_";
@@ -93,6 +98,45 @@ public sealed class FirstLaunchWizardStateService
         return CompleteStep(next, 3, "background_choice", nowUtc ?? DateTimeOffset.UtcNow);
     }
 
+    public FirstLaunchChoiceResult ApplyInlineChoice(
+        IReadOnlyDictionary<string, string>? settings,
+        IReadOnlyList<TaskCard>? existingCards,
+        AgentTaskCardQueueService queueService,
+        FirstLaunchBackgroundChoice choice,
+        DateTimeOffset? nowUtc = null)
+    {
+        var timestamp = nowUtc ?? DateTimeOffset.UtcNow;
+        if (IsWriteBlocked(settings))
+        {
+            return new FirstLaunchChoiceResult(Clone(settings), existingCards ?? [], null, false, "First-run choice was blocked by Stop Everything.");
+        }
+
+        var nextSettings = Clone(settings);
+        nextSettings[BackgroundChoiceSetting] = choice.ToString();
+        nextSettings[InlineChoiceDismissedSetting] = bool.TrueString;
+        if (choice == FirstLaunchBackgroundChoice.HelpWithSpriteCleanup)
+        {
+            nextSettings[ExperimentRegistrySeedSetting] = SpriteTemplateCandidateGenerationSeed;
+        }
+        else if (choice == FirstLaunchBackgroundChoice.SetUpLocalAiRuntime)
+        {
+            nextSettings[LocalRuntimeSetupRequestedSetting] = bool.TrueString;
+        }
+
+        Record(FirstRunChoiceRecordedPacketKind, $"Recorded first-run choice: {choice}.", timestamp);
+
+        if (choice != FirstLaunchBackgroundChoice.HelpWithSpriteCleanup)
+        {
+            return new FirstLaunchChoiceResult(nextSettings, existingCards ?? [], null, false, "First-run choice recorded.");
+        }
+
+        var card = BuildSpriteCleanupHelpTaskCard(timestamp);
+        var cards = queueService.AppendDraft(existingCards, card);
+        Record(SpriteCleanupHelpCardDraftedPacketKind, "Drafted a sprite-cleanup help task card from first-run choice.", timestamp);
+
+        return new FirstLaunchChoiceResult(nextSettings, cards, card, true, "Sprite-cleanup help task card drafted.");
+    }
+
     public IReadOnlyDictionary<string, string> CompleteFirstChatStep(
         IReadOnlyDictionary<string, string>? settings,
         DateTimeOffset? nowUtc = null)
@@ -165,4 +209,42 @@ public sealed class FirstLaunchWizardStateService
             Summary: summary,
             Status: "Completed"));
     }
+
+    private static TaskCard BuildSpriteCleanupHelpTaskCard(DateTimeOffset timestamp)
+    {
+        var intent = new TaskIntent(
+            Guid.NewGuid(),
+            "Help with sprite cleanup",
+            TaskIntentTargetMode.RouteToBestHelper,
+            TaskKind: TaskKind.ReviewSprites,
+            RequestedToolFamily: "spriteAudit",
+            RiskLevel: ToolRiskLevel.Low,
+            NeedsApproval: true,
+            ExpectedOutput: "Read-only sprite audit; produce repair queue draft.",
+            CreatedAtUtc: timestamp);
+        var policy = new ToolPolicy(
+            "sprite-audit-readonly",
+            "spriteAudit",
+            ToolAccessMode.ReadOnly,
+            ToolRiskLevel.Low,
+            ApprovalRequirement.None);
+
+        return new TaskCard(
+            intent.Id,
+            intent,
+            TaskCardStatus.Draft,
+            ToolFamily: "spriteAudit",
+            PolicySnapshot: policy,
+            Timeline: ["drafted_from_first_run_choice"],
+            ResultSummary: "Drafted from first-run sprite cleanup choice. Preview is report-only.",
+            CreatedAtUtc: timestamp,
+            UpdatedAtUtc: timestamp);
+    }
 }
+
+public sealed record FirstLaunchChoiceResult(
+    IReadOnlyDictionary<string, string> Settings,
+    IReadOnlyList<TaskCard> TaskCards,
+    TaskCard? DraftedCard,
+    bool DraftedSpriteCleanupCard,
+    string Message);

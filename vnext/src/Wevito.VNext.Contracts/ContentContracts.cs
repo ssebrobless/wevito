@@ -23,7 +23,8 @@ public sealed record ActionDefinition(
     string FeedbackText = "",
     bool IsPrimaryAction = true,
     string? OptionalAnimationFamily = null,
-    string? PropOverlay = null);
+    string? PropOverlay = null,
+    string Description = "");
 
 public sealed record EnvironmentDefinition(
     string Id,

@@ -1,0 +1,12 @@
+{
+  "version": "1",
+  "eggs": [
+    { "color": "red", "label": "Red egg", "hex": "#D94A42", "species": "fox", "enabled": true, "disabledReason": "" },
+    { "color": "orange", "label": "Orange egg", "hex": "#E98635", "species": "squirrel", "enabled": true, "disabledReason": "" },
+    { "color": "yellow", "label": "Yellow egg", "hex": "#E8C84E", "species": "goose", "enabled": true, "disabledReason": "" },
+    { "color": "green", "label": "Green egg", "hex": "#62B45D", "species": "deer", "enabled": false, "disabledReason": "Green runtime sprites are not installed yet." },
+    { "color": "blue", "label": "Blue egg", "hex": "#4C8FE8", "species": "frog", "enabled": true, "disabledReason": "" },
+    { "color": "indigo", "label": "Indigo egg", "hex": "#4B5BC8", "species": "crow", "enabled": true, "disabledReason": "" },
+    { "color": "violet", "label": "Violet egg", "hex": "#8C58D8", "species": "raccoon", "enabled": true, "disabledReason": "" }
+  ]
+}
