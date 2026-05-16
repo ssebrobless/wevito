@@ -35,7 +35,16 @@ public sealed class DefaultStateFactory
                 [ModelProviderModeService.LocalRuntimeEndpointSetting] = LocalRuntimeProbeService.DefaultOllamaEndpoint,
                 [ModelProviderModeService.LocalRuntimeModelSetting] = LocalRuntimeProbeService.DefaultOllamaModel,
                 [ModelProviderModeService.HostedProviderIdSetting] = "none",
-                [ModelProviderModeService.HostedProviderApprovedSetting] = bool.FalseString
+                [ModelProviderModeService.HostedProviderApprovedSetting] = bool.FalseString,
+                [CoexistenceTriggerService.FullscreenEnabledSetting] = bool.TrueString,
+                [CoexistenceTriggerService.AppListEnabledSetting] = bool.TrueString,
+                [CoexistenceTriggerService.CpuEnabledSetting] = bool.TrueString,
+                [CoexistenceTriggerService.NetworkEnabledSetting] = bool.TrueString,
+                [CoexistenceTriggerService.CpuThresholdSetting] = "80",
+                [CoexistenceTriggerService.NetworkThresholdSetting] = "80",
+                [DoNotDisturbScheduleService.EnabledSetting] = bool.FalseString,
+                [DoNotDisturbScheduleService.ScheduleSetting] = "[]",
+                [DoNotDisturbScheduleService.QuickToggleUntilUtcSetting] = ""
             },
             []);
     }

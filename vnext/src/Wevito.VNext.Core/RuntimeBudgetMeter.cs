@@ -20,6 +20,12 @@ public sealed record RuntimeBudgetReservation(
     RuntimeResourceSnapshot ResourceSnapshot,
     string Reason);
 
+public sealed record TieredRuntimeBudgetReservation(
+    bool Allowed,
+    RuntimeBudgetReservation RuntimeReservation,
+    WorkloadTierReservation TierReservation,
+    string Reason);
+
 public sealed class RuntimeBudgetMeter
 {
     private const string SchemaVersion = "1";
@@ -78,6 +84,29 @@ public sealed class RuntimeBudgetMeter
         state = state with { UsedThisHour = state.UsedThisHour + 1 };
         WriteState(state);
         return new RuntimeBudgetReservation(true, state.UsedThisHour, budget.MaxBackgroundTasksPerHour, resourceSnapshot, "");
+    }
+
+    public TieredRuntimeBudgetReservation TryReserve(
+        RuntimeBudgetSnapshot budget,
+        WorkloadTier tier,
+        double requestedCpuPercent,
+        WorkloadTierSnapshot tierSnapshot,
+        WorkloadTierService? tierService = null)
+    {
+        var service = tierService ?? new WorkloadTierService();
+        var tierReservation = service.TryReserve(tier, requestedCpuPercent, tierSnapshot);
+        if (!tierReservation.Allowed)
+        {
+            var current = ReadCurrent(budget);
+            return new TieredRuntimeBudgetReservation(false, current, tierReservation, tierReservation.Reason);
+        }
+
+        var runtimeReservation = TryReserve(budget);
+        return new TieredRuntimeBudgetReservation(
+            runtimeReservation.Allowed,
+            runtimeReservation,
+            tierReservation,
+            runtimeReservation.Allowed ? "" : runtimeReservation.Reason);
     }
 
     public bool EnsureStateFile()

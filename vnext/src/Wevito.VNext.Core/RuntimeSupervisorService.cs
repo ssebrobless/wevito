@@ -64,12 +64,16 @@ public sealed class RuntimeSupervisorService
         DesktopContext? desktopContext = null,
         bool isUserInitiatedToolOpen = false,
         bool? fullscreenOtherOverride = null,
-        bool forceQuiet = false)
+        bool forceQuiet = false,
+        CoexistenceTriggerResult? coexistenceTriggers = null,
+        DoNotDisturbState? doNotDisturbState = null)
     {
         var parsed = ReadSettings(settings);
         var isFullscreen = fullscreenOtherOverride ?? desktopContext?.ForegroundWindow.IsFullscreenApp == true;
         var quietedForFullscreen = parsed.AutoQuietDuringFullscreen && isFullscreen;
-        var effectiveMode = forceQuiet
+        var quietedForCoexistence = coexistenceTriggers?.IsQuieting == true;
+        var quietedForDnd = doNotDisturbState?.IsActive == true;
+        var effectiveMode = forceQuiet || quietedForCoexistence || quietedForDnd
             ? RuntimeSupervisorMode.Quiet
             : quietedForFullscreen && parsed.Mode == RuntimeSupervisorMode.Active
             ? RuntimeSupervisorMode.Quiet
@@ -82,13 +86,17 @@ public sealed class RuntimeSupervisorService
 
         var blockReason = forceQuiet
             ? "Power/session quiet mode blocks helper background work."
+            : quietedForDnd
+            ? doNotDisturbState?.Reason ?? "Do Not Disturb blocks helper background work."
+            : quietedForCoexistence
+            ? coexistenceTriggers?.Reason ?? "Coexistence quiet mode blocks helper background work."
             : BuildBlockReason(effectiveMode, quietedForFullscreen, parsed.BackgroundWorkAllowed);
         return new RuntimeSupervisorStatus(
             effectiveMode,
             backgroundAllowed,
             toolWindowAllowed,
             quietedForFullscreen,
-            BuildUserStatus(effectiveMode, backgroundAllowed, quietedForFullscreen, parsed),
+            BuildUserStatus(effectiveMode, backgroundAllowed, quietedForFullscreen, parsed, quietedForCoexistence, quietedForDnd),
             blockReason);
     }
 
@@ -142,11 +150,23 @@ public sealed class RuntimeSupervisorService
         RuntimeSupervisorMode mode,
         bool backgroundAllowed,
         bool quietedForFullscreen,
-        RuntimeSupervisorSettings settings)
+        RuntimeSupervisorSettings settings,
+        bool quietedForCoexistence = false,
+        bool quietedForDnd = false)
     {
         if (mode == RuntimeSupervisorMode.PetOnly)
         {
             return "Pet-only mode: Wevito will keep the pets visible but will not start helper work.";
+        }
+
+        if (quietedForDnd)
+        {
+            return "Do Not Disturb: helpers are paused, pets stay visible and calm.";
+        }
+
+        if (quietedForCoexistence)
+        {
+            return "Coexistence quiet mode: Wevito is yielding PC resources while pets keep running.";
         }
 
         if (quietedForFullscreen)

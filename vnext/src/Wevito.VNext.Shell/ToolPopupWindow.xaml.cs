@@ -184,6 +184,10 @@ public partial class ToolPopupWindow : Window
         AutonomousBetaTryHelpText.Text = FormatAutonomousBetaTryHelp(promotionDecision, state.SettingsSnapshot);
         RuntimeNoFocusStealCheckBox.IsChecked = GetSettingBool(state, RuntimeSupervisorService.NoFocusStealSetting, true);
         RuntimeAutoQuietFullscreenCheckBox.IsChecked = GetSettingBool(state, RuntimeSupervisorService.AutoQuietFullscreenSetting, true);
+        CoexistenceAppListCheckBox.IsChecked = GetSettingBool(state, CoexistenceTriggerService.AppListEnabledSetting, true);
+        CoexistenceCpuCheckBox.IsChecked = GetSettingBool(state, CoexistenceTriggerService.CpuEnabledSetting, true);
+        CoexistenceNetworkCheckBox.IsChecked = GetSettingBool(state, CoexistenceTriggerService.NetworkEnabledSetting, true);
+        DoNotDisturbScheduleCheckBox.IsChecked = GetSettingBool(state, DoNotDisturbScheduleService.EnabledSetting);
         RuntimeSupervisorStatusText.Text = runtimeSupervisorStatus?.UserStatus ?? "Runtime supervisor: waiting for shell state.";
         var modelEnabled = GetSettingBool(state, "pet_model_adapter_enabled");
         var modelFirstCallApproved = GetSettingBool(state, "pet_model_first_call_approved");
@@ -296,6 +300,10 @@ public partial class ToolPopupWindow : Window
             if (await TryInvokeButtonAsync(AutonomousBetaTryButton, localPoint, RequestAutonomousBetaConsentAsync)) { return true; }
             if (TryToggleCheckBox(RuntimeNoFocusStealCheckBox, localPoint)) { return true; }
             if (TryToggleCheckBox(RuntimeAutoQuietFullscreenCheckBox, localPoint)) { return true; }
+            if (TryToggleCheckBox(CoexistenceAppListCheckBox, localPoint)) { return true; }
+            if (TryToggleCheckBox(CoexistenceCpuCheckBox, localPoint)) { return true; }
+            if (TryToggleCheckBox(CoexistenceNetworkCheckBox, localPoint)) { return true; }
+            if (TryToggleCheckBox(DoNotDisturbScheduleCheckBox, localPoint)) { return true; }
             if (TryToggleCheckBox(PetModelAdapterEnabledCheckBox, localPoint)) { return true; }
             if (TryToggleCheckBox(WebSearchEnabledCheckBox, localPoint)) { return true; }
             if (await TryInvokeButtonAsync(PullDefaultModelButton, localPoint, () =>
@@ -1022,6 +1030,26 @@ public partial class ToolPopupWindow : Window
     private void RuntimeAutoQuietFullscreenCheckBox_OnChanged(object sender, RoutedEventArgs e)
     {
         PublishSetting(RuntimeSupervisorService.AutoQuietFullscreenSetting, RuntimeAutoQuietFullscreenCheckBox.IsChecked != false);
+    }
+
+    private void CoexistenceAppListCheckBox_OnChanged(object sender, RoutedEventArgs e)
+    {
+        PublishSetting(CoexistenceTriggerService.AppListEnabledSetting, CoexistenceAppListCheckBox.IsChecked != false);
+    }
+
+    private void CoexistenceCpuCheckBox_OnChanged(object sender, RoutedEventArgs e)
+    {
+        PublishSetting(CoexistenceTriggerService.CpuEnabledSetting, CoexistenceCpuCheckBox.IsChecked != false);
+    }
+
+    private void CoexistenceNetworkCheckBox_OnChanged(object sender, RoutedEventArgs e)
+    {
+        PublishSetting(CoexistenceTriggerService.NetworkEnabledSetting, CoexistenceNetworkCheckBox.IsChecked != false);
+    }
+
+    private void DoNotDisturbScheduleCheckBox_OnChanged(object sender, RoutedEventArgs e)
+    {
+        PublishSetting(DoNotDisturbScheduleService.EnabledSetting, DoNotDisturbScheduleCheckBox.IsChecked == true);
     }
 
     private void WebSearchEnabledCheckBox_OnChanged(object sender, RoutedEventArgs e)

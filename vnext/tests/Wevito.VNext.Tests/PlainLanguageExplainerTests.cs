@@ -66,6 +66,20 @@ public sealed class PlainLanguageExplainerTests
     }
 
     [Theory]
+    [InlineData(CoexistenceTriggerService.TriggerFiredPacketKind)]
+    [InlineData(CoexistenceTriggerService.TriggerClearedPacketKind)]
+    [InlineData(DoNotDisturbScheduleService.DndStateChangedPacketKind)]
+    [InlineData(WorkloadTierService.TierPriorityAdjustedPacketKind)]
+    [InlineData(CoexistenceTriggerService.PetAnimationForcedPacketKind)]
+    public void CoversAllCoexistenceKinds(string packetKind)
+    {
+        var text = new PlainLanguageExplainer().ExplainPacketKind(packetKind);
+
+        Assert.DoesNotContain("Unknown", text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains(".", text);
+    }
+
+    [Theory]
     [InlineData(ToolInvocationService.ToolInvocationStartedPacketKind)]
     [InlineData(ToolInvocationService.ToolInvocationCompletedPacketKind)]
     [InlineData("tool_registry_loaded")]
