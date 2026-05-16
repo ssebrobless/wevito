@@ -40,7 +40,7 @@ public sealed class OllamaLocalModelAdapterTests
             {
                 return new HttpResponseMessage(HttpStatusCode.OK)
                 {
-                    Content = new StringContent("""{"models":[{"name":"llama3.2:3b"}]}""")
+                    Content = new StringContent("""{"models":[{"name":"qwen2.5:7b-instruct-q4_K_M"}]}""")
                 };
             }
 
@@ -61,7 +61,7 @@ public sealed class OllamaLocalModelAdapterTests
         var packet = JsonSerializer.Deserialize<ModelInferenceEvidencePacket>(File.ReadAllText(response.AuditLogPath), JsonDefaults.Options);
         Assert.NotNull(packet);
         Assert.Equal("ollama", packet.Provider);
-        Assert.Equal("llama3.2:3b", packet.Model);
+        Assert.Equal(LocalRuntimeProbeService.DefaultOllamaModel, packet.Model);
         Assert.Equal("ollama", packet.RuntimeId);
         Assert.NotEmpty(packet.PromptSha256);
         Assert.NotEmpty(packet.ResponseSha256);

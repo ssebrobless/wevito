@@ -35,6 +35,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private readonly LiveStatusFeed _liveStatusFeed;
     private readonly EvidenceCollectionStatusService _evidenceCollectionStatusService;
     private readonly KillSwitchService _killSwitchService;
+    private readonly OllamaModelBootstrapService _ollamaModelBootstrapService;
     private readonly PetTaskAdapterPreviewDispatcher _petTaskAdapterPreviewDispatcher;
     private readonly RuntimeSupervisorService _runtimeSupervisorService = new();
     private readonly RuntimeBudgetMeter _runtimeBudgetMeter = new();
@@ -84,6 +85,11 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _activitySummaryService = new ActivitySummaryService(_auditLedgerService, plainLanguageExplainer);
         _liveStatusFeed = new LiveStatusFeed(_auditLedgerService, plainLanguageExplainer);
         _killSwitchService = new KillSwitchService(() => _state?.SettingsSnapshot ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase), _auditLedgerService);
+        _ollamaModelBootstrapService = new OllamaModelBootstrapService(
+            probeService: new LocalRuntimeProbeService(killSwitchService: _killSwitchService),
+            auditLedgerService: _auditLedgerService,
+            killSwitchService: _killSwitchService,
+            artifactRoot: Path.Combine(ResolveRepoRootOrBaseDirectory(), "vnext", "artifacts", "model-bootstrap"));
         _evidenceCollectionStatusService = new EvidenceCollectionStatusService(
             _auditLedgerService,
             Path.Combine(ResolveRepoRootOrBaseDirectory(), "vnext", "artifacts", "soak"),
@@ -202,6 +208,11 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _state = await _repository.LoadAsync() ?? defaultStateFactory.Create(_content);
         _state = HydrateLoadedState(_state, _content);
         _state = ApplyAuditScenarioOverride(_state, _content);
+        var bootstrapStatus = await _ollamaModelBootstrapService.ProbeStartupAsync(
+            _state.SettingsSnapshot,
+            EvaluateRuntimeSupervisor(isUserInitiatedToolOpen: false),
+            DateTimeOffset.UtcNow);
+        TraceLog.Write("local-ai", $"ollama-bootstrap kind={bootstrapStatus.PacketKind} summary={bootstrapStatus.Summary}");
         TraceLog.Write("shell", $"state-ready pinned={_state.IsPinned} pets={_state.ActivePets.Count} basket={_state.BasketItems.Count}");
 
         _homeWindow.Show();
@@ -2684,8 +2695,8 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         hydrated.TryAdd("pet_model_adapter_enabled", bool.FalseString);
         hydrated.TryAdd("pet_model_first_call_approved", bool.FalseString);
         hydrated.TryAdd(KillSwitchService.KillSwitchSetting, bool.FalseString);
-        hydrated.TryAdd(ModelProviderModeService.ProviderModeSetting, "disabled");
-        hydrated.TryAdd(ModelProviderModeService.LocalProviderIdSetting, "deterministic-local");
+        hydrated.TryAdd(ModelProviderModeService.ProviderModeSetting, ModelProviderModeService.LocalOnlyModeValue);
+        hydrated.TryAdd(ModelProviderModeService.LocalProviderIdSetting, ModelProviderModeService.DefaultLocalProviderId);
         hydrated.TryAdd(ModelProviderModeService.LocalProviderAvailableSetting, bool.FalseString);
         hydrated.TryAdd(ModelProviderModeService.InProcessLocalRuntimeEnabledSetting, bool.FalseString);
         hydrated.TryAdd(ModelProviderModeService.LocalRuntimeEndpointSetting, LocalRuntimeProbeService.DefaultOllamaEndpoint);

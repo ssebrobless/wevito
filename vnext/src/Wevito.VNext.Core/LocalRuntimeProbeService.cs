@@ -7,7 +7,7 @@ public sealed class LocalRuntimeProbeService
     public const string OllamaEndpointSetting = "local_runtime_ollama_endpoint";
     public const string OllamaModelSetting = "local_runtime_ollama_model";
     public const string DefaultOllamaEndpoint = "http://127.0.0.1:11434";
-    public const string DefaultOllamaModel = "llama3.2:3b";
+    public const string DefaultOllamaModel = "qwen2.5:7b-instruct-q4_K_M";
 
     private readonly HttpClient _httpClient;
     private readonly KillSwitchService? _killSwitchService;
