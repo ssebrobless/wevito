@@ -1,0 +1,196 @@
+[
+  {
+    "species": "crow",
+    "pngCount": 1080,
+    "dimensions": {
+      "89x80": 360,
+      "101x104": 144,
+      "107x105": 36,
+      "117x115": 144,
+      "120x115": 36,
+      "130x127": 144,
+      "130x124": 36,
+      "125x123": 144,
+      "128x122": 36
+    },
+    "edgeTouchCount": 0,
+    "cornerAlphaCount": 0,
+    "sparseCount": 0,
+    "firstEdgeTouch": null,
+    "firstCornerAlpha": null,
+    "contactSheet": "vnext/artifacts/c-phase-125-truth/sprite-quality/crow.png",
+    "notes": [
+      "1080 runtime PNGs; dimensions: 101x104=144, 107x105=36, 117x115=144, 120x115=36, 125x123=144, 128x122=36, 130x124=36, 130x127=144, 89x80=360",
+      "0 sampled edge-touch findings across runtime frames"
+    ]
+  },
+  {
+    "species": "deer",
+    "pngCount": 1080,
+    "dimensions": {
+      "72x72": 180,
+      "72x64": 900
+    },
+    "edgeTouchCount": 24,
+    "cornerAlphaCount": 0,
+    "sparseCount": 0,
+    "firstEdgeTouch": "sprites_runtime/deer/baby/male/blue/eat_02.png",
+    "firstCornerAlpha": null,
+    "contactSheet": "vnext/artifacts/c-phase-125-truth/sprite-quality/deer.png",
+    "notes": [
+      "1080 runtime PNGs; dimensions: 72x64=900, 72x72=180",
+      "24 frames touch canvas edge; first: sprites_runtime/deer/baby/male/blue/eat_02.png"
+    ]
+  },
+  {
+    "species": "fox",
+    "pngCount": 1080,
+    "dimensions": {
+      "72x64": 1080
+    },
+    "edgeTouchCount": 0,
+    "cornerAlphaCount": 0,
+    "sparseCount": 0,
+    "firstEdgeTouch": null,
+    "firstCornerAlpha": null,
+    "contactSheet": "vnext/artifacts/c-phase-125-truth/sprite-quality/fox.png",
+    "notes": [
+      "1080 runtime PNGs; dimensions: 72x64=1080",
+      "0 sampled edge-touch findings across runtime frames"
+    ]
+  },
+  {
+    "species": "frog",
+    "pngCount": 1080,
+    "dimensions": {
+      "96x84": 360,
+      "72x64": 360,
+      "128x92": 180,
+      "93x76": 180
+    },
+    "edgeTouchCount": 576,
+    "cornerAlphaCount": 0,
+    "sparseCount": 0,
+    "firstEdgeTouch": "sprites_runtime/frog/adult/female/blue/bathe_00.png",
+    "firstCornerAlpha": null,
+    "contactSheet": "vnext/artifacts/c-phase-125-truth/sprite-quality/frog.png",
+    "notes": [
+      "1080 runtime PNGs; dimensions: 128x92=180, 72x64=360, 93x76=180, 96x84=360",
+      "576 frames touch canvas edge; first: sprites_runtime/frog/adult/female/blue/bathe_00.png"
+    ]
+  },
+  {
+    "species": "goose",
+    "pngCount": 1098,
+    "dimensions": {
+      "88x76": 360,
+      "72x67": 360,
+      "102x125": 14,
+      "60x59": 4,
+      "83x76": 360
+    },
+    "edgeTouchCount": 756,
+    "cornerAlphaCount": 0,
+    "sparseCount": 0,
+    "firstEdgeTouch": "sprites_runtime/goose/adult/female/blue/bathe_00.png",
+    "firstCornerAlpha": null,
+    "contactSheet": "vnext/artifacts/c-phase-125-truth/sprite-quality/goose.png",
+    "notes": [
+      "1098 runtime PNGs; dimensions: 102x125=14, 60x59=4, 72x67=360, 83x76=360, 88x76=360",
+      "756 frames touch canvas edge; first: sprites_runtime/goose/adult/female/blue/bathe_00.png"
+    ]
+  },
+  {
+    "species": "pigeon",
+    "pngCount": 1080,
+    "dimensions": {
+      "111x116": 180,
+      "148x148": 180,
+      "145x144": 180,
+      "148x137": 180,
+      "79x75": 360
+    },
+    "edgeTouchCount": 30,
+    "cornerAlphaCount": 0,
+    "sparseCount": 0,
+    "firstEdgeTouch": "sprites_runtime/pigeon/adult/female/blue/eat_02.png",
+    "firstCornerAlpha": null,
+    "contactSheet": "vnext/artifacts/c-phase-125-truth/sprite-quality/pigeon.png",
+    "notes": [
+      "1080 runtime PNGs; dimensions: 111x116=180, 145x144=180, 148x137=180, 148x148=180, 79x75=360",
+      "30 frames touch canvas edge; first: sprites_runtime/pigeon/adult/female/blue/eat_02.png"
+    ]
+  },
+  {
+    "species": "raccoon",
+    "pngCount": 1080,
+    "dimensions": {
+      "72x64": 1080
+    },
+    "edgeTouchCount": 12,
+    "cornerAlphaCount": 0,
+    "sparseCount": 0,
+    "firstEdgeTouch": "sprites_runtime/raccoon/adult/female/blue/eat_02.png",
+    "firstCornerAlpha": null,
+    "contactSheet": "vnext/artifacts/c-phase-125-truth/sprite-quality/raccoon.png",
+    "notes": [
+      "1080 runtime PNGs; dimensions: 72x64=1080",
+      "12 frames touch canvas edge; first: sprites_runtime/raccoon/adult/female/blue/eat_02.png"
+    ]
+  },
+  {
+    "species": "rat",
+    "pngCount": 1080,
+    "dimensions": {
+      "72x64": 1080
+    },
+    "edgeTouchCount": 0,
+    "cornerAlphaCount": 0,
+    "sparseCount": 0,
+    "firstEdgeTouch": null,
+    "firstCornerAlpha": null,
+    "contactSheet": "vnext/artifacts/c-phase-125-truth/sprite-quality/rat.png",
+    "notes": [
+      "1080 runtime PNGs; dimensions: 72x64=1080",
+      "0 sampled edge-touch findings across runtime frames"
+    ]
+  },
+  {
+    "species": "snake",
+    "pngCount": 1080,
+    "dimensions": {
+      "72x64": 864,
+      "120x64": 72,
+      "104x64": 72,
+      "112x64": 72
+    },
+    "edgeTouchCount": 1056,
+    "cornerAlphaCount": 24,
+    "sparseCount": 0,
+    "firstEdgeTouch": "sprites_runtime/snake/adult/female/blue/bathe_00.png",
+    "firstCornerAlpha": "sprites_runtime/snake/adult/male/blue/bathe_00.png",
+    "contactSheet": "vnext/artifacts/c-phase-125-truth/sprite-quality/snake.png",
+    "notes": [
+      "1080 runtime PNGs; dimensions: 104x64=72, 112x64=72, 120x64=72, 72x64=864",
+      "1056 frames touch canvas edge; first: sprites_runtime/snake/adult/female/blue/bathe_00.png",
+      "24 frames have opaque corner pixels; first: sprites_runtime/snake/adult/male/blue/bathe_00.png"
+    ]
+  },
+  {
+    "species": "squirrel",
+    "pngCount": 1080,
+    "dimensions": {
+      "72x64": 1080
+    },
+    "edgeTouchCount": 0,
+    "cornerAlphaCount": 0,
+    "sparseCount": 0,
+    "firstEdgeTouch": null,
+    "firstCornerAlpha": null,
+    "contactSheet": "vnext/artifacts/c-phase-125-truth/sprite-quality/squirrel.png",
+    "notes": [
+      "1080 runtime PNGs; dimensions: 72x64=1080",
+      "0 sampled edge-touch findings across runtime frames"
+    ]
+  }
+]

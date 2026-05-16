@@ -1,0 +1,16 @@
+﻿[
+    {
+        "Id":  23928,
+        "Name":  "Wevito.VNext.Broker",
+        "MainWindowTitle":  "",
+        "PriorityClass":  16384,
+        "Path":  "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\src\\Wevito.VNext.Broker\\bin\\Debug\\net8.0-windows\\Wevito.VNext.Broker.exe"
+    },
+    {
+        "Id":  10592,
+        "Name":  "Wevito.VNext.Shell",
+        "MainWindowTitle":  "Wevito Home Panel",
+        "PriorityClass":  16384,
+        "Path":  "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\src\\Wevito.VNext.Shell\\bin\\Debug\\net8.0-windows10.0.19041.0\\Wevito.VNext.Shell.exe"
+    }
+]

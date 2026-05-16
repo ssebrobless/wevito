@@ -1,0 +1,303 @@
+﻿[
+    {
+        "ControlType":  "ControlType.Text",
+        "Name":  "Wevito",
+        "AutomationId":  "TitleText",
+        "IsEnabled":  true,
+        "Bounds":  "1245,123,70,29"
+    },
+    {
+        "ControlType":  "ControlType.Text",
+        "Name":  "Pets are settled in the home environment",
+        "AutomationId":  "SubtitleText",
+        "IsEnabled":  true,
+        "Bounds":  "1245,154,200,15"
+    },
+    {
+        "ControlType":  "ControlType.Button",
+        "Name":  "PIN",
+        "AutomationId":  "PinButton",
+        "IsEnabled":  true,
+        "Bounds":  "1259,123,42,27"
+    },
+    {
+        "ControlType":  "ControlType.Text",
+        "Name":  "PIN",
+        "AutomationId":  "",
+        "IsEnabled":  true,
+        "Bounds":  "1269,128,21,17"
+    },
+    {
+        "ControlType":  "ControlType.Button",
+        "Name":  "ACTIONS",
+        "AutomationId":  "ActionsButton",
+        "IsEnabled":  true,
+        "Bounds":  "1307,123,72,27"
+    },
+    {
+        "ControlType":  "ControlType.Text",
+        "Name":  "ACTIONS",
+        "AutomationId":  "",
+        "IsEnabled":  true,
+        "Bounds":  "1316,128,54,17"
+    },
+    {
+        "ControlType":  "ControlType.Button",
+        "Name":  "TOOLS",
+        "AutomationId":  "WebToolsButton",
+        "IsEnabled":  true,
+        "Bounds":  "1385,123,58,27"
+    },
+    {
+        "ControlType":  "ControlType.Text",
+        "Name":  "TOOLS",
+        "AutomationId":  "",
+        "IsEnabled":  true,
+        "Bounds":  "1394,128,40,17"
+    },
+    {
+        "ControlType":  "ControlType.Button",
+        "Name":  "SETTINGS",
+        "AutomationId":  "SettingsButton",
+        "IsEnabled":  true,
+        "Bounds":  "1449,123,76,27"
+    },
+    {
+        "ControlType":  "ControlType.Text",
+        "Name":  "SETTINGS",
+        "AutomationId":  "",
+        "IsEnabled":  true,
+        "Bounds":  "1458,128,58,17"
+    },
+    {
+        "ControlType":  "ControlType.Button",
+        "Name":  "STOP",
+        "AutomationId":  "StopEverythingButton",
+        "IsEnabled":  true,
+        "Bounds":  "1531,123,54,27"
+    },
+    {
+        "ControlType":  "ControlType.Text",
+        "Name":  "STOP",
+        "AutomationId":  "",
+        "IsEnabled":  true,
+        "Bounds":  "1543,128,31,17"
+    },
+    {
+        "ControlType":  "ControlType.Button",
+        "Name":  "DND",
+        "AutomationId":  "DoNotDisturbButton",
+        "IsEnabled":  true,
+        "Bounds":  "1591,123,52,27"
+    },
+    {
+        "ControlType":  "ControlType.Text",
+        "Name":  "DND",
+        "AutomationId":  "",
+        "IsEnabled":  true,
+        "Bounds":  "1603,128,29,17"
+    },
+    {
+        "ControlType":  "ControlType.Text",
+        "Name":  "Evidence: Day 4 of 7",
+        "AutomationId":  "EvidenceBadgeText",
+        "IsEnabled":  true,
+        "Bounds":  "1658,128,100,17"
+    },
+    {
+        "ControlType":  "ControlType.Button",
+        "Name":  "BENCH --",
+        "AutomationId":  "BenchmarkBadge",
+        "IsEnabled":  true,
+        "Bounds":  "1773,123,74,27"
+    },
+    {
+        "ControlType":  "ControlType.Text",
+        "Name":  "BENCH --",
+        "AutomationId":  "",
+        "IsEnabled":  true,
+        "Bounds":  "1782,128,56,17"
+    },
+    {
+        "ControlType":  "ControlType.Button",
+        "Name":  "LOOP idle",
+        "AutomationId":  "CodexLoopBadge",
+        "IsEnabled":  true,
+        "Bounds":  "1853,123,76,27"
+    },
+    {
+        "ControlType":  "ControlType.Text",
+        "Name":  "LOOP idle",
+        "AutomationId":  "",
+        "IsEnabled":  true,
+        "Bounds":  "1862,128,58,17"
+    },
+    {
+        "ControlType":  "ControlType.Text",
+        "Name":  "Focused - HUD active",
+        "AutomationId":  "ModeText",
+        "IsEnabled":  true,
+        "Bounds":  "1245,179,634,15"
+    },
+    {
+        "ControlType":  "ControlType.Text",
+        "Name":  "No active companions - link bin empty",
+        "AutomationId":  "StatusText",
+        "IsEnabled":  true,
+        "Bounds":  "1254,223,616,15"
+    },
+    {
+        "ControlType":  "ControlType.Text",
+        "Name":  "● Agent 1 · idle",
+        "AutomationId":  "",
+        "IsEnabled":  true,
+        "Bounds":  "Empty"
+    },
+    {
+        "ControlType":  "ControlType.Text",
+        "Name":  "● Agent 2 · idle",
+        "AutomationId":  "",
+        "IsEnabled":  true,
+        "Bounds":  "Empty"
+    },
+    {
+        "ControlType":  "ControlType.Text",
+        "Name":  "● Agent 3 · idle",
+        "AutomationId":  "",
+        "IsEnabled":  true,
+        "Bounds":  "Empty"
+    },
+    {
+        "ControlType":  "ControlType.Text",
+        "Name":  "Hunger",
+        "AutomationId":  "",
+        "IsEnabled":  true,
+        "Bounds":  "1256,306,298,13"
+    },
+    {
+        "ControlType":  "ControlType.ProgressBar",
+        "Name":  "",
+        "AutomationId":  "HungerBar",
+        "IsEnabled":  true,
+        "Bounds":  "1256,319,298,10"
+    },
+    {
+        "ControlType":  "ControlType.Text",
+        "Name":  "Thirst",
+        "AutomationId":  "",
+        "IsEnabled":  true,
+        "Bounds":  "1562,306,306,13"
+    },
+    {
+        "ControlType":  "ControlType.ProgressBar",
+        "Name":  "",
+        "AutomationId":  "ThirstBar",
+        "IsEnabled":  true,
+        "Bounds":  "1562,319,306,10"
+    },
+    {
+        "ControlType":  "ControlType.Text",
+        "Name":  "Energy",
+        "AutomationId":  "",
+        "IsEnabled":  true,
+        "Bounds":  "1256,337,298,13"
+    },
+    {
+        "ControlType":  "ControlType.ProgressBar",
+        "Name":  "",
+        "AutomationId":  "EnergyBar",
+        "IsEnabled":  true,
+        "Bounds":  "1256,350,298,10"
+    },
+    {
+        "ControlType":  "ControlType.Text",
+        "Name":  "Clean",
+        "AutomationId":  "",
+        "IsEnabled":  true,
+        "Bounds":  "1562,337,306,13"
+    },
+    {
+        "ControlType":  "ControlType.ProgressBar",
+        "Name":  "",
+        "AutomationId":  "CleanlinessBar",
+        "IsEnabled":  true,
+        "Bounds":  "1562,350,306,10"
+    },
+    {
+        "ControlType":  "ControlType.Text",
+        "Name":  "Wevito is ready. Chat is the primary surface; pets stay visually normal.",
+        "AutomationId":  "FeedbackText",
+        "IsEnabled":  true,
+        "Bounds":  "1245,389,634,15"
+    },
+    {
+        "ControlType":  "ControlType.Image",
+        "Name":  "",
+        "AutomationId":  "CelestialImage",
+        "IsEnabled":  true,
+        "Bounds":  "1824,427,44,44"
+    },
+    {
+        "ControlType":  "ControlType.Text",
+        "Name":  "Choose your first egg",
+        "AutomationId":  "",
+        "IsEnabled":  true,
+        "Bounds":  "Empty"
+    },
+    {
+        "ControlType":  "ControlType.Text",
+        "Name":  "Pick a ROYGBIV egg. The pet inside stays hidden until it hatches.",
+        "AutomationId":  "",
+        "IsEnabled":  true,
+        "Bounds":  "Empty"
+    },
+    {
+        "ControlType":  "ControlType.Text",
+        "Name":  "Red egg",
+        "AutomationId":  "",
+        "IsEnabled":  true,
+        "Bounds":  "Empty"
+    },
+    {
+        "ControlType":  "ControlType.Text",
+        "Name":  "Orange egg",
+        "AutomationId":  "",
+        "IsEnabled":  true,
+        "Bounds":  "Empty"
+    },
+    {
+        "ControlType":  "ControlType.Text",
+        "Name":  "Yellow egg",
+        "AutomationId":  "",
+        "IsEnabled":  true,
+        "Bounds":  "Empty"
+    },
+    {
+        "ControlType":  "ControlType.Text",
+        "Name":  "Green egg",
+        "AutomationId":  "",
+        "IsEnabled":  false,
+        "Bounds":  "Empty"
+    },
+    {
+        "ControlType":  "ControlType.Text",
+        "Name":  "Blue egg",
+        "AutomationId":  "",
+        "IsEnabled":  true,
+        "Bounds":  "Empty"
+    },
+    {
+        "ControlType":  "ControlType.Text",
+        "Name":  "Indigo egg",
+        "AutomationId":  "",
+        "IsEnabled":  true,
+        "Bounds":  "Empty"
+    },
+    {
+        "ControlType":  "ControlType.Text",
+        "Name":  "Violet egg",
+        "AutomationId":  "",
+        "IsEnabled":  true,
+        "Bounds":  "Empty"
+    }
+]

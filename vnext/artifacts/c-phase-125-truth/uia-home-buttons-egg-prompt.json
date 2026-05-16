@@ -1,0 +1,92 @@
+﻿[
+    {
+        "Name":  "PIN",
+        "AutomationId":  "PinButton",
+        "IsEnabled":  true,
+        "BoundingRectangle":  "1259,123,42,27"
+    },
+    {
+        "Name":  "ACTIONS",
+        "AutomationId":  "ActionsButton",
+        "IsEnabled":  true,
+        "BoundingRectangle":  "1307,123,72,27"
+    },
+    {
+        "Name":  "TOOLS",
+        "AutomationId":  "WebToolsButton",
+        "IsEnabled":  true,
+        "BoundingRectangle":  "1385,123,58,27"
+    },
+    {
+        "Name":  "SETTINGS",
+        "AutomationId":  "SettingsButton",
+        "IsEnabled":  true,
+        "BoundingRectangle":  "1449,123,76,27"
+    },
+    {
+        "Name":  "STOP",
+        "AutomationId":  "StopEverythingButton",
+        "IsEnabled":  true,
+        "BoundingRectangle":  "1531,123,54,27"
+    },
+    {
+        "Name":  "DND",
+        "AutomationId":  "DoNotDisturbButton",
+        "IsEnabled":  true,
+        "BoundingRectangle":  "1591,123,52,27"
+    },
+    {
+        "Name":  "BENCH --",
+        "AutomationId":  "BenchmarkBadge",
+        "IsEnabled":  true,
+        "BoundingRectangle":  "1773,123,74,27"
+    },
+    {
+        "Name":  "LOOP idle",
+        "AutomationId":  "CodexLoopBadge",
+        "IsEnabled":  true,
+        "BoundingRectangle":  "1853,123,76,27"
+    },
+    {
+        "Name":  "",
+        "AutomationId":  "",
+        "IsEnabled":  true,
+        "BoundingRectangle":  "Empty"
+    },
+    {
+        "Name":  "",
+        "AutomationId":  "",
+        "IsEnabled":  true,
+        "BoundingRectangle":  "Empty"
+    },
+    {
+        "Name":  "",
+        "AutomationId":  "",
+        "IsEnabled":  true,
+        "BoundingRectangle":  "Empty"
+    },
+    {
+        "Name":  "",
+        "AutomationId":  "",
+        "IsEnabled":  false,
+        "BoundingRectangle":  "Empty"
+    },
+    {
+        "Name":  "",
+        "AutomationId":  "",
+        "IsEnabled":  true,
+        "BoundingRectangle":  "Empty"
+    },
+    {
+        "Name":  "",
+        "AutomationId":  "",
+        "IsEnabled":  true,
+        "BoundingRectangle":  "Empty"
+    },
+    {
+        "Name":  "",
+        "AutomationId":  "",
+        "IsEnabled":  true,
+        "BoundingRectangle":  "Empty"
+    }
+]

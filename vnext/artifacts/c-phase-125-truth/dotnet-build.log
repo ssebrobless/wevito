@@ -1,0 +1,15 @@
+﻿COMMAND: dotnet build .\vnext\Wevito.VNext.sln
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Wevito.VNext.Contracts -> C:\Users\fishe\Documents\projects\wevito\vnext\src\Wevito.VNext.Contracts\bin\Debug\net8.0\Wevito.VNext.Contracts.dll
+  Wevito.VNext.Broker -> C:\Users\fishe\Documents\projects\wevito\vnext\src\Wevito.VNext.Broker\bin\Debug\net8.0-windows\Wevito.VNext.Broker.dll
+  Wevito.VNext.DevController -> C:\Users\fishe\Documents\projects\wevito\vnext\src\Wevito.VNext.DevController\bin\Debug\net8.0-windows10.0.19041.0\Wevito.VNext.DevController.dll
+  Wevito.VNext.Core -> C:\Users\fishe\Documents\projects\wevito\vnext\src\Wevito.VNext.Core\bin\Debug\net8.0\Wevito.VNext.Core.dll
+  Wevito.VNext.Shell -> C:\Users\fishe\Documents\projects\wevito\vnext\src\Wevito.VNext.Shell\bin\Debug\net8.0-windows10.0.19041.0\Wevito.VNext.Shell.dll
+  Wevito.VNext.Tests -> C:\Users\fishe\Documents\projects\wevito\vnext\tests\Wevito.VNext.Tests\bin\Debug\net8.0-windows10.0.19041.0\Wevito.VNext.Tests.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:09.12

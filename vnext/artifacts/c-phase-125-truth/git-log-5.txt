@@ -1,0 +1,5 @@
+﻿c3572a176 C-PHASE 124: add pet behavior and AI awareness [I-Reframe] (#156)
+099b8e8e1 C-PHASE 123: add pet visual polish layer [I-Reframe] (#155)
+b82ac4f00 C-PHASE 122: add notification focus audio workspace discipline [I-Reframe] (#154)
+98335c2c8 Merge pull request #153 from ssebrobless/claude-implementation/c-phase-121-process-priority-resource-throttling
+814670c06 C-PHASE 121: add resource throttling protections [I-Reframe]
