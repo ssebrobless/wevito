@@ -2869,6 +2869,11 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         hydrated.TryAdd(AudioOutputPolicyService.PetSoundEffectsEnabledSetting, bool.FalseString);
         hydrated.TryAdd(CursorReactivityService.EnabledSetting, bool.TrueString);
         hydrated.TryAdd(TrayIconDisciplineService.AnimationEnabledSetting, bool.FalseString);
+        hydrated.TryAdd(PetVisualPolishLogger.AnimationBlendingSetting, bool.TrueString);
+        hydrated.TryAdd(PetVisualPolishLogger.PositionInterpolationSetting, bool.TrueString);
+        hydrated.TryAdd(PetVisualPolishLogger.IdleMicroBehaviorsSetting, bool.TrueString);
+        hydrated.TryAdd(PetVisualPolishLogger.ParticleEffectsSetting, bool.TrueString);
+        hydrated.TryAdd(PetVisualPolishLogger.WindowShakeReactionSetting, bool.TrueString);
         hydrated.TryAdd(MultiMonitorService.PreferredMonitorSetting, string.Empty);
         hydrated.TryAdd(CoexistenceTriggerService.CpuThresholdSetting, "80");
         hydrated.TryAdd(CoexistenceTriggerService.NetworkThresholdSetting, "80");

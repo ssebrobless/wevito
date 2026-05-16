@@ -12,6 +12,14 @@ public enum AgentSlotAvailability
     Failed
 }
 
+public enum PetMicroBehavior
+{
+    Blink,
+    LookAround,
+    EarTwitch,
+    TailWag
+}
+
 public enum AgentSlotStatus
 {
     Idle,
@@ -270,6 +278,12 @@ public sealed record PetFpsSample(
     double FramesPerSecond,
     DateTimeOffset CapturedAtUtc,
     string Source = "godot");
+
+public sealed record PetMicroBehaviorTriggered(
+    Guid PetId,
+    string PetNameSnapshot,
+    PetMicroBehavior Behavior,
+    DateTimeOffset TriggeredAtUtc);
 
 public static class PetAgentContractLimits
 {
