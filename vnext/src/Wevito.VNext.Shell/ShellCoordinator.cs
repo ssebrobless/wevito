@@ -107,6 +107,8 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             probeService: new LocalRuntimeProbeService(killSwitchService: _killSwitchService),
             ollamaAdapter: new OllamaLocalModelAdapter(
                 settingsProvider: () => _state?.SettingsSnapshot ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
+                toolProvider: () => ToolRegistry.CreateDefault(
+                    settingsProvider: () => _state?.SettingsSnapshot ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)).LlmVisibleDescriptors,
                 killSwitchService: _killSwitchService),
             onnxPhiAdapter: onnxPhiAdapter,
             deterministicAdapter: new LocalModelAdapter(_killSwitchService),

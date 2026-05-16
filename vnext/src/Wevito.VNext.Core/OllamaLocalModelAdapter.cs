@@ -15,6 +15,7 @@ public sealed class OllamaLocalModelAdapter : IModelAdapter
     private readonly LocalRuntimeProbeService _probeService;
     private readonly LocalModelAdapter _fallbackAdapter;
     private readonly Func<IReadOnlyDictionary<string, string>> _settingsProvider;
+    private readonly Func<IReadOnlyList<ToolDescriptor>> _toolProvider;
     private readonly KillSwitchService? _killSwitchService;
 
     public OllamaLocalModelAdapter(
@@ -22,6 +23,7 @@ public sealed class OllamaLocalModelAdapter : IModelAdapter
         LocalRuntimeProbeService? probeService = null,
         LocalModelAdapter? fallbackAdapter = null,
         Func<IReadOnlyDictionary<string, string>>? settingsProvider = null,
+        Func<IReadOnlyList<ToolDescriptor>>? toolProvider = null,
         KillSwitchService? killSwitchService = null)
     {
         _httpClient = httpClient ?? new HttpClient { Timeout = TimeSpan.FromSeconds(20) };
@@ -29,6 +31,7 @@ public sealed class OllamaLocalModelAdapter : IModelAdapter
         _probeService = probeService ?? new LocalRuntimeProbeService(_httpClient, killSwitchService);
         _fallbackAdapter = fallbackAdapter ?? new LocalModelAdapter(killSwitchService);
         _settingsProvider = settingsProvider ?? (() => new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase));
+        _toolProvider = toolProvider ?? (() => []);
     }
 
     public async Task<ModelResponse> SuggestAsync(ModelRequest request, CancellationToken cancellationToken = default)
@@ -61,7 +64,7 @@ public sealed class OllamaLocalModelAdapter : IModelAdapter
         {
             using var httpRequest = new HttpRequestMessage(HttpMethod.Post, new Uri(baseUri, "/v1/chat/completions"));
             httpRequest.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            httpRequest.Content = new StringContent(JsonSerializer.Serialize(BuildPayload(request, model)), Encoding.UTF8, "application/json");
+            httpRequest.Content = new StringContent(JsonSerializer.Serialize(BuildPayload(request, model, tools: _toolProvider())), Encoding.UTF8, "application/json");
 
             using var response = await _httpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
             var body = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
@@ -103,7 +106,7 @@ public sealed class OllamaLocalModelAdapter : IModelAdapter
 
         using var httpRequest = new HttpRequestMessage(HttpMethod.Post, new Uri(baseUri, "/v1/chat/completions"));
         httpRequest.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("text/event-stream"));
-        httpRequest.Content = new StringContent(JsonSerializer.Serialize(BuildPayload(request, model, stream: true)), Encoding.UTF8, "application/json");
+        httpRequest.Content = new StringContent(JsonSerializer.Serialize(BuildPayload(request, model, stream: true, tools: _toolProvider())), Encoding.UTF8, "application/json");
 
         using var response = await _httpClient.SendAsync(httpRequest, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
         if (!response.IsSuccessStatusCode)
@@ -178,7 +181,7 @@ public sealed class OllamaLocalModelAdapter : IModelAdapter
         };
     }
 
-    private static object BuildPayload(ModelRequest request, string model, bool stream = false)
+    internal static object BuildPayload(ModelRequest request, string model, bool stream = false, IReadOnlyList<ToolDescriptor>? tools = null)
     {
         var trusted = request.TrustedContext is { Count: > 0 }
             ? string.Join(Environment.NewLine, request.TrustedContext)
@@ -186,6 +189,10 @@ public sealed class OllamaLocalModelAdapter : IModelAdapter
         var untrusted = request.UntrustedContext is { Count: > 0 }
             ? string.Join(Environment.NewLine, request.UntrustedContext.Select(PetModelSummaryService.WrapUntrusted))
             : "None.";
+
+        IReadOnlyList<object> visibleTools = tools is { Count: > 0 }
+            ? OllamaToolFormatAdapter.ToOpenAiTools(tools)
+            : Array.Empty<object>();
 
         return new
         {
@@ -217,7 +224,8 @@ public sealed class OllamaLocalModelAdapter : IModelAdapter
                 }
             },
             temperature = 0.2,
-            stream
+            stream,
+            tools = visibleTools
         };
     }
 

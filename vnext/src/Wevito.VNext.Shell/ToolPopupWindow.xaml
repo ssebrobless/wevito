@@ -802,6 +802,22 @@
                     <Border Margin="0,12,0,0"
                             Padding="10"
                             CornerRadius="10"
+                            BorderBrush="#3355A6E6"
+                            BorderThickness="1"
+                            Background="#142940">
+                        <StackPanel>
+                            <TextBlock Text="AI-callable tools"
+                                       Foreground="#FFF0F4F5"
+                                       FontSize="12"
+                                       FontWeight="SemiBold" />
+                            <StackPanel x:Name="ToolRegistryListPanel"
+                                        Margin="0,5,0,0"
+                                        automation:AutomationProperties.AutomationId="ToolRegistryListPanel" />
+                        </StackPanel>
+                    </Border>
+                    <Border Margin="0,12,0,0"
+                            Padding="10"
+                            CornerRadius="10"
                             BorderBrush="#335C6477"
                             BorderThickness="1"
                             Background="#17202A">

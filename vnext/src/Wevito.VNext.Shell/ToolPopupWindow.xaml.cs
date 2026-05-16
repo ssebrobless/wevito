@@ -196,6 +196,7 @@ public partial class ToolPopupWindow : Window
         PetModelFirstCallConsentButton.IsEnabled = !modelFirstCallApproved;
         LocalAiRuntimeStatusText.Text = FormatLocalAiRuntimeStatus(state);
         ReasoningModelStatusText.Text = FormatReasoningModelStatus(state);
+        RenderToolRegistryList(state);
         var webSearchEnabled = GetSettingBool(state, WebResearchConnector.WebSearchEnabledSetting);
         var webBackend = state.SettingsSnapshot.TryGetValue(WebResearchConnector.WebBackendSetting, out var backend) ? backend : "offline";
         WebSearchEnabledCheckBox.IsChecked = webSearchEnabled;
@@ -1038,6 +1039,14 @@ public partial class ToolPopupWindow : Window
         PublishSetting("pet_model_first_call_approved", true);
     }
 
+    private void ToolRegistryCheckBox_OnChanged(object sender, RoutedEventArgs e)
+    {
+        if (sender is CheckBox { Tag: string toolFamily } checkBox)
+        {
+            PublishSetting(ToolRegistry.BuildToolEnabledSettingKey(toolFamily), checkBox.IsChecked == true);
+        }
+    }
+
     private void PullDefaultModelButton_OnClick(object sender, RoutedEventArgs e)
     {
         PullDefaultModel();
@@ -1307,6 +1316,37 @@ public partial class ToolPopupWindow : Window
         var available = GetSettingBool(state, ModelProviderModeService.LocalProviderAvailableSetting);
         var inProcessEnabled = GetSettingBool(state, ModelProviderModeService.InProcessLocalRuntimeEnabledSetting);
         return $"Local AI runtime: mode={providerMode}; provider={(available ? "available" : "not probed/available")}; endpoint={endpoint}; model={model}; in-process fallback={(inProcessEnabled ? "enabled if weights exist" : "off")}; hosted AI remains disabled unless separately approved.";
+    }
+
+    private void RenderToolRegistryList(CompanionState state)
+    {
+        var registry = ToolRegistry.CreateDefault(settingsProvider: () => state.SettingsSnapshot);
+        ToolRegistryListPanel.Children.Clear();
+        foreach (var tool in registry.Descriptors)
+        {
+            var checkBox = new CheckBox
+            {
+                Margin = new Thickness(0, 4, 0, 0),
+                Style = (Style)FindResource("PopupCheckBoxStyle"),
+                Foreground = Brushes.WhiteSmoke,
+                IsChecked = !registry.IsDisabled(tool.ToolFamily),
+                Tag = tool.ToolFamily,
+                Content = $"{tool.ToolFamily} - {tool.RiskLevel} - {(tool.RequiresApproval ? "approval required" : "no approval")}"
+            };
+            checkBox.Checked += ToolRegistryCheckBox_OnChanged;
+            checkBox.Unchecked += ToolRegistryCheckBox_OnChanged;
+            ToolRegistryListPanel.Children.Add(checkBox);
+        }
+
+        if (ToolRegistryListPanel.Children.Count == 0)
+        {
+            ToolRegistryListPanel.Children.Add(new TextBlock
+            {
+                Foreground = Brushes.LightGray,
+                FontSize = 10,
+                Text = "No AI-callable tools are registered."
+            });
+        }
     }
 
     private static string FormatReasoningModelStatus(CompanionState state)

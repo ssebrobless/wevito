@@ -65,6 +65,19 @@ public sealed class PlainLanguageExplainerTests
         Assert.DoesNotContain("Unknown", text, StringComparison.OrdinalIgnoreCase);
     }
 
+    [Theory]
+    [InlineData(ToolInvocationService.ToolInvocationStartedPacketKind)]
+    [InlineData(ToolInvocationService.ToolInvocationCompletedPacketKind)]
+    [InlineData("tool_registry_loaded")]
+    [InlineData("tool_registry_setting")]
+    public void CoversToolRegistryKinds(string packetKind)
+    {
+        var text = new PlainLanguageExplainer().ExplainPacketKind(packetKind);
+
+        Assert.Contains("tool", text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Unknown", text, StringComparison.OrdinalIgnoreCase);
+    }
+
     [Fact]
     public void Explain_DoesNotExposePrivateSummaryText()
     {

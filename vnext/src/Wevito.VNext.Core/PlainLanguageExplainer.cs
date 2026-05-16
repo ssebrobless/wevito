@@ -60,6 +60,10 @@ public sealed class PlainLanguageExplainer
         "translateText",
         "tuning_apply",
         "tuning_rollback",
+        "tool_invocation_started",
+        "tool_invocation_completed",
+        "tool_registry_loaded",
+        "tool_registry_setting",
         "web_fetch"
     ];
 
@@ -138,6 +142,10 @@ public sealed class PlainLanguageExplainer
             "translateText" => "Prepared a translation result.",
             "tuning_apply" => "Applied reviewed local tuning configuration.",
             "tuning_rollback" => "Rolled back local tuning configuration.",
+            "tool_invocation_started" => "Started an AI-requested local tool invocation.",
+            "tool_invocation_completed" => "Completed an AI-requested local tool invocation.",
+            "tool_registry_loaded" => "Loaded the AI-callable local tool registry.",
+            "tool_registry_setting" => "Changed a local tool registry setting.",
             "web_fetch" => "Fetched approved web research records.",
             _ => WarnUnknown(packetKind)
         };

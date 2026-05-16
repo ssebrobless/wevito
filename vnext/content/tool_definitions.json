@@ -60,6 +60,114 @@
     "hostedAiDefault": "disabled"
   },
   {
+    "id": "localDocs",
+    "displayName": "Local Docs",
+    "toolFamily": "localDocs",
+    "defaultState": "local-only",
+    "networkDefault": "disabled",
+    "hostedAiDefault": "disabled",
+    "mayMutate": false
+  },
+  {
+    "id": "spriteAudit",
+    "displayName": "Sprite Audit",
+    "toolFamily": "spriteAudit",
+    "defaultState": "report-only",
+    "networkDefault": "disabled",
+    "hostedAiDefault": "disabled",
+    "mayMutate": false
+  },
+  {
+    "id": "petState",
+    "displayName": "Pet State",
+    "toolFamily": "petState",
+    "defaultState": "report-only",
+    "networkDefault": "disabled",
+    "hostedAiDefault": "disabled",
+    "mayMutate": false
+  },
+  {
+    "id": "assetInventory",
+    "displayName": "Asset Inventory",
+    "toolFamily": "assetInventory",
+    "defaultState": "report-only",
+    "networkDefault": "disabled",
+    "hostedAiDefault": "disabled",
+    "mayMutate": false
+  },
+  {
+    "id": "codeReview",
+    "displayName": "Code Review",
+    "toolFamily": "codeReview",
+    "defaultState": "report-only",
+    "networkDefault": "disabled",
+    "hostedAiDefault": "disabled",
+    "mayMutate": false
+  },
+  {
+    "id": "codePatchPlan",
+    "displayName": "Code Patch Plan",
+    "toolFamily": "codePatchPlan",
+    "defaultState": "plan-only",
+    "networkDefault": "disabled",
+    "hostedAiDefault": "disabled",
+    "mayMutate": false
+  },
+  {
+    "id": "buildProof",
+    "displayName": "Build Proof",
+    "toolFamily": "buildProof",
+    "defaultState": "approval-required",
+    "networkDefault": "disabled",
+    "hostedAiDefault": "disabled",
+    "mayMutate": false
+  },
+  {
+    "id": "translateText",
+    "displayName": "Translate Text",
+    "toolFamily": "translateText",
+    "defaultState": "preview-first",
+    "networkDefault": "disabled",
+    "hostedAiDefault": "disabled",
+    "mayMutate": false
+  },
+  {
+    "id": "audioAssist",
+    "displayName": "Audio Assist",
+    "toolFamily": "audioAssist",
+    "defaultState": "report-only",
+    "networkDefault": "disabled",
+    "hostedAiDefault": "disabled",
+    "mayMutate": false
+  },
+  {
+    "id": "screenCapture",
+    "displayName": "Screen Capture",
+    "toolFamily": "screenCapture",
+    "defaultState": "approval-required",
+    "networkDefault": "disabled",
+    "hostedAiDefault": "disabled",
+    "mayMutate": false
+  },
+  {
+    "id": "bookmark_for_benchmark",
+    "displayName": "Bookmark For Benchmark",
+    "toolFamily": "bookmark_for_benchmark",
+    "defaultState": "registered-only",
+    "networkDefault": "disabled",
+    "hostedAiDefault": "disabled",
+    "mayMutate": false
+  },
+  {
+    "id": "pin_message",
+    "displayName": "Pin Message",
+    "toolFamily": "pin_message",
+    "defaultState": "registered-only",
+    "networkDefault": "disabled",
+    "hostedAiDefault": "disabled",
+    "mayMutate": false
+  },
+  {
     "id": "local_ai_research",
     "displayName": "Local AI Research",
     "capacity": 0,
@@ -152,6 +260,7 @@
   {
     "id": "pet_memory",
     "displayName": "Pet Memory",
+    "toolFamily": "petMemory",
     "capacity": 0,
     "defaultState": "off",
     "requiresWriteApproval": true,
