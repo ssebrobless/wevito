@@ -13,10 +13,10 @@
     "id": "pet_model_adapter",
     "displayName": "Pet Model Adapter",
     "capacity": 0,
-    "defaultProvider": "none",
+    "defaultProvider": "ollama",
     "requiresFirstCallApproval": true,
     "apiKeyStorage": "windows-credential-manager",
-    "modelCallDefault": "disabled",
+    "modelCallDefault": "local-only",
     "helpers": [
       {
         "name": "Scout",
@@ -49,10 +49,10 @@
     "id": "local_ai_research",
     "displayName": "Local AI Research",
     "capacity": 0,
-    "defaultProvider": "deterministic-local",
+    "defaultProvider": "ollama",
     "ollamaProvider": {
       "endpointDefault": "http://127.0.0.1:11434",
-      "modelDefault": "llama3.2:3b",
+      "modelDefault": "qwen2.5:7b-instruct-q4_K_M",
       "localhostOnly": true,
       "probePath": "/api/tags",
       "chatPath": "/v1/chat/completions"

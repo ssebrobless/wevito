@@ -34,6 +34,8 @@ public sealed record ModelProviderRouteDecision(
 
 public sealed class ModelProviderModeService
 {
+    public const string LocalOnlyModeValue = "local_only";
+    public const string DefaultLocalProviderId = "ollama";
     public const string ProviderModeSetting = "pet_model_provider_mode";
     public const string LocalProviderIdSetting = "pet_model_local_provider_id";
     public const string HostedProviderIdSetting = "pet_model_hosted_provider_id";
@@ -47,10 +49,10 @@ public sealed class ModelProviderModeService
     {
         var snapshot = settings ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         return new ModelProviderSettings(
-            ParseMode(Read(snapshot, ProviderModeSetting, "disabled")),
+            ParseMode(Read(snapshot, ProviderModeSetting, LocalOnlyModeValue)),
             HostedProviderApproved: ReadBool(snapshot, HostedProviderApprovedSetting, false),
             LocalProviderAvailable: ReadBool(snapshot, LocalProviderAvailableSetting, false),
-            LocalProviderId: Read(snapshot, LocalProviderIdSetting, "deterministic-local"),
+            LocalProviderId: Read(snapshot, LocalProviderIdSetting, DefaultLocalProviderId),
             HostedProviderId: Read(snapshot, HostedProviderIdSetting, "none"),
             InProcessLocalRuntimeEnabled: ReadBool(snapshot, InProcessLocalRuntimeEnabledSetting, false),
             LocalRuntimeEndpoint: Read(snapshot, LocalRuntimeEndpointSetting, LocalRuntimeProbeService.DefaultOllamaEndpoint),

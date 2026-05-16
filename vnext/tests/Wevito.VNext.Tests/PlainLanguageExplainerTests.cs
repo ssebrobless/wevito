@@ -34,6 +34,24 @@ public sealed class PlainLanguageExplainerTests
     }
 
     [Fact]
+    public void CoversModelBootstrapRequiredKind()
+    {
+        var text = new PlainLanguageExplainer().ExplainPacketKind(OllamaModelBootstrapService.BootstrapRequiredPacketKind);
+
+        Assert.Contains("reasoning model", text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Unknown", text, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void CoversModelBootstrapRuntimeAbsentKind()
+    {
+        var text = new PlainLanguageExplainer().ExplainPacketKind(OllamaModelBootstrapService.RuntimeAbsentPacketKind);
+
+        Assert.Contains("Ollama", text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Unknown", text, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
     public void Explain_DoesNotExposePrivateSummaryText()
     {
         var explainer = new PlainLanguageExplainer();

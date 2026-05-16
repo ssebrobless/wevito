@@ -186,6 +186,7 @@ public partial class ToolPopupWindow : Window
             : "Consent not acknowledged. No live model calls can run.";
         PetModelFirstCallConsentButton.IsEnabled = !modelFirstCallApproved;
         LocalAiRuntimeStatusText.Text = FormatLocalAiRuntimeStatus(state);
+        ReasoningModelStatusText.Text = FormatReasoningModelStatus(state);
         var webSearchEnabled = GetSettingBool(state, WebResearchConnector.WebSearchEnabledSetting);
         var webBackend = state.SettingsSnapshot.TryGetValue(WebResearchConnector.WebBackendSetting, out var backend) ? backend : "offline";
         WebSearchEnabledCheckBox.IsChecked = webSearchEnabled;
@@ -287,6 +288,14 @@ public partial class ToolPopupWindow : Window
             if (TryToggleCheckBox(RuntimeAutoQuietFullscreenCheckBox, localPoint)) { return true; }
             if (TryToggleCheckBox(PetModelAdapterEnabledCheckBox, localPoint)) { return true; }
             if (TryToggleCheckBox(WebSearchEnabledCheckBox, localPoint)) { return true; }
+            if (await TryInvokeButtonAsync(PullDefaultModelButton, localPoint, () =>
+                {
+                    PullDefaultModel();
+                    return Task.CompletedTask;
+                }))
+            {
+                return true;
+            }
             if (await TryInvokeButtonAsync(PetModelFirstCallConsentButton, localPoint, () =>
                 {
                     PublishSetting("pet_model_first_call_approved", true);
@@ -1031,6 +1040,11 @@ public partial class ToolPopupWindow : Window
         PublishSetting("pet_model_first_call_approved", true);
     }
 
+    private void PullDefaultModelButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        PullDefaultModel();
+    }
+
     private async void SelectedPetComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (_suppressSettingEvents || SelectedPetComboBox.SelectedValue is not Guid petId)
@@ -1295,6 +1309,62 @@ public partial class ToolPopupWindow : Window
         var available = GetSettingBool(state, ModelProviderModeService.LocalProviderAvailableSetting);
         var inProcessEnabled = GetSettingBool(state, ModelProviderModeService.InProcessLocalRuntimeEnabledSetting);
         return $"Local AI runtime: mode={providerMode}; provider={(available ? "available" : "not probed/available")}; endpoint={endpoint}; model={model}; in-process fallback={(inProcessEnabled ? "enabled if weights exist" : "off")}; hosted AI remains disabled unless separately approved.";
+    }
+
+    private static string FormatReasoningModelStatus(CompanionState state)
+    {
+        var model = state.SettingsSnapshot.TryGetValue(ModelProviderModeService.LocalRuntimeModelSetting, out var configuredModel)
+            ? configuredModel
+            : LocalRuntimeProbeService.DefaultOllamaModel;
+        var endpoint = state.SettingsSnapshot.TryGetValue(ModelProviderModeService.LocalRuntimeEndpointSetting, out var configuredEndpoint)
+            ? configuredEndpoint
+            : LocalRuntimeProbeService.DefaultOllamaEndpoint;
+        var available = GetSettingBool(state, ModelProviderModeService.LocalProviderAvailableSetting);
+        var mode = state.SettingsSnapshot.TryGetValue(ModelProviderModeService.ProviderModeSetting, out var configuredMode)
+            ? configuredMode
+            : ModelProviderModeService.LocalOnlyModeValue;
+        var latency = state.SettingsSnapshot.TryGetValue("local_runtime_last_latency_ms", out var rawLatency) && !string.IsNullOrWhiteSpace(rawLatency)
+            ? $"{rawLatency} ms"
+            : "not measured";
+        var runtimeStatus = available ? "Available" : "Bootstrap required or unavailable";
+        return $"Reasoning model status: model={model}; mode={mode}; runtime={runtimeStatus}; endpoint={endpoint}; last latency={latency}.";
+    }
+
+    private void PullDefaultModel()
+    {
+        var repoRoot = ResolveRepoRootOrBaseDirectory();
+        var scriptPath = Path.Combine(repoRoot, "tools", "pull-default-model.ps1");
+        if (!File.Exists(scriptPath))
+        {
+            ReasoningModelStatusText.Text = $"Reasoning model status: pull script not found at {scriptPath}.";
+            return;
+        }
+
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = "powershell",
+            Arguments = $"-NoProfile -ExecutionPolicy Bypass -File \"{scriptPath}\"",
+            WorkingDirectory = repoRoot,
+            UseShellExecute = true
+        });
+        ReasoningModelStatusText.Text = $"Reasoning model status: pull started for {LocalRuntimeProbeService.DefaultOllamaModel}.";
+    }
+
+    private static string ResolveRepoRootOrBaseDirectory()
+    {
+        var current = new DirectoryInfo(AppContext.BaseDirectory);
+        while (current is not null)
+        {
+            if (Directory.Exists(Path.Combine(current.FullName, ".git")) ||
+                Directory.Exists(Path.Combine(current.FullName, "vnext")))
+            {
+                return current.FullName;
+            }
+
+            current = current.Parent;
+        }
+
+        return AppContext.BaseDirectory;
     }
 
     private static ImageSource? ResolveActionOptionPreview(SpriteAssetService assetService, string actionId, HabitatDisplayItem item)

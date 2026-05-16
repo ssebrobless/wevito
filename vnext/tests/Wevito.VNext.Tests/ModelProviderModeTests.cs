@@ -6,17 +6,17 @@ namespace Wevito.VNext.Tests;
 public sealed class ModelProviderModeTests
 {
     [Fact]
-    public void ApplyDefaultSettings_DisablesProviderAndHostedApproval()
+    public void ApplyDefaultSettings_UsesLocalOnlyProviderAndBlocksHostedApproval()
     {
         var settings = ShellCoordinator.ApplyDefaultSettings(new Dictionary<string, string>());
         var service = new ModelProviderModeService();
 
         var parsed = service.ReadSettings(settings);
 
-        Assert.Equal(ModelProviderMode.Disabled, parsed.Mode);
+        Assert.Equal(ModelProviderMode.LocalOnly, parsed.Mode);
         Assert.False(parsed.HostedProviderApproved);
         Assert.False(parsed.LocalProviderAvailable);
-        Assert.Equal("deterministic-local", parsed.LocalProviderId);
+        Assert.Equal("ollama", parsed.LocalProviderId);
         Assert.Equal("none", parsed.HostedProviderId);
         Assert.False(parsed.InProcessLocalRuntimeEnabled);
     }

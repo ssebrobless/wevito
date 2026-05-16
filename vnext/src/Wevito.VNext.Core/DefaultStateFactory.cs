@@ -27,7 +27,15 @@ public sealed class DefaultStateFactory
             {
                 ["theme"] = "slate",
                 ["roamBandHeight"] = "112",
-                ["starter_egg_pending"] = bool.TrueString
+                ["starter_egg_pending"] = bool.TrueString,
+                [ModelProviderModeService.ProviderModeSetting] = ModelProviderModeService.LocalOnlyModeValue,
+                [ModelProviderModeService.LocalProviderIdSetting] = ModelProviderModeService.DefaultLocalProviderId,
+                [ModelProviderModeService.LocalProviderAvailableSetting] = bool.FalseString,
+                [ModelProviderModeService.InProcessLocalRuntimeEnabledSetting] = bool.FalseString,
+                [ModelProviderModeService.LocalRuntimeEndpointSetting] = LocalRuntimeProbeService.DefaultOllamaEndpoint,
+                [ModelProviderModeService.LocalRuntimeModelSetting] = LocalRuntimeProbeService.DefaultOllamaModel,
+                [ModelProviderModeService.HostedProviderIdSetting] = "none",
+                [ModelProviderModeService.HostedProviderApprovedSetting] = bool.FalseString
             },
             []);
     }
