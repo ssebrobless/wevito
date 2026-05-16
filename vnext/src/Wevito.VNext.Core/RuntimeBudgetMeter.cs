@@ -6,7 +6,10 @@ namespace Wevito.VNext.Core;
 public sealed record RuntimeResourceSnapshot(
     double CpuPercent,
     int MemoryMb,
-    DateTimeOffset CapturedAtUtc);
+    DateTimeOffset CapturedAtUtc,
+    double WevitoCpuPercent = 0,
+    double GpuUtilizationPercent = 0,
+    int AvailableMemoryMb = int.MaxValue);
 
 public sealed record RuntimeBudgetSnapshot(
     int MaxBackgroundTasksPerHour,
@@ -19,6 +22,11 @@ public sealed record RuntimeBudgetReservation(
     int MaxThisHour,
     RuntimeResourceSnapshot ResourceSnapshot,
     string Reason);
+
+public sealed record RuntimeUserProtectionFloors(
+    double MaxWevitoCpuPercent = 50,
+    double MaxGpuUtilizationPercent = 80,
+    int MinimumAvailableMemoryMb = 4096);
 
 public sealed record TieredRuntimeBudgetReservation(
     bool Allowed,
@@ -48,6 +56,11 @@ public sealed class RuntimeBudgetMeter
 
     public RuntimeBudgetReservation TryReserve(RuntimeBudgetSnapshot budget)
     {
+        return TryReserve(budget, isForeground: false);
+    }
+
+    public RuntimeBudgetReservation TryReserve(RuntimeBudgetSnapshot budget, bool isForeground)
+    {
         var now = _clock();
         var resourceSnapshot = _resourceReader();
         var state = ReadState();
@@ -55,6 +68,13 @@ public sealed class RuntimeBudgetMeter
         if (state.HourStartedAtUtc != currentHour)
         {
             state = new BudgetMeterState(SchemaVersion, currentHour, 0);
+        }
+
+        var protectionFloorReason = isForeground ? "" : BuildUserProtectionFloorReason(resourceSnapshot);
+        if (!string.IsNullOrWhiteSpace(protectionFloorReason))
+        {
+            WriteState(state);
+            return new RuntimeBudgetReservation(false, state.UsedThisHour, budget.MaxBackgroundTasksPerHour, resourceSnapshot, protectionFloorReason);
         }
 
         if (budget.MaxBackgroundTasksPerHour <= 0)
@@ -101,7 +121,7 @@ public sealed class RuntimeBudgetMeter
             return new TieredRuntimeBudgetReservation(false, current, tierReservation, tierReservation.Reason);
         }
 
-        var runtimeReservation = TryReserve(budget);
+        var runtimeReservation = TryReserve(budget, tier == WorkloadTier.UserForeground);
         return new TieredRuntimeBudgetReservation(
             runtimeReservation.Allowed,
             runtimeReservation,
@@ -142,7 +162,7 @@ public sealed class RuntimeBudgetMeter
             WriteState(state);
         }
 
-        var reason = BuildBlockReason(state, budget, resourceSnapshot);
+        var reason = BuildBlockReason(state, budget, resourceSnapshot, isForeground: false);
         return new RuntimeBudgetReservation(
             string.IsNullOrWhiteSpace(reason),
             state.UsedThisHour,
@@ -154,8 +174,18 @@ public sealed class RuntimeBudgetMeter
     private static string BuildBlockReason(
         BudgetMeterState state,
         RuntimeBudgetSnapshot budget,
-        RuntimeResourceSnapshot resourceSnapshot)
+        RuntimeResourceSnapshot resourceSnapshot,
+        bool isForeground)
     {
+        if (!isForeground)
+        {
+            var floorReason = BuildUserProtectionFloorReason(resourceSnapshot);
+            if (!string.IsNullOrWhiteSpace(floorReason))
+            {
+                return floorReason;
+            }
+        }
+
         if (budget.MaxBackgroundTasksPerHour <= 0)
         {
             return "Background task budget is zero.";
@@ -173,6 +203,26 @@ public sealed class RuntimeBudgetMeter
 
         return resourceSnapshot.MemoryMb > budget.MemoryBudgetMb
             ? "Memory budget is exceeded."
+            : "";
+    }
+
+    public static string BuildUserProtectionFloorReason(
+        RuntimeResourceSnapshot resourceSnapshot,
+        RuntimeUserProtectionFloors? floors = null)
+    {
+        var parsed = floors ?? new RuntimeUserProtectionFloors();
+        if (resourceSnapshot.WevitoCpuPercent > parsed.MaxWevitoCpuPercent)
+        {
+            return "User protection floor blocked reservation: Wevito CPU would exceed 50%.";
+        }
+
+        if (resourceSnapshot.GpuUtilizationPercent > parsed.MaxGpuUtilizationPercent)
+        {
+            return "User protection floor blocked reservation: GPU utilization is above 80%.";
+        }
+
+        return resourceSnapshot.AvailableMemoryMb < parsed.MinimumAvailableMemoryMb
+            ? "User protection floor blocked reservation: less than 4 GB RAM is available."
             : "";
     }
 

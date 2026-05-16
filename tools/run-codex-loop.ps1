@@ -36,6 +36,23 @@ function Add-HistoryRow($phaseId, $kind, $summary, $status) {
 
 Ensure-CodexLoopFiles
 
+function Set-CodexCompileThrottle {
+    param(
+        [Parameter(Mandatory = $true)][string]$Reason,
+        [int]$ActiveCap = 2,
+        [int]$IdleCap = 6
+    )
+
+    $cap = $ActiveCap
+    if ($Reason -eq "user_idle") {
+        $cap = $IdleCap
+    }
+
+    $cap = [Math]::Max(1, [Math]::Min(6, $cap))
+    $env:MSBUILDPROCESSORCOUNT = "$cap"
+    Add-HistoryRow "" "codex_compile_throttled" "MSBUILDPROCESSORCOUNT=$cap reason=$Reason" "Completed"
+}
+
 if (Test-Path -LiteralPath $pausePath) {
     Add-HistoryRow "" "codex_loop_paused" "pause sentinel present" "Paused"
     Write-Host "Codex loop paused: $pausePath"
@@ -59,6 +76,7 @@ $status = [ordered]@{
 }
 $status | ConvertTo-Json | Set-Content -LiteralPath $statusPath -Encoding UTF8
 Add-HistoryRow $phase.phaseId "codex_phase_started" "phase started by run-codex-loop.ps1" "Running"
+Set-CodexCompileThrottle -Reason "codex_phase_running"
 
 if ($WhatIfLoop) {
     Write-Host "WhatIf: would invoke Codex for phase $($phase.phaseId)."

@@ -80,6 +80,22 @@ public sealed class PlainLanguageExplainerTests
     }
 
     [Theory]
+    [InlineData(ProcessPriorityManagerService.ProcessPrioritySetPacketKind)]
+    [InlineData(ProcessPriorityManagerService.ProcessPriorityBoostedPacketKind)]
+    [InlineData(DiskIoBudgetService.DiskIoBudgetThrottledPacketKind)]
+    [InlineData(CodexCompileThrottleService.CodexCompileThrottledPacketKind)]
+    [InlineData(GameModeDetectorService.GameModeDetectedPacketKind)]
+    [InlineData(GameModeDetectorService.GameModeClearedPacketKind)]
+    [InlineData("user_protection_floor_blocked_reservation")]
+    public void CoversAllResourceThrottlingKinds(string packetKind)
+    {
+        var text = new PlainLanguageExplainer().ExplainPacketKind(packetKind);
+
+        Assert.DoesNotContain("Unknown", text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains(".", text);
+    }
+
+    [Theory]
     [InlineData(BenchmarkSuiteService.BenchmarkRunPacketKind)]
     [InlineData(BenchmarkRegressionGate.RegressionDetectedPacketKind)]
     [InlineData(BenchmarkRegressionGate.BaselineUpdatedPacketKind)]
