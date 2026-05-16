@@ -963,6 +963,55 @@
                     </UniformGrid>
                 </StackPanel>
 
+                <StackPanel x:Name="BenchmarksPanel"
+                            Visibility="Collapsed">
+                    <TextBlock Text="Benchmark suite v1"
+                               Foreground="#FFF0F4F5"
+                               FontSize="13"
+                               FontWeight="SemiBold" />
+                    <TextBlock x:Name="BenchmarkScoreText"
+                               Margin="0,8,0,0"
+                               automation:AutomationProperties.AutomationId="BenchmarkScoreText"
+                               Foreground="#FFE1D6A8"
+                               FontSize="12"
+                               Text="Latest composite score: --"
+                               TextWrapping="Wrap" />
+                    <Border Margin="0,10,0,0"
+                            Padding="10"
+                            Background="#16212C"
+                            BorderBrush="#425D78"
+                            BorderThickness="1"
+                            CornerRadius="10">
+                        <StackPanel>
+                            <TextBlock x:Name="BenchmarkAxesText"
+                                       automation:AutomationProperties.AutomationId="BenchmarkAxesText"
+                                       Foreground="#FFDCE9EF"
+                                       FontSize="11"
+                                       Text="v1 axes: chat, tool-use, retrieval, safety, perf."
+                                       TextWrapping="Wrap" />
+                            <TextBlock x:Name="BenchmarkCadenceText"
+                                       Margin="0,6,0,0"
+                                       automation:AutomationProperties.AutomationId="BenchmarkCadenceText"
+                                       Foreground="#FFBFD2DC"
+                                       FontSize="10"
+                                       Text="Cadence: safety + perf per phase, capability daily, on-demand when requested."
+                                       TextWrapping="Wrap" />
+                            <TextBlock x:Name="BenchmarkStatusText"
+                                       Margin="0,6,0,0"
+                                       automation:AutomationProperties.AutomationId="BenchmarkStatusText"
+                                       Foreground="#FF9FB7C4"
+                                       FontSize="10"
+                                       Text="Approved cases report NoBaseline until reviewed cases are present."
+                                       TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Border>
+                    <Button Margin="0,12,0,0"
+                            Style="{StaticResource PopupButtonStyle}"
+                            IsEnabled="False"
+                            automation:AutomationProperties.AutomationId="RunBenchmarksNowButton"
+                            Content="RUN BENCHMARKS NOW (coming in curation phase)" />
+                </StackPanel>
+
                 <ScrollViewer x:Name="PetCommandPanel"
                               Visibility="Collapsed"
                               VerticalScrollBarVisibility="Auto"

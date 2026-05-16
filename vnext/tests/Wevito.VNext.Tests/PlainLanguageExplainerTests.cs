@@ -80,6 +80,18 @@ public sealed class PlainLanguageExplainerTests
     }
 
     [Theory]
+    [InlineData(BenchmarkSuiteService.BenchmarkRunPacketKind)]
+    [InlineData(BenchmarkRegressionGate.RegressionDetectedPacketKind)]
+    [InlineData(BenchmarkRegressionGate.BaselineUpdatedPacketKind)]
+    public void CoversAllBenchmarkKinds(string packetKind)
+    {
+        var text = new PlainLanguageExplainer().ExplainPacketKind(packetKind);
+
+        Assert.Contains("benchmark", text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Unknown", text, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Theory]
     [InlineData(ToolInvocationService.ToolInvocationStartedPacketKind)]
     [InlineData(ToolInvocationService.ToolInvocationCompletedPacketKind)]
     [InlineData("tool_registry_loaded")]

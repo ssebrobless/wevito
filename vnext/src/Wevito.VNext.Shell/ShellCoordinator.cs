@@ -138,6 +138,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _homeWindow.ToggleHelpersRequested += async () => await ToggleHelpersAsync();
         _homeWindow.OpenSpriteWorkflowV2Requested += async () => await OpenSpriteWorkflowV2Async();
         _homeWindow.OpenCreativeLearningLabRequested += async () => await OpenCreativeLearningLabAsync();
+        _homeWindow.OpenBenchmarksRequested += async () => await ToggleBenchmarksAsync();
         _homeWindow.OpenSettingsRequested += async () => await ToggleSettingsAsync();
         _homeWindow.ToggleCompactRequested += async () => await ToggleCompactHudAsync();
         _homeWindow.SaveRequested += async () => await SaveAsync();
@@ -883,6 +884,11 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private async Task ToggleHelpersAsync()
     {
         await ToggleToolAsync("helpers");
+    }
+
+    private async Task ToggleBenchmarksAsync()
+    {
+        await ToggleToolAsync("benchmarks");
     }
 
     private Task OpenSpriteWorkflowV2Async()

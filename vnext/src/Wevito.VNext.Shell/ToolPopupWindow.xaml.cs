@@ -108,6 +108,7 @@ public partial class ToolPopupWindow : Window
         var showingSettings = string.Equals(toolId, "settings", StringComparison.OrdinalIgnoreCase);
         var showingDev = devToolsEnabled && string.Equals(toolId, "dev", StringComparison.OrdinalIgnoreCase);
         var showingPetCommand = string.Equals(toolId, "helpers", StringComparison.OrdinalIgnoreCase);
+        var showingBenchmarks = string.Equals(toolId, "benchmarks", StringComparison.OrdinalIgnoreCase);
         var showingActionMenu = string.Equals(toolId, "actions", StringComparison.OrdinalIgnoreCase);
         var showingAction = toolId.StartsWith("action:", StringComparison.OrdinalIgnoreCase);
         var actionId = showingAction ? toolId["action:".Length..] : string.Empty;
@@ -115,14 +116,15 @@ public partial class ToolPopupWindow : Window
             ? content.Actions.FirstOrDefault(action => string.Equals(action.Id, actionId, StringComparison.OrdinalIgnoreCase))
             : null;
 
-        Title = showingBasket ? "Wevito Basket" : showingDev ? "Wevito Dev Tools" : showingPetCommand ? "Wevito PET TASKS" : showingActionMenu ? "Wevito Actions" : showingAction ? $"Wevito {actionDefinition?.DisplayName ?? "Action"}" : "Wevito Settings";
-        PopupTitle.Text = showingBasket ? "Basket" : showingDev ? "Dev Tools" : showingPetCommand ? "PET TASKS" : showingActionMenu ? "Actions" : showingAction ? (actionDefinition?.DisplayName ?? "Action") : "Settings";
+        Title = showingBasket ? "Wevito Basket" : showingDev ? "Wevito Dev Tools" : showingPetCommand ? "Wevito PET TASKS" : showingBenchmarks ? "Wevito Benchmarks" : showingActionMenu ? "Wevito Actions" : showingAction ? $"Wevito {actionDefinition?.DisplayName ?? "Action"}" : "Wevito Settings";
+        PopupTitle.Text = showingBasket ? "Basket" : showingDev ? "Dev Tools" : showingPetCommand ? "PET TASKS" : showingBenchmarks ? "Benchmarks" : showingActionMenu ? "Actions" : showingAction ? (actionDefinition?.DisplayName ?? "Action") : "Settings";
         BasketPanel.Visibility = showingBasket ? Visibility.Visible : Visibility.Collapsed;
         BasketButtons.Visibility = showingBasket ? Visibility.Visible : Visibility.Collapsed;
         ActionMenuPanel.Visibility = showingActionMenu ? Visibility.Visible : Visibility.Collapsed;
         ActionPanel.Visibility = showingAction ? Visibility.Visible : Visibility.Collapsed;
         SettingsPanel.Visibility = showingSettings ? Visibility.Visible : Visibility.Collapsed;
         PetCommandPanel.Visibility = showingPetCommand ? Visibility.Visible : Visibility.Collapsed;
+        BenchmarksPanel.Visibility = showingBenchmarks ? Visibility.Visible : Visibility.Collapsed;
         PetTaskReportOnlyBadge.Visibility = showingPetCommand ? Visibility.Visible : Visibility.Collapsed;
         DevPanel.Visibility = showingDev ? Visibility.Visible : Visibility.Collapsed;
         SettingsSaveButton.Visibility = showingSettings ? Visibility.Visible : Visibility.Collapsed;
@@ -165,6 +167,10 @@ public partial class ToolPopupWindow : Window
         else if (showingPetCommand)
         {
             RenderPetCommandPanel(petCommandState);
+        }
+        else if (showingBenchmarks)
+        {
+            RenderBenchmarksPanel(state);
         }
 
         _suppressSettingEvents = true;
@@ -426,6 +432,17 @@ public partial class ToolPopupWindow : Window
         PetCommandTimelineText.Text = $"Latest event: {card.Timeline?.LastOrDefault() ?? "draft_created"}";
         PetTaskNextActionText.Text = FormatNextAction(card);
         PetTaskResultPathText.Text = FormatResultPath(card);
+    }
+
+    private void RenderBenchmarksPanel(CompanionState state)
+    {
+        var score = state.SettingsSnapshot.TryGetValue("benchmark_latest_score", out var latestScore) && !string.IsNullOrWhiteSpace(latestScore)
+            ? latestScore
+            : "--";
+        BenchmarkScoreText.Text = $"Latest composite score: {score}";
+        BenchmarkCadenceText.Text = "Cadence: safety + perf per phase, capability daily, on-demand when requested.";
+        BenchmarkAxesText.Text = "v1 axes: chat, tool-use, retrieval, safety, perf.";
+        BenchmarkStatusText.Text = "Approved case folder is immutable once committed. Empty approved cases report NoBaseline, not pass.";
     }
 
     private static string FormatTaskQueue(IReadOnlyList<TaskCard>? cards)
