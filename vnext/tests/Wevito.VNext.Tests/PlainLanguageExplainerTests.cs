@@ -96,6 +96,21 @@ public sealed class PlainLanguageExplainerTests
     }
 
     [Theory]
+    [InlineData(NotificationPolicyService.NotificationDeferredPacketKind)]
+    [InlineData(NotificationPolicyService.NotificationDeliveredPacketKind)]
+    [InlineData(FocusDisciplineService.FocusProtectedPacketKind)]
+    [InlineData(AudioOutputPolicyService.AudioPlayedPacketKind)]
+    [InlineData(CursorReactivityService.CursorReactivityFiredPacketKind)]
+    [InlineData(MultiMonitorService.MultiMonitorPreferenceSetPacketKind)]
+    public void CoversAllDisciplineKinds(string packetKind)
+    {
+        var text = new PlainLanguageExplainer().ExplainPacketKind(packetKind);
+
+        Assert.DoesNotContain("Unknown", text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains(".", text);
+    }
+
+    [Theory]
     [InlineData(BenchmarkSuiteService.BenchmarkRunPacketKind)]
     [InlineData(BenchmarkRegressionGate.RegressionDetectedPacketKind)]
     [InlineData(BenchmarkRegressionGate.BaselineUpdatedPacketKind)]

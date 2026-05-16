@@ -225,6 +225,11 @@ public partial class ToolPopupWindow : Window
         DiskIoBudgetCheckBox.IsChecked = GetSettingBool(state, DiskIoBudgetService.EnabledSetting, true);
         CodexCompileCapComboBox.SelectedIndex = Math.Clamp(GetSettingInt(state, CodexCompileThrottleService.ActiveProcessorCapSetting, 2), 1, 4) - 1;
         DoNotDisturbScheduleCheckBox.IsChecked = GetSettingBool(state, DoNotDisturbScheduleService.EnabledSetting);
+        NotificationDeferCheckBox.IsChecked = GetSettingBool(state, NotificationPolicyService.DeferDuringActivitySetting, true);
+        AllowFocusTheftCheckBox.IsChecked = false;
+        PetSoundsCheckBox.IsChecked = GetSettingBool(state, AudioOutputPolicyService.PetSoundEffectsEnabledSetting);
+        PetCursorReactivityCheckBox.IsChecked = GetSettingBool(state, CursorReactivityService.EnabledSetting, true);
+        TrayIconAnimationCheckBox.IsChecked = GetSettingBool(state, TrayIconDisciplineService.AnimationEnabledSetting);
         RuntimeSupervisorStatusText.Text = runtimeSupervisorStatus?.UserStatus ?? "Runtime supervisor: waiting for shell state.";
         var modelEnabled = GetSettingBool(state, "pet_model_adapter_enabled");
         var modelFirstCallApproved = GetSettingBool(state, "pet_model_first_call_approved");
@@ -344,6 +349,10 @@ public partial class ToolPopupWindow : Window
             if (TryToggleCheckBox(ResourcePriorityCheckBox, localPoint)) { return true; }
             if (TryToggleCheckBox(DiskIoBudgetCheckBox, localPoint)) { return true; }
             if (TryToggleCheckBox(DoNotDisturbScheduleCheckBox, localPoint)) { return true; }
+            if (TryToggleCheckBox(NotificationDeferCheckBox, localPoint)) { return true; }
+            if (TryToggleCheckBox(PetSoundsCheckBox, localPoint)) { return true; }
+            if (TryToggleCheckBox(PetCursorReactivityCheckBox, localPoint)) { return true; }
+            if (TryToggleCheckBox(TrayIconAnimationCheckBox, localPoint)) { return true; }
             if (TryToggleCheckBox(PetModelAdapterEnabledCheckBox, localPoint)) { return true; }
             if (TryToggleCheckBox(WebSearchEnabledCheckBox, localPoint)) { return true; }
             if (await TryInvokeButtonAsync(PullDefaultModelButton, localPoint, () =>
@@ -1140,6 +1149,26 @@ public partial class ToolPopupWindow : Window
     private void DoNotDisturbScheduleCheckBox_OnChanged(object sender, RoutedEventArgs e)
     {
         PublishSetting(DoNotDisturbScheduleService.EnabledSetting, DoNotDisturbScheduleCheckBox.IsChecked == true);
+    }
+
+    private void NotificationDeferCheckBox_OnChanged(object sender, RoutedEventArgs e)
+    {
+        PublishSetting(NotificationPolicyService.DeferDuringActivitySetting, NotificationDeferCheckBox.IsChecked == true);
+    }
+
+    private void PetSoundsCheckBox_OnChanged(object sender, RoutedEventArgs e)
+    {
+        PublishSetting(AudioOutputPolicyService.PetSoundEffectsEnabledSetting, PetSoundsCheckBox.IsChecked == true);
+    }
+
+    private void PetCursorReactivityCheckBox_OnChanged(object sender, RoutedEventArgs e)
+    {
+        PublishSetting(CursorReactivityService.EnabledSetting, PetCursorReactivityCheckBox.IsChecked == true);
+    }
+
+    private void TrayIconAnimationCheckBox_OnChanged(object sender, RoutedEventArgs e)
+    {
+        PublishSetting(TrayIconDisciplineService.AnimationEnabledSetting, TrayIconAnimationCheckBox.IsChecked == true);
     }
 
     private void WebSearchEnabledCheckBox_OnChanged(object sender, RoutedEventArgs e)

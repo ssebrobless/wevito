@@ -10,6 +10,9 @@ var current_animation: String = "idle"
 var animation_frame: int = 0
 var animation_timer: float = 0.0
 var animation_speed: float = 0.25  # seconds per frame
+var cursor_reactivity_enabled: bool = true
+var cursor_reactivity_distance_px: float = 200.0
+var _cursor_reactivity_timer: float = 0.0
 const SPRITE_SCALE := Vector2(3, 3)
 const HATCH_DURATION_SEC := 3.0
 const PET_SPRITE_ROOTS := ["res://sprites_runtime", "res://sprites"]
@@ -145,6 +148,21 @@ func _set_horizontal_facing(x_dir: float):
 	elif x_dir < -0.01:
 		_direction = Vector2.LEFT
 		sprite.flip_h = true
+
+func _update_cursor_reactivity(delta: float):
+	if not cursor_reactivity_enabled:
+		return
+
+	if _cursor_reactivity_timer > 0.0:
+		_cursor_reactivity_timer = max(0.0, _cursor_reactivity_timer - delta)
+		return
+
+	var mouse_position = get_global_mouse_position()
+	if position.distance_to(mouse_position) > cursor_reactivity_distance_px:
+		return
+
+	_set_horizontal_facing(mouse_position.x - position.x)
+	_cursor_reactivity_timer = 10.0
 
 func _egg_tint() -> Color:
 	if pet_data == null:
@@ -344,6 +362,7 @@ func _process(delta):
 		update_sprite()
 	_last_hatching_state = pet_data.is_hatching
 	_apply_visual_scale()
+	_update_cursor_reactivity(delta)
 	
 	# Update animation timer
 	animation_timer += delta
@@ -363,7 +382,7 @@ func _process(delta):
 	match pet_state:
 		PetState.WANDERING:
 			if not pet_data.is_sleeping:
-				update_wandering(delta)
+		update_wandering(delta)
 				update_movement(delta)
 			if not _wandering:
 				_idle_jump_timer -= delta
