@@ -2,6 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:automation="clr-namespace:System.Windows.Automation;assembly=PresentationCore"
+        xmlns:local="clr-namespace:Wevito.VNext.Shell"
         Title="Wevito Basket"
         Width="450"
         Height="344"
@@ -917,11 +918,14 @@
                               CanContentScroll="False"
                               automation:AutomationProperties.AutomationId="PetCommandScrollViewer">
                     <StackPanel>
-                        <StackPanel.LayoutTransform>
-                            <ScaleTransform ScaleX="1"
-                                            ScaleY="0.86" />
-                        </StackPanel.LayoutTransform>
-                        <Grid>
+                        <local:ChatPanel x:Name="ChatPanel"
+                                         Margin="0,0,0,10"
+                                         automation:AutomationProperties.AutomationId="ChatPanel" />
+                        <Expander Header="Task cards and report-only adapters"
+                                  Foreground="#FFEAF6F7"
+                                  IsExpanded="False">
+                            <StackPanel Margin="0,8,0,0">
+                    <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
@@ -1222,6 +1226,8 @@
                                    FontSize="10"
                                    TextWrapping="Wrap"
                                    Text="Safety: PET TASKS is report-first. Most cards cannot run. Approved execution is limited to the small allowlist shown above and never imports/generates/mutates sprites from this surface." />
+                            </StackPanel>
+                        </Expander>
                     </StackPanel>
                 </ScrollViewer>
 

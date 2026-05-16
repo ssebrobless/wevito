@@ -46,6 +46,20 @@
     ]
   },
   {
+    "id": "chat",
+    "displayName": "Local Chat",
+    "capacity": 0,
+    "defaultProvider": "ollama",
+    "toolFamily": "chat",
+    "historyStore": "%LOCALAPPDATA%/Wevito/chat-history.sqlite",
+    "supportsStreaming": true,
+    "supportsSearch": true,
+    "supportsInterrupt": true,
+    "toolDispatchPhase": "C-PHASE 109",
+    "networkDefault": "localhost-only",
+    "hostedAiDefault": "disabled"
+  },
+  {
     "id": "local_ai_research",
     "displayName": "Local AI Research",
     "capacity": 0,

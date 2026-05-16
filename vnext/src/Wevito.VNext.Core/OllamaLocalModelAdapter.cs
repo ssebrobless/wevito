@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Net.Http.Headers;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -81,6 +82,66 @@ public sealed class OllamaLocalModelAdapter : IModelAdapter
         }
     }
 
+    public async IAsyncEnumerable<string> StreamAsync(ModelRequest request, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    {
+        var settings = _settingsProvider();
+        var endpoint = Read(settings, LocalRuntimeProbeService.OllamaEndpointSetting, LocalRuntimeProbeService.DefaultOllamaEndpoint);
+        var model = Read(settings, LocalRuntimeProbeService.OllamaModelSetting, LocalRuntimeProbeService.DefaultOllamaModel);
+
+        if (_killSwitchService?.IsActive() == true ||
+            !LocalRuntimeProbeService.IsLocalhostEndpoint(endpoint, out var baseUri, out _) ||
+            !(await _probeService.ProbeAsync(settings, null, request.RequestedAtUtc == default ? DateTimeOffset.UtcNow : request.RequestedAtUtc, cancellationToken).ConfigureAwait(false)).IsAvailable)
+        {
+            var fallback = await _fallbackAdapter.SuggestAsync(request, cancellationToken).ConfigureAwait(false);
+            foreach (var token in SplitForStreaming(fallback.Summary))
+            {
+                yield return token;
+            }
+
+            yield break;
+        }
+
+        using var httpRequest = new HttpRequestMessage(HttpMethod.Post, new Uri(baseUri, "/v1/chat/completions"));
+        httpRequest.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("text/event-stream"));
+        httpRequest.Content = new StringContent(JsonSerializer.Serialize(BuildPayload(request, model, stream: true)), Encoding.UTF8, "application/json");
+
+        using var response = await _httpClient.SendAsync(httpRequest, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+        if (!response.IsSuccessStatusCode)
+        {
+            var fallback = await _fallbackAdapter.SuggestAsync(request, cancellationToken).ConfigureAwait(false);
+            foreach (var token in SplitForStreaming(fallback.Summary))
+            {
+                yield return token;
+            }
+
+            yield break;
+        }
+
+        await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+        using var reader = new StreamReader(stream);
+        while (!reader.EndOfStream)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var line = await reader.ReadLineAsync(cancellationToken).ConfigureAwait(false);
+            if (string.IsNullOrWhiteSpace(line) || !line.StartsWith("data:", StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            var data = line["data:".Length..].Trim();
+            if (string.Equals(data, "[DONE]", StringComparison.OrdinalIgnoreCase))
+            {
+                yield break;
+            }
+
+            var token = ExtractOpenAiCompatibleDelta(data);
+            if (!string.IsNullOrEmpty(token))
+            {
+                yield return token;
+            }
+        }
+    }
+
     public static string FormatReadableStatus(LocalRuntimeProbeResult? probe)
     {
         if (probe is null)
@@ -117,7 +178,7 @@ public sealed class OllamaLocalModelAdapter : IModelAdapter
         };
     }
 
-    private static object BuildPayload(ModelRequest request, string model)
+    private static object BuildPayload(ModelRequest request, string model, bool stream = false)
     {
         var trusted = request.TrustedContext is { Count: > 0 }
             ? string.Join(Environment.NewLine, request.TrustedContext)
@@ -156,8 +217,39 @@ public sealed class OllamaLocalModelAdapter : IModelAdapter
                 }
             },
             temperature = 0.2,
-            stream = false
+            stream
         };
+    }
+
+    private static string ExtractOpenAiCompatibleDelta(string body)
+    {
+        using var document = JsonDocument.Parse(body);
+        if (!document.RootElement.TryGetProperty("choices", out var choices) ||
+            choices.ValueKind != JsonValueKind.Array)
+        {
+            return "";
+        }
+
+        foreach (var choice in choices.EnumerateArray())
+        {
+            if (choice.TryGetProperty("delta", out var delta) &&
+                delta.TryGetProperty("content", out var content) &&
+                content.ValueKind == JsonValueKind.String)
+            {
+                return content.GetString() ?? "";
+            }
+        }
+
+        return "";
+    }
+
+    private static IEnumerable<string> SplitForStreaming(string value)
+    {
+        var parts = (value ?? "").Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        for (var index = 0; index < parts.Length; index++)
+        {
+            yield return index == parts.Length - 1 ? parts[index] : parts[index] + " ";
+        }
     }
 
     private static string ExtractOpenAiCompatibleSummary(string body)

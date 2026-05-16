@@ -51,6 +51,20 @@ public sealed class PlainLanguageExplainerTests
         Assert.DoesNotContain("Unknown", text, StringComparison.OrdinalIgnoreCase);
     }
 
+    [Theory]
+    [InlineData(ChatSessionService.ChatSessionStartedPacketKind)]
+    [InlineData(ChatSessionService.ChatSearchPerformedPacketKind)]
+    [InlineData(ChatTitleService.ChatSessionTitleSetPacketKind)]
+    [InlineData(ChatStreamingService.ChatTurnCompletedPacketKind)]
+    [InlineData(ChatStreamingService.ChatTurnCancelledPacketKind)]
+    public void CoversAllNewChatKinds(string packetKind)
+    {
+        var text = new PlainLanguageExplainer().ExplainPacketKind(packetKind);
+
+        Assert.Contains("chat", text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Unknown", text, StringComparison.OrdinalIgnoreCase);
+    }
+
     [Fact]
     public void Explain_DoesNotExposePrivateSummaryText()
     {
