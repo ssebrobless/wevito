@@ -5,7 +5,8 @@ namespace Wevito.VNext.Core;
 
 public sealed record CoexistenceResourceSnapshot(
     double NonWevitoCpuPercent = 0,
-    double NetworkSaturationPercent = 0);
+    double NetworkSaturationPercent = 0,
+    bool GameModeActive = false);
 
 public sealed record CoexistenceTriggerResult(
     bool IsQuieting,
@@ -24,6 +25,7 @@ public sealed class CoexistenceTriggerService
     public const string AppListEnabledSetting = "coexistence_app_list_enabled";
     public const string CpuEnabledSetting = "coexistence_cpu_enabled";
     public const string NetworkEnabledSetting = "coexistence_network_enabled";
+    public const string GameModeEnabledSetting = GameModeDetectorService.EnabledSetting;
     public const string CpuThresholdSetting = "coexistence_cpu_threshold_percent";
     public const string NetworkThresholdSetting = "coexistence_network_threshold_percent";
     public const string DefaultSettingsFileName = "coexistence-app-list.json";
@@ -85,6 +87,11 @@ public sealed class CoexistenceTriggerService
             resourceSnapshot.NetworkSaturationPercent > ReadDouble(snapshot, NetworkThresholdSetting, 80))
         {
             active.Add("network_saturation");
+        }
+
+        if (ReadBool(snapshot, GameModeEnabledSetting, true) && resourceSnapshot.GameModeActive)
+        {
+            active.Add("game_mode");
         }
 
         RecordTransitions(active, nowUtc);

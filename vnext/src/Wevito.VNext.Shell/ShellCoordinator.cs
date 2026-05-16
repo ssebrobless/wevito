@@ -44,6 +44,8 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private readonly RuntimeBudgetMeter _runtimeBudgetMeter = new();
     private readonly CoexistenceTriggerService _coexistenceTriggerService;
     private readonly DoNotDisturbScheduleService _doNotDisturbScheduleService;
+    private readonly ProcessPriorityManagerService _processPriorityManagerService;
+    private readonly GameModeDetectorService _gameModeDetectorService;
     private readonly WindowsForegroundFullscreenMonitor _fullscreenMonitor;
     private readonly WindowsPowerHandler _powerHandler;
     private readonly FocusStealCounter _focusStealCounter = new();
@@ -96,6 +98,8 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _firstLaunchWizardStateService = new FirstLaunchWizardStateService(_aiIdentityService, _auditLedgerService, _killSwitchService);
         _coexistenceTriggerService = new CoexistenceTriggerService(_auditLedgerService, _killSwitchService);
         _doNotDisturbScheduleService = new DoNotDisturbScheduleService(_auditLedgerService, _killSwitchService);
+        _processPriorityManagerService = new ProcessPriorityManagerService(_auditLedgerService, _killSwitchService);
+        _gameModeDetectorService = new GameModeDetectorService(auditLedgerService: _auditLedgerService, killSwitchService: _killSwitchService);
         _ollamaModelBootstrapService = new OllamaModelBootstrapService(
             probeService: new LocalRuntimeProbeService(killSwitchService: _killSwitchService),
             auditLedgerService: _auditLedgerService,
@@ -226,6 +230,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _state = await _repository.LoadAsync() ?? defaultStateFactory.Create(_content);
         _state = HydrateLoadedState(_state, _content);
         _state = ApplyAuditScenarioOverride(_state, _content);
+        _processPriorityManagerService.ApplyBelowNormalToCurrentProcess(_state.SettingsSnapshot);
         _coexistenceTriggerService.EnsureDefaultAppListFile();
         _doNotDisturbScheduleService.EnsureDefaultScheduleFile();
         var bootstrapStatus = await _ollamaModelBootstrapService.ProbeStartupAsync(
@@ -241,6 +246,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         await RunFirstLaunchWizardAsync(force: false);
 
         _brokerProcess = BrokerProcessManager.Start(_pipeName);
+        _processPriorityManagerService.ApplyBelowNormal(ProcessPriorityManagerService.FromProcess(_brokerProcess), _state.SettingsSnapshot);
         TraceLog.Write("shell", $"broker-started pid={_brokerProcess.Id} pipe={_pipeName}");
         _brokerClient = new BrokerClient(_pipeName);
         _brokerClient.EventReceived += OnBrokerEvent;
@@ -698,10 +704,11 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private RuntimeSupervisorStatus EvaluateRuntimeSupervisor(bool isUserInitiatedToolOpen)
     {
         var now = DateTimeOffset.UtcNow;
+        var gameMode = _gameModeDetectorService.Evaluate(_state?.SettingsSnapshot);
         var coexistence = _coexistenceTriggerService.Evaluate(
             _state?.SettingsSnapshot,
             _desktopContext,
-            new CoexistenceResourceSnapshot(),
+            new CoexistenceResourceSnapshot(GameModeActive: gameMode.IsGameModeActive),
             now);
         var dnd = _doNotDisturbScheduleService.Evaluate(_state?.SettingsSnapshot, now);
         return _runtimeSupervisorService.Evaluate(
@@ -1818,7 +1825,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         await PersistAndRenderAsync();
     }
 
-    private void OnSettingChanged(string key, bool value)
+    private void OnSettingChanged(string key, string value)
     {
         if (_state is null)
         {
@@ -1827,7 +1834,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
 
         var nextSettings = new Dictionary<string, string>(_state.SettingsSnapshot, StringComparer.OrdinalIgnoreCase)
         {
-            [key] = value.ToString()
+            [key] = value
         };
         _state = _state with { SettingsSnapshot = nextSettings };
         TraceLog.Write("settings", $"{key}={value}");
@@ -1850,10 +1857,11 @@ internal sealed class ShellCoordinator : IAsyncDisposable
 
     private CompanionState ApplyAmbientWorkCompanionState(CompanionState state, DateTimeOffset now)
     {
+        var gameMode = _gameModeDetectorService.Evaluate(state.SettingsSnapshot);
         var coexistence = _coexistenceTriggerService.Evaluate(
             state.SettingsSnapshot,
             _desktopContext,
-            new CoexistenceResourceSnapshot(),
+            new CoexistenceResourceSnapshot(GameModeActive: gameMode.IsGameModeActive),
             now);
         var dnd = _doNotDisturbScheduleService.Evaluate(state.SettingsSnapshot, now);
         if (!coexistence.IsQuieting && !dnd.IsActive)
@@ -2839,6 +2847,10 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         hydrated.TryAdd(CoexistenceTriggerService.AppListEnabledSetting, bool.TrueString);
         hydrated.TryAdd(CoexistenceTriggerService.CpuEnabledSetting, bool.TrueString);
         hydrated.TryAdd(CoexistenceTriggerService.NetworkEnabledSetting, bool.TrueString);
+        hydrated.TryAdd(CoexistenceTriggerService.GameModeEnabledSetting, bool.TrueString);
+        hydrated.TryAdd(ProcessPriorityManagerService.EnabledSetting, bool.TrueString);
+        hydrated.TryAdd(DiskIoBudgetService.EnabledSetting, bool.TrueString);
+        hydrated.TryAdd(CodexCompileThrottleService.ActiveProcessorCapSetting, "2");
         hydrated.TryAdd(CoexistenceTriggerService.CpuThresholdSetting, "80");
         hydrated.TryAdd(CoexistenceTriggerService.NetworkThresholdSetting, "80");
         hydrated.TryAdd(DoNotDisturbScheduleService.EnabledSetting, bool.FalseString);

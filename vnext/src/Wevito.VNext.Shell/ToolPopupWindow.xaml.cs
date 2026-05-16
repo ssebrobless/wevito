@@ -60,7 +60,7 @@ public partial class ToolPopupWindow : Window
 
     public event Func<IReadOnlyList<string>, Task>? LinksDropped;
 
-    public event Action<string, bool>? SettingChanged;
+    public event Action<string, string>? SettingChanged;
 
     public event Func<Task>? AutonomousBetaConsentConfirmed;
 
@@ -220,6 +220,10 @@ public partial class ToolPopupWindow : Window
         CoexistenceAppListCheckBox.IsChecked = GetSettingBool(state, CoexistenceTriggerService.AppListEnabledSetting, true);
         CoexistenceCpuCheckBox.IsChecked = GetSettingBool(state, CoexistenceTriggerService.CpuEnabledSetting, true);
         CoexistenceNetworkCheckBox.IsChecked = GetSettingBool(state, CoexistenceTriggerService.NetworkEnabledSetting, true);
+        CoexistenceGameModeCheckBox.IsChecked = GetSettingBool(state, CoexistenceTriggerService.GameModeEnabledSetting, true);
+        ResourcePriorityCheckBox.IsChecked = GetSettingBool(state, ProcessPriorityManagerService.EnabledSetting, true);
+        DiskIoBudgetCheckBox.IsChecked = GetSettingBool(state, DiskIoBudgetService.EnabledSetting, true);
+        CodexCompileCapComboBox.SelectedIndex = Math.Clamp(GetSettingInt(state, CodexCompileThrottleService.ActiveProcessorCapSetting, 2), 1, 4) - 1;
         DoNotDisturbScheduleCheckBox.IsChecked = GetSettingBool(state, DoNotDisturbScheduleService.EnabledSetting);
         RuntimeSupervisorStatusText.Text = runtimeSupervisorStatus?.UserStatus ?? "Runtime supervisor: waiting for shell state.";
         var modelEnabled = GetSettingBool(state, "pet_model_adapter_enabled");
@@ -336,6 +340,9 @@ public partial class ToolPopupWindow : Window
             if (TryToggleCheckBox(CoexistenceAppListCheckBox, localPoint)) { return true; }
             if (TryToggleCheckBox(CoexistenceCpuCheckBox, localPoint)) { return true; }
             if (TryToggleCheckBox(CoexistenceNetworkCheckBox, localPoint)) { return true; }
+            if (TryToggleCheckBox(CoexistenceGameModeCheckBox, localPoint)) { return true; }
+            if (TryToggleCheckBox(ResourcePriorityCheckBox, localPoint)) { return true; }
+            if (TryToggleCheckBox(DiskIoBudgetCheckBox, localPoint)) { return true; }
             if (TryToggleCheckBox(DoNotDisturbScheduleCheckBox, localPoint)) { return true; }
             if (TryToggleCheckBox(PetModelAdapterEnabledCheckBox, localPoint)) { return true; }
             if (TryToggleCheckBox(WebSearchEnabledCheckBox, localPoint)) { return true; }
@@ -1107,6 +1114,29 @@ public partial class ToolPopupWindow : Window
         PublishSetting(CoexistenceTriggerService.NetworkEnabledSetting, CoexistenceNetworkCheckBox.IsChecked != false);
     }
 
+    private void CoexistenceGameModeCheckBox_OnChanged(object sender, RoutedEventArgs e)
+    {
+        PublishSetting(CoexistenceTriggerService.GameModeEnabledSetting, CoexistenceGameModeCheckBox.IsChecked != false);
+    }
+
+    private void ResourcePriorityCheckBox_OnChanged(object sender, RoutedEventArgs e)
+    {
+        PublishSetting(ProcessPriorityManagerService.EnabledSetting, ResourcePriorityCheckBox.IsChecked != false);
+    }
+
+    private void DiskIoBudgetCheckBox_OnChanged(object sender, RoutedEventArgs e)
+    {
+        PublishSetting(DiskIoBudgetService.EnabledSetting, DiskIoBudgetCheckBox.IsChecked != false);
+    }
+
+    private void CodexCompileCapComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (CodexCompileCapComboBox.SelectedItem is ComboBoxItem { Content: string value })
+        {
+            PublishSetting(CodexCompileThrottleService.ActiveProcessorCapSetting, value);
+        }
+    }
+
     private void DoNotDisturbScheduleCheckBox_OnChanged(object sender, RoutedEventArgs e)
     {
         PublishSetting(DoNotDisturbScheduleService.EnabledSetting, DoNotDisturbScheduleCheckBox.IsChecked == true);
@@ -1276,12 +1306,29 @@ public partial class ToolPopupWindow : Window
             return;
         }
 
+        SettingChanged?.Invoke(key, value.ToString());
+    }
+
+    private void PublishSetting(string key, string value)
+    {
+        if (_suppressSettingEvents)
+        {
+            return;
+        }
+
         SettingChanged?.Invoke(key, value);
     }
 
     private static bool GetSettingBool(CompanionState state, string key, bool defaultValue = false)
     {
         return GetSettingsBool(state.SettingsSnapshot, key, defaultValue);
+    }
+
+    private static int GetSettingInt(CompanionState state, string key, int defaultValue = 0)
+    {
+        return state.SettingsSnapshot.TryGetValue(key, out var raw) && int.TryParse(raw, out var parsed)
+            ? parsed
+            : defaultValue;
     }
 
     private static bool GetSettingsBool(IReadOnlyDictionary<string, string> settings, string key, bool defaultValue = false)
