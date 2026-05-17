@@ -7,6 +7,16 @@ namespace Wevito.VNext.Tests;
 public sealed class AppRepositoryTests
 {
     [Fact]
+    public void ResolveDefaultDatabasePath_UsesLiveSqliteProfileLocation()
+    {
+        var root = Path.Combine("C:\\Users\\Example\\AppData\\Local");
+
+        var path = AppRepository.ResolveDefaultDatabasePath(root);
+
+        Assert.Equal(Path.Combine(root, "WevitoVNext", "wevito-vnext.db"), path);
+    }
+
+    [Fact]
     public async Task SaveAndLoadAsync_RoundTripsTaskCardsWithoutExecutingThem()
     {
         var tempRoot = Path.Combine(Path.GetTempPath(), "wevito-tests", Guid.NewGuid().ToString("N"));

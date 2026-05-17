@@ -57,4 +57,24 @@ public sealed class ActionVisualIntentTests
         Assert.Equal(PropOverlayKind.Ball, updated.CurrentActionVisualIntent.Overlay);
         Assert.Equal(PetAnimationState.Happy, updated.CurrentAnimationState);
     }
+
+    [Theory]
+    [InlineData("feed", PetAnimationState.Eat, AnimationFamily.Eat)]
+    [InlineData("water", PetAnimationState.Drink, AnimationFamily.Drink)]
+    [InlineData("play", PetAnimationState.Happy, AnimationFamily.Happy)]
+    [InlineData("groom", PetAnimationState.Groom, AnimationFamily.Happy)]
+    [InlineData("medicine", PetAnimationState.Sick, AnimationFamily.Sick)]
+    [InlineData("doctor", PetAnimationState.Doctor, AnimationFamily.Sick)]
+    public void ImplicitCareActionsHaveDistinctConfirmationStates(string actionId, PetAnimationState expectedState, AnimationFamily expectedFamily)
+    {
+        var engine = new PetSimulationEngine();
+        var pet = new PetActor(Guid.NewGuid(), "Goose 1", "goose", ActiveStatuses: []);
+
+        var updated = engine.ApplyAction(actionId, [pet], DateTimeOffset.UtcNow).Single();
+
+        Assert.Equal(expectedState, updated.CurrentAnimationState);
+        Assert.Equal(expectedState, updated.OverrideAnimationState);
+        Assert.Equal(expectedFamily, updated.CurrentActionVisualIntent!.Family);
+        Assert.Equal(actionId, updated.LastActionId);
+    }
 }

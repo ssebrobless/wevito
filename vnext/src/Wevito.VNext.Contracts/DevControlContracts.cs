@@ -47,7 +47,9 @@ public sealed record DevControlPetSlotSnapshot(
     bool IsEmpty,
     bool IsDead,
     string? BehaviorState,
-    string? AnimationState)
+    string? AnimationState,
+    string? ActionVisualFamily = null,
+    string? LastActionId = null)
 {
     public static DevControlPetSlotSnapshot Empty(int slotIndex) => new(
         slotIndex,
@@ -60,6 +62,8 @@ public sealed record DevControlPetSlotSnapshot(
         null,
         true,
         false,
+        null,
+        null,
         null,
         null);
 }

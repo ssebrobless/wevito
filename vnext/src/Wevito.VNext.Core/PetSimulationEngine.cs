@@ -882,18 +882,16 @@ public sealed class PetSimulationEngine
 
     private static ActionDefinition BuildImplicitActionDefinition(string actionId)
     {
-        if (string.Equals(actionId, "water", StringComparison.OrdinalIgnoreCase))
-        {
-            return BuildWaterActionDefinition(includeOptionalFamily: false);
-        }
-
         var animationState = actionId switch
         {
             "feed" => PetAnimationState.Eat,
+            "water" => PetAnimationState.Drink,
             "rest" or "home" => PetAnimationState.Sleep,
-            "play" or "groom" => PetAnimationState.Happy,
+            "play" => PetAnimationState.Happy,
+            "groom" => PetAnimationState.Groom,
             "bath" => PetAnimationState.Bathe,
-            "medicine" or "doctor" => PetAnimationState.Sick,
+            "medicine" => PetAnimationState.Sick,
+            "doctor" => PetAnimationState.Doctor,
             _ => PetAnimationState.Idle
         };
         return new ActionDefinition(actionId, actionId, string.Empty, AnimationState: animationState);
@@ -978,7 +976,8 @@ public sealed class PetSimulationEngine
         return family switch
         {
             AnimationFamily.Walk or AnimationFamily.CarryBallWalk or AnimationFamily.CarryBallRun => PetAnimationState.Walk,
-            AnimationFamily.Eat or AnimationFamily.Drink => PetAnimationState.Eat,
+            AnimationFamily.Eat => PetAnimationState.Eat,
+            AnimationFamily.Drink => PetAnimationState.Drink,
             AnimationFamily.Sad => PetAnimationState.Sad,
             AnimationFamily.Sleep => PetAnimationState.Sleep,
             AnimationFamily.Sick => PetAnimationState.Sick,
@@ -994,10 +993,13 @@ public sealed class PetSimulationEngine
         {
             PetAnimationState.Walk => AnimationFamily.Walk,
             PetAnimationState.Eat => AnimationFamily.Eat,
+            PetAnimationState.Drink => AnimationFamily.Drink,
             PetAnimationState.Happy => AnimationFamily.Happy,
+            PetAnimationState.Groom => AnimationFamily.Happy,
             PetAnimationState.Sad => AnimationFamily.Sad,
             PetAnimationState.Sleep => AnimationFamily.Sleep,
             PetAnimationState.Sick => AnimationFamily.Sick,
+            PetAnimationState.Doctor => AnimationFamily.Sick,
             PetAnimationState.Bathe => AnimationFamily.Bathe,
             _ => AnimationFamily.Idle
         };

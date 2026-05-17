@@ -232,7 +232,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         TraceLog.Write("shell", $"content-loaded path={contentRoot} species={_content.Species.Count} environments={_content.Environments.Count}");
 
         var dataRoot = ResolveDataRoot();
-        var appDataPath = Path.Combine(dataRoot, "wevito-vnext.db");
+        var appDataPath = Path.Combine(dataRoot, AppRepository.DefaultDatabaseFileName);
         _repository = new AppRepository(appDataPath);
         await _repository.InitializeAsync();
         _runtimeBudgetMeter.EnsureStateFile();
@@ -2963,9 +2963,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             return Path.GetFullPath(overrideRoot);
         }
 
-        return Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "WevitoVNext");
+        return AppRepository.ResolveDefaultDataRoot();
     }
 
     private static void SetWindowVisibility(Window window, Visibility visibility, string name)
