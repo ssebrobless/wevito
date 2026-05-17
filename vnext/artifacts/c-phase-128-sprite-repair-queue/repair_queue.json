@@ -10106,7 +10106,7 @@
                      "lifeStage":  "adult",
                      "gender":  "male",
                      "priority":  "P1",
-                     "status":  "queued",
+                     "status":  "done",
                      "issueCount":  54,
                      "colorsAffected":  [
                                             "blue",
@@ -10942,7 +10942,11 @@
                                         "sourcePath":  "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites_runtime\\frog\\adult\\male\\yellow\\sleep_00.png",
                                         "capturePath":  "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\c-phase-127-matrix-sweep\\cells\\frog_adult_male_yellow_sleep.png"
                                     }
-                                ]
+                                ],
+                     "completedAtUtc":  "2026-05-17T18:40:32.2520105Z",
+                     "completedByPhase":  "C-PHASE 130.024",
+                     "completionArtifactRoot":  "vnext/artifacts/c-phase-130-batches/024-frog-adult-male",
+                     "batchArtifactRoot":  "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\c-phase-130-batches\\024-frog-adult-male"
                  },
                  {
                      "rowId":  "goose_baby_female",
@@ -29947,8 +29951,8 @@
                  }
              ],
     "statusCounts":  {
-                         "done":  23,
-                         "queued":  37
+                         "done":  24,
+                         "queued":  36
                      },
-    "lastUpdatedUtc":  "2026-05-17T18:24:34.5253840Z"
+    "lastUpdatedUtc":  "2026-05-17T18:40:32.2589919Z"
 }
