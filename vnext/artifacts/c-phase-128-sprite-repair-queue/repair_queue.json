@@ -1284,7 +1284,7 @@
       "lifeStage": "baby",
       "gender": "female",
       "priority": "P1",
-      "status": "queued",
+      "status": "done",
       "issueCount": 30,
       "colorsAffected": [
         "blue",
@@ -1720,7 +1720,9 @@
           "sourcePath": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites_runtime\\deer\\baby\\female\\yellow\\sleep_00.png",
           "capturePath": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\c-phase-127-matrix-sweep\\cells\\deer_baby_female_yellow_sleep.png"
         }
-      ]
+      ],
+      "completedAtUtc": "2026-05-17T00:00:00Z",
+      "completionArtifactRoot": "vnext/artifacts/c-phase-130-batches/007-deer-baby-female"
     },
     {
       "rowId": "deer_baby_male",
@@ -27612,8 +27614,8 @@
     }
   ],
   "statusCounts": {
-    "queued": 54,
-    "done": 6
+    "queued": 53,
+    "done": 7
   },
   "lastUpdatedUtc": "2026-05-17T00:00:00Z"
 }

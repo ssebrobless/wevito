@@ -128,6 +128,106 @@ def pad_frame(path: Path, backup_root: Path, runtime_root: Path, repair_edges: s
     )
 
 
+def padded_image(path: Path, repair_edges: set[str]) -> tuple[Image.Image, dict[str, int | tuple[int, int]]]:
+    with Image.open(path) as image:
+        rgba = image.convert("RGBA")
+        width, height = rgba.size
+        pad_left = 8 if repair_edges.intersection({"left", "right"}) else 0
+        pad_right = pad_left
+        pad_top = 8 if "top" in repair_edges else 0
+        pad_bottom = 0
+        canvas = Image.new("RGBA", (width + pad_left + pad_right, height + pad_top + pad_bottom), (0, 0, 0, 0))
+        canvas.alpha_composite(rgba, (pad_left, pad_top))
+        return canvas, {
+            "before_size": (width, height),
+            "after_size": canvas.size,
+            "pad_left": pad_left,
+            "pad_top": pad_top,
+            "pad_right": pad_right,
+            "pad_bottom": pad_bottom,
+        }
+
+
+def run_candidate_mode(args: argparse.Namespace) -> int:
+    species = args.species[0] if isinstance(args.species, list) and args.species else args.species
+    required = {
+        "--repo-root": args.repo_root,
+        "--species": species,
+        "--age": args.age,
+        "--gender": args.gender,
+        "--color": args.color,
+        "--animation": args.animation,
+        "--out-dir": args.out_dir,
+    }
+    missing = [name for name, value in required.items() if not value]
+    if missing:
+        raise SystemExit(f"candidate mode missing required arguments: {', '.join(missing)}")
+
+    repo_root = Path(args.repo_root).resolve()
+    runtime_root = Path(args.runtime_root)
+    if not runtime_root.is_absolute():
+        runtime_root = repo_root / runtime_root
+    runtime_root = runtime_root.resolve()
+    source_row = runtime_root / species / args.age / args.gender / args.color
+    out_dir = Path(args.out_dir).resolve()
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    paths = sorted(source_row.glob(f"{args.animation}_*.png"))
+    if not paths:
+        raise SystemExit(f"no runtime frames found for {species}/{args.age}/{args.gender}/{args.color}/{args.animation}")
+
+    should_repair, repair_edges = should_repair_row(paths)
+
+    records = []
+    for path in paths:
+        output_path = out_dir / path.name
+        before_hash = sha256(path)
+        if should_repair:
+            canvas, geometry = padded_image(path, repair_edges)
+            canvas.save(output_path)
+        else:
+            shutil.copy2(path, output_path)
+            with Image.open(path) as image:
+                geometry = {
+                    "before_size": image.size,
+                    "after_size": image.size,
+                    "pad_left": 0,
+                    "pad_top": 0,
+                    "pad_right": 0,
+                    "pad_bottom": 0,
+                }
+        records.append(
+            {
+                "source_path": str(path),
+                "candidate_path": str(output_path),
+                "before_sha256": before_hash,
+                "candidate_sha256": sha256(output_path),
+                **geometry,
+            }
+        )
+
+    payload = {
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "mode": "candidate",
+        "row_id": args.row_id,
+        "target": {
+            "species": species,
+            "age": args.age,
+            "gender": args.gender,
+            "color": args.color,
+            "animation": args.animation,
+        },
+        "repair_edges": sorted(repair_edges),
+        "candidate_mode_note": "bottom-only or no edge contact copies frames unchanged" if not should_repair else "",
+        "frame_count": len(records),
+        "records": records,
+    }
+    summary_path = out_dir / "candidate-summary.json"
+    summary_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    print(f"exported {len(records)} padded candidate frame(s) to {out_dir}")
+    return 0
+
+
 def write_markdown(path: Path, payload: dict) -> None:
     records = payload["records"]
     lines = [
@@ -168,10 +268,23 @@ def write_markdown(path: Path, payload: dict) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--runtime-root", default="sprites_runtime")
-    parser.add_argument("--output-root", required=True)
+    parser.add_argument("--output-root")
     parser.add_argument("--species", nargs="*", default=None, help="Optional species allowlist.")
     parser.add_argument("--apply", action="store_true", help="Actually write repairs. Omit for dry-run.")
+    parser.add_argument("--repo-root", help="Repo root for single-row candidate mode.")
+    parser.add_argument("--row-id", help="Queue row id for single-row candidate mode.")
+    parser.add_argument("--age", help="Age stage for single-row candidate mode.")
+    parser.add_argument("--gender", help="Gender for single-row candidate mode.")
+    parser.add_argument("--color", help="Color variant for single-row candidate mode.")
+    parser.add_argument("--animation", help="Animation family for single-row candidate mode.")
+    parser.add_argument("--out-dir", help="Candidate output folder for single-row candidate mode.")
     args = parser.parse_args()
+
+    if args.out_dir:
+        return run_candidate_mode(args)
+
+    if not args.output_root:
+        parser.error("the following arguments are required: --output-root")
 
     runtime_root = Path(args.runtime_root).resolve()
     output_root = Path(args.output_root)
