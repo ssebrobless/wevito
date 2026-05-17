@@ -4352,7 +4352,7 @@
       "lifeStage": "baby",
       "gender": "female",
       "priority": "P1",
-      "status": "queued",
+      "status": "done",
       "issueCount": 12,
       "colorsAffected": [
         "blue",
@@ -4550,7 +4550,8 @@
           "sourcePath": null,
           "capturePath": null
         }
-      ]
+      ],
+      "completed_by": "C-PHASE 130.013"
     },
     {
       "rowId": "fox_baby_male",
