@@ -10,3 +10,4 @@
 {"phase_id":"C-PHASE 130.003","timestamp_utc":"2026-05-17T05:06:18.6535197Z","branch":"claude-implementation/c-phase-130-batch-003-crow-teen-female","pr_url":"https://github.com/ssebrobless/wevito/pull/165"}
 {"phase_id":"C-PHASE 130.004","timestamp_utc":"2026-05-17T05:16:02.9756015Z","branch":"claude-implementation/c-phase-130-batch-004-crow-teen-male","pr_url":"https://github.com/ssebrobless/wevito/pull/166"}
 {"phase":"C-PHASE 130.005","timestamp":"2026-05-17T05:29:26.6771288Z","branch":"claude-implementation/c-phase-130-batch-005-crow-adult-female","pr":"https://github.com/ssebrobless/wevito/pull/167","row":"crow_adult_female"}
+{"phase":"C-PHASE 130.006","timestamp":"2026-05-17T05:39:42.0794927Z","branch":"claude-implementation/c-phase-130-batch-006-crow-adult-male","pr":"https://github.com/ssebrobless/wevito/pull/168","row":"crow_adult_male"}
