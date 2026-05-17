@@ -3,8 +3,8 @@
 - generated_at: `2026-05-17T03:11:00.642523+00:00`
 - source_manifest: `C:\Users\fishe\Documents\projects\wevito\vnext\artifacts\c-phase-127-matrix-sweep\visual_qa_manifest.json`
 - expected_families: `60`
-- queued_rows: `55`
-- completed_rows: `5`
+- queued_rows: `54`
+- completed_rows: `6`
 
 ## Priority Counts
 
@@ -26,7 +26,7 @@
 - `crow_teen_female` `P1` status=done issues=12 animations=drink,groom tools=tools/generate_runtime_pose_sprites.py
 - `crow_teen_male` `P1` status=done issues=12 animations=drink,groom tools=tools/generate_runtime_pose_sprites.py
 - `crow_adult_female` `P1` status=done issues=12 animations=drink,groom tools=tools/generate_runtime_pose_sprites.py
-- `crow_adult_male` `P1` issues=12 animations=drink,groom tools=tools/generate_runtime_pose_sprites.py
+- `crow_adult_male` `P1` status=done issues=12 animations=drink,groom tools=tools/generate_runtime_pose_sprites.py
 - `deer_baby_female` `P1` issues=30 animations=drink,eat,groom,sad,sleep tools=tools/generate_runtime_pose_sprites.py,tools/repair_runtime_sprite_canvas_padding.py
 - `deer_baby_male` `P1` issues=60 animations=bathe,drink,eat,groom,happy,idle,play,sad,sleep,walk tools=tools/generate_runtime_pose_sprites.py,tools/repair_runtime_sprite_canvas_padding.py
 - `deer_teen_female` `P1` issues=30 animations=drink,eat,groom,sad,sleep tools=tools/generate_runtime_pose_sprites.py,tools/repair_runtime_sprite_canvas_padding.py

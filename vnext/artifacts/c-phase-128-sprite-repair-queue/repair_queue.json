@@ -1076,7 +1076,7 @@
       "lifeStage": "adult",
       "gender": "male",
       "priority": "P1",
-      "status": "queued",
+      "status": "done",
       "issueCount": 12,
       "colorsAffected": [
         "blue",
@@ -1274,7 +1274,9 @@
           "sourcePath": null,
           "capturePath": null
         }
-      ]
+      ],
+      "completedAtUtc": "2026-05-17T00:00:00Z",
+      "completionArtifactRoot": "vnext/artifacts/c-phase-130-batches/006-crow-adult-male"
     },
     {
       "rowId": "deer_baby_female",
@@ -27610,8 +27612,8 @@
     }
   ],
   "statusCounts": {
-    "queued": 55,
-    "done": 5
+    "queued": 54,
+    "done": 6
   },
   "lastUpdatedUtc": "2026-05-17T00:00:00Z"
 }
