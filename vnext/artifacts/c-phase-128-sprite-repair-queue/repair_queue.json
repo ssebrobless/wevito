@@ -8411,7 +8411,7 @@
                      "lifeStage":  "teen",
                      "gender":  "male",
                      "priority":  "P1",
-                     "status":  "queued",
+                     "status":  "done",
                      "issueCount":  54,
                      "colorsAffected":  [
                                             "blue",
@@ -9247,7 +9247,10 @@
                                         "sourcePath":  "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites_runtime\\frog\\teen\\male\\yellow\\sleep_00.png",
                                         "capturePath":  "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\c-phase-127-matrix-sweep\\cells\\frog_teen_male_yellow_sleep.png"
                                     }
-                                ]
+                                ],
+                     "completedAtUtc":  "2026-05-17T00:00:00Z",
+                     "completedByPhase":  "C-PHASE 130.022",
+                     "completionArtifactRoot":  "vnext/artifacts/c-phase-130-batches/022-frog-teen-male"
                  },
                  {
                      "rowId":  "frog_adult_female",
