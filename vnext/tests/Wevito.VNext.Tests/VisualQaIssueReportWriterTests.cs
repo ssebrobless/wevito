@@ -10,6 +10,12 @@ public sealed class VisualQaIssueReportWriterTests
     public void WriteIssue_WritesMarkdownAndJsonUnderTimestampedFolder()
     {
         var root = Path.Combine(Path.GetTempPath(), $"wevito-visual-qa-{Guid.NewGuid():N}");
+        var auditPath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "Wevito",
+            "audit",
+            "visual-qa-issues.jsonl");
+        var beforeLength = File.Exists(auditPath) ? new FileInfo(auditPath).Length : 0;
         try
         {
             var writer = new VisualQaIssueReportWriter(root, () => DateTimeOffset.Parse("2026-05-14T12:34:56Z"));
@@ -48,6 +54,8 @@ public sealed class VisualQaIssueReportWriterTests
             var json = JsonDocument.Parse(File.ReadAllText(Path.Combine(result.PacketPath, "issue.json")));
             Assert.Equal("crow", json.RootElement.GetProperty("slot").GetProperty("speciesId").GetString());
             Assert.Equal("Crow head flattens during one walk frame.", json.RootElement.GetProperty("notes").GetString());
+            Assert.True(File.Exists(auditPath));
+            Assert.True(new FileInfo(auditPath).Length > beforeLength);
         }
         finally
         {

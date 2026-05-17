@@ -45,12 +45,28 @@ public sealed class DevControlSnapshotBuilderTests
         Assert.Contains("changed", message, StringComparison.OrdinalIgnoreCase);
     }
 
+    [Fact]
+    public void SnapshotIncludesAllSpeciesAndAgesAndColors()
+    {
+        var snapshot = DevControlSnapshotBuilder.Build([], CreateContent(), DateTimeOffset.Parse("2026-05-16T12:00:00Z"));
+
+        Assert.Contains("fox", snapshot.Options.SpeciesIds);
+        Assert.Contains("goose", snapshot.Options.SpeciesIds);
+        Assert.Contains("baby", snapshot.Options.LifeStages);
+        Assert.Contains("teen", snapshot.Options.LifeStages);
+        Assert.Contains("adult", snapshot.Options.LifeStages);
+        Assert.Contains("female", snapshot.Options.Genders);
+        Assert.Contains("male", snapshot.Options.Genders);
+        Assert.Contains("blue", snapshot.Options.ColorVariants);
+        Assert.Contains("red", snapshot.Options.ColorVariants);
+    }
+
     private static GameContent CreateContent()
     {
         return new GameContent(
             [
                 new SpeciesDefinition("fox", "Fox", "#f87", 96, SupportedAgeStages: [PetAgeStage.Baby, PetAgeStage.Adult], SupportedGenders: [PetGender.Female, PetGender.Male], SupportedColors: ["blue", "red"]),
-                new SpeciesDefinition("goose", "Goose", "#fff", 82, SupportedAgeStages: [PetAgeStage.Baby, PetAgeStage.Adult], SupportedGenders: [PetGender.Female, PetGender.Male], SupportedColors: ["blue", "red"])
+                new SpeciesDefinition("goose", "Goose", "#fff", 82, SupportedAgeStages: [PetAgeStage.Baby, PetAgeStage.Teen, PetAgeStage.Adult], SupportedGenders: [PetGender.Female, PetGender.Male], SupportedColors: ["blue", "red"])
             ],
             [
                 new ActionDefinition("feed", "Feed", "Feed pet", AnimationState: PetAnimationState.Eat),

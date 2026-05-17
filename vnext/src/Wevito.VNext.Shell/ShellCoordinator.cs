@@ -273,16 +273,23 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         if (_devToolsEnabled)
         {
             _devControlServer = new DevControlServer(
-                DevControlServer.DefaultPipeName,
+                DevControlServer.ResolvePipeName(),
                 _application.Dispatcher,
                 HandleDevControlCommandAsync);
             _devControlServer.Start();
-            TraceLog.Write("dev-control", $"server-started pipe={DevControlServer.DefaultPipeName}");
+            TraceLog.Write("dev-control", $"server-started pipe={DevControlServer.ResolvePipeName()}");
         }
 
         _lastTickAtUtc = DateTimeOffset.UtcNow;
         ApplyModeAndLayout();
-        _tickTimer.Start();
+        if (!IsVisualQaFastMode())
+        {
+            _tickTimer.Start();
+        }
+        else
+        {
+            TraceLog.Write("visual-qa", "tick-timer-skipped-for-fast-mode");
+        }
         TraceLog.Write("shell", "startup-complete");
     }
 
@@ -984,6 +991,17 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     {
         if (_state is null)
         {
+            return;
+        }
+
+        if (!force && string.Equals(Environment.GetEnvironmentVariable("WEVITO_SKIP_FIRST_LAUNCH_WIZARD"), "1", StringComparison.Ordinal))
+        {
+            TraceLog.Write("first-launch", "wizard-skipped-for-automation");
+            _state = _state with
+            {
+                SettingsSnapshot = WithSetting(_state.SettingsSnapshot, FirstLaunchWizardStateService.CompletedSetting, bool.TrueString)
+            };
+            await PersistAndRenderAsync();
             return;
         }
 
@@ -2482,7 +2500,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         };
         _state = ApplyCurrentLayout(_state);
         SetFeedback($"Dev controller spawned {newPet.Name}: {species.Id} {ageStage} {gender} {color}.");
-        await PersistAndRenderAsync();
+        await PersistAndRenderForDevControlAsync();
         return DevControlSuccess($"Spawned {newPet.Name}.");
     }
 
@@ -2581,7 +2599,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _state = _state with { ActivePets = pets };
         var frameLabel = request.FrameIndex is { } frameIndex ? $" frame {frameIndex}" : " loop";
         SetFeedback($"Visual QA forced {animationState}{frameLabel} on {pet.Name}.");
-        await PersistAndRenderAsync();
+        await PersistAndRenderForDevControlAsync();
         return DevControlSuccess($"Forced {animationState}{frameLabel} on {pet.Name}.");
     }
 
@@ -2599,7 +2617,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
 
         _state = ClearDevAnimation(_state, pet.Id);
         SetFeedback($"Visual QA cleared forced animation on {pet.Name}.");
-        await PersistAndRenderAsync();
+        await PersistAndRenderForDevControlAsync();
         return DevControlSuccess($"Cleared forced animation on {pet.Name}.");
     }
 
@@ -2674,8 +2692,23 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _state = HydrateLoadedState(_state, _content);
         _state = ApplyCurrentLayout(_state);
         SetFeedback($"Visual QA reset save sandbox: {mode}.");
-        await PersistAndRenderAsync();
+        await PersistAndRenderForDevControlAsync();
         return DevControlSuccess($"Reset save sandbox: {mode}.");
+    }
+
+    private Task PersistAndRenderForDevControlAsync()
+    {
+        if (IsVisualQaFastMode())
+        {
+            return Task.CompletedTask;
+        }
+
+        return PersistAndRenderAsync();
+    }
+
+    private static bool IsVisualQaFastMode()
+    {
+        return string.Equals(Environment.GetEnvironmentVariable("WEVITO_VISUAL_QA_FAST_MODE"), "1", StringComparison.Ordinal);
     }
 
     private DevControlResponseEnvelope DevControlSuccess(string message)
