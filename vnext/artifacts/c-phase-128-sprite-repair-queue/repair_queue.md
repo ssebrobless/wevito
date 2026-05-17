@@ -3,7 +3,8 @@
 - generated_at: `2026-05-17T03:11:00.642523+00:00`
 - source_manifest: `C:\Users\fishe\Documents\projects\wevito\vnext\artifacts\c-phase-127-matrix-sweep\visual_qa_manifest.json`
 - expected_families: `60`
-- queued_rows: `60`
+- queued_rows: `59`
+- completed_rows: `1`
 
 ## Priority Counts
 
@@ -20,7 +21,7 @@
 
 ## First 20 Rows
 
-- `crow_baby_female` `P1` issues=12 animations=drink,groom tools=tools/generate_runtime_pose_sprites.py
+- `crow_baby_female` `P1` status=done issues=12 animations=drink,groom tools=tools/generate_runtime_pose_sprites.py
 - `crow_baby_male` `P1` issues=12 animations=drink,groom tools=tools/generate_runtime_pose_sprites.py
 - `crow_teen_female` `P1` issues=12 animations=drink,groom tools=tools/generate_runtime_pose_sprites.py
 - `crow_teen_male` `P1` issues=12 animations=drink,groom tools=tools/generate_runtime_pose_sprites.py

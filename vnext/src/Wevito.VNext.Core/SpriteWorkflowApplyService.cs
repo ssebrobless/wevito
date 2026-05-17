@@ -33,9 +33,13 @@ public sealed class SpriteWorkflowApplyService
         }
 
         var runtimeRoot = FindSpritesRuntimeRoot(dryRun.RuntimeRowFolder);
+        var backupParent = Path.GetDirectoryName(dryRun.PlannedBackupFolder)
+            ?? throw new InvalidOperationException("Could not resolve planned backup parent folder.");
+        var dryRunArtifactRoot = Path.GetDirectoryName(backupParent)
+            ?? throw new InvalidOperationException("Could not resolve dry-run artifact root.");
         var stagingFolder = Path.Combine(
-            runtimeRoot,
-            ".staging",
+            dryRunArtifactRoot,
+            "staging",
             $"{BuildSafeRowId(dryRun.Target)}-{request.AppliedAtUtc:yyyyMMdd-HHmmss}");
         if (!_sameVolume(runtimeRoot, stagingFolder))
         {
@@ -76,14 +80,14 @@ public sealed class SpriteWorkflowApplyService
             Applied: true,
             request.AppliedAtUtc);
         File.WriteAllText(applyLogPath, JsonSerializer.Serialize(manifest, JsonDefaults.Options));
-        PruneBackups(runtimeRoot);
+        PruneBackups(backupParent);
 
         return new SpriteWorkflowApplyResult(true, applyLogPath, manifest, $"Applied {dryRun.Changes.Count} frame(s) with backup.");
     }
 
-    private static void PruneBackups(string runtimeRoot)
+    private static void PruneBackups(string backupParent)
     {
-        var backupRoot = Path.Combine(runtimeRoot, ".backup");
+        var backupRoot = backupParent;
         if (!Directory.Exists(backupRoot))
         {
             return;

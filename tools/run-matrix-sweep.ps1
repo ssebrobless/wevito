@@ -1,6 +1,10 @@
 param(
     [string]$ArtifactRoot = ".\vnext\artifacts\c-phase-127-matrix-sweep",
-    [string]$Configuration = "Debug"
+    [string]$Configuration = "Debug",
+    [string]$Species = "",
+    [string]$Age = "",
+    [string]$Gender = "",
+    [string]$Color = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -39,7 +43,13 @@ $process = [System.Diagnostics.Process]::Start($psi)
 try {
     $env:WEVITO_DEV_CONTROL_PIPE = $pipeName
     $env:WEVITO_VNEXT_TRACE_DIR = $traceRoot
-    dotnet run --project $runnerProject -c $Configuration -- --sweep --out $artifactRootFull --repo-root $repoRoot
+    $runnerArgs = @("--sweep", "--out", $artifactRootFull, "--repo-root", $repoRoot)
+    if ($Species) { $runnerArgs += @("--species", $Species) }
+    if ($Age) { $runnerArgs += @("--age", $Age) }
+    if ($Gender) { $runnerArgs += @("--gender", $Gender) }
+    if ($Color) { $runnerArgs += @("--color", $Color) }
+    if ($Species -or $Age -or $Gender -or $Color) { $runnerArgs += "--allow-clean" }
+    dotnet run --project $runnerProject -c $Configuration -- @runnerArgs
     if ($LASTEXITCODE -ne 0) {
         throw "AutomationRunner failed with exit code $LASTEXITCODE."
     }

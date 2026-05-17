@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
     <ProjectReference Include="..\Wevito.VNext.Contracts\Wevito.VNext.Contracts.csproj" />
+    <ProjectReference Include="..\Wevito.VNext.Core\Wevito.VNext.Core.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

@@ -11,6 +11,7 @@ complete transparent animation set for every supported color.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 import shutil
@@ -31,6 +32,11 @@ DEFAULT_SOURCE_ROOT = ROOT / "incoming_sprites"
 DEFAULT_OUTPUT_ROOT = ROOT / "sprites_runtime"
 CANVAS_SIZE = (72, 64)
 SUMMARY_NAME = "generation-summary.json"
+
+SINGLE_ISSUE_SOURCE_FAMILIES: dict[str, str] = {
+    "drink": "eat",
+    "groom": "bathe",
+}
 
 FRAME_LAYOUT_OVERRIDES: dict[str, dict[str, dict[str, dict[str, tuple[int, int]]]]] = {
     "snake": {
@@ -1813,7 +1819,18 @@ def main() -> None:
     parser.add_argument("--output-root", type=Path, default=DEFAULT_OUTPUT_ROOT)
     parser.add_argument("--clean", action="store_true")
     parser.add_argument("--species", nargs="*", help="Optional species ids to regenerate.")
+    parser.add_argument("--repo-root", type=Path, help="Repo root for single repair-queue issue mode.")
+    parser.add_argument("--row-id", help="Repair queue row id for single repair-queue issue mode.")
+    parser.add_argument("--age", help="Age stage for single repair-queue issue mode.")
+    parser.add_argument("--gender", help="Gender for single repair-queue issue mode.")
+    parser.add_argument("--color", help="Color variant for single repair-queue issue mode.")
+    parser.add_argument("--animation", help="Animation family for single repair-queue issue mode.")
+    parser.add_argument("--out-dir", type=Path, help="Candidate output folder for single repair-queue issue mode.")
     args = parser.parse_args()
+
+    if args.out_dir is not None:
+        export_single_issue_candidate(args)
+        return
 
     manifest = load_manifest(args.manifest)
     if args.species:
@@ -1848,6 +1865,89 @@ def main() -> None:
     }
     (args.output_root / SUMMARY_NAME).write_text(json.dumps(summary, indent=2), encoding="utf-8")
     print(f"exported {exported} runtime frame(s) to {args.output_root}")
+
+
+def export_single_issue_candidate(args: argparse.Namespace) -> None:
+    required = {
+        "--repo-root": args.repo_root,
+        "--row-id": args.row_id,
+        "--species": args.species,
+        "--age": args.age,
+        "--gender": args.gender,
+        "--color": args.color,
+        "--animation": args.animation,
+        "--out-dir": args.out_dir,
+    }
+    missing = [name for name, value in required.items() if not value]
+    if missing:
+        raise ValueError(f"Missing required single-issue argument(s): {', '.join(missing)}")
+
+    if isinstance(args.species, list):
+        if len(args.species) != 1:
+            raise ValueError("Single-issue mode requires exactly one --species value.")
+        species = args.species[0]
+    else:
+        species = str(args.species)
+
+    animation = str(args.animation).lower()
+    source_family = SINGLE_ISSUE_SOURCE_FAMILIES.get(animation)
+    if source_family is None:
+        allowed = ", ".join(sorted(SINGLE_ISSUE_SOURCE_FAMILIES))
+        raise ValueError(f"Single-issue candidate mode only supports {allowed}; got {animation}.")
+
+    repo_root = Path(args.repo_root).resolve()
+    runtime_folder = repo_root / "sprites_runtime" / species / str(args.age).lower() / str(args.gender).lower() / str(args.color).lower()
+    source_frames = sorted(runtime_folder.glob(f"{source_family}_*.png"))
+    if not source_frames:
+        raise FileNotFoundError(f"No {source_family} source frames found in {runtime_folder}")
+
+    out_dir = Path(args.out_dir).resolve()
+    out_dir.mkdir(parents=True, exist_ok=True)
+    for stale in out_dir.glob("*.png"):
+        stale.unlink()
+
+    exported: list[dict[str, str | int]] = []
+    for index, source_path in enumerate(source_frames):
+        target_name = f"{animation}_{index:02d}.png"
+        target_path = out_dir / target_name
+        shutil.copyfile(source_path, target_path)
+        exported.append(
+            {
+                "index": index,
+                "source_family": source_family,
+                "source_path": str(source_path),
+                "candidate_path": str(target_path),
+                "candidate_sha256": sha256(target_path),
+            }
+        )
+
+    summary = {
+        "schemaVersion": "1.0",
+        "mode": "single_repair_issue_candidate",
+        "rowId": args.row_id,
+        "speciesId": species,
+        "lifeStage": str(args.age).lower(),
+        "gender": str(args.gender).lower(),
+        "colorVariant": str(args.color).lower(),
+        "animationFamily": animation,
+        "sourceFamily": source_family,
+        "candidateFrameCount": len(exported),
+        "didUseNetwork": False,
+        "didUseHostedAi": False,
+        "didUseLocalModel": False,
+        "didMutateRuntime": False,
+        "frames": exported,
+    }
+    (out_dir / "candidate-summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
+    print(f"exported {len(exported)} {animation} candidate frame(s) to {out_dir}")
+
+
+def sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
 
 
 if __name__ == "__main__":

@@ -44,10 +44,10 @@ public sealed class SpriteWorkflowDryRunApplyService
         }
 
         var runtimeRowFolder = ResolveRuntimeRowFolder(repoRoot, request.Target);
+        var artifactRoot = Path.GetFullPath(request.ArtifactRoot);
         var backupFolder = Path.Combine(
-            repoRoot,
-            "sprites_runtime",
-            ".backup",
+            artifactRoot,
+            "backup",
             $"{request.Target.Species}-{FormatAge(request.Target.AgeStage)}-{FormatGender(request.Target.Gender)}-{request.Target.ColorVariant}-{request.Target.Family}-{request.GeneratedAtUtc:yyyyMMdd-HHmmss}");
         var changes = candidateFiles.Select(candidatePath =>
         {
@@ -74,7 +74,6 @@ public sealed class SpriteWorkflowDryRunApplyService
             WouldMutateRuntime: true,
             request.GeneratedAtUtc);
 
-        var artifactRoot = Path.GetFullPath(request.ArtifactRoot);
         Directory.CreateDirectory(artifactRoot);
         var manifestPath = Path.Combine(artifactRoot, "dry-run-apply.json");
         File.WriteAllText(manifestPath, JsonSerializer.Serialize(manifest, JsonDefaults.Options));
