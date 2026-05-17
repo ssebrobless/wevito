@@ -24,6 +24,21 @@ public sealed class SpriteRepairBatchRunnerTests
     }
 
     [Fact]
+    public async Task BackupAndStagingStayOutsideRuntimeTree()
+    {
+        var fixture = BatchFixture.Create();
+        fixture.WriteRuntime("idle_00.png", "before");
+        var runner = fixture.CreateRunner(candidateBytes: "after", proofRunner: _ => true);
+
+        var result = await runner.RunAsync(fixture.Request());
+
+        Assert.True(result.Succeeded);
+        Assert.DoesNotContain(Path.Combine("sprites_runtime", ".backup"), result.BackupFolder, StringComparison.OrdinalIgnoreCase);
+        Assert.False(Directory.Exists(Path.Combine(fixture.Root, "sprites_runtime", ".backup")));
+        Assert.False(Directory.Exists(Path.Combine(fixture.Root, "sprites_runtime", ".staging")));
+    }
+
+    [Fact]
     public async Task PythonRepairWritesUnderCandidatesFolder()
     {
         var fixture = BatchFixture.Create();

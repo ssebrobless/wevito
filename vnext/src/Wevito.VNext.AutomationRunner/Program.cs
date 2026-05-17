@@ -8,11 +8,18 @@ using System.Text.Json;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Wevito.VNext.Contracts;
+using Wevito.VNext.Core;
 
 var options = RunnerOptions.Parse(args);
+if (options.SpriteRepairBatch)
+{
+    return await RunSpriteRepairBatchAsync(options);
+}
+
 if (!options.Sweep)
 {
     Console.Error.WriteLine("Usage: Wevito.VNext.AutomationRunner --sweep --out <artifact-dir> [--repo-root <path>]");
+    Console.Error.WriteLine("   or: Wevito.VNext.AutomationRunner --sprite-repair-batch --queue <repair_queue.json> --row-id <row> --out <artifact-dir> [--repo-root <path>]");
     return 2;
 }
 
@@ -21,7 +28,7 @@ var outputRoot = Path.GetFullPath(options.OutputRoot ?? Path.Combine(repoRoot, "
 Directory.CreateDirectory(outputRoot);
 Directory.CreateDirectory(Path.Combine(outputRoot, "cells"));
 
-var species = LoadSpecies(repoRoot);
+var species = FilterSpecies(LoadSpecies(repoRoot), options);
 var optionalAnimations = LoadOptionalAnimations(repoRoot);
 var animationFamilies = new[]
 {
@@ -100,7 +107,7 @@ if (manifest.Rows.Count != manifest.ExpectedCellCount)
     return 3;
 }
 
-if (!manifest.Rows.Any(row => row.Tags.Count > 0))
+if (!manifest.Rows.Any(row => row.Tags.Count > 0) && !options.AllowClean)
 {
     Console.Error.WriteLine("Matrix sweep produced no tagged cells; heuristics may be too lax.");
     return 4;
@@ -108,6 +115,90 @@ if (!manifest.Rows.Any(row => row.Tags.Count > 0))
 
 Console.WriteLine($"Wrote {manifest.Rows.Count} matrix rows to {manifestPath}");
 return 0;
+
+static async Task<int> RunSpriteRepairBatchAsync(RunnerOptions options)
+{
+    if (string.IsNullOrWhiteSpace(options.QueuePath) ||
+        string.IsNullOrWhiteSpace(options.RowId) ||
+        string.IsNullOrWhiteSpace(options.OutputRoot))
+    {
+        Console.Error.WriteLine("--sprite-repair-batch requires --queue, --row-id, and --out.");
+        return 2;
+    }
+
+    var repoRoot = ResolveRepoRoot(options.RepoRoot);
+    var outputRoot = Path.GetFullPath(options.OutputRoot);
+    Directory.CreateDirectory(outputRoot);
+
+    var queuePath = Path.GetFullPath(options.QueuePath);
+    var queue = new SpriteRepairQueueReader().Load(queuePath, repoRoot);
+    var row = queue.Rows.FirstOrDefault(candidate => string.Equals(candidate.RowId, options.RowId, StringComparison.OrdinalIgnoreCase));
+    if (row is null)
+    {
+        Console.Error.WriteLine($"Queue row not found: {options.RowId}");
+        return 3;
+    }
+
+    var runner = new SpriteRepairBatchRunner(auditLedgerService: new AuditLedgerService());
+    var requestedAtUtc = DateTimeOffset.UtcNow;
+    var results = new List<SpriteRepairBatchResult>();
+    foreach (var issue in row.Issues)
+    {
+        var batchId = $"c-phase-130-001-{row.RowId}-{issue.ColorVariant}-{issue.AnimationFamily}";
+        var issueArtifactRoot = Path.Combine(outputRoot, batchId);
+        var result = await runner.RunAsync(new SpriteRepairBatchRequest(
+            repoRoot,
+            row,
+            issue,
+            issueArtifactRoot,
+            requestedAtUtc,
+            Guid.NewGuid(),
+            batchId));
+        results.Add(result);
+        if (!result.Succeeded)
+        {
+            await WriteBatchSummaryAsync(outputRoot, row, results, requestedAtUtc);
+            Console.Error.WriteLine($"Batch stopped on {issue.ColorVariant}/{issue.AnimationFamily}: {result.Message}");
+            return 4;
+        }
+    }
+
+    await WriteBatchSummaryAsync(outputRoot, row, results, requestedAtUtc);
+    Console.WriteLine($"Completed {results.Count} repair issue(s) for {row.RowId}");
+    return 0;
+}
+
+static async Task WriteBatchSummaryAsync(string outputRoot, SpriteRepairQueueRow row, IReadOnlyList<SpriteRepairBatchResult> results, DateTimeOffset requestedAtUtc)
+{
+    var summary = new
+    {
+        schemaVersion = "1.0",
+        phase = "C-PHASE 130.001",
+        requestedAtUtc,
+        row = row.RowId,
+        issueCount = results.Count,
+        succeeded = results.All(result => result.Succeeded),
+        didUseNetwork = false,
+        didUseHostedAi = false,
+        didUseLocalModel = false,
+        didMutate = results.Any(result => result.Succeeded),
+        results = results.Select(result => new
+        {
+            result.Status,
+            result.Message,
+            result.ArtifactPath,
+            result.CandidateFolder,
+            result.BackupFolder,
+            result.RolledBack,
+            result.PreHashes,
+            result.PostHashes
+        }).ToList()
+    };
+    await File.WriteAllTextAsync(
+        Path.Combine(outputRoot, "sprite_repair_batch_summary.json"),
+        JsonSerializer.Serialize(summary, JsonDefaults.Options),
+        Encoding.UTF8);
+}
 
 static async Task<VisualQaAnimationObservation> ObserveAnimationAsync(
     DevPipeClient client,
@@ -225,6 +316,32 @@ static IReadOnlyList<string> FindRuntimeFrames(string repoRoot, string speciesId
     return Directory.Exists(folder)
         ? Directory.GetFiles(folder, $"{runtimeAnimation}_*.png").OrderBy(path => path, StringComparer.OrdinalIgnoreCase).ToList()
         : [];
+}
+
+static IReadOnlyList<SpeciesAxis> FilterSpecies(IReadOnlyList<SpeciesAxis> species, RunnerOptions options)
+{
+    var filtered = species
+        .Where(item => Matches(options.SpeciesId, item.Id))
+        .Select(item => item with
+        {
+            LifeStages = item.LifeStages.Where(stage => Matches(options.LifeStage, stage)).ToList(),
+            Genders = item.Genders.Where(gender => Matches(options.Gender, gender)).ToList(),
+            Colors = item.Colors.Where(color => Matches(options.Color, color)).ToList()
+        })
+        .Where(item => item.LifeStages.Count > 0 && item.Genders.Count > 0 && item.Colors.Count > 0)
+        .ToList();
+
+    if (filtered.Count == 0)
+    {
+        throw new InvalidOperationException("No species rows matched the requested sweep filters.");
+    }
+
+    return filtered;
+}
+
+static bool Matches(string? filter, string value)
+{
+    return string.IsNullOrWhiteSpace(filter) || string.Equals(filter, value, StringComparison.OrdinalIgnoreCase);
 }
 
 static string ResolveRuntimeAnimationId(string animation)
@@ -353,13 +470,32 @@ static string BuildMarkdown(VisualQaMatrixManifest manifest)
     ]);
 }
 
-internal sealed record RunnerOptions(bool Sweep, string? OutputRoot, string? RepoRoot)
+internal sealed record RunnerOptions(
+    bool Sweep,
+    bool SpriteRepairBatch,
+    string? OutputRoot,
+    string? RepoRoot,
+    string? QueuePath,
+    string? RowId,
+    string? SpeciesId,
+    string? LifeStage,
+    string? Gender,
+    string? Color,
+    bool AllowClean)
 {
     public static RunnerOptions Parse(string[] args)
     {
         var sweep = args.Contains("--sweep", StringComparer.OrdinalIgnoreCase);
+        var spriteRepairBatch = args.Contains("--sprite-repair-batch", StringComparer.OrdinalIgnoreCase);
         string? outputRoot = null;
         string? repoRoot = null;
+        string? queuePath = null;
+        string? rowId = null;
+        string? speciesId = null;
+        string? lifeStage = null;
+        string? gender = null;
+        string? color = null;
+        var allowClean = args.Contains("--allow-clean", StringComparer.OrdinalIgnoreCase);
         for (var index = 0; index < args.Length; index++)
         {
             if (string.Equals(args[index], "--out", StringComparison.OrdinalIgnoreCase) && index + 1 < args.Length)
@@ -370,9 +506,33 @@ internal sealed record RunnerOptions(bool Sweep, string? OutputRoot, string? Rep
             {
                 repoRoot = args[index + 1];
             }
+            else if (string.Equals(args[index], "--queue", StringComparison.OrdinalIgnoreCase) && index + 1 < args.Length)
+            {
+                queuePath = args[index + 1];
+            }
+            else if (string.Equals(args[index], "--row-id", StringComparison.OrdinalIgnoreCase) && index + 1 < args.Length)
+            {
+                rowId = args[index + 1];
+            }
+            else if (string.Equals(args[index], "--species", StringComparison.OrdinalIgnoreCase) && index + 1 < args.Length)
+            {
+                speciesId = args[index + 1];
+            }
+            else if (string.Equals(args[index], "--age", StringComparison.OrdinalIgnoreCase) && index + 1 < args.Length)
+            {
+                lifeStage = args[index + 1];
+            }
+            else if (string.Equals(args[index], "--gender", StringComparison.OrdinalIgnoreCase) && index + 1 < args.Length)
+            {
+                gender = args[index + 1];
+            }
+            else if (string.Equals(args[index], "--color", StringComparison.OrdinalIgnoreCase) && index + 1 < args.Length)
+            {
+                color = args[index + 1];
+            }
         }
 
-        return new RunnerOptions(sweep, outputRoot, repoRoot);
+        return new RunnerOptions(sweep, spriteRepairBatch, outputRoot, repoRoot, queuePath, rowId, speciesId, lifeStage, gender, color, allowClean);
     }
 }
 

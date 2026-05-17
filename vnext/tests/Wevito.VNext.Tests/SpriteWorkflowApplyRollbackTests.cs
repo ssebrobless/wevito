@@ -61,14 +61,15 @@ public sealed class SpriteWorkflowApplyRollbackTests
     public void Apply_PrunesBackupsToRetentionLimit()
     {
         var fixture = CreateFixture();
-        var backupRoot = Path.Combine(fixture.Root, "sprites_runtime", ".backup");
+        var dryRun = CreateDryRun(fixture.Root, fixture.Target, fixture.CandidateFolder);
+        var backupRoot = Path.GetDirectoryName(dryRun.PlannedBackupFolder)
+            ?? throw new InvalidOperationException("Missing backup root.");
         Directory.CreateDirectory(backupRoot);
         for (var index = 0; index < 55; index++)
         {
             Directory.CreateDirectory(Path.Combine(backupRoot, $"old-{index:00}"));
         }
 
-        var dryRun = CreateDryRun(fixture.Root, fixture.Target, fixture.CandidateFolder);
         var result = new SpriteWorkflowApplyService().Apply(new SpriteWorkflowApplyRequest(dryRun, DateTimeOffset.Parse("2026-05-07T00:00:02Z")));
 
         Assert.True(result.Succeeded);

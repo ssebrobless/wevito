@@ -41,7 +41,7 @@
       "lifeStage": "baby",
       "gender": "female",
       "priority": "P1",
-      "status": "queued",
+      "status": "done",
       "issueCount": 12,
       "colorsAffected": [
         "blue",
@@ -239,7 +239,10 @@
           "sourcePath": null,
           "capturePath": null
         }
-      ]
+      ],
+      "completedAtUtc": "2026-05-17T03:57:24.328008+00:00",
+      "completedByPhase": "C-PHASE 130.001",
+      "batchArtifactRoot": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\c-phase-130-batches\\001-crow-baby-female"
     },
     {
       "rowId": "crow_baby_male",
