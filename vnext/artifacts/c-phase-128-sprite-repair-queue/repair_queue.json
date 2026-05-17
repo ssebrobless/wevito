@@ -1730,7 +1730,7 @@
       "lifeStage": "baby",
       "gender": "male",
       "priority": "P1",
-      "status": "queued",
+      "status": "done",
       "issueCount": 60,
       "colorsAffected": [
         "blue",
@@ -2561,7 +2561,9 @@
           "sourcePath": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites_runtime\\deer\\baby\\male\\yellow\\walk_00.png",
           "capturePath": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\c-phase-127-matrix-sweep\\cells\\deer_baby_male_yellow_walk.png"
         }
-      ]
+      ],
+      "completedAtUtc": "2026-05-17T06:30:00Z",
+      "completionArtifactRoot": "vnext/artifacts/c-phase-130-batches/008-deer-baby-male"
     },
     {
       "rowId": "deer_teen_female",
@@ -27614,8 +27616,8 @@
     }
   ],
   "statusCounts": {
-    "queued": 53,
-    "done": 7
+    "queued": 52,
+    "done": 8
   },
-  "lastUpdatedUtc": "2026-05-17T00:00:00Z"
+  "lastUpdatedUtc": "2026-05-17T06:30:00Z"
 }

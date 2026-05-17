@@ -165,28 +165,37 @@ public sealed class SpriteRepairBatchRunner
         SpriteRepairQueueIssue issue,
         string candidateFolder)
     {
+        List<string> arguments =
+        [
+            repairToolPath,
+            "--repo-root",
+            repoRoot,
+            "--row-id",
+            row.RowId,
+            "--species",
+            row.SpeciesId,
+            "--age",
+            row.LifeStage,
+            "--gender",
+            row.Gender,
+            "--color",
+            issue.ColorVariant,
+            "--animation",
+            issue.AnimationFamily,
+            "--out-dir",
+            candidateFolder
+        ];
+
+        if (!string.IsNullOrWhiteSpace(issue.SourcePath))
+        {
+            arguments.Add("--source-path");
+            arguments.Add(issue.SourcePath);
+        }
+
         return new ProofExecutionCommand(
             "sprite-repair-batch",
             "python",
-            [
-                repairToolPath,
-                "--repo-root",
-                repoRoot,
-                "--row-id",
-                row.RowId,
-                "--species",
-                row.SpeciesId,
-                "--age",
-                row.LifeStage,
-                "--gender",
-                row.Gender,
-                "--color",
-                issue.ColorVariant,
-                "--animation",
-                issue.AnimationFamily,
-                "--out-dir",
-                candidateFolder
-            ],
+            arguments,
             repoRoot,
             TimeSpan.FromMinutes(5),
             MustSkipAssetPrep: true);
