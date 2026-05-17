@@ -8,6 +8,7 @@ namespace Wevito.VNext.DevController;
 internal sealed class DevControlClient
 {
     private const string PipeName = "wevito-vnext-dev-control";
+    private const string PipeNameEnvironmentVariable = "WEVITO_DEV_CONTROL_PIPE";
 
     public Task<DevControlResponseEnvelope> GetSnapshotAsync()
     {
@@ -62,7 +63,7 @@ internal sealed class DevControlClient
     private static async Task<DevControlResponseEnvelope> SendAsync<TPayload>(string commandType, TPayload payload)
     {
         using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(2));
-        await using var pipe = new NamedPipeClientStream(".", PipeName, PipeDirection.InOut, PipeOptions.Asynchronous);
+        await using var pipe = new NamedPipeClientStream(".", ResolvePipeName(), PipeDirection.InOut, PipeOptions.Asynchronous);
         await pipe.ConnectAsync(timeout.Token);
 
         await using var writer = new StreamWriter(pipe, new UTF8Encoding(false), leaveOpen: true)
@@ -79,5 +80,11 @@ internal sealed class DevControlClient
         }
 
         return DevControlPipeMessage.DeserializeResponse(line);
+    }
+
+    private static string ResolvePipeName()
+    {
+        var configured = Environment.GetEnvironmentVariable(PipeNameEnvironmentVariable);
+        return string.IsNullOrWhiteSpace(configured) ? PipeName : configured.Trim();
     }
 }

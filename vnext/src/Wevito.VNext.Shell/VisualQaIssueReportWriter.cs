@@ -39,12 +39,24 @@ internal sealed class VisualQaIssueReportWriter
         };
 
         var jsonPath = Path.Combine(packetPath, "issue.json");
-        File.WriteAllText(jsonPath, JsonSerializer.Serialize(payload, JsonDefaults.Options), System.Text.Encoding.UTF8);
+        var json = JsonSerializer.Serialize(payload, JsonDefaults.Options);
+        File.WriteAllText(jsonPath, json, System.Text.Encoding.UTF8);
 
         var markdownPath = Path.Combine(packetPath, "issue.md");
         File.WriteAllText(markdownPath, BuildMarkdown(now, request, slot), System.Text.Encoding.UTF8);
+        AppendAuditJsonl(json);
 
         return new VisualQaIssueReportResult(packetPath, markdownPath, jsonPath);
+    }
+
+    private static void AppendAuditJsonl(string json)
+    {
+        var auditRoot = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "Wevito",
+            "audit");
+        Directory.CreateDirectory(auditRoot);
+        File.AppendAllText(Path.Combine(auditRoot, "visual-qa-issues.jsonl"), json + Environment.NewLine, System.Text.Encoding.UTF8);
     }
 
     private static string BuildMarkdown(DateTimeOffset now, VisualQaIssueTagRequest request, DevControlPetSlotSnapshot slot)

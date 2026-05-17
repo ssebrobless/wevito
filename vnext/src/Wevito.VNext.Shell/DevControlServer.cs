@@ -9,6 +9,7 @@ namespace Wevito.VNext.Shell;
 internal sealed class DevControlServer : IAsyncDisposable
 {
     public const string DefaultPipeName = "wevito-vnext-dev-control";
+    public const string PipeNameEnvironmentVariable = "WEVITO_DEV_CONTROL_PIPE";
 
     private readonly string _pipeName;
     private readonly Dispatcher _dispatcher;
@@ -29,6 +30,12 @@ internal sealed class DevControlServer : IAsyncDisposable
     public void Start()
     {
         _loopTask ??= Task.Run(RunAsync);
+    }
+
+    public static string ResolvePipeName()
+    {
+        var configured = Environment.GetEnvironmentVariable(PipeNameEnvironmentVariable);
+        return string.IsNullOrWhiteSpace(configured) ? DefaultPipeName : configured.Trim();
     }
 
     private async Task RunAsync()
