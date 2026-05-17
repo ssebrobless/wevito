@@ -11893,7 +11893,7 @@
                      "lifeStage":  "baby",
                      "gender":  "male",
                      "priority":  "P1",
-                     "status":  "queued",
+                     "status":  "done",
                      "issueCount":  60,
                      "colorsAffected":  [
                                             "blue",
@@ -12820,7 +12820,11 @@
                                         "sourcePath":  "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites_runtime\\goose\\baby\\male\\yellow\\walk_00.png",
                                         "capturePath":  "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\c-phase-127-matrix-sweep\\cells\\goose_baby_male_yellow_walk.png"
                                     }
-                                ]
+                                ],
+                     "completedAtUtc":  "2026-05-17T21:23:05.6821066Z",
+                     "completedByPhase":  "C-PHASE 130.026",
+                     "completionArtifactRoot":  "vnext/artifacts/c-phase-130-batches/026-goose-baby-male",
+                     "batchArtifactRoot":  "vnext/artifacts/c-phase-130-batches/026-goose-baby-male"
                  },
                  {
                      "rowId":  "goose_teen_female",
@@ -29955,8 +29959,10 @@
                  }
              ],
     "statusCounts":  {
-                         "done":  25,
-                         "queued":  35
+                         "done":  26,
+                         "queued":  34,
+                         "awaiting_review":  0,
+                         "paused":  0
                      },
-    "lastUpdatedUtc":  "2026-05-17T20:21:30.3027799Z"
+    "lastUpdatedUtc":  "2026-05-17T21:23:05.6821066Z"
 }
