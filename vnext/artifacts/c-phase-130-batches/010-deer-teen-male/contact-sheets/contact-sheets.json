@@ -1,0 +1,67 @@
+{
+  "generated_at_utc": "2026-05-17T06:56:00.151317+00:00",
+  "runtime_root": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites_runtime",
+  "species_count": 10,
+  "sheets": [
+    {
+      "species": "crow",
+      "path": "vnext/artifacts/c-phase-130-batches/010-deer-teen-male/contact-sheets/crow.png",
+      "rows": 360,
+      "frames": 1368
+    },
+    {
+      "species": "deer",
+      "path": "vnext/artifacts/c-phase-130-batches/010-deer-teen-male/contact-sheets/deer.png",
+      "rows": 342,
+      "frames": 1296
+    },
+    {
+      "species": "fox",
+      "path": "vnext/artifacts/c-phase-130-batches/010-deer-teen-male/contact-sheets/fox.png",
+      "rows": 288,
+      "frames": 1080
+    },
+    {
+      "species": "frog",
+      "path": "vnext/artifacts/c-phase-130-batches/010-deer-teen-male/contact-sheets/frog.png",
+      "rows": 288,
+      "frames": 1080
+    },
+    {
+      "species": "goose",
+      "path": "vnext/artifacts/c-phase-130-batches/010-deer-teen-male/contact-sheets/goose.png",
+      "rows": 292,
+      "frames": 1098
+    },
+    {
+      "species": "pigeon",
+      "path": "vnext/artifacts/c-phase-130-batches/010-deer-teen-male/contact-sheets/pigeon.png",
+      "rows": 288,
+      "frames": 1080
+    },
+    {
+      "species": "raccoon",
+      "path": "vnext/artifacts/c-phase-130-batches/010-deer-teen-male/contact-sheets/raccoon.png",
+      "rows": 288,
+      "frames": 1080
+    },
+    {
+      "species": "rat",
+      "path": "vnext/artifacts/c-phase-130-batches/010-deer-teen-male/contact-sheets/rat.png",
+      "rows": 288,
+      "frames": 1080
+    },
+    {
+      "species": "snake",
+      "path": "vnext/artifacts/c-phase-130-batches/010-deer-teen-male/contact-sheets/snake.png",
+      "rows": 288,
+      "frames": 1080
+    },
+    {
+      "species": "squirrel",
+      "path": "vnext/artifacts/c-phase-130-batches/010-deer-teen-male/contact-sheets/squirrel.png",
+      "rows": 288,
+      "frames": 1080
+    }
+  ]
+}
