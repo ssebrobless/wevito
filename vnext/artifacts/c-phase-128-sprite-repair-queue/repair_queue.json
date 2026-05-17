@@ -5180,7 +5180,7 @@
       "lifeStage": "adult",
       "gender": "female",
       "priority": "P1",
-      "status": "queued",
+      "status": "done",
       "issueCount": 12,
       "colorsAffected": [
         "blue",
@@ -5378,7 +5378,8 @@
           "sourcePath": null,
           "capturePath": null
         }
-      ]
+      ],
+      "completed_by": "C-PHASE 130.017"
     },
     {
       "rowId": "fox_adult_male",
