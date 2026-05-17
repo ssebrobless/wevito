@@ -868,7 +868,7 @@
       "lifeStage": "adult",
       "gender": "female",
       "priority": "P1",
-      "status": "queued",
+      "status": "done",
       "issueCount": 12,
       "colorsAffected": [
         "blue",
@@ -1066,7 +1066,9 @@
           "sourcePath": null,
           "capturePath": null
         }
-      ]
+      ],
+      "completedAtUtc": "2026-05-17T00:00:00Z",
+      "completionArtifactRoot": "vnext/artifacts/c-phase-130-batches/005-crow-adult-female"
     },
     {
       "rowId": "crow_adult_male",
@@ -27606,5 +27608,10 @@
         }
       ]
     }
-  ]
+  ],
+  "statusCounts": {
+    "queued": 55,
+    "done": 5
+  },
+  "lastUpdatedUtc": "2026-05-17T00:00:00Z"
 }
