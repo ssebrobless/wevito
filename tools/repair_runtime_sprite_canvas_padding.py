@@ -172,15 +172,34 @@ def run_candidate_mode(args: argparse.Namespace) -> int:
     out_dir = Path(args.out_dir).resolve()
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    paths = sorted(source_row.glob(f"{args.animation}_*.png"))
+    source_animation = args.animation
+    if args.source_path:
+        source_path = Path(args.source_path)
+        if not source_path.is_absolute():
+            source_path = repo_root / source_path
+        source_path = source_path.resolve()
+        if not source_path.exists():
+            raise SystemExit(f"source path does not exist: {source_path}")
+        try:
+            source_path.relative_to(runtime_root)
+        except ValueError as exc:
+            raise SystemExit(f"source path must stay under runtime root: {source_path}") from exc
+        match = FRAME_RE.match(source_path.name)
+        if match is None:
+            raise SystemExit(f"source path is not a runtime frame: {source_path}")
+        source_animation = match.group("animation")
+
+    paths = sorted(source_row.glob(f"{source_animation}_*.png"))
     if not paths:
-        raise SystemExit(f"no runtime frames found for {species}/{args.age}/{args.gender}/{args.color}/{args.animation}")
+        raise SystemExit(f"no runtime frames found for {species}/{args.age}/{args.gender}/{args.color}/{source_animation}")
 
     should_repair, repair_edges = should_repair_row(paths)
 
     records = []
     for path in paths:
-        output_path = out_dir / path.name
+        match = FRAME_RE.match(path.name)
+        frame_id = match.group("frame") if match else path.stem.rsplit("_", 1)[-1]
+        output_path = out_dir / f"{args.animation}_{frame_id}.png"
         before_hash = sha256(path)
         if should_repair:
             canvas, geometry = padded_image(path, repair_edges)
@@ -217,6 +236,8 @@ def run_candidate_mode(args: argparse.Namespace) -> int:
             "color": args.color,
             "animation": args.animation,
         },
+        "source_animation": source_animation,
+        "source_path": args.source_path or "",
         "repair_edges": sorted(repair_edges),
         "candidate_mode_note": "bottom-only or no edge contact copies frames unchanged" if not should_repair else "",
         "frame_count": len(records),
@@ -278,6 +299,7 @@ def main() -> int:
     parser.add_argument("--color", help="Color variant for single-row candidate mode.")
     parser.add_argument("--animation", help="Animation family for single-row candidate mode.")
     parser.add_argument("--out-dir", help="Candidate output folder for single-row candidate mode.")
+    parser.add_argument("--source-path", help="Optional runtime source frame when the target family falls back to another animation.")
     args = parser.parse_args()
 
     if args.out_dir:

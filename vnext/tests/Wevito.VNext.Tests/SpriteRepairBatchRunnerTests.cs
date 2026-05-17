@@ -55,6 +55,24 @@ public sealed class SpriteRepairBatchRunnerTests
     }
 
     [Fact]
+    public async Task PassesIssueSourcePathToRepairCommand()
+    {
+        var row = Row("goose", "baby", "female", sourcePath: @"C:\repo\sprites_runtime\goose\baby\female\blue\happy_00.png");
+        var fixture = BatchFixture.Create(row);
+        fixture.WriteRuntime("idle_00.png", "before");
+        var commandRunner = new CandidateWritingCommandRunner("after");
+        var runner = fixture.CreateRunner(commandRunner: commandRunner, proofRunner: _ => true);
+
+        var result = await runner.RunAsync(fixture.Request());
+
+        Assert.True(result.Succeeded);
+        var args = commandRunner.LastArguments.ToList();
+        var sourcePathIndex = args.IndexOf("--source-path");
+        Assert.True(sourcePathIndex >= 0);
+        Assert.Equal(@"C:\repo\sprites_runtime\goose\baby\female\blue\happy_00.png", args[sourcePathIndex + 1]);
+    }
+
+    [Fact]
     public async Task DryRunApplyAcceptsCandidatesFolder()
     {
         var fixture = BatchFixture.Create();
@@ -296,7 +314,7 @@ public sealed class SpriteRepairBatchRunnerTests
         }
     }
 
-    private static SpriteRepairQueueRow Row(string species, string lifeStage, string gender)
+    private static SpriteRepairQueueRow Row(string species, string lifeStage, string gender, string? sourcePath = null)
     {
         return new SpriteRepairQueueRow(
             $"{species}_{lifeStage}_{gender}",
@@ -318,7 +336,7 @@ public sealed class SpriteRepairBatchRunnerTests
                     ["test"],
                     "tools/fake_repair.py",
                     "test repair",
-                    null,
+                    sourcePath,
                     null)
             ]);
     }
