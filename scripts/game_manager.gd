@@ -6,7 +6,16 @@ const PetData = preload("res://scripts/pet_data.gd")
 
 const MAX_PETS = 3
 const ANIMAL_TYPES = ["rat", "crow", "fox", "snake", "deer", "frog", "pigeon", "raccoon", "squirrel", "goose"]
-const EGG_COLORS = ["red", "orange", "yellow", "blue", "indigo", "violet"]
+const STARTER_EGGS_PATH := "res://vnext/content/starter_eggs.json"
+const FALLBACK_STARTER_EGGS := [
+	{"color": "red", "label": "Red egg", "hex": "#D94A42", "species": "fox", "enabled": true, "disabledReason": ""},
+	{"color": "orange", "label": "Orange egg", "hex": "#E98635", "species": "squirrel", "enabled": true, "disabledReason": ""},
+	{"color": "yellow", "label": "Yellow egg", "hex": "#E8C84E", "species": "goose", "enabled": true, "disabledReason": ""},
+	{"color": "green", "label": "Green egg", "hex": "#62B45D", "species": "deer", "enabled": false, "disabledReason": "Green runtime sprites are not installed yet."},
+	{"color": "blue", "label": "Blue egg", "hex": "#4C8FE8", "species": "frog", "enabled": true, "disabledReason": ""},
+	{"color": "indigo", "label": "Indigo egg", "hex": "#4B5BC8", "species": "crow", "enabled": true, "disabledReason": ""},
+	{"color": "violet", "label": "Violet egg", "hex": "#8C58D8", "species": "raccoon", "enabled": true, "disabledReason": ""}
+]
 
 # Animal environments and innate conditions
 const ANIMAL_DATA = {
@@ -69,6 +78,7 @@ var auto_save_timer: float = 0.0
 var forage_state: Dictionary = {}
 var workout_heat: Dictionary = {}
 var habitat_loadouts: Dictionary = {}
+var starter_eggs: Array = []
 var critical_threshold_notified: Dictionary = {}
 
 # Game settings
@@ -121,7 +131,49 @@ signal naming_needed(pet_index: int)
 signal pet_critical_threshold_crossed(pet_index: int, stat_name: String, stat_value: float)
 
 func _ready():
+	starter_eggs = _load_starter_eggs()
 	_load_habitat_loadouts()
+
+func get_starter_egg_options() -> Array:
+	if starter_eggs.is_empty():
+		starter_eggs = _load_starter_eggs()
+	return starter_eggs.duplicate(true)
+
+func get_enabled_starter_egg_colors() -> Array:
+	var colors: Array = []
+	for egg in get_starter_egg_options():
+		if bool(egg.get("enabled", true)):
+			colors.append(str(egg.get("color", "")))
+	return colors
+
+func _load_starter_eggs() -> Array:
+	if not FileAccess.file_exists(STARTER_EGGS_PATH):
+		return FALLBACK_STARTER_EGGS.duplicate(true)
+	var file = FileAccess.open(STARTER_EGGS_PATH, FileAccess.READ)
+	if file == null:
+		return FALLBACK_STARTER_EGGS.duplicate(true)
+	var parsed = JSON.parse_string(file.get_as_text())
+	if parsed is Dictionary and parsed.has("eggs") and parsed["eggs"] is Array:
+		return parsed["eggs"]
+	return FALLBACK_STARTER_EGGS.duplicate(true)
+
+func _resolve_starter_egg(egg_color: String) -> Dictionary:
+	for egg in get_starter_egg_options():
+		if str(egg.get("color", "")).to_lower() == egg_color.to_lower():
+			return egg
+	return {}
+
+func _resolve_starter_egg_species(egg_color: String) -> String:
+	var egg = _resolve_starter_egg(egg_color)
+	if egg.has("species"):
+		return str(egg["species"])
+	return ANIMAL_TYPES.pick_random()
+
+func _pick_enabled_starter_egg_color() -> String:
+	var colors = get_enabled_starter_egg_colors()
+	if colors.is_empty():
+		return "red"
+	return colors.pick_random()
 
 func get_active_pet() -> Pet:
 	if pets.size() > 0 and active_pet_index < pets.size():
@@ -146,11 +198,11 @@ func add_pet(pet_node: Pet) -> int:
 	var new_index = pets.size()
 	pets.append(pet_node)
 	
-	# Create new pet data with random animal/gender
+	# Create new pet data with random enabled egg/gender; the egg now owns species.
 	var pd = PetData.new()
 	pd.name = "Wevito"
-	pd.egg_color = EGG_COLORS.pick_random()
-	pd.animal_type = ANIMAL_TYPES.pick_random()
+	pd.egg_color = _pick_enabled_starter_egg_color()
+	pd.animal_type = _resolve_starter_egg_species(pd.egg_color)
 	pd.gender = "male" if randf() > 0.5 else "female"
 	pd.is_hatching = true
 	pd.position = Vector2(80 + new_index * 100, 280)
@@ -173,11 +225,16 @@ func add_pet_with_color(pet_node: Pet, egg_color: String) -> int:
 	var new_index = pets.size()
 	pets.append(pet_node)
 	
-	# Create new pet data with selected color, random animal/gender
+	var egg = _resolve_starter_egg(egg_color)
+	if egg.is_empty() or not bool(egg.get("enabled", true)):
+		pets.erase(pet_node)
+		return -1
+
+	# Create new pet data with selected color and deterministic hidden species.
 	var pd = PetData.new()
 	pd.name = "Wevito"
 	pd.egg_color = egg_color
-	pd.animal_type = ANIMAL_TYPES.pick_random()
+	pd.animal_type = str(egg.get("species", ANIMAL_TYPES.pick_random()))
 	pd.gender = "male" if randf() > 0.5 else "female"
 	pd.is_hatching = true
 	pd.position = Vector2(80 + new_index * 100, 280)

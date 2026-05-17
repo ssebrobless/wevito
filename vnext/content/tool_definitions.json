@@ -78,6 +78,17 @@
     "mayMutate": false
   },
   {
+    "id": "sprite-cleanup-help",
+    "displayName": "Sprite Cleanup Help",
+    "toolFamily": "spriteAudit",
+    "defaultState": "draft-only",
+    "networkDefault": "disabled",
+    "hostedAiDefault": "disabled",
+    "mayMutate": false,
+    "adapter": "SpriteAuditPreviewAdapter",
+    "description": "Creates a read-only sprite audit draft from first-run onboarding. No mutation runs until a later per-species repair card is explicitly approved."
+  },
+  {
     "id": "petState",
     "displayName": "Pet State",
     "toolFamily": "petState",

@@ -46,6 +46,33 @@ public sealed class ToolPopupWindowActionTextTests
     }
 
     [Fact]
+    public void FormatActionSummaryIncludesClarityDescription()
+    {
+        var pets = new[]
+        {
+            new PetActor(Guid.NewGuid(), "Frog 1", "frog", ActiveStatuses: [])
+        };
+
+        var text = ToolPopupWindow.FormatActionSummary(
+            "Water",
+            "Drag a water item onto the selected pet to refill thirst.",
+            2,
+            pets);
+
+        Assert.Contains("refill thirst", text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Frog 1", text);
+    }
+
+    [Fact]
+    public void ActionsJsonContainsDescriptionsForEveryAction()
+    {
+        var json = File.ReadAllText(FindRepoFile("vnext", "content", "actions.json"));
+
+        Assert.Contains("\"description\"", json);
+        Assert.Equal(9, json.Split("\"description\"", StringSplitOptions.None).Length - 1);
+    }
+
+    [Fact]
     public void BuildActionOptionButtonLabelNamesTheTargetPet()
     {
         var pets = new[]

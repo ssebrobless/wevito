@@ -64,6 +64,8 @@ public partial class HomePanelWindow : Window
 
     public event Func<string, Task>? StarterEggRequested;
 
+    public event Func<FirstLaunchBackgroundChoice, Task>? FirstRunChoiceRequested;
+
     public event Action<string>? ActionRequested;
 
     public event Func<string, string, Task>? ActionOptionRequested;
@@ -256,7 +258,7 @@ public partial class HomePanelWindow : Window
         var stageRect = GetStageRect();
         if (state.ActivePets.Count == 0)
         {
-            RenderStarterEggPrompt(stageRect);
+            RenderStarterEggPrompt(stageRect, state.SettingsSnapshot);
         }
 
         var now = DateTimeOffset.UtcNow;
@@ -410,7 +412,7 @@ public partial class HomePanelWindow : Window
                !pet.IsDead;
     }
 
-    private void RenderStarterEggPrompt(RectInt stageRect)
+    private void RenderStarterEggPrompt(RectInt stageRect, IReadOnlyDictionary<string, string> settings)
     {
         var layout = ComputeStarterEggPromptLayout(stageRect, StarterEggCatalog.Eggs.Count);
         var panel = new Border
@@ -457,6 +459,11 @@ public partial class HomePanelWindow : Window
         }
 
         stack.Children.Add(choices);
+        if (ShouldRenderFirstRunChoicePanel(settings))
+        {
+            stack.Children.Add(BuildFirstRunChoicePanel());
+        }
+
         panel.Child = new ScrollViewer
         {
             VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
@@ -469,6 +476,56 @@ public partial class HomePanelWindow : Window
         Canvas.SetTop(panel, layout.Top);
         Canvas.SetZIndex(panel, HabitatDepthOrder.GetZIndex(DepthBand.UiOverlay));
         HomePetCanvas.Children.Add(panel);
+    }
+
+    private static bool ShouldRenderFirstRunChoicePanel(IReadOnlyDictionary<string, string> settings)
+    {
+        return !settings.TryGetValue(FirstLaunchWizardStateService.InlineChoiceDismissedSetting, out var dismissed) ||
+               !bool.TryParse(dismissed, out var parsed) ||
+               !parsed;
+    }
+
+    private StackPanel BuildFirstRunChoicePanel()
+    {
+        var panel = new StackPanel
+        {
+            Margin = new Thickness(0, 10, 0, 0)
+        };
+        panel.Children.Add(new TextBlock
+        {
+            Text = "Want Wevito to prepare anything in the background?",
+            Foreground = Brushes.White,
+            FontWeight = FontWeights.SemiBold,
+            FontSize = 11,
+            Margin = new Thickness(0, 0, 0, 5)
+        });
+        var choices = new WrapPanel
+        {
+            Orientation = Orientation.Horizontal
+        };
+        AddFirstRunChoiceButton(choices, "Just play with the pet", FirstLaunchBackgroundChoice.JustChat);
+        AddFirstRunChoiceButton(choices, "Help with sprite cleanup", FirstLaunchBackgroundChoice.HelpWithSpriteCleanup);
+        AddFirstRunChoiceButton(choices, "Set up local AI runtime", FirstLaunchBackgroundChoice.SetUpLocalAiRuntime);
+        panel.Children.Add(choices);
+        return panel;
+    }
+
+    private void AddFirstRunChoiceButton(Panel parent, string label, FirstLaunchBackgroundChoice choice)
+    {
+        var button = new Button
+        {
+            Content = label,
+            Tag = choice,
+            Margin = new Thickness(0, 0, 6, 5),
+            Padding = new Thickness(8, 4, 8, 4),
+            Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#26374B")),
+            BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#536B88")),
+            Foreground = Brushes.White,
+            FontSize = 10,
+            Cursor = System.Windows.Input.Cursors.Hand
+        };
+        button.Click += FirstRunChoiceButton_OnClick;
+        parent.Children.Add(button);
     }
 
     internal static StarterEggPromptLayout ComputeStarterEggPromptLayout(RectInt stageRect, int eggCount)
@@ -547,6 +604,14 @@ public partial class HomePanelWindow : Window
         if (sender is FrameworkElement { Tag: string colorVariant } && StarterEggRequested is not null)
         {
             await StarterEggRequested.Invoke(colorVariant);
+        }
+    }
+
+    private async void FirstRunChoiceButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is FrameworkElement { Tag: FirstLaunchBackgroundChoice choice } && FirstRunChoiceRequested is not null)
+        {
+            await FirstRunChoiceRequested.Invoke(choice);
         }
     }
 
