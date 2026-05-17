@@ -456,7 +456,7 @@
       "lifeStage": "teen",
       "gender": "female",
       "priority": "P1",
-      "status": "queued",
+      "status": "done",
       "issueCount": 12,
       "colorsAffected": [
         "blue",
