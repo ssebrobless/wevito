@@ -58,6 +58,7 @@ internal static class DevControlSnapshotBuilder
         var lifeStage = pet.AgeStage.ToString().ToLowerInvariant();
         var behavior = pet.BehaviorState.ToString();
         var animation = pet.CurrentAnimationState.ToString();
+        var actionVisualFamily = pet.CurrentActionVisualIntent?.Family.ToString();
         var display = $"{pet.Name}\n{pet.SpeciesId} | {gender} | {pet.ColorVariant} | {lifeStage}";
 
         return new DevControlPetSlotSnapshot(
@@ -72,7 +73,9 @@ internal static class DevControlSnapshotBuilder
             false,
             pet.IsDead,
             behavior,
-            animation);
+            animation,
+            actionVisualFamily,
+            string.IsNullOrWhiteSpace(pet.LastActionId) ? null : pet.LastActionId);
     }
 
     private static DevControlOptions BuildOptions(GameContent content)

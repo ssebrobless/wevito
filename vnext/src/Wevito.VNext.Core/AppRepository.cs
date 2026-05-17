@@ -7,6 +7,8 @@ namespace Wevito.VNext.Core;
 public sealed class AppRepository
 {
     public const int CurrentSchemaVersion = 2;
+    public const string DefaultDataDirectoryName = "WevitoVNext";
+    public const string DefaultDatabaseFileName = "wevito-vnext.db";
     private readonly string _databasePath;
 
     public AppRepository(string databasePath)
@@ -117,6 +119,26 @@ public sealed class AppRepository
         }
 
         await transaction.CommitAsync(cancellationToken);
+    }
+
+    public static string ResolveDefaultDataRoot()
+    {
+        return ResolveDefaultDataRoot(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData));
+    }
+
+    public static string ResolveDefaultDataRoot(string localApplicationData)
+    {
+        return Path.Combine(localApplicationData, DefaultDataDirectoryName);
+    }
+
+    public static string ResolveDefaultDatabasePath()
+    {
+        return Path.Combine(ResolveDefaultDataRoot(), DefaultDatabaseFileName);
+    }
+
+    public static string ResolveDefaultDatabasePath(string localApplicationData)
+    {
+        return Path.Combine(ResolveDefaultDataRoot(localApplicationData), DefaultDatabaseFileName);
     }
 
     private SqliteConnection OpenConnection()

@@ -15,7 +15,7 @@
     "effectSummary": "Restores thirst and steadies comfort.",
     "description": "Drag a water item onto the selected pet to refill thirst.",
     "iconId": "water",
-    "animationState": "eat",
+    "animationState": "drink",
     "optionalAnimationFamily": "drink",
     "feedbackText": "Clean water is refreshed for the group.",
     "isPrimaryAction": true
@@ -47,7 +47,7 @@
     "effectSummary": "Improves cleanliness and trust.",
     "description": "Drag a grooming item onto the selected pet to improve grooming.",
     "iconId": "groom",
-    "animationState": "happy",
+    "animationState": "groom",
     "feedbackText": "A gentle grooming pass settles the group.",
     "isPrimaryAction": true
   },
@@ -77,7 +77,7 @@
     "effectSummary": "Provides stronger health recovery.",
     "description": "Use a doctor-care item on the selected pet for stronger recovery.",
     "iconId": "doctor",
-    "animationState": "sick",
+    "animationState": "doctor",
     "feedbackText": "A closer health check is given to the pets.",
     "isPrimaryAction": true
   },

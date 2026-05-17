@@ -5,17 +5,14 @@ Use this with `docs/RC_CHECKLIST_V1.md`.
 ## Summary
 
 - Critical: 0
-- Major: 4
+- Major: 0
 - Minor: 0
 
 ## Open Bugs
 
 | ID | Severity | RC Item | Pets | Mode | Title | Status |
 |---|---|---|---|---|---|---|
-| BUG-001 | Major | RC-29 | 0 | Focused | Fresh-profile reset target is stale; live save persists in WevitoVNext SQLite, not `%LOCALAPPDATA%\Wevito\state.json` | Open |
-| BUG-002 | Major | RC-01 | 0 | Focused | First-launch `Help with sprite cleanup` choice records the setting but creates no `spriteAudit` draft task card | Open |
-| BUG-003 | Major | RC-21 | 0 | Focused | WPF starter egg catalog and Godot egg picker disagree: WPF has seven ROYGBIV eggs with green disabled, Godot has six colors and random species mapping | Open |
-| BUG-004 | Major | RC-25 | 1 | Focused | Successful DevControl care actions do not always produce distinct animation-state transitions (`water`, `groom`, `doctor`) | Open |
+|  |  |  |  |  |  |  |
 
 ## In Progress
 
@@ -27,7 +24,10 @@ Use this with `docs/RC_CHECKLIST_V1.md`.
 
 | ID | Linked RC Items | Fix Notes |
 |---|---|---|
-|  |  |  |
+| BUG-001 | RC-29 | C-PHASE 126b adds the live SQLite profile path contract plus a backup-first reset script at `tools/reset-wevito-vnext-profile.ps1`. |
+| BUG-002 | RC-01 | C-PHASE 126a drafts a `spriteAudit` TaskCard from `Help with sprite cleanup`; ready for live retest. |
+| BUG-003 | RC-21 | C-PHASE 126a moved WPF/Godot to the shared ROYGBIV starter egg catalog; ready for live retest. |
+| BUG-004 | RC-25 | C-PHASE 126b gives `water`, `groom`, and `doctor` first-class confirmation states while keeping sprite fallback safe. |
 
 ## Closed
 
@@ -40,6 +40,7 @@ Use this with `docs/RC_CHECKLIST_V1.md`.
 - 2026-02-23: Phase 2 kicked off. Baseline startup/parse checks passed.
 - 2026-02-23: Static behavior wiring verified in code; no runtime bug entries yet.
 - 2026-05-16: C-PHASE 125 product-truth baseline appended BUG-001 through BUG-004 from live build evidence on commit `c3572a176`.
+- 2026-05-16: C-PHASE 126a moved BUG-002 and BUG-003 to ready for retest; C-PHASE 126b moved BUG-001 and BUG-004 to ready for retest.
 
 ## BUG-001 Detail
 

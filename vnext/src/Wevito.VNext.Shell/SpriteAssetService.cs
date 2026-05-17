@@ -327,9 +327,12 @@ public sealed class SpriteAssetService
         {
             PetAnimationState.Walk => 120,
             PetAnimationState.Eat => 140,
+            PetAnimationState.Drink => 150,
             PetAnimationState.Happy => 150,
+            PetAnimationState.Groom => 170,
             PetAnimationState.Bathe => 170,
             PetAnimationState.Sick => 220,
+            PetAnimationState.Doctor => 220,
             PetAnimationState.Sad => 260,
             PetAnimationState.Sleep => 420,
             PetAnimationState.Waving => 150,
@@ -377,6 +380,9 @@ public sealed class SpriteAssetService
             PetAnimationState.Failed => "sad",
             PetAnimationState.Waiting => "idle",
             PetAnimationState.Review => "idle",
+            PetAnimationState.Drink => "eat",
+            PetAnimationState.Groom => "happy",
+            PetAnimationState.Doctor => "sick",
             _ => animationState.ToString().ToLowerInvariant()
         };
     }
