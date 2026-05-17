@@ -1,0 +1,15 @@
+commandId: sprite-repair-batch
+command: python C:\Users\fishe\Documents\projects\wevito\tools\repair_runtime_sprite_canvas_padding.py --repo-root C:\Users\fishe\Documents\projects\wevito --row-id deer_teen_male --species deer --age teen --gender male --color red --animation sad --out-dir C:\Users\fishe\Documents\projects\wevito\sprites_authored\.candidates\c-phase-130-001-deer_teen_male-red-sad --source-path C:\Users\fishe\Documents\projects\wevito\sprites_runtime\deer\teen\male\red\sad_00.png
+status: MutationDetected
+exitCode: 0
+mutationDetected: True
+
+mutatedProtectedPaths:
+- sprites_authored/.candidates/c-phase-130-001-deer_teen_male-red-sad/candidate-summary.json
+- sprites_authored/.candidates/c-phase-130-001-deer_teen_male-red-sad/sad_00.png
+- sprites_authored/.candidates/c-phase-130-001-deer_teen_male-red-sad/sad_01.png
+
+## stdout
+exported 2 padded candidate frame(s) to C:\Users\fishe\Documents\projects\wevito\sprites_authored\.candidates\c-phase-130-001-deer_teen_male-red-sad
+
+## stderr

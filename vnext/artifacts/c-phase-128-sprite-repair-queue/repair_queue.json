@@ -3017,7 +3017,7 @@
       "lifeStage": "teen",
       "gender": "male",
       "priority": "P1",
-      "status": "queued",
+      "status": "done",
       "issueCount": 30,
       "colorsAffected": [
         "blue",
@@ -3453,7 +3453,8 @@
           "sourcePath": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites_runtime\\deer\\teen\\male\\yellow\\sleep_00.png",
           "capturePath": "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\c-phase-127-matrix-sweep\\cells\\deer_teen_male_yellow_sleep.png"
         }
-      ]
+      ],
+      "completed_by": "C-PHASE 130.010"
     },
     {
       "rowId": "deer_adult_female",
