@@ -72,11 +72,11 @@ public sealed class HomePanelWindowRenderingTests
     }
 
     [Fact]
-    public void ComputeStarterEggPromptLayout_KeepsSevenEggGridInsideStage()
+    public void ComputeStarterEggPromptLayout_KeepsSixEggGridInsideStage()
     {
         var stage = new RectInt(25, 440, 360, 220);
 
-        var layout = HomePanelWindow.ComputeStarterEggPromptLayout(stage, eggCount: 7);
+        var layout = HomePanelWindow.ComputeStarterEggPromptLayout(stage, eggCount: 6);
 
         Assert.True(layout.Width <= stage.Width - 16);
         Assert.True(layout.MaxHeight <= stage.Height - 16);
@@ -88,11 +88,11 @@ public sealed class HomePanelWindowRenderingTests
     }
 
     [Fact]
-    public void ComputeStarterEggPromptLayout_UsesCompactColumnsForSevenEggs()
+    public void ComputeStarterEggPromptLayout_UsesCompactColumnsForSixEggs()
     {
         var stage = new RectInt(25, 440, 612, 300);
 
-        var layout = HomePanelWindow.ComputeStarterEggPromptLayout(stage, eggCount: 7);
+        var layout = HomePanelWindow.ComputeStarterEggPromptLayout(stage, eggCount: 6);
 
         Assert.Equal(3, layout.Columns);
         Assert.True(layout.Width <= 460);
