@@ -173,6 +173,21 @@
                                    FontWeight="SemiBold"
                                    Text="Evidence: Day 0 of 0" />
                     </Border>
+                    <Border x:Name="LocalBrainBadge"
+                            Margin="6,0,0,0"
+                            Padding="8,4"
+                            CornerRadius="4"
+                            Background="#263C35"
+                            BorderBrush="#7DB89A"
+                            BorderThickness="1"
+                            automation:AutomationProperties.AutomationId="LocalBrainBadge"
+                            ToolTip="Local brain status">
+                        <TextBlock x:Name="LocalBrainBadgeText"
+                                   Foreground="#FFEAF7FB"
+                                   FontSize="11"
+                                   FontWeight="SemiBold"
+                                   Text="BRAIN starting" />
+                    </Border>
                     <Button x:Name="BenchmarkBadgeButton"
                             Margin="6,0,0,0"
                             Style="{StaticResource HudButtonStyle}"
