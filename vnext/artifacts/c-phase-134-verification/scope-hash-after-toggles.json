@@ -1,0 +1,10 @@
+{
+    "spritePath":  "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites_runtime\\crow\\adult\\female\\blue\\bathe_00.png",
+    "spritePreSha256":  "5392A0CDBC7E93E2B443458CB83046BF88F339EF4E9C777F2B92B585947C2D1F",
+    "spritePostSha256":  "5392A0CDBC7E93E2B443458CB83046BF88F339EF4E9C777F2B92B585947C2D1F",
+    "spriteEqual":  true,
+    "auditJsonlPath":  "C:\\Users\\fishe\\AppData\\Local\\Wevito\\audit\\coexistence-events.jsonl",
+    "auditPreSha256":  "BF74B860AF7BF7864913940ED50ECD17FF5274499FE07E1F82D81F78A49CE106",
+    "auditPostSha256":  "BF74B860AF7BF7864913940ED50ECD17FF5274499FE07E1F82D81F78A49CE106",
+    "auditEqual":  true
+}

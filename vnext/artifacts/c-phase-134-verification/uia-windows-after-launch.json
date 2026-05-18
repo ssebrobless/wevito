@@ -1,0 +1,51 @@
+[
+    {
+        "Name":  "Wevito Home Panel",
+        "ClassName":  "Window",
+        "AutomationId":  "",
+        "ProcessId":  8512,
+        "BoundingRectangle":  "234,234,660,910"
+    },
+    {
+        "Name":  "Wevito Basket",
+        "ClassName":  "Window",
+        "AutomationId":  "",
+        "ProcessId":  8512,
+        "BoundingRectangle":  "104,104,450,344"
+    },
+    {
+        "Name":  "Wevito Roam Band",
+        "ClassName":  "Window",
+        "AutomationId":  "",
+        "ProcessId":  8512,
+        "BoundingRectangle":  "52,52,1280,118"
+    },
+    {
+        "Name":  "Codex",
+        "ClassName":  "Chrome_WidgetWin_1",
+        "AutomationId":  "",
+        "ProcessId":  1260,
+        "BoundingRectangle":  "-6,2,851,799"
+    },
+    {
+        "Name":  "? Create C-PHASE 134+ plan from planning request",
+        "ClassName":  "CASCADIA_HOSTING_WINDOW_CLASS",
+        "AutomationId":  "",
+        "ProcessId":  14536,
+        "BoundingRectangle":  "880,3,1047,635"
+    },
+    {
+        "Name":  "Codex",
+        "ClassName":  "Chrome_WidgetWin_1",
+        "AutomationId":  "",
+        "ProcessId":  1260,
+        "BoundingRectangle":  "1506,701,399,359"
+    },
+    {
+        "Name":  "Steam",
+        "ClassName":  "SDL_app",
+        "AutomationId":  "",
+        "ProcessId":  12684,
+        "BoundingRectangle":  "Empty"
+    }
+]

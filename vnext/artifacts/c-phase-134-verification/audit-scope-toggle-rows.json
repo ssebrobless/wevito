@@ -1,0 +1,62 @@
+[
+  {
+    "id": 19659,
+    "packet_id": "b081baf6-4be8-4942-a9e9-52bc95617881",
+    "packet_kind": "autonomous_scope_enabled_changed",
+    "task_card_id": "",
+    "created_at_utc": "2026-05-18T10:09:18.3122914+00:00",
+    "did_use_network": 0,
+    "did_use_hosted_ai": 0,
+    "did_use_local_model": 0,
+    "did_mutate": 0,
+    "artifact_path": "",
+    "summary": "Autonomous scope 'sprite-repair-triage' enabled=True.",
+    "status": "Completed",
+    "error": ""
+  },
+  {
+    "id": 19660,
+    "packet_id": "ca2fc824-80ba-4b49-b9ce-f16acb6e4394",
+    "packet_kind": "autonomous_scope_enabled_changed",
+    "task_card_id": "",
+    "created_at_utc": "2026-05-18T10:09:32.7648490+00:00",
+    "did_use_network": 0,
+    "did_use_hosted_ai": 0,
+    "did_use_local_model": 0,
+    "did_mutate": 0,
+    "artifact_path": "",
+    "summary": "Autonomous scope 'sprite-repair-triage' enabled=False.",
+    "status": "Completed",
+    "error": ""
+  },
+  {
+    "id": 19661,
+    "packet_id": "4e7ee46e-23d5-463d-abde-a6031d80de79",
+    "packet_kind": "autonomous_scope_enabled_changed",
+    "task_card_id": "",
+    "created_at_utc": "2026-05-18T10:09:35.1057582+00:00",
+    "did_use_network": 0,
+    "did_use_hosted_ai": 0,
+    "did_use_local_model": 0,
+    "did_mutate": 0,
+    "artifact_path": "",
+    "summary": "Autonomous scope 'audit-ledger-cleanup' enabled=True.",
+    "status": "Completed",
+    "error": ""
+  },
+  {
+    "id": 19662,
+    "packet_id": "a57f8b2e-34cb-4f13-9b56-6eeb5458eb84",
+    "packet_kind": "autonomous_scope_enabled_changed",
+    "task_card_id": "",
+    "created_at_utc": "2026-05-18T10:09:49.5882676+00:00",
+    "did_use_network": 0,
+    "did_use_hosted_ai": 0,
+    "did_use_local_model": 0,
+    "did_mutate": 0,
+    "artifact_path": "",
+    "summary": "Autonomous scope 'audit-ledger-cleanup' enabled=False.",
+    "status": "Completed",
+    "error": ""
+  }
+]

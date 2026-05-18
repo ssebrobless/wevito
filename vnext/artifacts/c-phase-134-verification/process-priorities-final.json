@@ -1,0 +1,14 @@
+[
+    {
+        "Name":  "Wevito.VNext.Broker",
+        "Id":  6932,
+        "PriorityClass":  16384,
+        "Path":  "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\src\\Wevito.VNext.Broker\\bin\\Debug\\net8.0-windows\\Wevito.VNext.Broker.exe"
+    },
+    {
+        "Name":  "Wevito.VNext.Shell",
+        "Id":  21120,
+        "PriorityClass":  16384,
+        "Path":  "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\src\\Wevito.VNext.Shell\\bin\\Debug\\net8.0-windows10.0.19041.0\\Wevito.VNext.Shell.exe"
+    }
+]

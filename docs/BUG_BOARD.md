@@ -24,16 +24,16 @@ Use this with `docs/RC_CHECKLIST_V1.md`.
 
 | ID | Linked RC Items | Fix Notes |
 |---|---|---|
-| BUG-001 | RC-29 | C-PHASE 126b adds the live SQLite profile path contract plus a backup-first reset script at `tools/reset-wevito-vnext-profile.ps1`. |
-| BUG-002 | RC-01 | C-PHASE 126a drafts a `spriteAudit` TaskCard from `Help with sprite cleanup`; ready for live retest. |
-| BUG-003 | RC-21 | C-PHASE 126a moved WPF/Godot to the shared ROYGBIV starter egg catalog; ready for live retest. |
-| BUG-004 | RC-25 | C-PHASE 126b gives `water`, `groom`, and `doctor` first-class confirmation states while keeping sprite fallback safe. |
+|  |  |  |
 
 ## Closed
 
 | ID | Severity | RC Item | Resolution |
 |---|---|---|---|
-|  |  |  |  |
+| BUG-001 | Major | RC-29 | Closed in C-PHASE 134. Live reset target is `%LOCALAPPDATA%\WevitoVNext\wevito-vnext.db`, and `tools/reset-wevito-vnext-profile.ps1` performed a backup-first reset. Evidence: `vnext/artifacts/c-phase-134-verification/reset-profile-dry-run.txt`, `vnext/artifacts/c-phase-134-verification/reset-profile-actual.txt`. |
+| BUG-002 | Major | RC-01 | Closed in C-PHASE 134. Selecting `Help with sprite cleanup` drafted a persisted `TaskCard` with `Status=Draft` and `ToolFamily=spriteAudit`. Evidence: `vnext/artifacts/c-phase-134-verification/sqlite-state-after-help-choice.json`, `vnext/artifacts/c-phase-134-verification/devcontrol-snapshot-after-help-choice.json`. |
+| BUG-003 | Major | RC-21 | Closed in C-PHASE 134. WPF rendered six v1 starter eggs only: red, orange, yellow, blue, indigo, violet; green was omitted, and Godot fallback matched the same six-color catalog. Evidence: `vnext/artifacts/c-phase-134-verification/egg-catalog-parity.json`. |
+| BUG-004 | Major | RC-25 | Closed in C-PHASE 134. DevControl action retest returned success for all nine actions, and `water`, `groom`, and `doctor` now transitioned animation state. Evidence: `vnext/artifacts/c-phase-134-verification/devcontrol-red-fox-actions.json`. |
 
 ## Session Notes
 
@@ -41,6 +41,7 @@ Use this with `docs/RC_CHECKLIST_V1.md`.
 - 2026-02-23: Static behavior wiring verified in code; no runtime bug entries yet.
 - 2026-05-16: C-PHASE 125 product-truth baseline appended BUG-001 through BUG-004 from live build evidence on commit `c3572a176`.
 - 2026-05-16: C-PHASE 126a moved BUG-002 and BUG-003 to ready for retest; C-PHASE 126b moved BUG-001 and BUG-004 to ready for retest.
+- 2026-05-18: C-PHASE 134 live retest closed BUG-001 through BUG-004 on commit `c6365a4fe`.
 
 ## BUG-001 Detail
 

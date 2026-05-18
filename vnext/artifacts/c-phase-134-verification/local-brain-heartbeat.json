@@ -1,0 +1,17 @@
+[
+  {
+    "id": 19642,
+    "packet_id": "1ee63e97-ede3-448f-81e3-6a2c70825ee7",
+    "packet_kind": "local_brain_heartbeat",
+    "task_card_id": "",
+    "created_at_utc": "2026-05-18T10:01:44.5215839+00:00",
+    "did_use_network": 0,
+    "did_use_hosted_ai": 0,
+    "did_use_local_model": 0,
+    "did_mutate": 0,
+    "artifact_path": "",
+    "summary": "Local brain offline: Ollama probe failed: TaskCanceledException.",
+    "status": "Offline",
+    "error": "Ollama probe failed: TaskCanceledException."
+  }
+]

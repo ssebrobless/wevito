@@ -1,0 +1,1018 @@
+[
+    {
+        "Name":  "Wevito Settings",
+        "ControlType":  "ControlType.Window",
+        "AutomationId":  "",
+        "ClassName":  "Window",
+        "IsEnabled":  true,
+        "Rect":  "702,110,520,720"
+    },
+    {
+        "Name":  "Settings",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "PopupTitle",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "715,123,440,27"
+    },
+    {
+        "Name":  "Close",
+        "ControlType":  "ControlType.Button",
+        "AutomationId":  "ToolCloseButton",
+        "ClassName":  "Button",
+        "IsEnabled":  true,
+        "Rect":  "1155,123,54,27"
+    },
+    {
+        "Name":  "Close",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "1166,128,32,17"
+    },
+    {
+        "Name":  "",
+        "ControlType":  "ControlType.Pane",
+        "AutomationId":  "",
+        "ClassName":  "ScrollViewer",
+        "IsEnabled":  true,
+        "Rect":  "715,158,494,24"
+    },
+    {
+        "Name":  "Chat",
+        "ControlType":  "ControlType.Button",
+        "AutomationId":  "",
+        "ClassName":  "Button",
+        "IsEnabled":  true,
+        "Rect":  "715,158,37,24"
+    },
+    {
+        "Name":  "Chat",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "723,163,21,14"
+    },
+    {
+        "Name":  "Activity",
+        "ControlType":  "ControlType.Button",
+        "AutomationId":  "",
+        "ClassName":  "Button",
+        "IsEnabled":  true,
+        "Rect":  "758,158,50,24"
+    },
+    {
+        "Name":  "Activity",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "766,163,34,14"
+    },
+    {
+        "Name":  "Agents",
+        "ControlType":  "ControlType.Button",
+        "AutomationId":  "",
+        "ClassName":  "Button",
+        "IsEnabled":  true,
+        "Rect":  "814,158,48,24"
+    },
+    {
+        "Name":  "Agents",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "822,163,32,14"
+    },
+    {
+        "Name":  "Tools",
+        "ControlType":  "ControlType.Button",
+        "AutomationId":  "",
+        "ClassName":  "Button",
+        "IsEnabled":  true,
+        "Rect":  "868,158,39,24"
+    },
+    {
+        "Name":  "Tools",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "876,163,23,14"
+    },
+    {
+        "Name":  "Benchmarks",
+        "ControlType":  "ControlType.Button",
+        "AutomationId":  "",
+        "ClassName":  "Button",
+        "IsEnabled":  true,
+        "Rect":  "913,158,71,24"
+    },
+    {
+        "Name":  "Benchmarks",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "921,163,55,14"
+    },
+    {
+        "Name":  "Creative Lab",
+        "ControlType":  "ControlType.Button",
+        "AutomationId":  "",
+        "ClassName":  "Button",
+        "IsEnabled":  true,
+        "Rect":  "990,158,72,24"
+    },
+    {
+        "Name":  "Creative Lab",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "998,163,56,14"
+    },
+    {
+        "Name":  "Settings",
+        "ControlType":  "ControlType.Button",
+        "AutomationId":  "",
+        "ClassName":  "Button",
+        "IsEnabled":  true,
+        "Rect":  "1068,158,53,24"
+    },
+    {
+        "Name":  "Settings",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "1076,163,37,14"
+    },
+    {
+        "Name":  "Tune the local HUD without affecting the passive roam behavior.",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "715,192,494,14"
+    },
+    {
+        "Name":  "Compact focused HUD",
+        "ControlType":  "ControlType.CheckBox",
+        "AutomationId":  "CompactHudCheckBox",
+        "ClassName":  "CheckBox",
+        "IsEnabled":  true,
+        "Rect":  "715,218,494,18"
+    },
+    {
+        "Name":  "Compact focused HUD",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "739,218,131,18"
+    },
+    {
+        "Name":  "Show pet names in the habitat",
+        "ControlType":  "ControlType.CheckBox",
+        "AutomationId":  "ShowPetNamesCheckBox",
+        "ClassName":  "CheckBox",
+        "IsEnabled":  true,
+        "Rect":  "715,244,494,17"
+    },
+    {
+        "Name":  "Show pet names in the habitat",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "739,244,175,17"
+    },
+    {
+        "Name":  "Show status summary text",
+        "ControlType":  "ControlType.CheckBox",
+        "AutomationId":  "ShowStatusSummaryCheckBox",
+        "ClassName":  "CheckBox",
+        "IsEnabled":  true,
+        "Rect":  "715,269,494,17"
+    },
+    {
+        "Name":  "Show status summary text",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "739,269,150,17"
+    },
+    {
+        "Name":  "Always-on runtime supervisor",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "726,309,472,16"
+    },
+    {
+        "Name":  "Active: background helper work is off; user-started previews are still available.",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "RuntimeSupervisorStatusText",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "726,329,472,13"
+    },
+    {
+        "Name":  "STOP all agent work immediately",
+        "ControlType":  "ControlType.CheckBox",
+        "AutomationId":  "RuntimeKillSwitchCheckBox",
+        "ClassName":  "CheckBox",
+        "IsEnabled":  true,
+        "Rect":  "726,350,472,18"
+    },
+    {
+        "Name":  "STOP all agent work immediately",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "750,350,189,18"
+    },
+    {
+        "Name":  "Quiet mode pauses agent work",
+        "ControlType":  "ControlType.CheckBox",
+        "AutomationId":  "RuntimeQuietModeCheckBox",
+        "ClassName":  "CheckBox",
+        "IsEnabled":  true,
+        "Rect":  "726,376,472,17"
+    },
+    {
+        "Name":  "Quiet mode pauses agent work",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "750,376,179,17"
+    },
+    {
+        "Name":  "Pet-only mode hides agent tools",
+        "ControlType":  "ControlType.CheckBox",
+        "AutomationId":  "RuntimePetOnlyModeCheckBox",
+        "ClassName":  "CheckBox",
+        "IsEnabled":  true,
+        "Rect":  "726,401,472,17"
+    },
+    {
+        "Name":  "Pet-only mode hides agent tools",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "750,401,187,17"
+    },
+    {
+        "Name":  "Allow background agent previews",
+        "ControlType":  "ControlType.CheckBox",
+        "AutomationId":  "RuntimeBackgroundWorkAllowedCheckBox",
+        "ClassName":  "CheckBox",
+        "IsEnabled":  true,
+        "Rect":  "726,426,472,18"
+    },
+    {
+        "Name":  "Allow background agent previews",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "750,426,194,18"
+    },
+    {
+        "Name":  "Allow Wevito to propose background tasks (preview only)",
+        "ControlType":  "ControlType.CheckBox",
+        "AutomationId":  "SchedulerEnabledCheckBox",
+        "ClassName":  "CheckBox",
+        "IsEnabled":  true,
+        "Rect":  "726,452,472,17"
+    },
+    {
+        "Name":  "Allow Wevito to propose background tasks (preview only)",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "750,452,330,17"
+    },
+    {
+        "Name":  "Autonomous beta: off | decision=KeepSupervisedPreview | checks=7/11 | proposal-only; mutation apply is blocked.",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "AutonomousBetaStatusText",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "726,477,472,26"
+    },
+    {
+        "Name":  "Autonomous beta enabled (read-only status)",
+        "ControlType":  "ControlType.CheckBox",
+        "AutomationId":  "AutonomousBetaEnabledCheckBox",
+        "ClassName":  "CheckBox",
+        "IsEnabled":  false,
+        "Rect":  "726,511,472,18"
+    },
+    {
+        "Name":  "Autonomous beta enabled (read-only status)",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  false,
+        "Rect":  "750,511,257,18"
+    },
+    {
+        "Name":  "Promotion decision: KeepSupervisedPreview (7/11)\r\nPASS window_days: 7 vs \u003e= 7\r\nFAIL active_uptime_per_active_day: 0 % vs \u003e= 50%\r\nPASS policy_violations: 0 vs == 0\r\nPASS mutations_with_proof_packet_pct: 100 % vs == 100%\r\nPASS hosted_ai_calls_in_local_only: 0 vs == 0\r\nPASS focus_steal_events: 0 vs == 0\r\nFAIL resource_budget_within_pct: 100 vs abs(delta) \u003c= 10%\r\nFAIL citation_coverage_ratio: 0 vs \u003e= 0.6\r\nFAIL golden_eval_result: FAIL vs PASS\r\nPASS self_improvement_reports_per_active_day: 1 vs \u003e= 1\r\nPASS kill_switch_active_during_window: False vs false",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "PromotionSnapshotTableText",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "726,537,472,140"
+    },
+    {
+        "Name":  "Try the autonomous beta",
+        "ControlType":  "ControlType.Button",
+        "AutomationId":  "AutonomousBetaTryButton",
+        "ClassName":  "Button",
+        "IsEnabled":  false,
+        "Rect":  "726,685,472,32"
+    },
+    {
+        "Name":  "Try the autonomous beta",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  false,
+        "Rect":  "888,692,148,18"
+    },
+    {
+        "Name":  "Disabled because latest promotion decision is KeepSupervisedPreview: active_uptime_per_active_day, resource_budget_within_pct, citation_coverage_ratio, golden_eval_result.",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "AutonomousBetaTryHelpText",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "726,722,472,26"
+    },
+    {
+        "Name":  "Autonomous scope gates",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "726,758,472,15"
+    },
+    {
+        "Name":  "Scopes: sprite-repair-triage=off, audit-ledger-cleanup=off | autonomous beta=off | cards draft only; sprite art never mutates here.",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "AutonomousScopeStatusText",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "726,777,472,26"
+    },
+    {
+        "Name":  "Sprite repair triage drafts review cards",
+        "ControlType":  "ControlType.CheckBox",
+        "AutomationId":  "SpriteRepairTriageScopeCheckBox",
+        "ClassName":  "CheckBox",
+        "IsEnabled":  true,
+        "Rect":  "726,809,472,18"
+    },
+    {
+        "Name":  "Sprite repair triage drafts review cards",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "750,809,218,18"
+    },
+    {
+        "Name":  "Audit cleanup archives old archived JSONL files",
+        "ControlType":  "ControlType.CheckBox",
+        "AutomationId":  "AuditLedgerCleanupScopeCheckBox",
+        "ClassName":  "CheckBox",
+        "IsEnabled":  true,
+        "Rect":  "726,833,472,17"
+    },
+    {
+        "Name":  "Audit cleanup archives old archived JSONL files",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "750,833,270,17"
+    },
+    {
+        "Name":  "Prevent focus stealing",
+        "ControlType":  "ControlType.CheckBox",
+        "AutomationId":  "RuntimeNoFocusStealCheckBox",
+        "ClassName":  "CheckBox",
+        "IsEnabled":  true,
+        "Rect":  "726,858,472,17"
+    },
+    {
+        "Name":  "Prevent focus stealing",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "750,858,126,17"
+    },
+    {
+        "Name":  "Quiet automatically during fullscreen apps",
+        "ControlType":  "ControlType.CheckBox",
+        "AutomationId":  "RuntimeAutoQuietFullscreenCheckBox",
+        "ClassName":  "CheckBox",
+        "IsEnabled":  true,
+        "Rect":  "726,883,472,17"
+    },
+    {
+        "Name":  "Quiet automatically during fullscreen apps",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "750,883,242,17"
+    },
+    {
+        "Name":  "Coexistence controls",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "726,910,472,15"
+    },
+    {
+        "Name":  "Quiet for meeting/recording apps",
+        "ControlType":  "ControlType.CheckBox",
+        "AutomationId":  "CoexistenceAppListCheckBox",
+        "ClassName":  "CheckBox",
+        "IsEnabled":  true,
+        "Rect":  "726,931,472,17"
+    },
+    {
+        "Name":  "Quiet for meeting/recording apps",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "750,931,194,17"
+    },
+    {
+        "Name":  "Quiet when non-Wevito CPU exceeds 80%",
+        "ControlType":  "ControlType.CheckBox",
+        "AutomationId":  "CoexistenceCpuCheckBox",
+        "ClassName":  "CheckBox",
+        "IsEnabled":  true,
+        "Rect":  "726,954,472,18"
+    },
+    {
+        "Name":  "Quiet when non-Wevito CPU exceeds 80%",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "750,954,242,18"
+    },
+    {
+        "Name":  "Quiet when network is saturated",
+        "ControlType":  "ControlType.CheckBox",
+        "AutomationId":  "CoexistenceNetworkCheckBox",
+        "ClassName":  "CheckBox",
+        "IsEnabled":  true,
+        "Rect":  "726,978,472,17"
+    },
+    {
+        "Name":  "Quiet when network is saturated",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "750,978,186,17"
+    },
+    {
+        "Name":  "Quiet when Windows Game Mode is active",
+        "ControlType":  "ControlType.CheckBox",
+        "AutomationId":  "CoexistenceGameModeCheckBox",
+        "ClassName":  "CheckBox",
+        "IsEnabled":  true,
+        "Rect":  "726,1001,472,17"
+    },
+    {
+        "Name":  "Quiet when Windows Game Mode is active",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "750,1001,246,17"
+    },
+    {
+        "Name":  "Resource throttling",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "726,1028,472,15"
+    },
+    {
+        "Name":  "Run Wevito background processes below normal priority",
+        "ControlType":  "ControlType.CheckBox",
+        "AutomationId":  "ResourcePriorityCheckBox",
+        "ClassName":  "CheckBox",
+        "IsEnabled":  true,
+        "Rect":  "726,1049,472,17"
+    },
+    {
+        "Name":  "Run Wevito background processes below normal priority",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "750,1049,325,17"
+    },
+    {
+        "Name":  "Throttle background disk writes while I am active",
+        "ControlType":  "ControlType.CheckBox",
+        "AutomationId":  "DiskIoBudgetCheckBox",
+        "ClassName":  "CheckBox",
+        "IsEnabled":  true,
+        "Rect":  "726,1072,472,17"
+    },
+    {
+        "Name":  "Throttle background disk writes while I am active",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "750,1072,280,17"
+    },
+    {
+        "Name":  "Codex active compile cap",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "726,1103,112,14"
+    },
+    {
+        "Name":  "",
+        "ControlType":  "ControlType.ComboBox",
+        "AutomationId":  "CodexCompileCapComboBox",
+        "ClassName":  "ComboBox",
+        "IsEnabled":  true,
+        "Rect":  "846,1095,64,30"
+    },
+    {
+        "Name":  "Use configured Do Not Disturb schedule",
+        "ControlType":  "ControlType.CheckBox",
+        "AutomationId":  "DoNotDisturbScheduleCheckBox",
+        "ClassName":  "CheckBox",
+        "IsEnabled":  true,
+        "Rect":  "726,1131,472,17"
+    },
+    {
+        "Name":  "Use configured Do Not Disturb schedule",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "750,1131,232,17"
+    },
+    {
+        "Name":  "Notification and workspace discipline",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "726,1158,472,15"
+    },
+    {
+        "Name":  "Defer helper notifications while I am active",
+        "ControlType":  "ControlType.CheckBox",
+        "AutomationId":  "NotificationDeferCheckBox",
+        "ClassName":  "CheckBox",
+        "IsEnabled":  true,
+        "Rect":  "726,1179,472,17"
+    },
+    {
+        "Name":  "Defer helper notifications while I am active",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "750,1179,244,17"
+    },
+    {
+        "Name":  "Allow background windows to steal focus (locked off)",
+        "ControlType":  "ControlType.CheckBox",
+        "AutomationId":  "AllowFocusTheftCheckBox",
+        "ClassName":  "CheckBox",
+        "IsEnabled":  false,
+        "Rect":  "726,1202,472,17"
+    },
+    {
+        "Name":  "Allow background windows to steal focus (locked off)",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  false,
+        "Rect":  "750,1202,306,17"
+    },
+    {
+        "Name":  "Allow user-triggered pet sound effects",
+        "ControlType":  "ControlType.CheckBox",
+        "AutomationId":  "PetSoundsCheckBox",
+        "ClassName":  "CheckBox",
+        "IsEnabled":  true,
+        "Rect":  "726,1225,472,18"
+    },
+    {
+        "Name":  "Allow user-triggered pet sound effects",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "750,1225,221,18"
+    },
+    {
+        "Name":  "Let pets subtly react to the cursor",
+        "ControlType":  "ControlType.CheckBox",
+        "AutomationId":  "PetCursorReactivityCheckBox",
+        "ClassName":  "CheckBox",
+        "IsEnabled":  true,
+        "Rect":  "726,1249,472,17"
+    },
+    {
+        "Name":  "Let pets subtly react to the cursor",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "750,1249,192,17"
+    },
+    {
+        "Name":  "Animate tray icon badges",
+        "ControlType":  "ControlType.CheckBox",
+        "AutomationId":  "TrayIconAnimationCheckBox",
+        "ClassName":  "CheckBox",
+        "IsEnabled":  true,
+        "Rect":  "726,1272,472,17"
+    },
+    {
+        "Name":  "Animate tray icon badges",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "750,1272,146,17"
+    },
+    {
+        "Name":  "Pet visual polish",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "726,1299,472,15"
+    },
+    {
+        "Name":  "Blend animation transitions",
+        "ControlType":  "ControlType.CheckBox",
+        "AutomationId":  "AnimationBlendingCheckBox",
+        "ClassName":  "CheckBox",
+        "IsEnabled":  true,
+        "Rect":  "726,1320,472,17"
+    },
+    {
+        "Name":  "Blend animation transitions",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "750,1320,157,17"
+    },
+    {
+        "Name":  "Smooth pet movement between ticks",
+        "ControlType":  "ControlType.CheckBox",
+        "AutomationId":  "PositionInterpolationCheckBox",
+        "ClassName":  "CheckBox",
+        "IsEnabled":  true,
+        "Rect":  "726,1343,472,17"
+    },
+    {
+        "Name":  "Smooth pet movement between ticks",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "750,1343,215,17"
+    },
+    {
+        "Name":  "Allow subtle idle micro-behaviors",
+        "ControlType":  "ControlType.CheckBox",
+        "AutomationId":  "IdleMicroBehaviorsCheckBox",
+        "ClassName":  "CheckBox",
+        "IsEnabled":  true,
+        "Rect":  "726,1366,472,18"
+    },
+    {
+        "Name":  "Allow subtle idle micro-behaviors",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "750,1366,191,18"
+    },
+    {
+        "Name":  "Show lightweight pet particles",
+        "ControlType":  "ControlType.CheckBox",
+        "AutomationId":  "ParticleEffectsCheckBox",
+        "ClassName":  "CheckBox",
+        "IsEnabled":  true,
+        "Rect":  "726,1390,472,17"
+    },
+    {
+        "Name":  "Show lightweight pet particles",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "750,1390,173,17"
+    },
+    {
+        "Name":  "Let pets react when I shake the window",
+        "ControlType":  "ControlType.CheckBox",
+        "AutomationId":  "WindowShakeReactionCheckBox",
+        "ClassName":  "CheckBox",
+        "IsEnabled":  true,
+        "Rect":  "726,1413,472,17"
+    },
+    {
+        "Name":  "Let pets react when I shake the window",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "750,1413,225,17"
+    },
+    {
+        "Name":  "AI helper summaries: Disabled",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "PetModelCapabilityStatusText",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "726,1464,472,16"
+    },
+    {
+        "Name":  "Provider: Anthropic\r\nCredential target: API keys are expected in Windows Credential Manager under Wevito/anthropic/api-key, not plaintext project config.\r\nData sent: The selected helper name/role, requested tool family, user task text, the read-only tool summary, trusted context, and any untrusted file/web snippets wrapped in \u003cuntrusted\u003e tags.\r\nLocal audit: If a later approved model call runs, Wevito writes a local model-call.json audit record under that PET TASKS artifact folder with provider, model, args hash, decision, and latency.\r\nAllowlist: Only the safe helper/tool allowlist can request a model summary; helper names and pet personality do not grant permission.\r\nEnabling AI helper summaries only permits read-only suggestions. It does not execute tools, mutate sprites, run commands, or bypass PET TASKS approval gates.",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "PetModelConsentText",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "726,1486,472,146"
+    },
+    {
+        "Name":  "Enable AI agent summaries after consent",
+        "ControlType":  "ControlType.CheckBox",
+        "AutomationId":  "PetModelAdapterEnabledCheckBox",
+        "ClassName":  "CheckBox",
+        "IsEnabled":  true,
+        "Rect":  "726,1640,472,18"
+    },
+    {
+        "Name":  "Enable AI agent summaries after consent",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "750,1640,234,18"
+    },
+    {
+        "Name":  "Acknowledge consent",
+        "ControlType":  "ControlType.Button",
+        "AutomationId":  "PetModelFirstCallConsentButton",
+        "ClassName":  "Button",
+        "IsEnabled":  true,
+        "Rect":  "726,1666,230,31"
+    },
+    {
+        "Name":  "Acknowledge consent",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "776,1673,130,17"
+    },
+    {
+        "Name":  "Consent not acknowledged. No live model calls can run.",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "PetModelConsentStatusText",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "962,1668,236,27"
+    },
+    {
+        "Name":  "Local AI Runtime",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "726,1731,472,16"
+    },
+    {
+        "Name":  "Local AI runtime: mode=local_only; provider=not probed/available; endpoint=http://127.0.0.1:11434; model=qwen2.5:7b-instruct-q4_K_M; in-process fallback=off; hosted AI remains disabled unless separately approved.",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "LocalAiRuntimeStatusText",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "726,1752,472,40"
+    },
+    {
+        "Name":  "Reasoning model status: model=qwen2.5:7b-instruct-q4_K_M; mode=local_only; runtime=Bootstrap required or unavailable; endpoint=http://127.0.0.1:11434; last latency=not measured.",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "ReasoningModelStatusText",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "726,1797,472,27"
+    },
+    {
+        "Name":  "Pull default model",
+        "ControlType":  "ControlType.Button",
+        "AutomationId":  "PullDefaultModelButton",
+        "ClassName":  "Button",
+        "IsEnabled":  true,
+        "Rect":  "726,1832,126,31"
+    },
+    {
+        "Name":  "Pull default model",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "735,1839,108,17"
+    },
+    {
+        "Name":  "LocalOnly reasoning uses localhost Ollama with deterministic fallback. No hosted provider keys are read here.",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "726,1868,472,26"
+    },
+    {
+        "Name":  "Run first-launch wizard again",
+        "ControlType":  "ControlType.Button",
+        "AutomationId":  "RunFirstLaunchWizardButton",
+        "ClassName":  "Button",
+        "IsEnabled":  true,
+        "Rect":  "726,1902,190,32"
+    },
+    {
+        "Name":  "Run first-launch wizard again",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "735,1909,172,18"
+    },
+    {
+        "Name":  "AI-callable tools",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "726,1968,472,16"
+    },
+    {
+        "Name":  "Wevito activity",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "726,2342,472,16"
+    },
+    {
+        "Name":  "Audited helper activity: 1331 row(s). Applied a single-family sprite repair batch with backup and post-proof: 1014, Showed a Wevito window without stealing focus from the user\u0027s current app: 108, Set a Wevito process to background-friendly priority: 73. Sensitive flags: 1014.",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "ActivitySummaryText",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "726,2362,472,40"
+    },
+    {
+        "Name":  "10:06 Updated an agent slot name from the active pet roster.\r\n10:03 Set a Wevito process to background-friendly priority.\r\n10:03 Drafted a sprite-cleanup help task card from first-run choice.",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "ActivityRecentText",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "726,2406,472,40"
+    },
+    {
+        "Name":  "Self-improvement",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "726,2456,472,16"
+    },
+    {
+        "Name":  "No self-improvement reports in this activity window yet.",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "SelfImprovementText",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "726,2476,472,13"
+    },
+    {
+        "Name":  "Evidence collection",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "735,2508,454,16"
+    },
+    {
+        "Name":  "Soak window: Day 6 of 7\r\nReadiness: day_6_of_7\r\nToday: rows=1331, flagged=1054, heartbeats=2, focus_delta=0, budget_exceeded=False\r\n5/13/2026: heartbeats=7, flagged=0, focus_delta=0, budget_exceeded=False, report=none\r\n5/14/2026: heartbeats=46, flagged=13, focus_delta=0, budget_exceeded=False, report=none\r\n5/15/2026: heartbeats=25, flagged=0, focus_delta=0, budget_exceeded=False, report=none\r\n5/16/2026: heartbeats=10, flagged=4, focus_delta=0, budget_exceeded=False, report=none\r\n5/17/2026: heartbeats=1, flagged=922, focus_delta=0, budget_exceeded=False, report=none\r\n5/18/2026: heartbeats=2, flagged=1054, focus_delta=0, budget_exceeded=False, report=none",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "EvidenceCollectionText",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "735,2528,454,120"
+    },
+    {
+        "Name":  "Web research",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "726,2691,472,16"
+    },
+    {
+        "Name":  "Default backend is offline. Live fetches require approved task cards, privacy filtering, and stored backend credentials.",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "726,2711,472,26"
+    },
+    {
+        "Name":  "Allow approved web research fetches",
+        "ControlType":  "ControlType.CheckBox",
+        "AutomationId":  "WebSearchEnabledCheckBox",
+        "ClassName":  "CheckBox",
+        "IsEnabled":  true,
+        "Rect":  "726,2745,472,18"
+    },
+    {
+        "Name":  "Allow approved web research fetches",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "750,2745,214,18"
+    },
+    {
+        "Name":  "Backend: offline · live fetches disabled · keys: Wevito/web-search/\u003cbackend\u003e",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "WebSearchStatusText",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "726,2767,472,13"
+    },
+    {
+        "Name":  "Save now",
+        "ControlType":  "ControlType.Button",
+        "AutomationId":  "SettingsSaveButton",
+        "ClassName":  "Button",
+        "IsEnabled":  true,
+        "Rect":  "715,2803,241,31"
+    },
+    {
+        "Name":  "Save now",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "807,2810,57,17"
+    },
+    {
+        "Name":  "Open dev tools",
+        "ControlType":  "ControlType.Button",
+        "AutomationId":  "SettingsDevButton",
+        "ClassName":  "Button",
+        "IsEnabled":  true,
+        "Rect":  "962,2803,247,31"
+    },
+    {
+        "Name":  "Open dev tools",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "1041,2810,89,17"
+    }
+]

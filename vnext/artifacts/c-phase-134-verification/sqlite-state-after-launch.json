@@ -1,0 +1,22 @@
+{
+  "db": "C:\\Users\\fishe\\AppData\\Local\\WevitoVNext\\wevito-vnext.db",
+  "tables": {
+    "app_state": {
+      "columns": [
+        "key",
+        "value"
+      ],
+      "rows": []
+    },
+    "basket_items": {
+      "columns": [
+        "id",
+        "url",
+        "label",
+        "source",
+        "captured_at_utc"
+      ],
+      "rows": []
+    }
+  }
+}

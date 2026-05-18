@@ -1,0 +1,47 @@
+[
+    {
+        "FullName":  "C:\\Users\\fishe\\AppData\\Local\\WevitoVNext\\backups",
+        "Length":  null,
+        "LastWriteTime":  "\/Date(1778773557937)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\fishe\\AppData\\Local\\WevitoVNext\\save-backups",
+        "Length":  null,
+        "LastWriteTime":  "\/Date(1778965887631)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\fishe\\AppData\\Local\\WevitoVNext\\wevito-vnext.backup-20260518-095513.db",
+        "Length":  28672,
+        "LastWriteTime":  "\/Date(1778966659701)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\fishe\\AppData\\Local\\WevitoVNext\\wevito-vnext.db",
+        "Length":  20480,
+        "LastWriteTime":  "\/Date(1779098126979)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\fishe\\AppData\\Local\\WevitoVNext\\backups\\fresh-start-20260514-114557",
+        "Length":  null,
+        "LastWriteTime":  "\/Date(1778773557941)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\fishe\\AppData\\Local\\WevitoVNext\\backups\\fresh-start-20260514-114557\\wevito-vnext.db",
+        "Length":  45056,
+        "LastWriteTime":  "\/Date(1778738054215)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\fishe\\AppData\\Local\\WevitoVNext\\save-backups\\c-phase-125-20260516T211127Z",
+        "Length":  null,
+        "LastWriteTime":  "\/Date(1778965887675)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\fishe\\AppData\\Local\\WevitoVNext\\save-backups\\wevito-vnext-before-fresh-egg-20260514-125007.db",
+        "Length":  20480,
+        "LastWriteTime":  "\/Date(1778773558724)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\fishe\\AppData\\Local\\WevitoVNext\\save-backups\\c-phase-125-20260516T211127Z\\wevito-vnext.db",
+        "Length":  24576,
+        "LastWriteTime":  "\/Date(1778948445258)\/"
+    }
+]

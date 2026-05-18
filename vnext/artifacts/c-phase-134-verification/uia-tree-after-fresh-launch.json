@@ -1,0 +1,410 @@
+[
+    {
+        "Name":  "Wevito Home Panel",
+        "ControlType":  "ControlType.Window",
+        "AutomationId":  "",
+        "ClassName":  "Window",
+        "IsEnabled":  true,
+        "Rect":  "1232,110,660,910"
+    },
+    {
+        "Name":  "Wevito",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "TitleText",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "1245,123,70,29"
+    },
+    {
+        "Name":  "Pets are settled in the home environment",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "SubtitleText",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "1245,154,200,15"
+    },
+    {
+        "Name":  "PIN",
+        "ControlType":  "ControlType.Button",
+        "AutomationId":  "PinButton",
+        "ClassName":  "Button",
+        "IsEnabled":  true,
+        "Rect":  "1259,123,42,27"
+    },
+    {
+        "Name":  "PIN",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "1269,128,21,17"
+    },
+    {
+        "Name":  "ACTIONS",
+        "ControlType":  "ControlType.Button",
+        "AutomationId":  "ActionsButton",
+        "ClassName":  "Button",
+        "IsEnabled":  true,
+        "Rect":  "1307,123,72,27"
+    },
+    {
+        "Name":  "ACTIONS",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "1316,128,54,17"
+    },
+    {
+        "Name":  "TOOLS",
+        "ControlType":  "ControlType.Button",
+        "AutomationId":  "WebToolsButton",
+        "ClassName":  "Button",
+        "IsEnabled":  true,
+        "Rect":  "1385,123,58,27"
+    },
+    {
+        "Name":  "TOOLS",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "1394,128,40,17"
+    },
+    {
+        "Name":  "SETTINGS",
+        "ControlType":  "ControlType.Button",
+        "AutomationId":  "SettingsButton",
+        "ClassName":  "Button",
+        "IsEnabled":  true,
+        "Rect":  "1449,123,76,27"
+    },
+    {
+        "Name":  "SETTINGS",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "1458,128,58,17"
+    },
+    {
+        "Name":  "STOP",
+        "ControlType":  "ControlType.Button",
+        "AutomationId":  "StopEverythingButton",
+        "ClassName":  "Button",
+        "IsEnabled":  true,
+        "Rect":  "1531,123,54,27"
+    },
+    {
+        "Name":  "STOP",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "1543,128,31,17"
+    },
+    {
+        "Name":  "DND",
+        "ControlType":  "ControlType.Button",
+        "AutomationId":  "DoNotDisturbButton",
+        "ClassName":  "Button",
+        "IsEnabled":  true,
+        "Rect":  "1591,123,52,27"
+    },
+    {
+        "Name":  "DND",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "1603,128,29,17"
+    },
+    {
+        "Name":  "Evidence: Day 6 of 7",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "EvidenceBadgeText",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "1658,128,100,17"
+    },
+    {
+        "Name":  "BRAIN offline",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "LocalBrainBadgeText",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "1782,128,68,17"
+    },
+    {
+        "Name":  "BENCH --",
+        "ControlType":  "ControlType.Button",
+        "AutomationId":  "BenchmarkBadge",
+        "ClassName":  "Button",
+        "IsEnabled":  true,
+        "Rect":  "1865,123,74,27"
+    },
+    {
+        "Name":  "BENCH --",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "1874,128,56,17"
+    },
+    {
+        "Name":  "LOOP idle",
+        "ControlType":  "ControlType.Button",
+        "AutomationId":  "CodexLoopBadge",
+        "ClassName":  "Button",
+        "IsEnabled":  true,
+        "Rect":  "1945,123,76,27"
+    },
+    {
+        "Name":  "LOOP idle",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "1954,128,58,17"
+    },
+    {
+        "Name":  "Focused - HUD active",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "ModeText",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "1245,179,634,15"
+    },
+    {
+        "Name":  "No active companions - link bin empty",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "StatusText",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "1254,223,616,15"
+    },
+    {
+        "Name":  "? Agent 1 · idle",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "Empty"
+    },
+    {
+        "Name":  "? Agent 2 · idle",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "Empty"
+    },
+    {
+        "Name":  "? Agent 3 · idle",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "Empty"
+    },
+    {
+        "Name":  "Hunger",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "1256,306,298,13"
+    },
+    {
+        "Name":  "",
+        "ControlType":  "ControlType.ProgressBar",
+        "AutomationId":  "HungerBar",
+        "ClassName":  "ProgressBar",
+        "IsEnabled":  true,
+        "Rect":  "1256,319,298,10"
+    },
+    {
+        "Name":  "Thirst",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "1562,306,306,13"
+    },
+    {
+        "Name":  "",
+        "ControlType":  "ControlType.ProgressBar",
+        "AutomationId":  "ThirstBar",
+        "ClassName":  "ProgressBar",
+        "IsEnabled":  true,
+        "Rect":  "1562,319,306,10"
+    },
+    {
+        "Name":  "Energy",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "1256,337,298,13"
+    },
+    {
+        "Name":  "",
+        "ControlType":  "ControlType.ProgressBar",
+        "AutomationId":  "EnergyBar",
+        "ClassName":  "ProgressBar",
+        "IsEnabled":  true,
+        "Rect":  "1256,350,298,10"
+    },
+    {
+        "Name":  "Clean",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "1562,337,306,13"
+    },
+    {
+        "Name":  "",
+        "ControlType":  "ControlType.ProgressBar",
+        "AutomationId":  "CleanlinessBar",
+        "ClassName":  "ProgressBar",
+        "IsEnabled":  true,
+        "Rect":  "1562,350,306,10"
+    },
+    {
+        "Name":  "Wevito is ready. Chat is the primary surface; pets stay visually normal.",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "FeedbackText",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "1245,389,634,15"
+    },
+    {
+        "Name":  "",
+        "ControlType":  "ControlType.Image",
+        "AutomationId":  "CelestialImage",
+        "ClassName":  "Image",
+        "IsEnabled":  true,
+        "Rect":  "1824,427,44,44"
+    },
+    {
+        "Name":  "",
+        "ControlType":  "ControlType.Pane",
+        "AutomationId":  "",
+        "ClassName":  "ScrollViewer",
+        "IsEnabled":  true,
+        "Rect":  "Empty"
+    },
+    {
+        "Name":  "Choose your first egg",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "Empty"
+    },
+    {
+        "Name":  "Pick an egg color. The pet inside stays hidden until it hatches. Green returns in a future phase.",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "Empty"
+    },
+    {
+        "Name":  "",
+        "ControlType":  "ControlType.Button",
+        "AutomationId":  "",
+        "ClassName":  "Button",
+        "IsEnabled":  true,
+        "Rect":  "Empty"
+    },
+    {
+        "Name":  "Red egg",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "Empty"
+    },
+    {
+        "Name":  "",
+        "ControlType":  "ControlType.Button",
+        "AutomationId":  "",
+        "ClassName":  "Button",
+        "IsEnabled":  true,
+        "Rect":  "Empty"
+    },
+    {
+        "Name":  "Orange egg",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "Empty"
+    },
+    {
+        "Name":  "",
+        "ControlType":  "ControlType.Button",
+        "AutomationId":  "",
+        "ClassName":  "Button",
+        "IsEnabled":  true,
+        "Rect":  "Empty"
+    },
+    {
+        "Name":  "Yellow egg",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "Empty"
+    },
+    {
+        "Name":  "",
+        "ControlType":  "ControlType.Button",
+        "AutomationId":  "",
+        "ClassName":  "Button",
+        "IsEnabled":  true,
+        "Rect":  "Empty"
+    },
+    {
+        "Name":  "Blue egg",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "Empty"
+    },
+    {
+        "Name":  "",
+        "ControlType":  "ControlType.Button",
+        "AutomationId":  "",
+        "ClassName":  "Button",
+        "IsEnabled":  true,
+        "Rect":  "Empty"
+    },
+    {
+        "Name":  "Indigo egg",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "Empty"
+    },
+    {
+        "Name":  "",
+        "ControlType":  "ControlType.Button",
+        "AutomationId":  "",
+        "ClassName":  "Button",
+        "IsEnabled":  true,
+        "Rect":  "Empty"
+    },
+    {
+        "Name":  "Violet egg",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "Empty"
+    }
+]
