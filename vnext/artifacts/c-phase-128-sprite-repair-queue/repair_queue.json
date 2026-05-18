@@ -15649,7 +15649,7 @@
                      "lifeStage":  "adult",
                      "gender":  "male",
                      "priority":  "P1",
-                     "status":  "queued",
+                     "status":  "done",
                      "issueCount":  60,
                      "colorsAffected":  [
                                             "blue",
@@ -16576,7 +16576,11 @@
                                         "sourcePath":  "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites_runtime\\goose\\adult\\male\\yellow\\walk_00.png",
                                         "capturePath":  "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\c-phase-127-matrix-sweep\\cells\\goose_adult_male_yellow_walk.png"
                                     }
-                                ]
+                                ],
+                     "completedAtUtc":  "2026-05-18T01:03:02.8101400Z",
+                     "completedByPhase":  "C-PHASE 130.030",
+                     "completionArtifactRoot":  "vnext/artifacts/c-phase-130-batches/030-goose-adult-male",
+                     "batchArtifactRoot":  "vnext/artifacts/c-phase-130-batches/030-goose-adult-male"
                  },
                  {
                      "rowId":  "pigeon_baby_female",
@@ -29971,10 +29975,10 @@
                  }
              ],
     "statusCounts":  {
-                         "done":  29,
-                         "queued":  31,
+                         "done":  30,
+                         "queued":  30,
                          "awaiting_review":  0,
                          "paused":  0
                      },
-    "lastUpdatedUtc":  "2026-05-18T00:40:17.3733778Z"
+    "lastUpdatedUtc":  "2026-05-18T01:03:02.8101400Z"
 }
