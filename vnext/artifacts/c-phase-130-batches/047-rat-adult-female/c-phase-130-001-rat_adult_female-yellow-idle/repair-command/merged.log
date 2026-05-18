@@ -1,0 +1,17 @@
+commandId: sprite-repair-batch
+command: python C:\Users\fishe\Documents\projects\wevito\tools\repair_runtime_sprite_canvas_padding.py --repo-root C:\Users\fishe\Documents\projects\wevito --row-id rat_adult_female --species rat --age adult --gender female --color yellow --animation idle --out-dir C:\Users\fishe\Documents\projects\wevito\sprites_authored\.candidates\c-phase-130-001-rat_adult_female-yellow-idle --source-path C:\Users\fishe\Documents\projects\wevito\sprites_runtime\rat\adult\female\yellow\idle_00.png
+status: MutationDetected
+exitCode: 0
+mutationDetected: True
+
+mutatedProtectedPaths:
+- sprites_authored/.candidates/c-phase-130-001-rat_adult_female-yellow-idle/candidate-summary.json
+- sprites_authored/.candidates/c-phase-130-001-rat_adult_female-yellow-idle/idle_00.png
+- sprites_authored/.candidates/c-phase-130-001-rat_adult_female-yellow-idle/idle_01.png
+- sprites_authored/.candidates/c-phase-130-001-rat_adult_female-yellow-idle/idle_02.png
+- sprites_authored/.candidates/c-phase-130-001-rat_adult_female-yellow-idle/idle_03.png
+
+## stdout
+exported 4 padded candidate frame(s) to C:\Users\fishe\Documents\projects\wevito\sprites_authored\.candidates\c-phase-130-001-rat_adult_female-yellow-idle
+
+## stderr
