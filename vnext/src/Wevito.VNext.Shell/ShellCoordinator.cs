@@ -10,6 +10,7 @@ using Wevito.VNext.Core;
 using Wevito.VNext.Core.Audit;
 using Wevito.VNext.Core.LocalRetrieval;
 using Wevito.VNext.Core.SelfImprovement.Experiments;
+using Wevito.VNext.Core.SelfImprovement.Maturity;
 using Wevito.VNext.Core.Settings;
 using Wevito.VNext.Core.Tools;
 
@@ -39,6 +40,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private readonly AuditLedgerService _auditLedgerService = new();
     private readonly ActivitySummaryService _activitySummaryService;
     private readonly EvidenceSummaryService _evidenceSummaryService;
+    private readonly MaturityScoreboardService _maturityScoreboardService;
     private readonly LiveStatusFeed _liveStatusFeed;
     private readonly EvidenceCollectionStatusService _evidenceCollectionStatusService;
     private readonly KillSwitchService _killSwitchService;
@@ -115,6 +117,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _liveStatusFeed = new LiveStatusFeed(_auditLedgerService, plainLanguageExplainer);
         _killSwitchService = new KillSwitchService(() => _state?.SettingsSnapshot ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase), _auditLedgerService);
         _evidenceSummaryService = new EvidenceSummaryService(_auditLedgerService.DatabasePath, _auditLedgerService, _killSwitchService);
+        _maturityScoreboardService = new MaturityScoreboardService(_auditLedgerService.DatabasePath, _auditLedgerService, _killSwitchService);
         _aiIdentityService = new AiIdentityService(_auditLedgerService, _killSwitchService);
         _firstLaunchWizardStateService = new FirstLaunchWizardStateService(_aiIdentityService, _auditLedgerService, _killSwitchService);
         _coexistenceTriggerService = new CoexistenceTriggerService(_auditLedgerService, _killSwitchService);
@@ -752,10 +755,11 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         var killSwitchActive = KillSwitchService.IsActive(_state.SettingsSnapshot);
         var evidenceStatus = _evidenceCollectionStatusService.Read();
         var evidenceSummary = _evidenceSummaryService.GetSummary(ToolPopupWindow.BuildEvidenceSummaryQuery(_state.SettingsSnapshot, now));
+        var maturityClock = _maturityScoreboardService.BuildScoreboard(now);
 
         _homeWindow.Render(_state, environment, _feedbackText, _assetService, needSnapshot, aggregateStatuses, actionEnabled, habitatLoadout, evidenceStatus, _localBrainStatus);
         _roamBandWindow.Render(_state, _assetService, liveStatus, liveBannerText, supervisorStatus, killSwitchActive, evidenceStatus, desktopAssetOpacity);
-        _toolPopupWindow.Render(_state, _content, habitatLoadout, _assetService, _devToolsEnabled, petCommandBarState, supervisorStatus, activitySummary, autonomousDecision, promotionDecision, liveRecentLines, evidenceStatus, evidenceSummary);
+        _toolPopupWindow.Render(_state, _content, habitatLoadout, _assetService, _devToolsEnabled, petCommandBarState, supervisorStatus, activitySummary, autonomousDecision, promotionDecision, liveRecentLines, evidenceStatus, evidenceSummary, maturityClock);
     }
 
     private async Task EnableAutonomousBetaAfterConsentAsync()
