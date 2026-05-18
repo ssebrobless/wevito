@@ -1,0 +1,19 @@
+commandId: sprite-repair-batch
+command: python C:\Users\fishe\Documents\projects\wevito\tools\repair_runtime_sprite_canvas_padding.py --repo-root C:\Users\fishe\Documents\projects\wevito --row-id snake_adult_male --species snake --age adult --gender male --color yellow --animation walk --out-dir C:\Users\fishe\Documents\projects\wevito\sprites_authored\.candidates\c-phase-130-001-snake_adult_male-yellow-walk --source-path C:\Users\fishe\Documents\projects\wevito\sprites_runtime\snake\adult\male\yellow\walk_00.png
+status: MutationDetected
+exitCode: 0
+mutationDetected: True
+
+mutatedProtectedPaths:
+- sprites_authored/.candidates/c-phase-130-001-snake_adult_male-yellow-walk/candidate-summary.json
+- sprites_authored/.candidates/c-phase-130-001-snake_adult_male-yellow-walk/walk_00.png
+- sprites_authored/.candidates/c-phase-130-001-snake_adult_male-yellow-walk/walk_01.png
+- sprites_authored/.candidates/c-phase-130-001-snake_adult_male-yellow-walk/walk_02.png
+- sprites_authored/.candidates/c-phase-130-001-snake_adult_male-yellow-walk/walk_03.png
+- sprites_authored/.candidates/c-phase-130-001-snake_adult_male-yellow-walk/walk_04.png
+- sprites_authored/.candidates/c-phase-130-001-snake_adult_male-yellow-walk/walk_05.png
+
+## stdout
+exported 6 padded candidate frame(s) to C:\Users\fishe\Documents\projects\wevito\sprites_authored\.candidates\c-phase-130-001-snake_adult_male-yellow-walk
+
+## stderr
