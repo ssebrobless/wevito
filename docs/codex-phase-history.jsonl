@@ -67,3 +67,4 @@
 {"phase":"C-PHASE 130.060","timestamp":"2026-05-18T08:03:48.9924495Z","branch":"claude-implementation/c-phase-130-batch-060-squirrel-adult-male","pr":"https://github.com/ssebrobless/wevito/pull/222","row":"squirrel_adult_male"}
 {"phase":"C-PHASE 131","timestamp":"2026-05-18T08:17:52.0754298Z","branch":"claude-implementation/c-phase-131-green-color-decision-b","pr":"https://github.com/ssebrobless/wevito/pull/223","decision":"disable_green_for_v1"}
 {"phase":"C-PHASE 132","timestamp":"2026-05-18T08:45:00.0000000Z","branch":"claude-implementation/c-phase-132-local-brain-default-on","pr":"https://github.com/ssebrobless/wevito/pull/224","local_brain":"offline_degraded_on_this_machine"}
+{"phase":"C-PHASE 133","timestamp":"2026-05-18T09:06:13.3939084Z","branch":"claude-implementation/c-phase-133-autonomous-loop-scope-gate","pr":"https://github.com/ssebrobless/wevito/pull/225","scopes":"sprite-repair-triage,audit-ledger-cleanup"}
