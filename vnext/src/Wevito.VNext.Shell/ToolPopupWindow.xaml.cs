@@ -219,6 +219,9 @@ public partial class ToolPopupWindow : Window
         PromotionSnapshotTableText.Text = FormatPromotionSnapshotTable(promotionDecision);
         AutonomousBetaTryButton.IsEnabled = PromotionCriteriaSnapshot.CanEnableAutonomousBetaEntry(promotionDecision, state.SettingsSnapshot);
         AutonomousBetaTryHelpText.Text = FormatAutonomousBetaTryHelp(promotionDecision, state.SettingsSnapshot);
+        SpriteRepairTriageScopeCheckBox.IsChecked = GetSettingBool(state, AutonomousScopeService.BuildEnabledSettingKey(AutonomousScopeService.SpriteRepairTriageScopeId));
+        AuditLedgerCleanupScopeCheckBox.IsChecked = GetSettingBool(state, AutonomousScopeService.BuildEnabledSettingKey(AutonomousScopeService.AuditLedgerCleanupScopeId));
+        AutonomousScopeStatusText.Text = FormatAutonomousScopeStatus(state.SettingsSnapshot);
         RuntimeNoFocusStealCheckBox.IsChecked = GetSettingBool(state, RuntimeSupervisorService.NoFocusStealSetting, true);
         RuntimeAutoQuietFullscreenCheckBox.IsChecked = GetSettingBool(state, RuntimeSupervisorService.AutoQuietFullscreenSetting, true);
         CoexistenceAppListCheckBox.IsChecked = GetSettingBool(state, CoexistenceTriggerService.AppListEnabledSetting, true);
@@ -349,6 +352,8 @@ public partial class ToolPopupWindow : Window
             if (TryToggleCheckBox(RuntimeBackgroundWorkAllowedCheckBox, localPoint)) { return true; }
             if (TryToggleCheckBox(SchedulerEnabledCheckBox, localPoint)) { return true; }
             if (await TryInvokeButtonAsync(AutonomousBetaTryButton, localPoint, RequestAutonomousBetaConsentAsync)) { return true; }
+            if (TryToggleCheckBox(SpriteRepairTriageScopeCheckBox, localPoint)) { return true; }
+            if (TryToggleCheckBox(AuditLedgerCleanupScopeCheckBox, localPoint)) { return true; }
             if (TryToggleCheckBox(RuntimeNoFocusStealCheckBox, localPoint)) { return true; }
             if (TryToggleCheckBox(RuntimeAutoQuietFullscreenCheckBox, localPoint)) { return true; }
             if (TryToggleCheckBox(CoexistenceAppListCheckBox, localPoint)) { return true; }
@@ -1220,6 +1225,20 @@ public partial class ToolPopupWindow : Window
         PublishSetting("pet_model_adapter_enabled", PetModelAdapterEnabledCheckBox.IsChecked == true);
     }
 
+    private void SpriteRepairTriageScopeCheckBox_OnChanged(object sender, RoutedEventArgs e)
+    {
+        PublishSetting(
+            AutonomousScopeService.BuildEnabledSettingKey(AutonomousScopeService.SpriteRepairTriageScopeId),
+            SpriteRepairTriageScopeCheckBox.IsChecked == true);
+    }
+
+    private void AuditLedgerCleanupScopeCheckBox_OnChanged(object sender, RoutedEventArgs e)
+    {
+        PublishSetting(
+            AutonomousScopeService.BuildEnabledSettingKey(AutonomousScopeService.AuditLedgerCleanupScopeId),
+            AuditLedgerCleanupScopeCheckBox.IsChecked == true);
+    }
+
     private void PetModelFirstCallConsentButton_OnClick(object sender, RoutedEventArgs e)
     {
         PublishSetting("pet_model_first_call_approved", true);
@@ -1469,6 +1488,14 @@ public partial class ToolPopupWindow : Window
     internal static bool ShouldWriteAutonomousBetaConsent(bool explicitConfirm, PromotionDecision? decision, IReadOnlyDictionary<string, string> settings)
     {
         return explicitConfirm && PromotionCriteriaSnapshot.CanEnableAutonomousBetaEntry(decision, settings);
+    }
+
+    internal static string FormatAutonomousScopeStatus(IReadOnlyDictionary<string, string> settings)
+    {
+        var betaEnabled = GetSettingsBool(settings, AutonomousOperationsConfig.EnabledSetting);
+        var spriteEnabled = AutonomousScopeService.IsEnabled(settings, AutonomousScopeService.SpriteRepairTriageScopeId);
+        var cleanupEnabled = AutonomousScopeService.IsEnabled(settings, AutonomousScopeService.AuditLedgerCleanupScopeId);
+        return $"Scopes: sprite-repair-triage={(spriteEnabled ? "on" : "off")}, audit-ledger-cleanup={(cleanupEnabled ? "on" : "off")} | autonomous beta={(betaEnabled ? "on" : "off")} | cards draft only; sprite art never mutates here.";
     }
 
     private async Task RequestAutonomousBetaConsentAsync()

@@ -7,14 +7,16 @@ public sealed record AutonomousOperationsRequest(
     IReadOnlyDictionary<string, string> Settings,
     RuntimeSupervisorStatus RuntimeStatus,
     string ArtifactRoot,
-    DateTimeOffset RequestedAtUtc);
+    DateTimeOffset RequestedAtUtc,
+    IReadOnlyList<TaskCard>? TaskCards = null);
 
 public sealed record AutonomousOperationsResult(
     bool Ran,
     bool DidMutate,
     string ArtifactFolder,
     string Summary,
-    string BlockReason);
+    string BlockReason,
+    IReadOnlyList<TaskCard>? TaskCards = null);
 
 public sealed class AutonomousOperationsLoop
 {
@@ -24,18 +26,21 @@ public sealed class AutonomousOperationsLoop
     private readonly AuditLedgerService _ledger;
     private readonly KillSwitchService? _killSwitchService;
     private readonly UserInteractingWithPetState? _userInteractingWithPetState;
+    private readonly AutonomousScopeRegistry? _scopeRegistry;
     private DateTimeOffset _lastIterationAtUtc;
 
     public AutonomousOperationsLoop(
         AutonomousBetaDecisionService decisionService,
         AuditLedgerService ledger,
         KillSwitchService? killSwitchService = null,
-        UserInteractingWithPetState? userInteractingWithPetState = null)
+        UserInteractingWithPetState? userInteractingWithPetState = null,
+        AutonomousScopeRegistry? scopeRegistry = null)
     {
         _decisionService = decisionService;
         _ledger = ledger;
         _killSwitchService = killSwitchService;
         _userInteractingWithPetState = userInteractingWithPetState;
+        _scopeRegistry = scopeRegistry;
     }
 
     public AutonomousOperationsResult TryRunIteration(AutonomousOperationsRequest request)
@@ -110,12 +115,28 @@ public sealed class AutonomousOperationsLoop
             DidUseHostedAi: false,
             DidUseLocalModel: config.LocalModelReasoningEnabled,
             DidMutate: false,
-            folder,
-            "Autonomous operations beta completed one proposal-only iteration; mutation_apply=false.",
-            "Completed"));
+                folder,
+                "Autonomous operations beta completed one proposal-only iteration; mutation_apply=false.",
+                "Completed"));
+        var scopeResult = _scopeRegistry?.RunEnabledScopes(new AutonomousScopeRunRequest(
+            request.Settings,
+            request.RuntimeStatus,
+            request.ArtifactRoot,
+            request.RequestedAtUtc,
+            request.TaskCards ?? []));
         TryWriteSelfImprovementReport(request);
         _lastIterationAtUtc = request.RequestedAtUtc;
-        return new AutonomousOperationsResult(true, false, folder, "Autonomous beta iteration completed without mutation.", "");
+        var didMutate = scopeResult?.DidMutate == true;
+        var summary = scopeResult?.Ran == true
+            ? $"Autonomous beta iteration completed; scopes={scopeResult.Summary}"
+            : "Autonomous beta iteration completed without mutation.";
+        return new AutonomousOperationsResult(
+            true,
+            didMutate,
+            folder,
+            summary,
+            "",
+            scopeResult?.TaskCards ?? request.TaskCards);
     }
 
     private void TryWriteSelfImprovementReport(AutonomousOperationsRequest request)
