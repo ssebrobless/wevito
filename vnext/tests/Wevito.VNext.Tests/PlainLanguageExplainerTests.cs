@@ -52,6 +52,18 @@ public sealed class PlainLanguageExplainerTests
     }
 
     [Theory]
+    [InlineData(LocalBrainHeartbeatService.HeartbeatPacketKind)]
+    [InlineData(LocalBrainBenchmarkSmokeTest.PacketKind)]
+    [InlineData("local_brain_onboarding_panel_shown")]
+    public void CoversLocalBrainKinds(string packetKind)
+    {
+        var text = new PlainLanguageExplainer().ExplainPacketKind(packetKind);
+
+        Assert.Contains("local brain", text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Unknown", text, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Theory]
     [InlineData(ChatSessionService.ChatSessionStartedPacketKind)]
     [InlineData(ChatSessionService.ChatSearchPerformedPacketKind)]
     [InlineData(ChatTitleService.ChatSessionTitleSetPacketKind)]

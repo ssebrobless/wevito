@@ -39,6 +39,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private readonly AiIdentityService _aiIdentityService;
     private readonly FirstLaunchWizardStateService _firstLaunchWizardStateService;
     private readonly OllamaModelBootstrapService _ollamaModelBootstrapService;
+    private readonly LocalBrainHeartbeatService _localBrainHeartbeatService;
     private readonly AgentToolDispatcher _petTaskAdapterPreviewDispatcher;
     private readonly RuntimeSupervisorService _runtimeSupervisorService = new();
     private readonly RuntimeBudgetMeter _runtimeBudgetMeter = new();
@@ -92,6 +93,8 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private CompanionMode? _lastLoggedMode;
     private string _lastPublishedRegionsKey = "";
     private ChatInputBarState? _petCommandBarState;
+    private LocalBrainStatus _localBrainStatus = LocalBrainStatus.Starting(DateTimeOffset.UtcNow);
+    private bool _localBrainHeartbeatInFlight;
 
     public ShellCoordinator(Application application)
     {
@@ -116,6 +119,10 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             auditLedgerService: _auditLedgerService,
             killSwitchService: _killSwitchService,
             artifactRoot: Path.Combine(ResolveRepoRootOrBaseDirectory(), "vnext", "artifacts", "model-bootstrap"));
+        _localBrainHeartbeatService = new LocalBrainHeartbeatService(
+            probeService: new LocalRuntimeProbeService(killSwitchService: _killSwitchService),
+            auditLedgerService: _auditLedgerService,
+            killSwitchService: _killSwitchService);
         _evidenceCollectionStatusService = new EvidenceCollectionStatusService(
             _auditLedgerService,
             Path.Combine(ResolveRepoRootOrBaseDirectory(), "vnext", "artifacts", "soak"),
@@ -250,6 +257,11 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             EvaluateRuntimeSupervisor(isUserInitiatedToolOpen: false),
             DateTimeOffset.UtcNow);
         TraceLog.Write("local-ai", $"ollama-bootstrap kind={bootstrapStatus.PacketKind} summary={bootstrapStatus.Summary}");
+        _localBrainStatus = await _localBrainHeartbeatService.TickAsync(
+            _state.SettingsSnapshot,
+            EvaluateRuntimeSupervisor(isUserInitiatedToolOpen: false),
+            DateTimeOffset.UtcNow);
+        TraceLog.Write("local-ai", $"local-brain status={_localBrainStatus.Availability} reason={_localBrainStatus.Reason}");
         TraceLog.Write("shell", $"state-ready pinned={_state.IsPinned} pets={_state.ActivePets.Count} basket={_state.BasketItems.Count}");
         TraceDisciplinePolicySnapshot(_state.SettingsSnapshot);
 
@@ -412,8 +424,35 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             ActivePets = _petSimulationEngine.Tick(_state.ActivePets, petMotionMode, petMotionBounds, now, deltaSeconds)
         };
         _state = ApplyAmbientWorkCompanionState(_state, now);
+        TryPollLocalBrainHeartbeat(now);
 
         Render();
+    }
+
+    private void TryPollLocalBrainHeartbeat(DateTimeOffset now)
+    {
+        if (_state is null || _localBrainHeartbeatInFlight)
+        {
+            return;
+        }
+
+        _localBrainHeartbeatInFlight = true;
+        var settings = _state.SettingsSnapshot;
+        var supervisorStatus = EvaluateRuntimeSupervisor(isUserInitiatedToolOpen: _state.ActiveTool.IsOpen);
+        _ = _localBrainHeartbeatService.TickAsync(settings, supervisorStatus, now)
+            .ContinueWith(task =>
+            {
+                _localBrainHeartbeatInFlight = false;
+                if (task.Status == TaskStatus.RanToCompletion)
+                {
+                    _localBrainStatus = task.Result;
+                    TraceLog.Write("local-ai", $"local-brain heartbeat status={_localBrainStatus.Availability} reason={_localBrainStatus.Reason}");
+                }
+                else if (task.Exception is not null)
+                {
+                    TraceLog.Write("local-ai", $"local-brain heartbeat failed={task.Exception.GetBaseException().GetType().Name}");
+                }
+            }, CancellationToken.None, TaskContinuationOptions.None, TaskScheduler.FromCurrentSynchronizationContext());
     }
 
     private void TryPollForegroundContext(DateTimeOffset now)
@@ -664,7 +703,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         var killSwitchActive = KillSwitchService.IsActive(_state.SettingsSnapshot);
         var evidenceStatus = _evidenceCollectionStatusService.Read();
 
-        _homeWindow.Render(_state, environment, _feedbackText, _assetService, needSnapshot, aggregateStatuses, actionEnabled, habitatLoadout, evidenceStatus);
+        _homeWindow.Render(_state, environment, _feedbackText, _assetService, needSnapshot, aggregateStatuses, actionEnabled, habitatLoadout, evidenceStatus, _localBrainStatus);
         _roamBandWindow.Render(_state, _assetService, liveStatus, liveBannerText, supervisorStatus, killSwitchActive, evidenceStatus, desktopAssetOpacity);
         _toolPopupWindow.Render(_state, _content, habitatLoadout, _assetService, _devToolsEnabled, petCommandBarState, supervisorStatus, activitySummary, autonomousDecision, promotionDecision, liveRecentLines, evidenceStatus);
     }

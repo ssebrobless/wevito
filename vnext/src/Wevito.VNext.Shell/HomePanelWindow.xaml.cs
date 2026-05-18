@@ -154,7 +154,8 @@ public partial class HomePanelWindow : Window
         IReadOnlyList<PetStatusType> aggregateStatuses,
         IReadOnlyDictionary<string, bool> actionEnabled,
         HabitatLoadout habitatLoadout,
-        EvidenceCollectionStatus? evidenceStatus = null)
+        EvidenceCollectionStatus? evidenceStatus = null,
+        LocalBrainStatus? localBrainStatus = null)
     {
         var compactHud = state.SettingsSnapshot.TryGetValue("compact_hud", out var compactValue) &&
                          bool.TryParse(compactValue, out var compactFlag) &&
@@ -199,6 +200,7 @@ public partial class HomePanelWindow : Window
         EvidenceBadgeText.Text = evidenceStatus?.Active == true
             ? $"Evidence: Day {evidenceStatus.DayN} of {evidenceStatus.DayMax}"
             : "Evidence: not started";
+        ApplyLocalBrainBadge(localBrainStatus);
         BenchmarkBadgeButton.Content = state.SettingsSnapshot.TryGetValue("benchmark_latest_score", out var benchmarkScore) && !string.IsNullOrWhiteSpace(benchmarkScore)
             ? $"BENCH {benchmarkScore}"
             : "BENCH --";
@@ -2422,6 +2424,24 @@ public partial class HomePanelWindow : Window
         return string.IsNullOrWhiteSpace(phase)
             ? $"LOOP {state}"
             : $"LOOP {phase}";
+    }
+
+    private void ApplyLocalBrainBadge(LocalBrainStatus? status)
+    {
+        var effective = status ?? LocalBrainStatus.Starting(DateTimeOffset.UtcNow);
+        var (text, background, border) = effective.Availability switch
+        {
+            LocalBrainAvailability.Ready => ("BRAIN ready", "#263C35", "#7DB89A"),
+            LocalBrainAvailability.Dormant => ("BRAIN quiet", "#243646", "#7894B2"),
+            LocalBrainAvailability.Blocked => ("BRAIN paused", "#5A1E24", "#D56B73"),
+            LocalBrainAvailability.Offline => ("BRAIN offline", "#3E3446", "#A98BC8"),
+            _ => ("BRAIN starting", "#2C344D", "#7D88C8")
+        };
+
+        LocalBrainBadgeText.Text = text;
+        LocalBrainBadge.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(background));
+        LocalBrainBadge.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(border));
+        LocalBrainBadge.ToolTip = $"{LocalBrainHeartbeatService.BuildSummary(effective)} Last probe: {effective.LastProbeAtUtc:O}";
     }
 
     private static bool HasRollbackProposal(IReadOnlyList<TaskCard>? cards)
