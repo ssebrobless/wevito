@@ -1,4 +1,5 @@
 using Wevito.VNext.Core.SelfImprovement;
+using Wevito.VNext.Core.SelfImprovement.Experiments;
 
 namespace Wevito.VNext.Core;
 
@@ -11,6 +12,6 @@ public static class ShellCompositionRoot
 
     public static ExperimentRegistry CreateExperimentRegistry()
     {
-        return ExperimentRegistry.Empty();
+        return ExperimentRegistry.ForCompositionRoot(SpriteRepairBatchProposalDescriptor.Descriptor);
     }
 }

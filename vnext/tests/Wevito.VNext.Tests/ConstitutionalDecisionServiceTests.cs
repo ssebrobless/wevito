@@ -91,7 +91,7 @@ public sealed class ConstitutionalDecisionServiceTests
         var outcome = service.Decide(Input(scopeEnabled: true, registryEmpty: false));
 
         var blocked = Assert.IsType<ConstitutionalDecisionOutcome.Blocked>(outcome);
-        Assert.Equal(DefaultDenyRule.EmptyRegistryReason, blocked.Reason);
+        Assert.Equal(DefaultDenyRule.DefaultDenyReason, blocked.Reason);
     }
 
     [Fact]

@@ -96,6 +96,7 @@ public interface IAutonomousScope
 public sealed class AutonomousScopeService
 {
     public const string SpriteRepairTriageScopeId = "sprite-repair-triage";
+    public const string SpriteRepairBatchProposalScopeId = "sprite-repair-batch-proposal";
     public const string AuditLedgerCleanupScopeId = "audit-ledger-cleanup";
     public const string EnabledChangedPacketKind = "autonomous_scope_enabled_changed";
     public const string TickPacketKind = "autonomous_scope_tick";
@@ -107,6 +108,12 @@ public sealed class AutonomousScopeService
             SpriteRepairTriageScopeId,
             "Sprite repair triage",
             "Drafts review-only task cards for high-priority sprite repair queue rows.",
+            TimeSpan.FromMinutes(30),
+            CanMutate: false),
+        new AutonomousScopeDescriptor(
+            SpriteRepairBatchProposalScopeId,
+            "Sprite-repair batch proposal",
+            "Review only. No sprite mutation. No apply. Drafts a supervised self-improvement repair proposal packet.",
             TimeSpan.FromMinutes(30),
             CanMutate: false),
         new AutonomousScopeDescriptor(

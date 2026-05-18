@@ -1,16 +1,27 @@
 using Wevito.VNext.Core;
 using Wevito.VNext.Core.SelfImprovement;
+using Wevito.VNext.Core.SelfImprovement.Experiments;
 
 namespace Wevito.VNext.Tests;
 
 public sealed class ExperimentRegistryTests
 {
     [Fact]
-    public void DefaultRegistry_IsEmpty()
+    public void EmptyRegistry_IsEmpty()
+    {
+        var registry = ExperimentRegistry.Empty();
+
+        Assert.Empty(registry.RegisteredKinds);
+    }
+
+    [Fact]
+    public void CompositionRoot_RegistersFirstReviewOnlyExperimentKind()
     {
         var registry = ShellCompositionRoot.CreateExperimentRegistry();
 
-        Assert.Empty(registry.RegisteredKinds);
+        var descriptor = Assert.Single(registry.RegisteredKinds);
+        Assert.Equal(SpriteRepairBatchProposalDescriptor.Kind, descriptor.Kind.Value);
+        Assert.False(descriptor.EnabledByDefault);
     }
 
     [Fact]
