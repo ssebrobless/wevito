@@ -11,6 +11,7 @@ using Wevito.VNext.Contracts;
 using Wevito.VNext.Core;
 using Wevito.VNext.Core.Audit;
 using Wevito.VNext.Core.LocalRetrieval;
+using Wevito.VNext.Core.SelfImprovement.Maturity;
 using Wevito.VNext.Core.Settings;
 using Wevito.VNext.Core.Tools;
 
@@ -144,7 +145,8 @@ public partial class ToolPopupWindow : Window
         PromotionDecision? promotionDecision = null,
         IReadOnlyList<string>? activityRecentLines = null,
         EvidenceCollectionStatus? evidenceStatus = null,
-        EvidenceSummary? evidenceSummary = null)
+        EvidenceSummary? evidenceSummary = null,
+        MaturityClock? maturityClock = null)
     {
         var toolId = string.IsNullOrWhiteSpace(state.ActiveTool.ToolId) ? "basket" : state.ActiveTool.ToolId;
         var showingBasket = string.Equals(toolId, "basket", StringComparison.OrdinalIgnoreCase);
@@ -239,7 +241,7 @@ public partial class ToolPopupWindow : Window
         }
         else if (showingEvidence)
         {
-            RenderEvidencePanel(state, evidenceSummary);
+            RenderEvidencePanel(state, evidenceSummary, maturityClock);
         }
 
         _suppressSettingEvents = true;
@@ -1836,8 +1838,9 @@ public partial class ToolPopupWindow : Window
         LocalDocsResultsGrid.ItemsSource = _localDocumentRows;
     }
 
-    private void RenderEvidencePanel(CompanionState state, EvidenceSummary? summary)
+    private void RenderEvidencePanel(CompanionState state, EvidenceSummary? summary, MaturityClock? maturityClock)
     {
+        RenderMaturityClock(maturityClock);
         if (summary is null)
         {
             _evidenceSummaryRows = [];
@@ -1856,6 +1859,26 @@ public partial class ToolPopupWindow : Window
         EvidenceStatusText.Text = summary.IsBlocked
             ? $"Blocked: {summary.StatusMessage}"
             : $"Range={ResolveEvidenceDateRangeSetting(state)}; max={summary.Query.MaxPackets}; rows={summary.Rows.Count}; {unknownText}. Export writes only to vnext/artifacts/c-phase-141-evidence-dashboard/.";
+    }
+
+    private void RenderMaturityClock(MaturityClock? maturityClock)
+    {
+        if (maturityClock is null)
+        {
+            MaturityClockStatusText.Text = "Maturity clock waiting for audit ledger state.";
+            MaturityClockProgressText.Text = "dry-run=0; apply=0; rollback=0; eval=0; total=0";
+            MaturityClockResetText.Text = "reset conditions: none";
+            return;
+        }
+
+        MaturityClockStatusText.Text = maturityClock.IsBlocked
+            ? $"Maturity clock blocked: {maturityClock.StatusMessage}"
+            : $"Maturity clock: {maturityClock.ProgressIncrements} evidence increment(s). Read-only; no capability flags flip from this value.";
+        MaturityClockProgressText.Text =
+            $"dry-run={maturityClock.DryRunCompletedCount}; apply={maturityClock.ApplyCompletedCount}; rollback={maturityClock.RollbackVerifiedCount}; eval={maturityClock.EvalCompletedPassedCount}; total={maturityClock.ProgressIncrements}";
+        MaturityClockResetText.Text = maturityClock.ResetReasons.Count == 0
+            ? "reset conditions: none"
+            : $"reset conditions: {string.Join(", ", maturityClock.ResetReasons)}";
     }
 
     internal static EvidenceSummaryQuery BuildEvidenceSummaryQuery(IReadOnlyDictionary<string, string> settings, DateTimeOffset nowUtc)
