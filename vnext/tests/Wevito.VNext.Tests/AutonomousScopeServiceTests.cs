@@ -52,6 +52,48 @@ public sealed class AutonomousScopeServiceTests
     }
 
     [Fact]
+    public void SpriteRepairTriageScope_Tick_EnrichesCardWithPlan()
+    {
+        var root = CreateSpriteRepairRepo();
+        var queuePath = WriteSpriteRepairQueue(root, Row("snake", "baby", "female", sourcePath: Path.Combine(root, "sprites_runtime", "snake", "baby", "female", "blue", "idle_00.png")));
+        File.WriteAllText(Path.Combine(root, "sprites_runtime", "snake", "baby", "female", "blue", "idle_00.png"), "before");
+        var ledger = new AuditLedgerService(Path.Combine(root, "ledger.sqlite"));
+        var scope = new SpriteRepairTriageScope(queuePath, ledger);
+
+        var result = scope.TryRun(Request(Settings(betaEnabled: true, spriteScopeEnabled: true), root, []));
+
+        var card = Assert.Single(result.TaskCards);
+        Assert.NotNull(card.ReviewPayload);
+        Assert.Equal("snake", card.ReviewPayload!["species"]);
+        Assert.Equal("baby", card.ReviewPayload["age"]);
+        Assert.Equal("female", card.ReviewPayload["gender"]);
+        Assert.Contains("python", card.ReviewPayload["repair_command_lines"], StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("sprites_authored", card.ReviewPayload["candidate_output_directories"], StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("sprites_runtime", card.ReviewPayload["runtime_target_directories"], StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("idle_00.png", card.ReviewPayload["flagged_frame_relative_paths"], StringComparison.OrdinalIgnoreCase);
+        var rows = ledger.Snapshot(Now.AddMinutes(-1), Now.AddMinutes(1));
+        Assert.Contains(rows, row => row.PacketKind == SpriteRepairTriageScope.EnrichedPacketKind && !row.DidMutate);
+    }
+
+    [Fact]
+    public void SpriteRepairTriageScope_Tick_DoesNotMutateSprites()
+    {
+        var root = CreateSpriteRepairRepo();
+        var runtimeFrame = Path.Combine(root, "sprites_runtime", "snake", "baby", "female", "blue", "idle_00.png");
+        File.WriteAllText(runtimeFrame, "before");
+        var queuePath = WriteSpriteRepairQueue(root, Row("snake", "baby", "female", sourcePath: runtimeFrame));
+        var ledger = new AuditLedgerService(Path.Combine(root, "ledger.sqlite"));
+        var scope = new SpriteRepairTriageScope(queuePath, ledger);
+
+        var result = scope.TryRun(Request(Settings(betaEnabled: true, spriteScopeEnabled: true), root, []));
+
+        Assert.True(result.Ran);
+        Assert.False(result.DidMutate);
+        Assert.Equal("before", File.ReadAllText(runtimeFrame));
+        Assert.False(Directory.EnumerateDirectories(Path.Combine(root, "sprites_authored", ".candidates")).Any());
+    }
+
+    [Fact]
     public void AuditLedgerCleanupScope_MovesOnlyOldArchivedJsonlWithoutDeletingOrEditing()
     {
         var root = TempRoot();
@@ -205,6 +247,7 @@ public sealed class AutonomousScopeServiceTests
     [InlineData(AutonomousScopeService.EnabledChangedPacketKind)]
     [InlineData(AutonomousScopeService.PreviewPacketKind)]
     [InlineData(AutonomousScopeService.TickPacketKind)]
+    [InlineData(SpriteRepairTriageScope.EnrichedPacketKind)]
     [InlineData(SpriteRepairTriageScope.PacketKind)]
     [InlineData(AuditLedgerCleanupScope.PacketKind)]
     public void PlainLanguageExplainer_CoversAutonomousScopePacketKinds(string packetKind)
@@ -274,5 +317,60 @@ public sealed class AutonomousScopeServiceTests
         var root = Path.Combine(Path.GetTempPath(), "wevito-autonomous-scope-tests", Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(root);
         return root;
+    }
+
+    private static string CreateSpriteRepairRepo()
+    {
+        var root = Path.Combine(Path.GetTempPath(), "wevito-autonomous-scope-repo-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(Path.Combine(root, "tools"));
+        Directory.CreateDirectory(Path.Combine(root, "sprites_authored", ".candidates"));
+        Directory.CreateDirectory(Path.Combine(root, "sprites_runtime", "snake", "baby", "female", "blue"));
+        File.WriteAllText(Path.Combine(root, "wevito.godot"), "");
+        File.WriteAllText(Path.Combine(root, "tools", "fake_repair.py"), "# fake repair");
+        return root;
+    }
+
+    private static string WriteSpriteRepairQueue(string root, SpriteRepairQueueRow row)
+    {
+        var queuePath = Path.Combine(root, "repair_queue.json");
+        var manifest = new SpriteRepairQueueManifest(
+            "1.0",
+            Now,
+            "visual_qa_manifest.json",
+            Now.AddMinutes(-30).ToString("O"),
+            1,
+            1,
+            new Dictionary<string, int> { [row.Priority] = 1 },
+            new Dictionary<string, int> { ["crop_detected"] = 1 },
+            [row]);
+        File.WriteAllText(queuePath, System.Text.Json.JsonSerializer.Serialize(manifest, JsonDefaults.Options));
+        return queuePath;
+    }
+
+    private static SpriteRepairQueueRow Row(string species, string lifeStage, string gender, string? sourcePath = null)
+    {
+        return new SpriteRepairQueueRow(
+            $"{species}_{lifeStage}_{gender}",
+            species,
+            lifeStage,
+            gender,
+            "P1",
+            "queued",
+            1,
+            ["blue"],
+            ["idle"],
+            ["tools/fake_repair.py"],
+            [
+                new SpriteRepairQueueIssue(
+                    "blue",
+                    "idle",
+                    "P1",
+                    ["crop_detected"],
+                    ["test warning"],
+                    "tools/fake_repair.py",
+                    "test reason",
+                    sourcePath,
+                    null)
+            ]);
     }
 }

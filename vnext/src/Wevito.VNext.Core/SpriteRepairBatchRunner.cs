@@ -25,6 +25,22 @@ public sealed record SpriteRepairBatchResult(
     IReadOnlyDictionary<string, string> PreHashes,
     IReadOnlyDictionary<string, string> PostHashes);
 
+public sealed record SpriteRepairBatchPlan(
+    string RowId,
+    string SpeciesId,
+    string LifeStage,
+    string Gender,
+    string ColorVariant,
+    string AnimationFamily,
+    string RuntimeTargetDirectory,
+    string CandidateOutputDirectory,
+    string RepairToolPath,
+    bool RepairToolExists,
+    string CommandLine,
+    IReadOnlyList<string> FlaggedFrameRelativePaths,
+    IReadOnlyList<string> WouldWriteRelativePaths,
+    string Summary);
+
 public sealed class SpriteRepairBatchRunner
 {
     public const string BatchPacketKind = "sprite_repair_batch";
@@ -142,6 +158,36 @@ public sealed class SpriteRepairBatchRunner
             postHashes);
     }
 
+    public SpriteRepairBatchPlan BuildPlanForReview(SpriteRepairBatchRequest request)
+    {
+        var repoRoot = Path.GetFullPath(request.RepoRoot);
+        var target = BuildTarget(request.Row, request.Issue);
+        var runtimeRowFolder = SpriteWorkflowDryRunApplyService.ResolveRuntimeRowFolder(repoRoot, target);
+        var batchId = BuildBatchId(request);
+        var candidateFolder = ResolveCandidateFolder(repoRoot, batchId, request.CandidateFolderOverride);
+        var repairToolPath = ResolveToolPath(repoRoot, request.Issue.RepairTool);
+        var command = BuildRepairCommand(repoRoot, repairToolPath, request.Row, request.Issue, candidateFolder);
+        var flaggedFrames = ResolveFlaggedFrameRelativePaths(repoRoot, runtimeRowFolder, request.Issue);
+        var wouldWrite = ResolveWouldWriteRelativePaths(repoRoot, runtimeRowFolder, request.Issue, flaggedFrames);
+        var summary = $"Would run {request.Issue.RepairTool} for {request.Row.SpeciesId}/{request.Row.LifeStage}/{request.Row.Gender}/{request.Issue.ColorVariant}/{request.Issue.AnimationFamily}; would write {wouldWrite.Count} runtime frame path(s) after candidate review.";
+
+        return new SpriteRepairBatchPlan(
+            request.Row.RowId,
+            request.Row.SpeciesId,
+            request.Row.LifeStage,
+            request.Row.Gender,
+            request.Issue.ColorVariant,
+            request.Issue.AnimationFamily,
+            runtimeRowFolder,
+            candidateFolder,
+            repairToolPath,
+            File.Exists(repairToolPath),
+            FormatCommandLine(command),
+            flaggedFrames,
+            wouldWrite,
+            summary);
+    }
+
     private static SpriteRowKey BuildTarget(SpriteRepairQueueRow row, SpriteRepairQueueIssue issue)
     {
         if (!Enum.TryParse<PetAgeStage>(row.LifeStage, ignoreCase: true, out var ageStage) ||
@@ -204,6 +250,65 @@ public sealed class SpriteRepairBatchRunner
     private static string ResolveToolPath(string repoRoot, string repairTool)
     {
         return Path.GetFullPath(Path.Combine(repoRoot, repairTool.Replace('/', Path.DirectorySeparatorChar)));
+    }
+
+    private static IReadOnlyList<string> ResolveFlaggedFrameRelativePaths(string repoRoot, string runtimeRowFolder, SpriteRepairQueueIssue issue)
+    {
+        var explicitPaths = new[] { issue.SourcePath, issue.CapturePath }
+            .Where(path => !string.IsNullOrWhiteSpace(path))
+            .Select(path => ToRepoRelativePath(repoRoot, ResolvePath(repoRoot, path!)))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+        if (explicitPaths.Count > 0)
+        {
+            return explicitPaths;
+        }
+
+        if (!Directory.Exists(runtimeRowFolder))
+        {
+            return [];
+        }
+
+        return Directory.EnumerateFiles(runtimeRowFolder, $"{issue.AnimationFamily}_*.png", SearchOption.TopDirectoryOnly)
+            .OrderBy(path => path, StringComparer.OrdinalIgnoreCase)
+            .Select(path => ToRepoRelativePath(repoRoot, path))
+            .ToArray();
+    }
+
+    private static IReadOnlyList<string> ResolveWouldWriteRelativePaths(
+        string repoRoot,
+        string runtimeRowFolder,
+        SpriteRepairQueueIssue issue,
+        IReadOnlyList<string> flaggedFrames)
+    {
+        if (flaggedFrames.Count > 0)
+        {
+            return flaggedFrames
+                .Select(path => path.Replace('\\', '/'))
+                .ToArray();
+        }
+
+        return [ToRepoRelativePath(repoRoot, Path.Combine(runtimeRowFolder, $"{issue.AnimationFamily}_00.png"))];
+    }
+
+    private static string FormatCommandLine(ProofExecutionCommand command)
+    {
+        return string.Join(" ", new[] { command.Executable }.Concat(command.Arguments).Select(QuoteCommandPart));
+    }
+
+    private static string QuoteCommandPart(string part)
+    {
+        return part.Any(char.IsWhiteSpace) ? $"\"{part.Replace("\"", "\\\"")}\"" : part;
+    }
+
+    private static string ToRepoRelativePath(string repoRoot, string path)
+    {
+        return Path.GetRelativePath(repoRoot, Path.GetFullPath(path)).Replace('\\', '/');
+    }
+
+    private static string ResolvePath(string repoRoot, string path)
+    {
+        return Path.GetFullPath(Path.IsPathRooted(path) ? path : Path.Combine(repoRoot, path));
     }
 
     private static string ResolveCandidateFolder(string repoRoot, string batchId, string? overridePath)
