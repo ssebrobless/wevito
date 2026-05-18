@@ -9,6 +9,7 @@ using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Wevito.VNext.Contracts;
 using Wevito.VNext.Core;
+using Wevito.VNext.Core.Audit;
 using Wevito.VNext.Core.LocalRetrieval;
 using Wevito.VNext.Core.Settings;
 using Wevito.VNext.Core.Tools;
@@ -27,6 +28,7 @@ public partial class ToolPopupWindow : Window
     private List<ActionOptionRowItem> _actionRows = [];
     private List<PetTaskQueueRowItem> _taskQueueRows = [];
     private List<LocalDocumentResultRowItem> _localDocumentRows = [];
+    private List<EvidenceSummaryRowItem> _evidenceSummaryRows = [];
     private bool _suppressTaskQueueSelection;
     private string _autonomousScopePreviewText = "No autonomous scope preview has run in this session.";
     private string _localDocsStatusText = "Local document retrieval is disabled until Settings enables it.";
@@ -88,6 +90,8 @@ public partial class ToolPopupWindow : Window
 
     public event Func<string, Task>? AutonomousScopePreviewRequested;
 
+    public event Func<Task>? EvidenceSummaryExportRequested;
+
     public event Func<Guid, TaskCardStatus, Task>? PetTaskStatusChangeRequested;
 
     public event Func<Guid, Task>? PetTaskPreviewRequested;
@@ -139,7 +143,8 @@ public partial class ToolPopupWindow : Window
         AutonomousBetaDecision? autonomousDecision = null,
         PromotionDecision? promotionDecision = null,
         IReadOnlyList<string>? activityRecentLines = null,
-        EvidenceCollectionStatus? evidenceStatus = null)
+        EvidenceCollectionStatus? evidenceStatus = null,
+        EvidenceSummary? evidenceSummary = null)
     {
         var toolId = string.IsNullOrWhiteSpace(state.ActiveTool.ToolId) ? "basket" : state.ActiveTool.ToolId;
         var showingBasket = string.Equals(toolId, "basket", StringComparison.OrdinalIgnoreCase);
@@ -149,6 +154,7 @@ public partial class ToolPopupWindow : Window
         var showingPetCommand = string.Equals(toolId, "helpers", StringComparison.OrdinalIgnoreCase);
         var showingBenchmarks = string.Equals(toolId, "benchmarks", StringComparison.OrdinalIgnoreCase);
         var showingAutonomousScopes = string.Equals(toolId, "autonomous-scopes", StringComparison.OrdinalIgnoreCase);
+        var showingEvidence = string.Equals(toolId, "evidence", StringComparison.OrdinalIgnoreCase);
         var localDocsEnabled = GetSettingBool(state, SettingKeys.LocalDocumentRetrievalEnabled);
         var advancedToolsVisible = GetSettingBool(state, ToolCatalog.AdvancedToolsVisibleSetting);
         var showingLocalDocs = localDocsEnabled && string.Equals(toolId, "local-docs", StringComparison.OrdinalIgnoreCase);
@@ -159,14 +165,15 @@ public partial class ToolPopupWindow : Window
             ? content.Actions.FirstOrDefault(action => string.Equals(action.Id, actionId, StringComparison.OrdinalIgnoreCase))
             : null;
 
-        Title = showingBasket ? "Wevito Tools" : showingDev ? "Wevito Dev Tools" : showingPetCommand ? "Wevito Chat" : showingBenchmarks ? "Wevito Benchmarks" : showingAutonomousScopes ? "Wevito Autonomy" : showingLocalDocs ? "Wevito Local Docs" : showingActivity ? "Wevito Activity" : showingActionMenu ? "Wevito Actions" : showingAction ? $"Wevito {actionDefinition?.DisplayName ?? "Action"}" : "Wevito Settings";
-        PopupTitle.Text = showingBasket ? "Tools" : showingDev ? "Dev Tools" : showingPetCommand ? "Chat" : showingBenchmarks ? "Benchmarks" : showingAutonomousScopes ? "Autonomy" : showingLocalDocs ? "Local Docs" : showingActivity ? "Activity" : showingActionMenu ? "Actions" : showingAction ? (actionDefinition?.DisplayName ?? "Action") : "Settings";
+        Title = showingBasket ? "Wevito Tools" : showingDev ? "Wevito Dev Tools" : showingPetCommand ? "Wevito Chat" : showingBenchmarks ? "Wevito Benchmarks" : showingAutonomousScopes ? "Wevito Autonomy" : showingEvidence ? "Wevito Evidence" : showingLocalDocs ? "Wevito Local Docs" : showingActivity ? "Wevito Activity" : showingActionMenu ? "Wevito Actions" : showingAction ? $"Wevito {actionDefinition?.DisplayName ?? "Action"}" : "Wevito Settings";
+        PopupTitle.Text = showingBasket ? "Tools" : showingDev ? "Dev Tools" : showingPetCommand ? "Chat" : showingBenchmarks ? "Benchmarks" : showingAutonomousScopes ? "Autonomy" : showingEvidence ? "Evidence" : showingLocalDocs ? "Local Docs" : showingActivity ? "Activity" : showingActionMenu ? "Actions" : showingAction ? (actionDefinition?.DisplayName ?? "Action") : "Settings";
         BasketPanel.Visibility = showingBasket ? Visibility.Visible : Visibility.Collapsed;
         BasketButtons.Visibility = showingBasket ? Visibility.Visible : Visibility.Collapsed;
         ActionMenuPanel.Visibility = showingActionMenu ? Visibility.Visible : Visibility.Collapsed;
         ActionPanel.Visibility = showingAction ? Visibility.Visible : Visibility.Collapsed;
         SettingsPanel.Visibility = showingSettings || showingActivity ? Visibility.Visible : Visibility.Collapsed;
         AutonomousScopesPanel.Visibility = showingAutonomousScopes ? Visibility.Visible : Visibility.Collapsed;
+        EvidencePanel.Visibility = showingEvidence ? Visibility.Visible : Visibility.Collapsed;
         ApplyToolCatalogTabMetadata(localDocsEnabled, advancedToolsVisible);
         LocalDocsTabButton.Visibility = localDocsEnabled ? Visibility.Visible : Visibility.Collapsed;
         ActivityTabButton.Visibility = advancedToolsVisible ? Visibility.Visible : Visibility.Collapsed;
@@ -230,9 +237,15 @@ public partial class ToolPopupWindow : Window
         {
             RenderLocalDocsPanel(state);
         }
+        else if (showingEvidence)
+        {
+            RenderEvidencePanel(state, evidenceSummary);
+        }
 
         _suppressSettingEvents = true;
         AdvancedToolsToggle.IsChecked = advancedToolsVisible;
+        EvidenceDateRangeComboBox.SelectedValue = ResolveEvidenceDateRangeSetting(state);
+        EvidenceMaxPacketsComboBox.SelectedValue = ResolveEvidenceMaxPacketsSetting(state).ToString();
         CompactHudCheckBox.IsChecked = GetSettingBool(state, "compact_hud");
         ShowPetNamesCheckBox.IsChecked = GetSettingBool(state, "show_pet_names");
         ShowStatusSummaryCheckBox.IsChecked = GetSettingBool(state, "show_status_summary", true);
@@ -955,6 +968,25 @@ public partial class ToolPopupWindow : Window
         if (LocalDocsQueryRequested is not null)
         {
             await LocalDocsQueryRequested.Invoke(LocalDocsQueryTextBox.Text ?? string.Empty);
+        }
+    }
+
+    private void EvidenceFilterComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (_suppressSettingEvents)
+        {
+            return;
+        }
+
+        PublishSetting("evidence_dashboard_date_range", EvidenceDateRangeComboBox.SelectedValue as string ?? "24h");
+        PublishSetting("evidence_dashboard_max_packets", EvidenceMaxPacketsComboBox.SelectedValue as string ?? EvidenceSummaryService.DefaultMaxPackets.ToString());
+    }
+
+    private async void EvidenceExportButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (EvidenceSummaryExportRequested is not null)
+        {
+            await EvidenceSummaryExportRequested.Invoke();
         }
     }
 
@@ -1741,6 +1773,7 @@ public partial class ToolPopupWindow : Window
         ApplyTab(TasksTabButton);
         ApplyTab(ToolsTabButton);
         ApplyTab(LocalAiTabButton);
+        ApplyTab(EvidenceTabButton);
         ApplyTab(AutonomyTabButton);
         ApplyTab(LocalDocsTabButton);
         ApplyTab(ActivityTabButton);
@@ -1782,6 +1815,63 @@ public partial class ToolPopupWindow : Window
         LocalDocsPolicyText.Text = $"Default-off local search. File types: .md, .txt, .json. Max file bytes: {maxBytes}. No model and no network.";
         LocalDocsStatusText.Text = _localDocsStatusText;
         LocalDocsResultsGrid.ItemsSource = _localDocumentRows;
+    }
+
+    private void RenderEvidencePanel(CompanionState state, EvidenceSummary? summary)
+    {
+        if (summary is null)
+        {
+            _evidenceSummaryRows = [];
+            EvidenceSummaryGrid.ItemsSource = _evidenceSummaryRows;
+            EvidenceStatusText.Text = "Evidence summary is waiting for shell state.";
+            EvidenceExportButton.IsEnabled = false;
+            return;
+        }
+
+        _evidenceSummaryRows = summary.Rows.Select(EvidenceSummaryRowItem.From).ToList();
+        EvidenceSummaryGrid.ItemsSource = _evidenceSummaryRows;
+        EvidenceExportButton.IsEnabled = !summary.IsBlocked;
+        var unknownText = summary.UnknownPacketKinds.Count == 0
+            ? "no unknown packet kinds"
+            : $"{summary.UnknownPacketKinds.Count} unknown packet kind(s) hidden from dashboard claims";
+        EvidenceStatusText.Text = summary.IsBlocked
+            ? $"Blocked: {summary.StatusMessage}"
+            : $"Range={ResolveEvidenceDateRangeSetting(state)}; max={summary.Query.MaxPackets}; rows={summary.Rows.Count}; {unknownText}. Export writes only to vnext/artifacts/c-phase-141-evidence-dashboard/.";
+    }
+
+    internal static EvidenceSummaryQuery BuildEvidenceSummaryQuery(IReadOnlyDictionary<string, string> settings, DateTimeOffset nowUtc)
+    {
+        var maxPackets = settings.TryGetValue("evidence_dashboard_max_packets", out var rawMax) &&
+            int.TryParse(rawMax, out var parsedMax)
+            ? parsedMax
+            : EvidenceSummaryService.DefaultMaxPackets;
+        var range = settings.TryGetValue("evidence_dashboard_date_range", out var rawRange)
+            ? rawRange
+            : "24h";
+        DateTimeOffset? from = range switch
+        {
+            "7d" => nowUtc.AddDays(-7),
+            "30d" => nowUtc.AddDays(-30),
+            "all" => null,
+            _ => nowUtc.AddHours(-24)
+        };
+        return new EvidenceSummaryQuery(from, nowUtc, maxPackets);
+    }
+
+    private static string ResolveEvidenceDateRangeSetting(CompanionState state)
+    {
+        return state.SettingsSnapshot.TryGetValue("evidence_dashboard_date_range", out var range) &&
+            range is "24h" or "7d" or "30d" or "all"
+            ? range
+            : "24h";
+    }
+
+    private static int ResolveEvidenceMaxPacketsSetting(CompanionState state)
+    {
+        return state.SettingsSnapshot.TryGetValue("evidence_dashboard_max_packets", out var raw) &&
+            int.TryParse(raw, out var maxPackets)
+            ? Math.Clamp(maxPackets, 1, EvidenceSummaryService.MaxAllowedPackets)
+            : EvidenceSummaryService.DefaultMaxPackets;
     }
 
     private static string FormatReasoningModelStatus(CompanionState state)
@@ -2616,6 +2706,30 @@ internal sealed record LocalDocumentResultRowItem(
             snippet.LineNumber,
             snippet.SnippetText,
             snippet.Score.ToString("0.000000"));
+    }
+}
+
+internal sealed record EvidenceSummaryRowItem(
+    string PacketKind,
+    int Count,
+    string LastSeen,
+    int MutationYesCount,
+    int NetworkYesCount,
+    int HostedAiYesCount,
+    int LocalModelYesCount,
+    int RefusalCount)
+{
+    public static EvidenceSummaryRowItem From(EvidenceSummaryKindRow row)
+    {
+        return new EvidenceSummaryRowItem(
+            row.PacketKind,
+            row.Count,
+            row.LastSeenUtc.ToLocalTime().ToString("MM/dd HH:mm"),
+            row.MutationYesCount,
+            row.NetworkYesCount,
+            row.HostedAiYesCount,
+            row.LocalModelYesCount,
+            row.RefusalCount);
     }
 }
 

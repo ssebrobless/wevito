@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Threading;
 using Wevito.VNext.Contracts;
 using Wevito.VNext.Core;
+using Wevito.VNext.Core.Audit;
 using Wevito.VNext.Core.LocalRetrieval;
 using Wevito.VNext.Core.Settings;
 using Wevito.VNext.Core.Tools;
@@ -36,6 +37,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private readonly AgentTaskCardQueueService _petTaskCardQueueService = new();
     private readonly AuditLedgerService _auditLedgerService = new();
     private readonly ActivitySummaryService _activitySummaryService;
+    private readonly EvidenceSummaryService _evidenceSummaryService;
     private readonly LiveStatusFeed _liveStatusFeed;
     private readonly EvidenceCollectionStatusService _evidenceCollectionStatusService;
     private readonly KillSwitchService _killSwitchService;
@@ -111,6 +113,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _activitySummaryService = new ActivitySummaryService(_auditLedgerService, plainLanguageExplainer);
         _liveStatusFeed = new LiveStatusFeed(_auditLedgerService, plainLanguageExplainer);
         _killSwitchService = new KillSwitchService(() => _state?.SettingsSnapshot ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase), _auditLedgerService);
+        _evidenceSummaryService = new EvidenceSummaryService(_auditLedgerService.DatabasePath, _auditLedgerService, _killSwitchService);
         _aiIdentityService = new AiIdentityService(_auditLedgerService, _killSwitchService);
         _firstLaunchWizardStateService = new FirstLaunchWizardStateService(_aiIdentityService, _auditLedgerService, _killSwitchService);
         _coexistenceTriggerService = new CoexistenceTriggerService(_auditLedgerService, _killSwitchService);
@@ -233,6 +236,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _toolPopupWindow.RunFirstLaunchWizardRequested += async () => await RunFirstLaunchWizardAsync(force: true);
         _toolPopupWindow.AutonomousBetaConsentConfirmed += async () => await EnableAutonomousBetaAfterConsentAsync();
         _toolPopupWindow.AutonomousScopePreviewRequested += async scopeId => await PreviewAutonomousScopeAsync(scopeId);
+        _toolPopupWindow.EvidenceSummaryExportRequested += async () => await ExportEvidenceSummaryAsync();
         _toolPopupWindow.DevToolCommandRequested += async command => await HandleDevToolCommandAsync(command);
         _toolPopupWindow.ActionMenuRequested += actionId =>
         {
@@ -745,10 +749,11 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         var autonomousDecision = _autonomousBetaDecisionService.Decide(now, promotionDecision);
         var killSwitchActive = KillSwitchService.IsActive(_state.SettingsSnapshot);
         var evidenceStatus = _evidenceCollectionStatusService.Read();
+        var evidenceSummary = _evidenceSummaryService.GetSummary(ToolPopupWindow.BuildEvidenceSummaryQuery(_state.SettingsSnapshot, now));
 
         _homeWindow.Render(_state, environment, _feedbackText, _assetService, needSnapshot, aggregateStatuses, actionEnabled, habitatLoadout, evidenceStatus, _localBrainStatus);
         _roamBandWindow.Render(_state, _assetService, liveStatus, liveBannerText, supervisorStatus, killSwitchActive, evidenceStatus, desktopAssetOpacity);
-        _toolPopupWindow.Render(_state, _content, habitatLoadout, _assetService, _devToolsEnabled, petCommandBarState, supervisorStatus, activitySummary, autonomousDecision, promotionDecision, liveRecentLines, evidenceStatus);
+        _toolPopupWindow.Render(_state, _content, habitatLoadout, _assetService, _devToolsEnabled, petCommandBarState, supervisorStatus, activitySummary, autonomousDecision, promotionDecision, liveRecentLines, evidenceStatus, evidenceSummary);
     }
 
     private async Task EnableAutonomousBetaAfterConsentAsync()
@@ -866,6 +871,24 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _feedbackText = next.IsActive
             ? "Do Not Disturb is on. Helpers pause while pets stay visible."
             : "Do Not Disturb is off. Helpers may resume when other gates allow.";
+        await PersistAndRenderAsync();
+    }
+
+    private async Task ExportEvidenceSummaryAsync()
+    {
+        if (_state is null)
+        {
+            return;
+        }
+
+        var artifactRoot = Path.Combine(ResolveRepoRootOrBaseDirectory(), "vnext", "artifacts", "c-phase-141-evidence-dashboard");
+        var result = _evidenceSummaryService.ExportSummary(
+            ToolPopupWindow.BuildEvidenceSummaryQuery(_state.SettingsSnapshot, DateTimeOffset.UtcNow),
+            artifactRoot,
+            DateTimeOffset.UtcNow);
+        _feedbackText = result.Exported
+            ? $"Evidence summary exported: {result.Path}"
+            : $"Evidence export blocked: {result.BlockReason}";
         await PersistAndRenderAsync();
     }
 
@@ -3182,6 +3205,8 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         hydrated.TryAdd(SettingKeys.LocalDocumentRetrievalRoot, SettingKeys.DefaultLocalDocumentRetrievalRoot());
         hydrated.TryAdd(SettingKeys.LocalDocumentRetrievalMaxFileBytes, SettingKeys.LocalDocumentRetrievalDefaultMaxFileBytes);
         hydrated.TryAdd(ToolCatalog.AdvancedToolsVisibleSetting, bool.FalseString);
+        hydrated.TryAdd("evidence_dashboard_date_range", "24h");
+        hydrated.TryAdd("evidence_dashboard_max_packets", EvidenceSummaryService.DefaultMaxPackets.ToString());
         return hydrated;
     }
 
