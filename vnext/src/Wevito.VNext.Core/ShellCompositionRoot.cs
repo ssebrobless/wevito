@@ -6,6 +6,11 @@ public static class ShellCompositionRoot
 {
     public static ConstitutionalDecisionService CreateConstitutionalDecisionService(KillSwitchService? killSwitchService = null)
     {
-        return new ConstitutionalDecisionService(killSwitchService);
+        return new ConstitutionalDecisionService(killSwitchService, CreateExperimentRegistry());
+    }
+
+    public static ExperimentRegistry CreateExperimentRegistry()
+    {
+        return ExperimentRegistry.Empty();
     }
 }

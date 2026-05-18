@@ -8,7 +8,7 @@ public sealed class ConstitutionalDecisionServiceTests
     [Fact]
     public void Decide_DefaultOutcomeIsBlocked()
     {
-        var service = new ConstitutionalDecisionService();
+        var service = new ConstitutionalDecisionService(experimentRegistry: RegisteredRegistry());
 
         var outcome = service.Decide(Input(scopeEnabled: true, registryEmpty: false));
 
@@ -31,7 +31,7 @@ public sealed class ConstitutionalDecisionServiceTests
     public void Decide_UsesKillSwitchService()
     {
         var settings = new Dictionary<string, string> { [KillSwitchService.KillSwitchSetting] = "true" };
-        var service = new ConstitutionalDecisionService(new KillSwitchService(() => settings));
+        var service = new ConstitutionalDecisionService(new KillSwitchService(() => settings), RegisteredRegistry());
 
         var outcome = service.Decide(Input(scopeEnabled: true, registryEmpty: false));
 
@@ -91,7 +91,7 @@ public sealed class ConstitutionalDecisionServiceTests
         var outcome = service.Decide(Input(scopeEnabled: true, registryEmpty: false));
 
         var blocked = Assert.IsType<ConstitutionalDecisionOutcome.Blocked>(outcome);
-        Assert.Equal(DefaultDenyRule.DefaultDenyReason, blocked.Reason);
+        Assert.Equal(DefaultDenyRule.EmptyRegistryReason, blocked.Reason);
     }
 
     [Fact]
@@ -119,5 +119,13 @@ public sealed class ConstitutionalDecisionServiceTests
             RequestsHostedAi: hostedAi,
             ExperimentRegistryIsEmpty: registryEmpty,
             KillSwitchActive: killSwitchActive);
+    }
+
+    private static ExperimentRegistry RegisteredRegistry()
+    {
+        return ExperimentRegistry.ForTests(new ExperimentDescriptor(
+            new ExperimentKind("sprite-repair-batch-proposal"),
+            "Sprite repair batch proposal",
+            "Review-only sprite repair proposal."));
     }
 }
