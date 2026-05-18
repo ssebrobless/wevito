@@ -442,7 +442,7 @@ public partial class HomePanelWindow : Window
         });
         stack.Children.Add(new TextBlock
         {
-            Text = "Pick a ROYGBIV egg. The pet inside stays hidden until it hatches.",
+            Text = "Pick an egg color. The pet inside stays hidden until it hatches. Green returns in a future phase.",
             Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#B9D5FF")),
             TextWrapping = TextWrapping.Wrap,
             FontSize = 11,

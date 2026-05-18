@@ -12,7 +12,7 @@ public sealed class StarterEggCatalogTests
 
         var fromFile = StarterEggCatalog.LoadFromPath(StarterEggCatalog.ManifestPath);
 
-        Assert.Equal(7, fromFile.Count);
+        Assert.Equal(6, fromFile.Count);
         Assert.Equal("fox", fromFile.Single(egg => egg.ColorVariant == "red").SpeciesId);
     }
 
@@ -22,8 +22,8 @@ public sealed class StarterEggCatalogTests
         var colors = StarterEggCatalog.Eggs.Select(egg => egg.ColorVariant).ToArray();
         var labels = StarterEggCatalog.Eggs.Select(egg => egg.Label).ToArray();
 
-        Assert.Equal(["red", "orange", "yellow", "green", "blue", "indigo", "violet"], colors);
-        Assert.Equal(["Red egg", "Orange egg", "Yellow egg", "Green egg", "Blue egg", "Indigo egg", "Violet egg"], labels);
+        Assert.Equal(["red", "orange", "yellow", "blue", "indigo", "violet"], colors);
+        Assert.Equal(["Red egg", "Orange egg", "Yellow egg", "Blue egg", "Indigo egg", "Violet egg"], labels);
     }
 
     [Fact]
@@ -34,13 +34,12 @@ public sealed class StarterEggCatalogTests
     }
 
     [Fact]
-    public void Eggs_DoNotEnableGreenUntilRuntimeGreenSpritesExist()
+    public void Eggs_ReserveGreenForFuturePhaseByOmittingItFromV1StarterChoices()
     {
         var green = StarterEggCatalog.Resolve("green");
 
-        Assert.NotNull(green);
-        Assert.False(green!.IsEnabled);
-        Assert.Equal("Green runtime sprites are not installed yet.", green.DisabledReason);
+        Assert.Null(green);
+        Assert.DoesNotContain(StarterEggCatalog.Eggs, egg => egg.ColorVariant == "green");
     }
 
     [Fact]
@@ -54,7 +53,7 @@ public sealed class StarterEggCatalogTests
     {
         var eggs = StarterEggCatalog.LoadFromPath(Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"), "missing.json"));
 
-        Assert.Equal(["red", "orange", "yellow", "green", "blue", "indigo", "violet"], eggs.Select(egg => egg.ColorVariant).ToArray());
+        Assert.Equal(["red", "orange", "yellow", "blue", "indigo", "violet"], eggs.Select(egg => egg.ColorVariant).ToArray());
         Assert.Equal("fox", eggs.Single(egg => egg.ColorVariant == "red").SpeciesId);
     }
 

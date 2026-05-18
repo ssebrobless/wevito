@@ -2348,7 +2348,7 @@ func show_egg_selection():
 		egg_container.add_child(egg_btn)
 
 	var hint = Label.new()
-	hint.text = "Pick a color; the pet inside is hidden until hatch. Green is reserved."
+	hint.text = "Pick a color; the pet inside is hidden until hatch. Green returns in a future phase."
 	hint.add_theme_font_size_override("font_size", 10)
 	hint.add_theme_color_override("font_color", _detail_text_color())
 	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
