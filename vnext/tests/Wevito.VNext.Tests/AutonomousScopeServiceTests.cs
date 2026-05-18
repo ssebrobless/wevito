@@ -1,4 +1,5 @@
 using System.Threading;
+using System.Text.Json;
 using Wevito.VNext.Contracts;
 using Wevito.VNext.Core;
 
@@ -172,6 +173,86 @@ public sealed class AutonomousScopeServiceTests
     }
 
     [Fact]
+    public void AuditLedgerCleanup_ApplyDryRun_DoesNotMoveFiles()
+    {
+        var root = TempRoot();
+        var auditRoot = SeedOldArchivedAuditRoot(root);
+        var oldArchived = Path.Combine(auditRoot, "20260101-archived.jsonl");
+        var originalHash = Sha256(oldArchived);
+        var ledger = new AuditLedgerService(Path.Combine(root, "ledger.sqlite"));
+        var scope = new AuditLedgerCleanupScope(auditRoot, ledger);
+
+        var summary = scope.ApplyDryRun();
+
+        Assert.Equal("dry-run", summary.Mode);
+        Assert.Equal(1, summary.MovedCount);
+        Assert.True(File.Exists(oldArchived));
+        Assert.Equal(originalHash, Sha256(oldArchived));
+        Assert.False(File.Exists(Path.Combine(auditRoot, "archive", "20260101-archived.jsonl")));
+        var rows = ledger.Snapshot(DateTimeOffset.UtcNow.AddMinutes(-1), DateTimeOffset.UtcNow.AddMinutes(1));
+        Assert.Contains(rows, row => row.PacketKind == AuditLedgerCleanupScope.DryRunPacketKind && !row.DidMutate);
+    }
+
+    [Fact]
+    public void AuditLedgerCleanup_ApplyDryRun_WritesDryRunSummary()
+    {
+        var root = TempRoot();
+        var auditRoot = SeedOldArchivedAuditRoot(root);
+        var ledger = new AuditLedgerService(Path.Combine(root, "ledger.sqlite"));
+        var scope = new AuditLedgerCleanupScope(auditRoot, ledger);
+
+        var summary = scope.ApplyDryRun();
+
+        Assert.EndsWith("-audit-ledger-cleanup-dry-run.json", summary.SummaryPath);
+        Assert.StartsWith(Path.Combine(auditRoot, "cleanup-summaries"), summary.SummaryPath, StringComparison.OrdinalIgnoreCase);
+        Assert.True(File.Exists(summary.SummaryPath));
+        using var document = JsonDocument.Parse(File.ReadAllText(summary.SummaryPath));
+        Assert.Equal("dry-run", document.RootElement.GetProperty("mode").GetString());
+    }
+
+    [Fact]
+    public void AuditLedgerCleanup_DryRunSummary_IncludesSha256()
+    {
+        var root = TempRoot();
+        var auditRoot = SeedOldArchivedAuditRoot(root);
+        var oldArchived = Path.Combine(auditRoot, "20260101-archived.jsonl");
+        var expectedHash = Sha256(oldArchived);
+        var ledger = new AuditLedgerService(Path.Combine(root, "ledger.sqlite"));
+        var scope = new AuditLedgerCleanupScope(auditRoot, ledger);
+
+        var summary = scope.ApplyDryRun();
+
+        using var document = JsonDocument.Parse(File.ReadAllText(summary.SummaryPath));
+        var move = document.RootElement.GetProperty("moved")[0];
+        Assert.Equal(expectedHash, move.GetProperty("sha256").GetString());
+        Assert.Equal(expectedHash, move.GetProperty("preMoveSha256").GetString());
+        Assert.Equal("", move.GetProperty("postMoveSha256").GetString());
+    }
+
+    [Fact]
+    public void AuditLedgerCleanup_ApplyCleanup_StillBehavesAsBefore()
+    {
+        var root = TempRoot();
+        var auditRoot = SeedOldArchivedAuditRoot(root);
+        var oldArchived = Path.Combine(auditRoot, "20260101-archived.jsonl");
+        var originalHash = Sha256(oldArchived);
+        var ledger = new AuditLedgerService(Path.Combine(root, "ledger.sqlite"));
+        var scope = new AuditLedgerCleanupScope(auditRoot, ledger);
+
+        var result = scope.TryRun(Request(Settings(betaEnabled: true, cleanupScopeEnabled: true), root, []));
+
+        Assert.True(result.Ran);
+        Assert.True(result.DidMutate);
+        var archivedPath = Path.Combine(auditRoot, "archive", "20260101-archived.jsonl");
+        Assert.False(File.Exists(oldArchived));
+        Assert.True(File.Exists(archivedPath));
+        Assert.Equal(originalHash, Sha256(archivedPath));
+        var summary = Assert.Single(Directory.EnumerateFiles(Path.Combine(auditRoot, "cleanup-summaries"), "*-audit-ledger-cleanup-apply.json"));
+        using var document = JsonDocument.Parse(File.ReadAllText(summary));
+        Assert.Equal(originalHash, document.RootElement.GetProperty("moved")[0].GetProperty("postMoveSha256").GetString());
+    }
+
+    [Fact]
     public async Task AutonomousScopeService_Preview_RespectsKillSwitch()
     {
         var root = TempRoot();
@@ -249,7 +330,9 @@ public sealed class AutonomousScopeServiceTests
     [InlineData(AutonomousScopeService.TickPacketKind)]
     [InlineData(SpriteRepairTriageScope.EnrichedPacketKind)]
     [InlineData(SpriteRepairTriageScope.PacketKind)]
+    [InlineData(AuditLedgerCleanupScope.DryRunPacketKind)]
     [InlineData(AuditLedgerCleanupScope.PacketKind)]
+    [InlineData(AuditLedgerCleanupScope.RolledBackPacketKind)]
     public void PlainLanguageExplainer_CoversAutonomousScopePacketKinds(string packetKind)
     {
         var unknown = new List<string>();
@@ -317,6 +400,19 @@ public sealed class AutonomousScopeServiceTests
         var root = Path.Combine(Path.GetTempPath(), "wevito-autonomous-scope-tests", Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(root);
         return root;
+    }
+
+    private static string SeedOldArchivedAuditRoot(string root)
+    {
+        var auditRoot = Path.Combine(root, "audit");
+        Directory.CreateDirectory(auditRoot);
+        var oldArchived = Path.Combine(auditRoot, "20260101-archived.jsonl");
+        var liveLedger = Path.Combine(auditRoot, "ledger.jsonl");
+        File.WriteAllText(oldArchived, "{\"packet\":\"old\"}");
+        File.WriteAllText(liveLedger, "{\"packet\":\"live\"}");
+        File.SetLastWriteTimeUtc(oldArchived, Now.AddDays(-45).UtcDateTime);
+        File.SetLastWriteTimeUtc(liveLedger, Now.AddDays(-45).UtcDateTime);
+        return auditRoot;
     }
 
     private static string CreateSpriteRepairRepo()

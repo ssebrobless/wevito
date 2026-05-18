@@ -59,6 +59,31 @@ public sealed record AutonomousScopePreview(
     }
 }
 
+public sealed record AuditLedgerCleanupMovePlan(
+    string Source,
+    string Destination,
+    string Sha256,
+    string PostMoveSha256,
+    int AgeDays);
+
+public sealed record AuditLedgerCleanupPlan(
+    string SchemaVersion,
+    string AuditRoot,
+    string ArchiveRoot,
+    DateTimeOffset RequestedAtUtc,
+    int MoveCount,
+    IReadOnlyList<AuditLedgerCleanupMovePlan> Moves);
+
+public sealed record AuditLedgerCleanupSummary(
+    string SchemaVersion,
+    string Mode,
+    string AuditRoot,
+    string ArchiveRoot,
+    DateTimeOffset RequestedAtUtc,
+    int MovedCount,
+    string SummaryPath,
+    IReadOnlyList<AuditLedgerCleanupMovePlan> Moved);
+
 public interface IAutonomousScope
 {
     AutonomousScopeDescriptor Descriptor { get; }
@@ -597,14 +622,18 @@ public sealed class SpriteRepairTriageScope : IAutonomousScope
 public sealed class AuditLedgerCleanupScope : IAutonomousScope
 {
     public const string PacketKind = "audit_ledger_cleanup_summary";
+    public const string DryRunPacketKind = "audit_ledger_cleanup_dry_run";
+    public const string RolledBackPacketKind = "audit_ledger_cleanup_rolled_back";
 
     private readonly string _auditRoot;
     private readonly AuditLedgerService _ledger;
+    private readonly KillSwitchService? _killSwitchService;
 
-    public AuditLedgerCleanupScope(string auditRoot, AuditLedgerService ledger)
+    public AuditLedgerCleanupScope(string auditRoot, AuditLedgerService ledger, KillSwitchService? killSwitchService = null)
     {
         _auditRoot = auditRoot;
         _ledger = ledger;
+        _killSwitchService = killSwitchService;
     }
 
     public AutonomousScopeDescriptor Descriptor { get; } = AutonomousScopeService.KnownScopes.Single(scope =>
@@ -612,50 +641,14 @@ public sealed class AuditLedgerCleanupScope : IAutonomousScope
 
     public AutonomousScopeRunResult TryRun(AutonomousScopeRunRequest request)
     {
-        Directory.CreateDirectory(_auditRoot);
-        var archiveRoot = Path.Combine(_auditRoot, "archive");
-        Directory.CreateDirectory(archiveRoot);
-        var cutoff = request.RequestedAtUtc.UtcDateTime.AddDays(-30);
-        var moved = new List<object>();
-
-        foreach (var file in new DirectoryInfo(_auditRoot).EnumerateFiles("*.jsonl", SearchOption.TopDirectoryOnly))
+        if (_killSwitchService?.IsActive() == true || KillSwitchService.IsActive(request.Settings))
         {
-            if (!IsArchivedLedgerFile(file) || file.LastWriteTimeUtc > cutoff)
-            {
-                continue;
-            }
-
-            var destination = Path.Combine(archiveRoot, file.Name);
-            if (File.Exists(destination))
-            {
-                destination = Path.Combine(archiveRoot, $"{Path.GetFileNameWithoutExtension(file.Name)}-{request.RequestedAtUtc:yyyyMMddHHmmss}.jsonl");
-            }
-
-            var beforeHash = Sha256(file.FullName);
-            File.Move(file.FullName, destination);
-            var afterHash = Sha256(destination);
-            moved.Add(new
-            {
-                source = file.FullName,
-                destination,
-                sha256 = beforeHash,
-                afterSha256 = afterHash
-            });
+            return new AutonomousScopeRunResult(Descriptor.ScopeId, false, false, request.ExistingTaskCards, "", "kill_switch=true");
         }
 
-        var artifactRoot = Path.Combine(request.ArtifactRoot, $"{request.RequestedAtUtc:yyyyMMdd-HHmmss}-audit-ledger-cleanup");
-        Directory.CreateDirectory(artifactRoot);
-        var summaryPath = Path.Combine(artifactRoot, "cleanup-summary.json");
-        File.WriteAllText(summaryPath, JsonSerializer.Serialize(new
-        {
-            schemaVersion = "1",
-            auditRoot = _auditRoot,
-            archiveRoot,
-            movedCount = moved.Count,
-            moved
-        }, JsonDefaults.Options));
+        var result = ApplyCleanup(request.RequestedAtUtc);
 
-        var summary = $"Audit ledger cleanup moved {moved.Count} old archived JSONL file(s); delete=false edit=false.";
+        var summary = $"Audit ledger cleanup moved {result.MovedCount} old archived JSONL file(s); delete=false edit=false.";
         _ledger.Record(new EvidencePacket(
             Guid.NewGuid(),
             PacketKind,
@@ -664,11 +657,64 @@ public sealed class AuditLedgerCleanupScope : IAutonomousScope
             DidUseNetwork: false,
             DidUseHostedAi: false,
             DidUseLocalModel: false,
-            DidMutate: moved.Count > 0,
-            ArtifactPath: summaryPath,
+            DidMutate: result.MovedCount > 0,
+            ArtifactPath: result.SummaryPath,
             Summary: summary,
             Status: "Completed"));
-        return new AutonomousScopeRunResult(Descriptor.ScopeId, true, moved.Count > 0, request.ExistingTaskCards, summary);
+        return new AutonomousScopeRunResult(Descriptor.ScopeId, true, result.MovedCount > 0, request.ExistingTaskCards, summary);
+    }
+
+    public AuditLedgerCleanupPlan DescribeCleanupPlan()
+    {
+        return BuildPlan(DateTimeOffset.UtcNow);
+    }
+
+    public AuditLedgerCleanupSummary ApplyDryRun()
+    {
+        if (_killSwitchService?.IsActive() == true)
+        {
+            throw new InvalidOperationException("kill_switch=true");
+        }
+
+        var plan = BuildPlan(DateTimeOffset.UtcNow);
+        var summary = WriteSummary(plan, "dry-run", plan.Moves);
+        _ledger.Record(new EvidencePacket(
+            Guid.NewGuid(),
+            DryRunPacketKind,
+            null,
+            plan.RequestedAtUtc,
+            DidUseNetwork: false,
+            DidUseHostedAi: false,
+            DidUseLocalModel: false,
+            DidMutate: false,
+            ArtifactPath: summary.SummaryPath,
+            Summary: $"Audit ledger cleanup dry-run planned {summary.MovedCount} old archived JSONL move(s); moved=0.",
+            Status: "PreviewReady"));
+        return summary;
+    }
+
+    public AuditLedgerCleanupSummary ApplyCleanup()
+    {
+        return ApplyCleanup(DateTimeOffset.UtcNow);
+    }
+
+    public AuditLedgerCleanupSummary ApplyCleanup(DateTimeOffset requestedAtUtc)
+    {
+        if (_killSwitchService?.IsActive() == true)
+        {
+            throw new InvalidOperationException("kill_switch=true");
+        }
+
+        var plan = BuildPlan(requestedAtUtc);
+        Directory.CreateDirectory(plan.ArchiveRoot);
+        var moved = new List<AuditLedgerCleanupMovePlan>();
+        foreach (var item in plan.Moves)
+        {
+            File.Move(item.Source, item.Destination);
+            moved.Add(item with { PostMoveSha256 = Sha256(item.Destination) });
+        }
+
+        return WriteSummary(plan, "apply", moved);
     }
 
     public Task<AutonomousScopePreview> DescribePlannedActionsAsync(CancellationToken cancellationToken)
@@ -684,29 +730,15 @@ public sealed class AuditLedgerCleanupScope : IAutonomousScope
                 "audit_root_missing"));
         }
 
-        var archiveRoot = Path.Combine(_auditRoot, "archive");
-        var cutoff = DateTimeOffset.UtcNow.UtcDateTime.AddDays(-30);
-        var items = new List<AutonomousScopePreviewItem>();
-        foreach (var file in new DirectoryInfo(_auditRoot).EnumerateFiles("*.jsonl", SearchOption.TopDirectoryOnly))
-        {
-            if (!IsArchivedLedgerFile(file) || file.LastWriteTimeUtc > cutoff)
-            {
-                continue;
-            }
-
-            var destination = Path.Combine(archiveRoot, file.Name);
-            if (File.Exists(destination))
-            {
-                destination = Path.Combine(archiveRoot, $"{Path.GetFileNameWithoutExtension(file.Name)}-{DateTimeOffset.UtcNow:yyyyMMddHHmmss}.jsonl");
-            }
-
-            items.Add(new AutonomousScopePreviewItem(
-                $"archive old audit JSONL {file.Name}",
-                SourcePath: file.FullName,
-                DestinationPath: destination,
-                Sha256: Sha256(file.FullName),
-                AgeDays: Math.Max(0, (int)Math.Floor((DateTimeOffset.UtcNow.UtcDateTime - file.LastWriteTimeUtc).TotalDays))));
-        }
+        var plan = BuildPlan(DateTimeOffset.UtcNow);
+        var items = plan.Moves
+            .Select(item => new AutonomousScopePreviewItem(
+                $"archive old audit JSONL {Path.GetFileName(item.Source)}",
+                SourcePath: item.Source,
+                DestinationPath: item.Destination,
+                Sha256: item.Sha256,
+                AgeDays: item.AgeDays))
+            .ToList();
 
         var summary = items.Count == 0
             ? "No old archived audit JSONL files would move."
@@ -723,6 +755,68 @@ public sealed class AuditLedgerCleanupScope : IAutonomousScope
     {
         return file.Extension.Equals(".jsonl", StringComparison.OrdinalIgnoreCase) &&
                file.Name.Contains("archived", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private AuditLedgerCleanupPlan BuildPlan(DateTimeOffset requestedAtUtc)
+    {
+        Directory.CreateDirectory(_auditRoot);
+        var archiveRoot = Path.Combine(_auditRoot, "archive");
+        var cutoff = requestedAtUtc.UtcDateTime.AddDays(-30);
+        var moves = new List<AuditLedgerCleanupMovePlan>();
+        foreach (var file in new DirectoryInfo(_auditRoot).EnumerateFiles("*.jsonl", SearchOption.TopDirectoryOnly))
+        {
+            if (!IsArchivedLedgerFile(file) || file.LastWriteTimeUtc > cutoff)
+            {
+                continue;
+            }
+
+            var destination = Path.Combine(archiveRoot, file.Name);
+            if (File.Exists(destination))
+            {
+                destination = Path.Combine(archiveRoot, $"{Path.GetFileNameWithoutExtension(file.Name)}-{requestedAtUtc:yyyyMMddHHmmss}.jsonl");
+            }
+
+            moves.Add(new AuditLedgerCleanupMovePlan(
+                file.FullName,
+                destination,
+                Sha256(file.FullName),
+                "",
+                Math.Max(0, (int)Math.Floor((requestedAtUtc.UtcDateTime - file.LastWriteTimeUtc).TotalDays))));
+        }
+
+        return new AuditLedgerCleanupPlan("1", _auditRoot, archiveRoot, requestedAtUtc, moves.Count, moves);
+    }
+
+    private AuditLedgerCleanupSummary WriteSummary(
+        AuditLedgerCleanupPlan plan,
+        string mode,
+        IReadOnlyList<AuditLedgerCleanupMovePlan> moved)
+    {
+        var summaryRoot = Path.Combine(_auditRoot, "cleanup-summaries");
+        Directory.CreateDirectory(summaryRoot);
+        var summaryPath = Path.Combine(summaryRoot, $"{plan.RequestedAtUtc:yyyyMMdd-HHmmss-fffffff}-audit-ledger-cleanup-{mode}.json");
+        var summary = new AuditLedgerCleanupSummary("1", mode, plan.AuditRoot, plan.ArchiveRoot, plan.RequestedAtUtc, moved.Count, summaryPath, moved);
+        File.WriteAllText(summaryPath, JsonSerializer.Serialize(new
+        {
+            schemaVersion = summary.SchemaVersion,
+            mode = summary.Mode,
+            auditRoot = summary.AuditRoot,
+            archiveRoot = summary.ArchiveRoot,
+            requestedAtUtc = summary.RequestedAtUtc,
+            movedCount = summary.MovedCount,
+            summaryPath = summary.SummaryPath,
+            moved = summary.Moved.Select(item => new
+            {
+                source = item.Source,
+                destination = item.Destination,
+                sha256 = item.Sha256,
+                afterSha256 = item.PostMoveSha256,
+                preMoveSha256 = item.Sha256,
+                postMoveSha256 = item.PostMoveSha256,
+                ageDays = item.AgeDays
+            }).ToArray()
+        }, JsonDefaults.Options));
+        return summary;
     }
 
     private static string Sha256(string path)
