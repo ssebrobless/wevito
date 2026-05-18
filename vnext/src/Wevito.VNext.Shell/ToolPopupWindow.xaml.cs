@@ -24,6 +24,7 @@ public partial class ToolPopupWindow : Window
     private List<ActionOptionRowItem> _actionRows = [];
     private List<PetTaskQueueRowItem> _taskQueueRows = [];
     private bool _suppressTaskQueueSelection;
+    private string _autonomousScopePreviewText = "No autonomous scope preview has run in this session.";
 
     public ToolPopupWindow()
     {
@@ -75,6 +76,8 @@ public partial class ToolPopupWindow : Window
     public event Func<string, Task>? ToolTabRequested;
 
     public event Func<Task>? RunFirstLaunchWizardRequested;
+
+    public event Func<string, Task>? AutonomousScopePreviewRequested;
 
     public event Func<Guid, TaskCardStatus, Task>? PetTaskStatusChangeRequested;
 
@@ -136,6 +139,7 @@ public partial class ToolPopupWindow : Window
         var showingDev = devToolsEnabled && string.Equals(toolId, "dev", StringComparison.OrdinalIgnoreCase);
         var showingPetCommand = string.Equals(toolId, "helpers", StringComparison.OrdinalIgnoreCase);
         var showingBenchmarks = string.Equals(toolId, "benchmarks", StringComparison.OrdinalIgnoreCase);
+        var showingAutonomousScopes = string.Equals(toolId, "autonomous-scopes", StringComparison.OrdinalIgnoreCase);
         var showingActionMenu = string.Equals(toolId, "actions", StringComparison.OrdinalIgnoreCase);
         var showingAction = toolId.StartsWith("action:", StringComparison.OrdinalIgnoreCase);
         var actionId = showingAction ? toolId["action:".Length..] : string.Empty;
@@ -143,13 +147,14 @@ public partial class ToolPopupWindow : Window
             ? content.Actions.FirstOrDefault(action => string.Equals(action.Id, actionId, StringComparison.OrdinalIgnoreCase))
             : null;
 
-        Title = showingBasket ? "Wevito Tools" : showingDev ? "Wevito Dev Tools" : showingPetCommand ? "Wevito Chat" : showingBenchmarks ? "Wevito Benchmarks" : showingActivity ? "Wevito Activity" : showingActionMenu ? "Wevito Actions" : showingAction ? $"Wevito {actionDefinition?.DisplayName ?? "Action"}" : "Wevito Settings";
-        PopupTitle.Text = showingBasket ? "Tools" : showingDev ? "Dev Tools" : showingPetCommand ? "Chat" : showingBenchmarks ? "Benchmarks" : showingActivity ? "Activity" : showingActionMenu ? "Actions" : showingAction ? (actionDefinition?.DisplayName ?? "Action") : "Settings";
+        Title = showingBasket ? "Wevito Tools" : showingDev ? "Wevito Dev Tools" : showingPetCommand ? "Wevito Chat" : showingBenchmarks ? "Wevito Benchmarks" : showingAutonomousScopes ? "Wevito Autonomy" : showingActivity ? "Wevito Activity" : showingActionMenu ? "Wevito Actions" : showingAction ? $"Wevito {actionDefinition?.DisplayName ?? "Action"}" : "Wevito Settings";
+        PopupTitle.Text = showingBasket ? "Tools" : showingDev ? "Dev Tools" : showingPetCommand ? "Chat" : showingBenchmarks ? "Benchmarks" : showingAutonomousScopes ? "Autonomy" : showingActivity ? "Activity" : showingActionMenu ? "Actions" : showingAction ? (actionDefinition?.DisplayName ?? "Action") : "Settings";
         BasketPanel.Visibility = showingBasket ? Visibility.Visible : Visibility.Collapsed;
         BasketButtons.Visibility = showingBasket ? Visibility.Visible : Visibility.Collapsed;
         ActionMenuPanel.Visibility = showingActionMenu ? Visibility.Visible : Visibility.Collapsed;
         ActionPanel.Visibility = showingAction ? Visibility.Visible : Visibility.Collapsed;
         SettingsPanel.Visibility = showingSettings || showingActivity ? Visibility.Visible : Visibility.Collapsed;
+        AutonomousScopesPanel.Visibility = showingAutonomousScopes ? Visibility.Visible : Visibility.Collapsed;
         PetCommandPanel.Visibility = showingPetCommand ? Visibility.Visible : Visibility.Collapsed;
         BenchmarksPanel.Visibility = showingBenchmarks ? Visibility.Visible : Visibility.Collapsed;
         PetTaskReportOnlyBadge.Visibility = showingPetCommand ? Visibility.Visible : Visibility.Collapsed;
@@ -221,7 +226,13 @@ public partial class ToolPopupWindow : Window
         AutonomousBetaTryHelpText.Text = FormatAutonomousBetaTryHelp(promotionDecision, state.SettingsSnapshot);
         SpriteRepairTriageScopeCheckBox.IsChecked = GetSettingBool(state, AutonomousScopeService.BuildEnabledSettingKey(AutonomousScopeService.SpriteRepairTriageScopeId));
         AuditLedgerCleanupScopeCheckBox.IsChecked = GetSettingBool(state, AutonomousScopeService.BuildEnabledSettingKey(AutonomousScopeService.AuditLedgerCleanupScopeId));
+        AutonomousSpriteRepairTriageScopeCheckBox.IsChecked = SpriteRepairTriageScopeCheckBox.IsChecked;
+        AutonomousAuditLedgerCleanupScopeCheckBox.IsChecked = AuditLedgerCleanupScopeCheckBox.IsChecked;
         AutonomousScopeStatusText.Text = FormatAutonomousScopeStatus(state.SettingsSnapshot);
+        AutonomousScopePanelStatusText.Text = AutonomousScopeStatusText.Text;
+        SpriteRepairScopeLastTickText.Text = FormatAutonomousScopeRecentLine(activityRecentLines, AutonomousScopeService.SpriteRepairTriageScopeId);
+        AuditCleanupScopeLastTickText.Text = FormatAutonomousScopeRecentLine(activityRecentLines, AutonomousScopeService.AuditLedgerCleanupScopeId);
+        AutonomousScopePreviewText.Text = _autonomousScopePreviewText;
         RuntimeNoFocusStealCheckBox.IsChecked = GetSettingBool(state, RuntimeSupervisorService.NoFocusStealSetting, true);
         RuntimeAutoQuietFullscreenCheckBox.IsChecked = GetSettingBool(state, RuntimeSupervisorService.AutoQuietFullscreenSetting, true);
         CoexistenceAppListCheckBox.IsChecked = GetSettingBool(state, CoexistenceTriggerService.AppListEnabledSetting, true);
@@ -1225,6 +1236,16 @@ public partial class ToolPopupWindow : Window
         PublishSetting("pet_model_adapter_enabled", PetModelAdapterEnabledCheckBox.IsChecked == true);
     }
 
+    private async void AutonomousScopePreviewButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button { Tag: string scopeId } && AutonomousScopePreviewRequested is not null)
+        {
+            _autonomousScopePreviewText = $"Preview requested for {scopeId}.";
+            AutonomousScopePreviewText.Text = _autonomousScopePreviewText;
+            await AutonomousScopePreviewRequested.Invoke(scopeId);
+        }
+    }
+
     private void SpriteRepairTriageScopeCheckBox_OnChanged(object sender, RoutedEventArgs e)
     {
         PublishSetting(
@@ -1237,6 +1258,63 @@ public partial class ToolPopupWindow : Window
         PublishSetting(
             AutonomousScopeService.BuildEnabledSettingKey(AutonomousScopeService.AuditLedgerCleanupScopeId),
             AuditLedgerCleanupScopeCheckBox.IsChecked == true);
+    }
+
+    private void AutonomousSpriteRepairTriageScopeCheckBox_OnChanged(object sender, RoutedEventArgs e)
+    {
+        PublishSetting(
+            AutonomousScopeService.BuildEnabledSettingKey(AutonomousScopeService.SpriteRepairTriageScopeId),
+            AutonomousSpriteRepairTriageScopeCheckBox.IsChecked == true);
+    }
+
+    private void AutonomousAuditLedgerCleanupScopeCheckBox_OnChanged(object sender, RoutedEventArgs e)
+    {
+        PublishSetting(
+            AutonomousScopeService.BuildEnabledSettingKey(AutonomousScopeService.AuditLedgerCleanupScopeId),
+            AutonomousAuditLedgerCleanupScopeCheckBox.IsChecked == true);
+    }
+
+    internal void SetAutonomousScopePreview(AutonomousScopePreview preview)
+    {
+        var lines = new List<string>
+        {
+            $"{preview.ScopeId}: {preview.Summary}",
+            $"would-do action count: {preview.ActionCount}",
+            $"flags: network={preview.EvidenceFlags.DidUseNetwork}, hosted_ai={preview.EvidenceFlags.DidUseHostedAi}, local_model={preview.EvidenceFlags.DidUseLocalModel}, mutate={preview.EvidenceFlags.DidMutate}"
+        };
+        if (!string.IsNullOrWhiteSpace(preview.BlockReason))
+        {
+            lines.Add($"blocked: {preview.BlockReason}");
+        }
+
+        foreach (var item in preview.PlannedItems.Take(8))
+        {
+            var details = new List<string> { item.Label };
+            if (!string.IsNullOrWhiteSpace(item.SourcePath))
+            {
+                details.Add($"source={item.SourcePath}");
+            }
+
+            if (!string.IsNullOrWhiteSpace(item.DestinationPath))
+            {
+                details.Add($"dest={item.DestinationPath}");
+            }
+
+            if (!string.IsNullOrWhiteSpace(item.Sha256))
+            {
+                details.Add($"sha256={item.Sha256}");
+            }
+
+            if (item.AgeDays is not null)
+            {
+                details.Add($"age_days={item.AgeDays}");
+            }
+
+            lines.Add("- " + string.Join(" | ", details));
+        }
+
+        _autonomousScopePreviewText = string.Join(Environment.NewLine, lines);
+        AutonomousScopePreviewText.Text = _autonomousScopePreviewText;
     }
 
     private void PetModelFirstCallConsentButton_OnClick(object sender, RoutedEventArgs e)
@@ -1496,6 +1574,15 @@ public partial class ToolPopupWindow : Window
         var spriteEnabled = AutonomousScopeService.IsEnabled(settings, AutonomousScopeService.SpriteRepairTriageScopeId);
         var cleanupEnabled = AutonomousScopeService.IsEnabled(settings, AutonomousScopeService.AuditLedgerCleanupScopeId);
         return $"Scopes: sprite-repair-triage={(spriteEnabled ? "on" : "off")}, audit-ledger-cleanup={(cleanupEnabled ? "on" : "off")} | autonomous beta={(betaEnabled ? "on" : "off")} | cards draft only; sprite art never mutates here.";
+    }
+
+    private static string FormatAutonomousScopeRecentLine(IReadOnlyList<string>? recentLines, string scopeId)
+    {
+        var line = recentLines?
+            .LastOrDefault(candidate => candidate.Contains(scopeId, StringComparison.OrdinalIgnoreCase));
+        return string.IsNullOrWhiteSpace(line)
+            ? "Last tick: none in recent activity."
+            : $"Last tick/result: {line}";
     }
 
     private async Task RequestAutonomousBetaConsentAsync()

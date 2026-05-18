@@ -1,3 +1,4 @@
+using System.Threading;
 using Wevito.VNext.Contracts;
 using Wevito.VNext.Core;
 
@@ -81,6 +82,94 @@ public sealed class AutonomousScopeServiceTests
     }
 
     [Fact]
+    public async Task SpriteRepairTriageScope_Preview_DoesNotDraftCards()
+    {
+        var root = TempRoot();
+        var queuePath = Path.Combine(root, "repair_queue.json");
+        File.WriteAllText(queuePath, """
+            {
+              "rows": [
+                { "rowId": "snake_baby_female", "speciesId": "snake", "lifeStage": "baby", "gender": "female", "priority": "P1" }
+              ]
+            }
+            """);
+        var ledger = new AuditLedgerService(Path.Combine(root, "ledger.sqlite"));
+        var scope = new SpriteRepairTriageScope(queuePath, ledger);
+
+        var preview = await scope.DescribePlannedActionsAsync(CancellationToken.None);
+
+        Assert.Equal(AutonomousScopeService.SpriteRepairTriageScopeId, preview.ScopeId);
+        Assert.Equal(1, preview.ActionCount);
+        Assert.False(preview.EvidenceFlags.DidMutate);
+        Assert.Single(preview.PlannedItems);
+        Assert.Empty(ledger.Snapshot(Now.AddMinutes(-1), Now.AddMinutes(1)));
+    }
+
+    [Fact]
+    public async Task AuditLedgerCleanupScope_Preview_DoesNotMoveFiles()
+    {
+        var root = TempRoot();
+        var auditRoot = Path.Combine(root, "audit");
+        Directory.CreateDirectory(auditRoot);
+        var oldArchived = Path.Combine(auditRoot, "20260101-archived.jsonl");
+        File.WriteAllText(oldArchived, "{\"packet\":\"old\"}");
+        File.SetLastWriteTimeUtc(oldArchived, DateTimeOffset.UtcNow.AddDays(-45).UtcDateTime);
+        var originalHash = Sha256(oldArchived);
+        var ledger = new AuditLedgerService(Path.Combine(root, "ledger.sqlite"));
+        var scope = new AuditLedgerCleanupScope(auditRoot, ledger);
+
+        var preview = await scope.DescribePlannedActionsAsync(CancellationToken.None);
+
+        Assert.Equal(1, preview.ActionCount);
+        var item = Assert.Single(preview.PlannedItems);
+        Assert.Equal(oldArchived, item.SourcePath);
+        Assert.Equal(originalHash, item.Sha256);
+        Assert.True(File.Exists(oldArchived));
+        Assert.False(Directory.Exists(Path.Combine(auditRoot, "archive")));
+        Assert.Empty(ledger.Snapshot(Now.AddMinutes(-1), Now.AddMinutes(1)));
+    }
+
+    [Fact]
+    public async Task AutonomousScopeService_Preview_RespectsKillSwitch()
+    {
+        var root = TempRoot();
+        var queuePath = Path.Combine(root, "repair_queue.json");
+        File.WriteAllText(queuePath, """{ "rows": [ { "rowId": "snake", "priority": "P1" } ] }""");
+        var settings = new Dictionary<string, string> { [KillSwitchService.KillSwitchSetting] = bool.TrueString };
+        var ledger = new AuditLedgerService(Path.Combine(root, "ledger.sqlite"));
+        var service = new AutonomousScopeService(ledger, new KillSwitchService(() => settings, ledger));
+
+        var preview = await service.PreviewAsync(
+            AutonomousScopeService.SpriteRepairTriageScopeId,
+            [new SpriteRepairTriageScope(queuePath, ledger)]);
+
+        Assert.Equal("kill_switch=true", preview.BlockReason);
+        Assert.Equal(0, preview.ActionCount);
+        Assert.Empty(ledger.Snapshot(DateTimeOffset.UtcNow.AddMinutes(-1), DateTimeOffset.UtcNow.AddMinutes(1)));
+    }
+
+    [Fact]
+    public async Task AutonomousScopeService_Preview_DoesNotChangePersistedFlags()
+    {
+        var root = TempRoot();
+        var queuePath = Path.Combine(root, "repair_queue.json");
+        File.WriteAllText(queuePath, """{ "rows": [ { "rowId": "snake", "priority": "P1" } ] }""");
+        var settings = Settings(betaEnabled: false, spriteScopeEnabled: false, cleanupScopeEnabled: false);
+        var before = settings.ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.OrdinalIgnoreCase);
+        var ledger = new AuditLedgerService(Path.Combine(root, "ledger.sqlite"));
+        var service = new AutonomousScopeService(ledger);
+
+        var preview = await service.PreviewAsync(
+            AutonomousScopeService.SpriteRepairTriageScopeId,
+            [new SpriteRepairTriageScope(queuePath, ledger)]);
+
+        Assert.Equal(1, preview.ActionCount);
+        Assert.Equal(before, settings);
+        var rows = ledger.Snapshot(DateTimeOffset.UtcNow.AddMinutes(-1), DateTimeOffset.UtcNow.AddMinutes(1));
+        Assert.Contains(rows, row => row.PacketKind == AutonomousScopeService.PreviewPacketKind && !row.DidMutate);
+    }
+
+    [Fact]
     public void AutonomousOperationsLoop_RunsEnabledSpriteRepairScopeAfterBetaGate()
     {
         var root = TempRoot();
@@ -114,6 +203,7 @@ public sealed class AutonomousScopeServiceTests
 
     [Theory]
     [InlineData(AutonomousScopeService.EnabledChangedPacketKind)]
+    [InlineData(AutonomousScopeService.PreviewPacketKind)]
     [InlineData(AutonomousScopeService.TickPacketKind)]
     [InlineData(SpriteRepairTriageScope.PacketKind)]
     [InlineData(AuditLedgerCleanupScope.PacketKind)]

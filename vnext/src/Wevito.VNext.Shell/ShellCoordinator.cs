@@ -61,6 +61,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private readonly AutonomousTaskScheduler _autonomousTaskScheduler;
     private readonly AutonomousBetaDecisionService _autonomousBetaDecisionService;
     private readonly AutonomousScopeService _autonomousScopeService;
+    private readonly IReadOnlyList<IAutonomousScope> _autonomousScopes;
     private readonly AutonomousOperationsLoop _autonomousOperationsLoop;
     private readonly TranslationExecutionAdapter _translationExecutionAdapter = new();
     private readonly AudioAssistExecutionAdapter _audioAssistExecutionAdapter = new();
@@ -152,11 +153,12 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _autonomousBetaDecisionService = new AutonomousBetaDecisionService(_auditLedgerService);
         _autonomousScopeService = new AutonomousScopeService(_auditLedgerService, _killSwitchService);
         var repoRoot = ResolveRepoRootOrBaseDirectory();
-        var autonomousScopeRegistry = new AutonomousScopeRegistry(_autonomousScopeService,
+        _autonomousScopes =
         [
             new SpriteRepairTriageScope(Path.Combine(repoRoot, "vnext", "artifacts", "c-phase-128-sprite-repair-queue", "repair_queue.json"), _auditLedgerService, _petTaskCardQueueService),
             new AuditLedgerCleanupScope(Path.GetDirectoryName(_auditLedgerService.DatabasePath) ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Wevito", "audit"), _auditLedgerService)
-        ]);
+        ];
+        var autonomousScopeRegistry = new AutonomousScopeRegistry(_autonomousScopeService, _autonomousScopes);
         _autonomousOperationsLoop = new AutonomousOperationsLoop(_autonomousBetaDecisionService, _auditLedgerService, _killSwitchService, scopeRegistry: autonomousScopeRegistry);
         _screenCaptureExecutionAdapter = new ScreenCaptureExecutionAdapter(new WindowsGraphicsCaptureBackend(() => _homeWindow));
         _tickTimer = new DispatcherTimer(DispatcherPriority.Render)
@@ -212,6 +214,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _toolPopupWindow.ToolTabRequested += async toolId => await OpenToolTabAsync(toolId);
         _toolPopupWindow.RunFirstLaunchWizardRequested += async () => await RunFirstLaunchWizardAsync(force: true);
         _toolPopupWindow.AutonomousBetaConsentConfirmed += async () => await EnableAutonomousBetaAfterConsentAsync();
+        _toolPopupWindow.AutonomousScopePreviewRequested += async scopeId => await PreviewAutonomousScopeAsync(scopeId);
         _toolPopupWindow.DevToolCommandRequested += async command => await HandleDevToolCommandAsync(command);
         _toolPopupWindow.ActionMenuRequested += actionId =>
         {
@@ -758,6 +761,21 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             Status: "Completed"));
         _state = _state with { SettingsSnapshot = WithSetting(_state.SettingsSnapshot, AutonomousOperationsConfig.EnabledSetting, bool.TrueString) };
         _feedbackText = "Autonomous beta enabled after explicit consent. Stop Everything can still pause it immediately.";
+        await PersistAndRenderAsync();
+    }
+
+    private async Task PreviewAutonomousScopeAsync(string scopeId)
+    {
+        if (_state is null)
+        {
+            return;
+        }
+
+        var preview = await _autonomousScopeService.PreviewAsync(scopeId, _autonomousScopes);
+        _toolPopupWindow.SetAutonomousScopePreview(preview);
+        _feedbackText = string.IsNullOrWhiteSpace(preview.BlockReason)
+            ? $"Previewed {scopeId}: {preview.ActionCount} planned action(s), no mutation."
+            : $"Preview blocked for {scopeId}: {preview.BlockReason}";
         await PersistAndRenderAsync();
     }
 
