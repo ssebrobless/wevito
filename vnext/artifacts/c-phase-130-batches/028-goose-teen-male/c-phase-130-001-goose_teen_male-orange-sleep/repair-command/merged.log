@@ -1,0 +1,15 @@
+commandId: sprite-repair-batch
+command: python C:\Users\fishe\Documents\projects\wevito\tools\repair_runtime_sprite_canvas_padding.py --repo-root C:\Users\fishe\Documents\projects\wevito --row-id goose_teen_male --species goose --age teen --gender male --color orange --animation sleep --out-dir C:\Users\fishe\Documents\projects\wevito\sprites_authored\.candidates\c-phase-130-001-goose_teen_male-orange-sleep --source-path C:\Users\fishe\Documents\projects\wevito\sprites_runtime\goose\teen\male\orange\sleep_00.png
+status: MutationDetected
+exitCode: 0
+mutationDetected: True
+
+mutatedProtectedPaths:
+- sprites_authored/.candidates/c-phase-130-001-goose_teen_male-orange-sleep/candidate-summary.json
+- sprites_authored/.candidates/c-phase-130-001-goose_teen_male-orange-sleep/sleep_00.png
+- sprites_authored/.candidates/c-phase-130-001-goose_teen_male-orange-sleep/sleep_01.png
+
+## stdout
+exported 2 padded candidate frame(s) to C:\Users\fishe\Documents\projects\wevito\sprites_authored\.candidates\c-phase-130-001-goose_teen_male-orange-sleep
+
+## stderr
