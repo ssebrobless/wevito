@@ -180,8 +180,10 @@
                             Background="#263C35"
                             BorderBrush="#7DB89A"
                             BorderThickness="1"
+                            Cursor="Hand"
                             automation:AutomationProperties.AutomationId="LocalBrainBadge"
-                            ToolTip="Local brain status">
+                            ToolTip="Open local brain status"
+                            MouseLeftButtonUp="LocalBrainBadge_OnMouseLeftButtonUp">
                         <TextBlock x:Name="LocalBrainBadgeText"
                                    Foreground="#FFEAF7FB"
                                    FontSize="11"

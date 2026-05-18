@@ -50,6 +50,8 @@ public partial class HomePanelWindow : Window
 
     public event Func<Task>? OpenBenchmarksRequested;
 
+    public event Func<Task>? OpenLocalBrainStatusRequested;
+
     public event Func<Task>? SaveRequested;
 
     public event Func<Task>? OpenSettingsRequested;
@@ -2563,6 +2565,14 @@ public partial class HomePanelWindow : Window
         if (OpenSettingsRequested is not null)
         {
             await OpenSettingsRequested.Invoke();
+        }
+    }
+
+    private async void LocalBrainBadge_OnMouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+    {
+        if (OpenLocalBrainStatusRequested is not null)
+        {
+            await OpenLocalBrainStatusRequested.Invoke();
         }
     }
 

@@ -40,6 +40,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private readonly FirstLaunchWizardStateService _firstLaunchWizardStateService;
     private readonly OllamaModelBootstrapService _ollamaModelBootstrapService;
     private readonly LocalBrainHeartbeatService _localBrainHeartbeatService;
+    private readonly LocalBrainStatusPanelService _localBrainStatusPanelService;
     private readonly AgentToolDispatcher _petTaskAdapterPreviewDispatcher;
     private readonly RuntimeSupervisorService _runtimeSupervisorService = new();
     private readonly RuntimeBudgetMeter _runtimeBudgetMeter = new();
@@ -76,6 +77,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private readonly ToolPopupWindow _toolPopupWindow = new();
     private SpriteWorkflowV2Window? _spriteWorkflowV2Window;
     private CreativeLearningLabWindow? _creativeLearningLabWindow;
+    private LocalBrainStatusPanelWindow? _localBrainStatusPanelWindow;
     private DevControlServer? _devControlServer;
 
     private BrokerClient? _brokerClient;
@@ -125,6 +127,11 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             probeService: new LocalRuntimeProbeService(killSwitchService: _killSwitchService),
             auditLedgerService: _auditLedgerService,
             killSwitchService: _killSwitchService);
+        _localBrainStatusPanelService = new LocalBrainStatusPanelService(
+            _localBrainHeartbeatService,
+            new LocalRuntimeProbeService(killSwitchService: _killSwitchService),
+            _auditLedgerService,
+            _killSwitchService);
         _evidenceCollectionStatusService = new EvidenceCollectionStatusService(
             _auditLedgerService,
             Path.Combine(ResolveRepoRootOrBaseDirectory(), "vnext", "artifacts", "soak"),
@@ -175,6 +182,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _homeWindow.OpenSpriteWorkflowV2Requested += async () => await OpenSpriteWorkflowV2Async();
         _homeWindow.OpenCreativeLearningLabRequested += async () => await OpenCreativeLearningLabAsync();
         _homeWindow.OpenBenchmarksRequested += async () => await ToggleBenchmarksAsync();
+        _homeWindow.OpenLocalBrainStatusRequested += async () => await OpenLocalBrainStatusPanelAsync();
         _homeWindow.OpenSettingsRequested += async () => await ToggleSettingsAsync();
         _homeWindow.ToggleCompactRequested += async () => await ToggleCompactHudAsync();
         _homeWindow.SaveRequested += async () => await SaveAsync();
@@ -1034,6 +1042,29 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _creativeLearningLabWindow.LoadProject(ResolveRepoRootOrBaseDirectory());
         ShowWindowWithFocusDiscipline(_creativeLearningLabWindow, "CreativeLearningLab", userInitiated: true);
         TraceLog.Write("creative-learning-lab", "opened read-only artifact index");
+        return Task.CompletedTask;
+    }
+
+    private Task OpenLocalBrainStatusPanelAsync()
+    {
+        if (_localBrainStatusPanelWindow is null)
+        {
+            _localBrainStatusPanelWindow = new LocalBrainStatusPanelWindow(
+                _localBrainStatusPanelService,
+                () => _state?.SettingsSnapshot ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
+                () => EvaluateRuntimeSupervisor(isUserInitiatedToolOpen: true))
+            {
+                Owner = _homeWindow
+            };
+            _localBrainStatusPanelWindow.Closed += (_, _) => _localBrainStatusPanelWindow = null;
+        }
+        else
+        {
+            _localBrainStatusPanelWindow.RefreshFromCurrentState();
+        }
+
+        ShowWindowWithFocusDiscipline(_localBrainStatusPanelWindow, "LocalBrainStatusPanel", userInitiated: true);
+        TraceLog.Write("local-ai", "local-brain-status-panel-opened");
         return Task.CompletedTask;
     }
 

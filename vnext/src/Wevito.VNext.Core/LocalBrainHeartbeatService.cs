@@ -52,6 +52,11 @@ public sealed class LocalBrainHeartbeatService
     }
 
     public LocalBrainStatus LatestStatus => _latestStatus;
+    public LocalBrainObservedSnapshot LastObserved => new(
+        _latestStatus,
+        _lastProbeAtUtc,
+        _lastPacketAtUtc,
+        BuildSummary(_latestStatus));
 
     public async Task<LocalBrainStatus> TickAsync(
         IReadOnlyDictionary<string, string>? settings,
