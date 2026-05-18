@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Wevito.VNext.Contracts;
+using Wevito.VNext.Core.Settings;
 
 namespace Wevito.VNext.Core;
 
@@ -18,6 +19,7 @@ public sealed class SoakDriverCommandService
         "runtime_autonomous_beta_enabled",
         "pet_model_adapter_enabled",
         "web_search_enabled",
+        SettingKeys.LocalDocumentRetrievalEnabled,
         "local_tool_exec_enabled",
         "tuning_lora_enabled",
         KillSwitchService.KillSwitchSetting

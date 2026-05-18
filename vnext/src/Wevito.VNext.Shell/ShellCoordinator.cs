@@ -7,6 +7,8 @@ using System.Windows;
 using System.Windows.Threading;
 using Wevito.VNext.Contracts;
 using Wevito.VNext.Core;
+using Wevito.VNext.Core.LocalRetrieval;
+using Wevito.VNext.Core.Settings;
 
 namespace Wevito.VNext.Shell;
 
@@ -41,6 +43,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private readonly OllamaModelBootstrapService _ollamaModelBootstrapService;
     private readonly LocalBrainHeartbeatService _localBrainHeartbeatService;
     private readonly LocalBrainStatusPanelService _localBrainStatusPanelService;
+    private readonly LocalDocumentRetrievalService _localDocumentRetrievalService;
     private readonly AgentToolDispatcher _petTaskAdapterPreviewDispatcher;
     private readonly RuntimeSupervisorService _runtimeSupervisorService = new();
     private readonly RuntimeBudgetMeter _runtimeBudgetMeter = new();
@@ -132,6 +135,10 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             new LocalRuntimeProbeService(killSwitchService: _killSwitchService),
             _auditLedgerService,
             _killSwitchService);
+        _localDocumentRetrievalService = new LocalDocumentRetrievalService(
+            settingsProvider: () => _state?.SettingsSnapshot ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
+            auditLedgerService: _auditLedgerService,
+            killSwitchService: _killSwitchService);
         _evidenceCollectionStatusService = new EvidenceCollectionStatusService(
             _auditLedgerService,
             Path.Combine(ResolveRepoRootOrBaseDirectory(), "vnext", "artifacts", "soak"),
@@ -220,6 +227,8 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _toolPopupWindow.LinksDropped += async urls => await AddLinksAsync(urls, "drop");
         _toolPopupWindow.SettingChanged += OnSettingChanged;
         _toolPopupWindow.ToolTabRequested += async toolId => await OpenToolTabAsync(toolId);
+        _toolPopupWindow.LocalDocsBuildRequested += async () => await HandleLocalDocsBuildAsync();
+        _toolPopupWindow.LocalDocsQueryRequested += async query => await HandleLocalDocsQueryAsync(query);
         _toolPopupWindow.RunFirstLaunchWizardRequested += async () => await RunFirstLaunchWizardAsync(force: true);
         _toolPopupWindow.AutonomousBetaConsentConfirmed += async () => await EnableAutonomousBetaAfterConsentAsync();
         _toolPopupWindow.AutonomousScopePreviewRequested += async scopeId => await PreviewAutonomousScopeAsync(scopeId);
@@ -785,6 +794,57 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             ? $"Previewed {scopeId}: {preview.ActionCount} planned action(s), no mutation."
             : $"Preview blocked for {scopeId}: {preview.BlockReason}";
         await PersistAndRenderAsync();
+    }
+
+    private async Task HandleLocalDocsBuildAsync()
+    {
+        if (_state is null)
+        {
+            return;
+        }
+
+        try
+        {
+            var result = await _localDocumentRetrievalService.BuildIndexAsync(CancellationToken.None);
+            _toolPopupWindow.SetLocalDocsStatus(
+                result.Success
+                    ? $"Index ready: {result.IndexedFiles} file(s), {result.IndexedLines} line(s), {result.SkippedFiles} skipped."
+                    : $"Index refused: {result.Reason}.");
+            _feedbackText = result.Success ? "Local Docs index built safely." : $"Local Docs refused: {result.Reason}.";
+        }
+        catch (Exception ex)
+        {
+            _toolPopupWindow.SetLocalDocsStatus($"Index failed: {ex.Message}");
+            _feedbackText = "Local Docs index failed. Check the Local Docs tab for details.";
+            TraceLog.Write("local-docs", $"build-failed {ex}");
+        }
+
+        Render();
+    }
+
+    private async Task HandleLocalDocsQueryAsync(string query)
+    {
+        if (_state is null)
+        {
+            return;
+        }
+
+        try
+        {
+            var results = await _localDocumentRetrievalService.QueryAsync(query, 12, CancellationToken.None);
+            _toolPopupWindow.SetLocalDocsResults(results);
+            _toolPopupWindow.SetLocalDocsStatus($"Query complete: {results.Count} result(s).");
+            _feedbackText = $"Local Docs returned {results.Count} result(s).";
+        }
+        catch (Exception ex)
+        {
+            _toolPopupWindow.SetLocalDocsResults([]);
+            _toolPopupWindow.SetLocalDocsStatus($"Query failed: {ex.Message}");
+            _feedbackText = "Local Docs query failed. Check the query text.";
+            TraceLog.Write("local-docs", $"query-failed {ex}");
+        }
+
+        Render();
     }
 
     private async Task ToggleDoNotDisturbAsync()
@@ -3116,6 +3176,9 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         hydrated.TryAdd(WebResearchConnector.WebBackendSetting, "offline");
         hydrated.TryAdd(WebResearchConnector.MaxFetchesPerHourSetting, "30");
         hydrated.TryAdd(WebResearchConnector.MaxFetchesPerTaskSetting, "5");
+        hydrated.TryAdd(SettingKeys.LocalDocumentRetrievalEnabled, bool.FalseString);
+        hydrated.TryAdd(SettingKeys.LocalDocumentRetrievalRoot, SettingKeys.DefaultLocalDocumentRetrievalRoot());
+        hydrated.TryAdd(SettingKeys.LocalDocumentRetrievalMaxFileBytes, SettingKeys.LocalDocumentRetrievalDefaultMaxFileBytes);
         return hydrated;
     }
 
