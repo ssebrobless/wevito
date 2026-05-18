@@ -29889,7 +29889,7 @@
                      "lifeStage":  "adult",
                      "gender":  "male",
                      "priority":  "P1",
-                     "status":  "queued",
+                     "status":  "done",
                      "issueCount":  12,
                      "colorsAffected":  [
                                             "blue",
@@ -30087,12 +30087,15 @@
                                         "sourcePath":  null,
                                         "capturePath":  null
                                     }
-                                ]
+                                ],
+                     "completedAtUtc":  "2026-05-18T07:59:32.5092419Z",
+                     "completedByPhase":  "C-PHASE 130.060",
+                     "completionArtifactRoot":  "vnext/artifacts/c-phase-130-batches/060-squirrel-adult-male",
+                     "batchArtifactRoot":  "vnext/artifacts/c-phase-130-batches/060-squirrel-adult-male"
                  }
              ],
     "statusCounts":  {
-                         "done":  59,
-                         "queued":  1
+                         "done":  60
                      },
-    "lastUpdatedUtc":  "2026-05-18T07:47:23.1597064Z"
+    "lastUpdatedUtc":  "2026-05-18T07:59:32.5296975Z"
 }
