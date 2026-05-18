@@ -1,3 +1,5 @@
+using Wevito.VNext.Core.Audit;
+
 namespace Wevito.VNext.Core;
 
 public sealed class PlainLanguageExplainer
@@ -121,6 +123,15 @@ public sealed class PlainLanguageExplainer
         "screenCapture",
         "session_lock",
         "session_unlock",
+        SelfImprovementPacketKinds.ProposalDrafted,
+        SelfImprovementPacketKinds.ConstitutionalReviewed,
+        SelfImprovementPacketKinds.DryRunCompleted,
+        SelfImprovementPacketKinds.EvalCompleted,
+        SelfImprovementPacketKinds.ApplyAwaitingApproval,
+        SelfImprovementPacketKinds.ApplyRefused,
+        SelfImprovementPacketKinds.ApplyCompleted,
+        SelfImprovementPacketKinds.RollbackVerified,
+        SelfImprovementPacketKinds.MaturityClockReset,
         "soak_window_end",
         "spriteAudit",
         "sprite_cleanup_help_card_drafted",
@@ -283,6 +294,15 @@ public sealed class PlainLanguageExplainer
             "screenCapture" => "Prepared a screen capture helper result.",
             "session_lock" => "Wevito entered Quiet mode because the session locked.",
             "session_unlock" => "Wevito recorded the session unlocking.",
+            SelfImprovementPacketKinds.ProposalDrafted => "Wevito drafted a supervised self-improvement proposal for review.",
+            SelfImprovementPacketKinds.ConstitutionalReviewed => "Wevito checked a self-improvement proposal against its safety rules.",
+            SelfImprovementPacketKinds.DryRunCompleted => "Wevito completed a self-improvement dry run without applying changes.",
+            SelfImprovementPacketKinds.EvalCompleted => "Wevito completed the required self-improvement evaluation gates.",
+            SelfImprovementPacketKinds.ApplyAwaitingApproval => "A self-improvement apply step is waiting for explicit user approval.",
+            SelfImprovementPacketKinds.ApplyRefused => "Wevito refused a self-improvement apply step for safety.",
+            SelfImprovementPacketKinds.ApplyCompleted => "Wevito applied an explicitly approved self-improvement change.",
+            SelfImprovementPacketKinds.RollbackVerified => "Wevito verified the rollback path for a self-improvement change.",
+            SelfImprovementPacketKinds.MaturityClockReset => "Wevito reset a self-improvement maturity clock after a safety condition changed.",
             "soak_window_end" => "Recorded the end of an evidence-collection soak window.",
             "spriteAudit" => "Audited sprite or animation files.",
             "sprite_cleanup_help_card_drafted" => "Drafted a sprite-cleanup help task card from first-run choice.",
