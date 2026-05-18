@@ -1,0 +1,7 @@
+{
+  "runtime_autonomous_beta_enabled": "False",
+  "runtime_autonomous_beta_daily_cap": "3",
+  "runtime_autonomous_beta_interval_minutes": "10",
+  "autonomous_scope_sprite-repair-triage_enabled": "False",
+  "autonomous_scope_audit-ledger-cleanup_enabled": "False"
+}

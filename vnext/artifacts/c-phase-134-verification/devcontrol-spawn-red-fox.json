@@ -1,0 +1,128 @@
+{
+    "success":  true,
+    "message":  "Spawned Fox 1.",
+    "snapshot":  {
+                     "slots":  [
+                                   {
+                                       "slotIndex":  0,
+                                       "petId":  "d163c3e8-118a-431f-be14-a889f06a825a",
+                                       "displayText":  "Fox 1\nfox | female | red | baby",
+                                       "name":  "Fox 1",
+                                       "speciesId":  "fox",
+                                       "gender":  "female",
+                                       "colorVariant":  "red",
+                                       "lifeStage":  "baby",
+                                       "isEmpty":  false,
+                                       "isDead":  false,
+                                       "behaviorState":  "Home",
+                                       "animationState":  "Idle",
+                                       "actionVisualFamily":  null,
+                                       "lastActionId":  null
+                                   },
+                                   {
+                                       "slotIndex":  1,
+                                       "petId":  null,
+                                       "displayText":  "N/A",
+                                       "name":  null,
+                                       "speciesId":  null,
+                                       "gender":  null,
+                                       "colorVariant":  null,
+                                       "lifeStage":  null,
+                                       "isEmpty":  true,
+                                       "isDead":  false,
+                                       "behaviorState":  null,
+                                       "animationState":  null,
+                                       "actionVisualFamily":  null,
+                                       "lastActionId":  null
+                                   },
+                                   {
+                                       "slotIndex":  2,
+                                       "petId":  null,
+                                       "displayText":  "N/A",
+                                       "name":  null,
+                                       "speciesId":  null,
+                                       "gender":  null,
+                                       "colorVariant":  null,
+                                       "lifeStage":  null,
+                                       "isEmpty":  true,
+                                       "isDead":  false,
+                                       "behaviorState":  null,
+                                       "animationState":  null,
+                                       "actionVisualFamily":  null,
+                                       "lastActionId":  null
+                                   }
+                               ],
+                     "options":  {
+                                     "speciesIds":  [
+                                                        "crow",
+                                                        "deer",
+                                                        "fox",
+                                                        "frog",
+                                                        "goose",
+                                                        "pigeon",
+                                                        "raccoon",
+                                                        "rat",
+                                                        "snake",
+                                                        "squirrel"
+                                                    ],
+                                     "lifeStages":  [
+                                                        "baby",
+                                                        "teen",
+                                                        "adult",
+                                                        "senior"
+                                                    ],
+                                     "genders":  [
+                                                     "female",
+                                                     "male"
+                                                 ],
+                                     "colorVariants":  [
+                                                           "red",
+                                                           "orange",
+                                                           "yellow",
+                                                           "green",
+                                                           "blue",
+                                                           "indigo",
+                                                           "violet"
+                                                       ],
+                                     "actions":  [
+                                                     {
+                                                         "actionId":  "feed",
+                                                         "label":  "Feed"
+                                                     },
+                                                     {
+                                                         "actionId":  "water",
+                                                         "label":  "Water"
+                                                     },
+                                                     {
+                                                         "actionId":  "rest",
+                                                         "label":  "Rest"
+                                                     },
+                                                     {
+                                                         "actionId":  "play",
+                                                         "label":  "Play"
+                                                     },
+                                                     {
+                                                         "actionId":  "groom",
+                                                         "label":  "Groom"
+                                                     },
+                                                     {
+                                                         "actionId":  "bath",
+                                                         "label":  "Bath"
+                                                     },
+                                                     {
+                                                         "actionId":  "medicine",
+                                                         "label":  "Medicine"
+                                                     },
+                                                     {
+                                                         "actionId":  "doctor",
+                                                         "label":  "Doctor"
+                                                     },
+                                                     {
+                                                         "actionId":  "home",
+                                                         "label":  "Home"
+                                                     }
+                                                 ]
+                                 },
+                     "capturedAtUtc":  "2026-05-18T10:06:07.4929312+00:00"
+                 }
+}

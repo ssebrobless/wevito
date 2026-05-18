@@ -1,0 +1,370 @@
+[
+    {
+        "Name":  "Wevito Home Panel",
+        "ControlType":  "ControlType.Window",
+        "AutomationId":  "",
+        "ClassName":  "Window",
+        "IsEnabled":  true,
+        "Rect":  "156,156,660,910"
+    },
+    {
+        "Name":  "Welcome to Wevito",
+        "ControlType":  "ControlType.Window",
+        "AutomationId":  "",
+        "ClassName":  "Window",
+        "IsEnabled":  true,
+        "Rect":  "710,310,500,420"
+    },
+    {
+        "Name":  "Welcome to Wevito",
+        "ControlType":  "ControlType.TitleBar",
+        "AutomationId":  "TitleBar",
+        "ClassName":  "",
+        "IsEnabled":  true,
+        "Rect":  "718,318,484,23"
+    },
+    {
+        "Name":  "System Menu Bar",
+        "ControlType":  "ControlType.MenuBar",
+        "AutomationId":  "SystemMenuBar",
+        "ClassName":  "",
+        "IsEnabled":  true,
+        "Rect":  "718,318,22,22"
+    },
+    {
+        "Name":  "System",
+        "ControlType":  "ControlType.MenuItem",
+        "AutomationId":  "Item 1",
+        "ClassName":  "",
+        "IsEnabled":  true,
+        "Rect":  "718,318,22,22"
+    },
+    {
+        "Name":  "Close",
+        "ControlType":  "ControlType.Button",
+        "AutomationId":  "Close",
+        "ClassName":  "",
+        "IsEnabled":  true,
+        "Rect":  "1169,311,34,30"
+    },
+    {
+        "Name":  "Set up Wevito",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "TitleText",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "738,361,444,29"
+    },
+    {
+        "Name":  "Step 1 of 4",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "StepText",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "738,394,444,18"
+    },
+    {
+        "Name":  "What should I call you?",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "738,430,444,21"
+    },
+    {
+        "Name":  "This names the local AI assistant. The pets stay as the visual surface.",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "738,455,444,17"
+    },
+    {
+        "Name":  "",
+        "ControlType":  "ControlType.Edit",
+        "AutomationId":  "FirstLaunchAiNameTextBox",
+        "ClassName":  "TextBox",
+        "IsEnabled":  true,
+        "Rect":  "738,482,444,19"
+    },
+    {
+        "Name":  "Back",
+        "ControlType":  "ControlType.Button",
+        "AutomationId":  "BackButton",
+        "ClassName":  "Button",
+        "IsEnabled":  false,
+        "Rect":  "1069,671,52,31"
+    },
+    {
+        "Name":  "Back",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  false,
+        "Rect":  "1082,678,26,17"
+    },
+    {
+        "Name":  "Next",
+        "ControlType":  "ControlType.Button",
+        "AutomationId":  "FirstLaunchNextButton",
+        "ClassName":  "Button",
+        "IsEnabled":  true,
+        "Rect":  "1129,671,53,31"
+    },
+    {
+        "Name":  "Next",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "1142,678,27,17"
+    },
+    {
+        "Name":  "Wevito",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "TitleText",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "169,169,70,29"
+    },
+    {
+        "Name":  "Corner habitat online",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "SubtitleText",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "169,200,103,15"
+    },
+    {
+        "Name":  "PIN",
+        "ControlType":  "ControlType.Button",
+        "AutomationId":  "PinButton",
+        "ClassName":  "Button",
+        "IsEnabled":  true,
+        "Rect":  "183,169,42,27"
+    },
+    {
+        "Name":  "PIN",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "193,174,21,17"
+    },
+    {
+        "Name":  "ACTIONS",
+        "ControlType":  "ControlType.Button",
+        "AutomationId":  "ActionsButton",
+        "ClassName":  "Button",
+        "IsEnabled":  true,
+        "Rect":  "231,169,72,27"
+    },
+    {
+        "Name":  "ACTIONS",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "240,174,54,17"
+    },
+    {
+        "Name":  "TOOLS",
+        "ControlType":  "ControlType.Button",
+        "AutomationId":  "WebToolsButton",
+        "ClassName":  "Button",
+        "IsEnabled":  true,
+        "Rect":  "309,169,58,27"
+    },
+    {
+        "Name":  "TOOLS",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "318,174,40,17"
+    },
+    {
+        "Name":  "SETTINGS",
+        "ControlType":  "ControlType.Button",
+        "AutomationId":  "SettingsButton",
+        "ClassName":  "Button",
+        "IsEnabled":  true,
+        "Rect":  "373,169,76,27"
+    },
+    {
+        "Name":  "SETTINGS",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "382,174,58,17"
+    },
+    {
+        "Name":  "STOP",
+        "ControlType":  "ControlType.Button",
+        "AutomationId":  "StopEverythingButton",
+        "ClassName":  "Button",
+        "IsEnabled":  true,
+        "Rect":  "455,169,54,27"
+    },
+    {
+        "Name":  "STOP",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "467,174,31,17"
+    },
+    {
+        "Name":  "DND",
+        "ControlType":  "ControlType.Button",
+        "AutomationId":  "DoNotDisturbButton",
+        "ClassName":  "Button",
+        "IsEnabled":  true,
+        "Rect":  "515,169,52,27"
+    },
+    {
+        "Name":  "DND",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "527,174,29,17"
+    },
+    {
+        "Name":  "BRAIN starting",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "LocalBrainBadgeText",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "582,174,74,17"
+    },
+    {
+        "Name":  "BENCH --",
+        "ControlType":  "ControlType.Button",
+        "AutomationId":  "BenchmarkBadge",
+        "ClassName":  "Button",
+        "IsEnabled":  true,
+        "Rect":  "671,169,74,27"
+    },
+    {
+        "Name":  "BENCH --",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "680,174,56,17"
+    },
+    {
+        "Name":  "LOOP idle",
+        "ControlType":  "ControlType.Button",
+        "AutomationId":  "CodexLoopBadge",
+        "ClassName":  "Button",
+        "IsEnabled":  true,
+        "Rect":  "751,169,76,27"
+    },
+    {
+        "Name":  "LOOP idle",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "760,174,58,17"
+    },
+    {
+        "Name":  "Focused",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "ModeText",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "169,225,634,15"
+    },
+    {
+        "Name":  "3 pets active",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "StatusText",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "178,269,616,15"
+    },
+    {
+        "Name":  "Hunger",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "180,332,298,13"
+    },
+    {
+        "Name":  "",
+        "ControlType":  "ControlType.ProgressBar",
+        "AutomationId":  "HungerBar",
+        "ClassName":  "ProgressBar",
+        "IsEnabled":  true,
+        "Rect":  "180,345,298,10"
+    },
+    {
+        "Name":  "Thirst",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "486,332,306,13"
+    },
+    {
+        "Name":  "",
+        "ControlType":  "ControlType.ProgressBar",
+        "AutomationId":  "ThirstBar",
+        "ClassName":  "ProgressBar",
+        "IsEnabled":  true,
+        "Rect":  "486,345,306,10"
+    },
+    {
+        "Name":  "Energy",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "180,363,298,13"
+    },
+    {
+        "Name":  "",
+        "ControlType":  "ControlType.ProgressBar",
+        "AutomationId":  "EnergyBar",
+        "ClassName":  "ProgressBar",
+        "IsEnabled":  true,
+        "Rect":  "180,376,298,10"
+    },
+    {
+        "Name":  "Clean",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "486,363,306,13"
+    },
+    {
+        "Name":  "",
+        "ControlType":  "ControlType.ProgressBar",
+        "AutomationId":  "CleanlinessBar",
+        "ClassName":  "ProgressBar",
+        "IsEnabled":  true,
+        "Rect":  "486,376,306,10"
+    },
+    {
+        "Name":  "",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "FeedbackText",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "169,415,634,15"
+    },
+    {
+        "Name":  "",
+        "ControlType":  "ControlType.Image",
+        "AutomationId":  "CelestialImage",
+        "ClassName":  "Image",
+        "IsEnabled":  true,
+        "Rect":  "Empty"
+    }
+]

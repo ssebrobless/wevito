@@ -1,0 +1,22 @@
+[
+    {
+        "id":  "SpriteRepairTriageScopeCheckBox",
+        "before":  "Off",
+        "after":  "On"
+    },
+    {
+        "id":  "SpriteRepairTriageScopeCheckBox",
+        "before":  "On",
+        "after":  "Off"
+    },
+    {
+        "id":  "AuditLedgerCleanupScopeCheckBox",
+        "before":  "Off",
+        "after":  "On"
+    },
+    {
+        "id":  "AuditLedgerCleanupScopeCheckBox",
+        "before":  "On",
+        "after":  "Off"
+    }
+]

@@ -1,0 +1,306 @@
+[
+    {
+        "Name":  "Wevito Chat",
+        "ControlType":  "ControlType.Window",
+        "AutomationId":  "",
+        "ClassName":  "Window",
+        "IsEnabled":  true,
+        "Rect":  "702,110,520,720"
+    },
+    {
+        "Name":  "Chat",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "PopupTitle",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "715,123,348,27"
+    },
+    {
+        "Name":  "REPORT ONLY",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "PetTaskReportOnlyBadge",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "1072,127,66,19"
+    },
+    {
+        "Name":  "Close",
+        "ControlType":  "ControlType.Button",
+        "AutomationId":  "ToolCloseButton",
+        "ClassName":  "Button",
+        "IsEnabled":  true,
+        "Rect":  "1155,123,54,27"
+    },
+    {
+        "Name":  "Close",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "1166,128,32,17"
+    },
+    {
+        "Name":  "",
+        "ControlType":  "ControlType.Pane",
+        "AutomationId":  "",
+        "ClassName":  "ScrollViewer",
+        "IsEnabled":  true,
+        "Rect":  "715,158,494,24"
+    },
+    {
+        "Name":  "Chat",
+        "ControlType":  "ControlType.Button",
+        "AutomationId":  "",
+        "ClassName":  "Button",
+        "IsEnabled":  true,
+        "Rect":  "715,158,37,24"
+    },
+    {
+        "Name":  "Chat",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "723,163,21,14"
+    },
+    {
+        "Name":  "Activity",
+        "ControlType":  "ControlType.Button",
+        "AutomationId":  "",
+        "ClassName":  "Button",
+        "IsEnabled":  true,
+        "Rect":  "758,158,50,24"
+    },
+    {
+        "Name":  "Activity",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "766,163,34,14"
+    },
+    {
+        "Name":  "Agents",
+        "ControlType":  "ControlType.Button",
+        "AutomationId":  "",
+        "ClassName":  "Button",
+        "IsEnabled":  true,
+        "Rect":  "814,158,48,24"
+    },
+    {
+        "Name":  "Agents",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "822,163,32,14"
+    },
+    {
+        "Name":  "Tools",
+        "ControlType":  "ControlType.Button",
+        "AutomationId":  "",
+        "ClassName":  "Button",
+        "IsEnabled":  true,
+        "Rect":  "868,158,39,24"
+    },
+    {
+        "Name":  "Tools",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "876,163,23,14"
+    },
+    {
+        "Name":  "Benchmarks",
+        "ControlType":  "ControlType.Button",
+        "AutomationId":  "",
+        "ClassName":  "Button",
+        "IsEnabled":  true,
+        "Rect":  "913,158,71,24"
+    },
+    {
+        "Name":  "Benchmarks",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "921,163,55,14"
+    },
+    {
+        "Name":  "Creative Lab",
+        "ControlType":  "ControlType.Button",
+        "AutomationId":  "",
+        "ClassName":  "Button",
+        "IsEnabled":  true,
+        "Rect":  "990,158,72,24"
+    },
+    {
+        "Name":  "Creative Lab",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "998,163,56,14"
+    },
+    {
+        "Name":  "Settings",
+        "ControlType":  "ControlType.Button",
+        "AutomationId":  "",
+        "ClassName":  "Button",
+        "IsEnabled":  true,
+        "Rect":  "1068,158,53,24"
+    },
+    {
+        "Name":  "Settings",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "1076,163,37,14"
+    },
+    {
+        "Name":  "",
+        "ControlType":  "ControlType.Pane",
+        "AutomationId":  "PetCommandScrollViewer",
+        "ClassName":  "ScrollViewer",
+        "IsEnabled":  true,
+        "Rect":  "715,192,494,615"
+    },
+    {
+        "Name":  "",
+        "ControlType":  "ControlType.Custom",
+        "AutomationId":  "ChatPanel",
+        "ClassName":  "ChatPanel",
+        "IsEnabled":  true,
+        "Rect":  "715,192,494,340"
+    },
+    {
+        "Name":  "New Chat",
+        "ControlType":  "ControlType.Button",
+        "AutomationId":  "ChatNewButton",
+        "ClassName":  "Button",
+        "IsEnabled":  true,
+        "Rect":  "715,192,75,29"
+    },
+    {
+        "Name":  "New Chat",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "724,198,57,17"
+    },
+    {
+        "Name":  "",
+        "ControlType":  "ControlType.Edit",
+        "AutomationId":  "ChatSearchTextBox",
+        "ClassName":  "TextBox",
+        "IsEnabled":  true,
+        "Rect":  "796,192,299,29"
+    },
+    {
+        "Name":  "Search",
+        "ControlType":  "ControlType.Button",
+        "AutomationId":  "ChatSearchButton",
+        "ClassName":  "Button",
+        "IsEnabled":  true,
+        "Rect":  "1101,192,57,29"
+    },
+    {
+        "Name":  "Search",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "1110,198,39,17"
+    },
+    {
+        "Name":  "Stop",
+        "ControlType":  "ControlType.Button",
+        "AutomationId":  "ChatStopButton",
+        "ClassName":  "Button",
+        "IsEnabled":  true,
+        "Rect":  "1164,192,45,29"
+    },
+    {
+        "Name":  "Stop",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "1173,198,27,17"
+    },
+    {
+        "Name":  "",
+        "ControlType":  "ControlType.Pane",
+        "AutomationId":  "",
+        "ClassName":  "ScrollViewer",
+        "IsEnabled":  true,
+        "Rect":  "716,230,492,229"
+    },
+    {
+        "Name":  "",
+        "ControlType":  "ControlType.List",
+        "AutomationId":  "ChatMessageList",
+        "ClassName":  "ItemsControl",
+        "IsEnabled":  true,
+        "Rect":  "724,238,476,213"
+    },
+    {
+        "Name":  "",
+        "ControlType":  "ControlType.Edit",
+        "AutomationId":  "ChatInputTextBox",
+        "ClassName":  "TextBox",
+        "IsEnabled":  true,
+        "Rect":  "715,468,431,44"
+    },
+    {
+        "Name":  "Send",
+        "ControlType":  "ControlType.Button",
+        "AutomationId":  "ChatSendButton",
+        "ClassName":  "Button",
+        "IsEnabled":  true,
+        "Rect":  "1154,468,55,44"
+    },
+    {
+        "Name":  "Send",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "1167,481,29,18"
+    },
+    {
+        "Name":  "Local chat ready. Tool calls are preview-only until C-PHASE 109.",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "StatusText",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "715,517,494,15"
+    },
+    {
+        "Name":  "Task cards and report-only adapters",
+        "ControlType":  "ControlType.Group",
+        "AutomationId":  "",
+        "ClassName":  "Expander",
+        "IsEnabled":  true,
+        "Rect":  "715,542,494,23"
+    },
+    {
+        "Name":  "Task cards and report-only adapters",
+        "ControlType":  "ControlType.Button",
+        "AutomationId":  "HeaderSite",
+        "ClassName":  "Button",
+        "IsEnabled":  true,
+        "Rect":  "717,544,490,19"
+    },
+    {
+        "Name":  "Task cards and report-only adapters",
+        "ControlType":  "ControlType.Text",
+        "AutomationId":  "",
+        "ClassName":  "TextBlock",
+        "IsEnabled":  true,
+        "Rect":  "740,544,205,18"
+    }
+]

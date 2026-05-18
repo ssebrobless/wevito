@@ -1,0 +1,4 @@
+Wevito vNext profile reset
+Live save database: C:\Users\fishe\AppData\Local\WevitoVNext\wevito-vnext.db
+Backup target: C:\Users\fishe\AppData\Local\WevitoVNext\wevito-vnext.backup-20260518-095513.db
+Profile reset complete. Backup preserved at: C:\Users\fishe\AppData\Local\WevitoVNext\wevito-vnext.backup-20260518-095513.db

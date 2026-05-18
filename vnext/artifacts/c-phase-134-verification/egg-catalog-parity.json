@@ -1,0 +1,53 @@
+{
+    "contentColors":  [
+                          "red",
+                          "orange",
+                          "yellow",
+                          "blue",
+                          "indigo",
+                          "violet"
+                      ],
+    "contentSpecies":  [
+                           {
+                               "color":  "red",
+                               "species":  "fox",
+                               "enabled":  true
+                           },
+                           {
+                               "color":  "orange",
+                               "species":  "squirrel",
+                               "enabled":  true
+                           },
+                           {
+                               "color":  "yellow",
+                               "species":  "goose",
+                               "enabled":  true
+                           },
+                           {
+                               "color":  "blue",
+                               "species":  "frog",
+                               "enabled":  true
+                           },
+                           {
+                               "color":  "indigo",
+                               "species":  "crow",
+                               "enabled":  true
+                           },
+                           {
+                               "color":  "violet",
+                               "species":  "raccoon",
+                               "enabled":  true
+                           }
+                       ],
+    "renderedEggLabels":  [
+                              "Red egg",
+                              "Orange egg",
+                              "Yellow egg",
+                              "Blue egg",
+                              "Indigo egg",
+                              "Violet egg"
+                          ],
+    "renderedContainsGreen":  false,
+    "godotFallbackContainsGreen":  false,
+    "godotFallbackHasRedFox":  true
+}

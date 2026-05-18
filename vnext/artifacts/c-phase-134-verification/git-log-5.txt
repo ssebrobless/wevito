@@ -1,0 +1,5 @@
+c6365a4fe docs: request C-PHASE 134 planning (#226)
+9b478282c C-PHASE 133: Autonomous loop scope gate (sprite-repair-triage + audit-ledger-cleanup; default off) (#225)
+202aa6092 C-PHASE 132: Local-brain default-on (heartbeat, smoke test, hosted-adapter refused at composition root) (#224)
+e3298985c C-PHASE 131: Green color decision (disable) (#223)
+25072fb16 C-PHASE 130.060: repair squirrel adult male runtime rows (#222)

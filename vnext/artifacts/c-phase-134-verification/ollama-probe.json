@@ -1,0 +1,9 @@
+{
+    "endpoint":  "http://127.0.0.1:11434/api/tags",
+    "reachable":  false,
+    "error":  "WebException: Unable to connect to the remote server",
+    "models":  [
+
+               ],
+    "checkedAtUtc":  "2026-05-18T10:06:47.3949123Z"
+}

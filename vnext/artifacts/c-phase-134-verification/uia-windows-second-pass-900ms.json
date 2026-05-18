@@ -1,0 +1,22 @@
+[
+    {
+        "Name":  "Codex",
+        "Pid":  1260,
+        "Rect":  "-6,2,851,799"
+    },
+    {
+        "Name":  "? Create C-PHASE 134+ plan from planning request",
+        "Pid":  14536,
+        "Rect":  "880,3,1047,635"
+    },
+    {
+        "Name":  "Codex",
+        "Pid":  1260,
+        "Rect":  "1506,701,399,359"
+    },
+    {
+        "Name":  "Steam",
+        "Pid":  12684,
+        "Rect":  "Empty"
+    }
+]
