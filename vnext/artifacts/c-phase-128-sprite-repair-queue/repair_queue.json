@@ -26016,7 +26016,7 @@
                      "lifeStage":  "teen",
                      "gender":  "male",
                      "priority":  "P1",
-                     "status":  "queued",
+                     "status":  "done",
                      "issueCount":  60,
                      "colorsAffected":  [
                                             "blue",
@@ -26943,7 +26943,11 @@
                                         "sourcePath":  "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites_runtime\\snake\\teen\\male\\yellow\\walk_00.png",
                                         "capturePath":  "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\c-phase-127-matrix-sweep\\cells\\snake_teen_male_yellow_walk.png"
                                     }
-                                ]
+                                ],
+                     "completedAtUtc":  "2026-05-18T06:58:18.5784766Z",
+                     "completedByPhase":  "C-PHASE 130.054",
+                     "completionArtifactRoot":  "vnext/artifacts/c-phase-130-batches/054-snake-teen-male",
+                     "batchArtifactRoot":  "vnext/artifacts/c-phase-130-batches/054-snake-teen-male"
                  },
                  {
                      "rowId":  "snake_adult_female",
@@ -30067,8 +30071,8 @@
                  }
              ],
     "statusCounts":  {
-                         "done":  53,
-                         "queued":  7
+                         "done":  54,
+                         "queued":  6
                      },
-    "lastUpdatedUtc":  "2026-05-18T06:42:44.5292301Z"
+    "lastUpdatedUtc":  "2026-05-18T06:58:18.5854580Z"
 }
