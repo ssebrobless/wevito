@@ -19065,7 +19065,7 @@
                      "lifeStage":  "baby",
                      "gender":  "male",
                      "priority":  "P1",
-                     "status":  "queued",
+                     "status":  "done",
                      "issueCount":  12,
                      "colorsAffected":  [
                                             "blue",
@@ -19263,7 +19263,11 @@
                                         "sourcePath":  null,
                                         "capturePath":  null
                                     }
-                                ]
+                                ],
+                     "completedAtUtc":  "2026-05-18T03:47:24.3827043Z",
+                     "completedByPhase":  "C-PHASE 130.038",
+                     "completionArtifactRoot":  "vnext/artifacts/c-phase-130-batches/038-raccoon-baby-male",
+                     "batchArtifactRoot":  "vnext/artifacts/c-phase-130-batches/038-raccoon-baby-male"
                  },
                  {
                      "rowId":  "raccoon_teen_female",
@@ -30003,8 +30007,8 @@
                  }
              ],
     "statusCounts":  {
-                         "done":  37,
-                         "queued":  23
+                         "done":  38,
+                         "queued":  22
                      },
-    "lastUpdatedUtc":  "2026-05-18T03:37:23.3777520Z"
+    "lastUpdatedUtc":  "2026-05-18T03:47:24.3827043Z"
 }
