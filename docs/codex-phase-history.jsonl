@@ -68,3 +68,4 @@
 {"phase":"C-PHASE 131","timestamp":"2026-05-18T08:17:52.0754298Z","branch":"claude-implementation/c-phase-131-green-color-decision-b","pr":"https://github.com/ssebrobless/wevito/pull/223","decision":"disable_green_for_v1"}
 {"phase":"C-PHASE 132","timestamp":"2026-05-18T08:45:00.0000000Z","branch":"claude-implementation/c-phase-132-local-brain-default-on","pr":"https://github.com/ssebrobless/wevito/pull/224","local_brain":"offline_degraded_on_this_machine"}
 {"phase":"C-PHASE 133","timestamp":"2026-05-18T09:06:13.3939084Z","branch":"claude-implementation/c-phase-133-autonomous-loop-scope-gate","pr":"https://github.com/ssebrobless/wevito/pull/225","scopes":"sprite-repair-triage,audit-ledger-cleanup"}
+{"phase":"C-PHASE 134","timestamp":"2026-05-18T10:15:48.8457774Z","branch":"claude-implementation/c-phase-134-verification-baseline","pr":"https://github.com/ssebrobless/wevito/pull/227","result":"bug_board_live_retest_closed_bug_001_through_bug_004"}
