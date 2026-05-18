@@ -9,6 +9,7 @@ using Wevito.VNext.Contracts;
 using Wevito.VNext.Core;
 using Wevito.VNext.Core.Audit;
 using Wevito.VNext.Core.LocalRetrieval;
+using Wevito.VNext.Core.SelfImprovement;
 using Wevito.VNext.Core.SelfImprovement.Experiments;
 using Wevito.VNext.Core.SelfImprovement.Maturity;
 using Wevito.VNext.Core.Settings;
@@ -72,6 +73,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private readonly AutonomousBetaDecisionService _autonomousBetaDecisionService;
     private readonly AutonomousScopeService _autonomousScopeService;
     private readonly IReadOnlyList<IAutonomousScope> _autonomousScopes;
+    private readonly SupervisedImprovementLoop _supervisedImprovementLoop;
     private readonly AutonomousOperationsLoop _autonomousOperationsLoop;
     private readonly TranslationExecutionAdapter _translationExecutionAdapter = new();
     private readonly AudioAssistExecutionAdapter _audioAssistExecutionAdapter = new();
@@ -182,7 +184,8 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             new AuditLedgerCleanupScope(Path.GetDirectoryName(_auditLedgerService.DatabasePath) ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Wevito", "audit"), _auditLedgerService)
         ];
         var autonomousScopeRegistry = new AutonomousScopeRegistry(_autonomousScopeService, _autonomousScopes);
-        _autonomousOperationsLoop = new AutonomousOperationsLoop(_autonomousBetaDecisionService, _auditLedgerService, _killSwitchService, scopeRegistry: autonomousScopeRegistry);
+        _supervisedImprovementLoop = ShellCompositionRoot.CreateSupervisedImprovementLoop(_auditLedgerService, _killSwitchService);
+        _autonomousOperationsLoop = new AutonomousOperationsLoop(_autonomousBetaDecisionService, _auditLedgerService, _killSwitchService, scopeRegistry: autonomousScopeRegistry, supervisedImprovementLoop: _supervisedImprovementLoop);
         _screenCaptureExecutionAdapter = new ScreenCaptureExecutionAdapter(new WindowsGraphicsCaptureBackend(() => _homeWindow));
         _tickTimer = new DispatcherTimer(DispatcherPriority.Render)
         {
@@ -253,6 +256,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _toolPopupWindow.PetTaskStatusChangeRequested += async (cardId, status) => await HandlePetTaskStatusChangeAsync(cardId, status);
         _toolPopupWindow.PetTaskPreviewRequested += async cardId => await HandlePetTaskPreviewAsync(cardId);
         _toolPopupWindow.PetTaskExecutionRequested += async cardId => await HandlePetTaskExecutionAsync(cardId);
+        _toolPopupWindow.SupervisedApplyApprovalRequested += async (cardId, approval) => await HandleSupervisedApplyApprovalAsync(cardId, approval);
     }
 
     public async Task StartAsync()
@@ -1598,6 +1602,38 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             WellbeingSnapshots: snapshots);
         SetFeedback(_petCommandBarState.StatusMessage);
         TraceLog.Write("pet-command", $"execute id={cardId} family={result.ToolFamily} status={result.Status} mutate={result.DidMutate} audit={result.AuditLogPath}");
+        await PersistAndRenderAsync();
+    }
+
+    private async Task HandleSupervisedApplyApprovalAsync(Guid cardId, UserApplyApproval approval)
+    {
+        if (_state is null)
+        {
+            return;
+        }
+
+        var card = (_state.TaskCards ?? []).FirstOrDefault(candidate => candidate.Id == cardId);
+        if (card is null)
+        {
+            SetFeedback("Supervised apply card was not found.");
+            Render();
+            return;
+        }
+
+        var payload = card.ReviewPayload ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        var expectedScopeId = payload.TryGetValue("scope_id", out var scopeId) ? scopeId : "";
+        var expectedOperationId = payload.TryGetValue("operation_id", out var operationId) ? operationId : "";
+        var result = _supervisedImprovementLoop.HandleApplyApproval(
+            approval,
+            expectedScopeId,
+            expectedOperationId,
+            card.Id,
+            DateTimeOffset.UtcNow,
+            _state.TaskCards ?? []);
+        SetFeedback(result.RefusalReason.Equals(SupervisedImprovementLoop.ApplyRunnerNotImplementedReason, StringComparison.Ordinal)
+            ? "Approval accepted, but v0 safely refused because the apply runner is not implemented yet."
+            : $"Supervised apply refused: {result.RefusalReason}");
+        _state = _state with { TaskCards = result.TaskCards };
         await PersistAndRenderAsync();
     }
 
@@ -3202,6 +3238,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         hydrated.TryAdd(AutonomousOperationsConfig.EnabledSetting, bool.FalseString);
         hydrated.TryAdd(AutonomousOperationsConfig.DailyCapSetting, "3");
         hydrated.TryAdd(AutonomousOperationsConfig.IntervalMinutesSetting, "10");
+        hydrated.TryAdd(SupervisedImprovementLoopSettings.EnabledSetting, bool.FalseString);
         hydrated.TryAdd(LiveStatusFeed.PollSecondsSetting, "10");
         hydrated.TryAdd(WebResearchConnector.WebSearchEnabledSetting, bool.FalseString);
         hydrated.TryAdd(WebResearchConnector.WebBackendSetting, "offline");

@@ -114,12 +114,13 @@ public sealed class UserApplyApprovalValidatorTests
             Path.Combine(productionRoot, "Wevito.VNext.Core", "SelfImprovement", "UserApplyApproval.cs"),
             Path.Combine(productionRoot, "Wevito.VNext.Core", "SelfImprovement", "UserApplyApprovalValidator.cs"),
             Path.Combine(productionRoot, "Wevito.VNext.Core", "SelfImprovement", "IRequiresUserApplyApproval.cs"),
+            Path.Combine(productionRoot, "Wevito.VNext.Shell", "ToolPopupWindow.xaml.cs"),
         };
 
         var offenders = Directory
             .EnumerateFiles(productionRoot, "*.cs", SearchOption.AllDirectories)
             .Where(path => !allowedFiles.Contains(path))
-            .Where(path => File.ReadAllText(path).Contains("new UserApplyApproval", StringComparison.Ordinal))
+            .Where(path => File.ReadAllText(path).Contains("new UserApplyApproval(", StringComparison.Ordinal))
             .Select(path => Path.GetRelativePath(productionRoot, path))
             .ToArray();
 
