@@ -20691,7 +20691,7 @@
                      "lifeStage":  "baby",
                      "gender":  "male",
                      "priority":  "P1",
-                     "status":  "queued",
+                     "status":  "done",
                      "issueCount":  12,
                      "colorsAffected":  [
                                             "blue",
@@ -20889,7 +20889,11 @@
                                         "sourcePath":  null,
                                         "capturePath":  null
                                     }
-                                ]
+                                ],
+                     "completedAtUtc":  "2026-05-18T04:47:50.9519376Z",
+                     "completedByPhase":  "C-PHASE 130.044",
+                     "completionArtifactRoot":  "vnext/artifacts/c-phase-130-batches/044-rat-baby-male",
+                     "batchArtifactRoot":  "vnext/artifacts/c-phase-130-batches/044-rat-baby-male"
                  },
                  {
                      "rowId":  "rat_teen_female",
@@ -30027,8 +30031,8 @@
                  }
              ],
     "statusCounts":  {
-                         "done":  43,
-                         "queued":  17
+                         "done":  44,
+                         "queued":  16
                      },
-    "lastUpdatedUtc":  "2026-05-18T04:40:16.2400040Z"
+    "lastUpdatedUtc":  "2026-05-18T04:47:50.9599160Z"
 }
