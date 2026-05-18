@@ -1,0 +1,261 @@
+{
+  "phase": "C-PHASE 140",
+  "generatedAtUtc": "2026-05-18T12:15:46Z",
+  "mode": "report-only inventory; no runtime mutation",
+  "sourceFiles": [
+    {
+      "path": "vnext/src/Wevito.VNext.Core/Tools/ToolCatalog.cs",
+      "lastTouchedCommit": "new-in-c-phase-140"
+    },
+    {
+      "path": "vnext/src/Wevito.VNext.Shell/ToolPopupWindow.xaml",
+      "lastTouchedCommit": "658938a51ec8de90f3d8866db3a5cd9aff0b0ba6"
+    },
+    {
+      "path": "vnext/src/Wevito.VNext.Shell/ToolPopupWindow.xaml.cs",
+      "lastTouchedCommit": "658938a51ec8de90f3d8866db3a5cd9aff0b0ba6"
+    },
+    {
+      "path": "vnext/src/Wevito.VNext.Core/ToolRegistry.cs",
+      "lastTouchedCommit": "c3572a1761a672a8e98681cfedd52b01e30d3f0c"
+    },
+    {
+      "path": "vnext/src/Wevito.VNext.Core/PlainLanguageExplainer.cs",
+      "lastTouchedCommit": "658938a51ec8de90f3d8866db3a5cd9aff0b0ba6"
+    }
+  ],
+  "tabs": [
+    {
+      "tabId": "pets",
+      "displayName": "Pets",
+      "toolId": "actions",
+      "automationId": "ToolTabPetsButton",
+      "parentTab": "top-tab-strip",
+      "isAdvanced": false,
+      "description": "Care, feed, play, and inspect the selected pets."
+    },
+    {
+      "tabId": "tasks",
+      "displayName": "Tasks",
+      "toolId": "helpers",
+      "automationId": "ToolTabTasksButton",
+      "parentTab": "top-tab-strip",
+      "isAdvanced": false,
+      "description": "Ask Wevito helpers for report-only task cards."
+    },
+    {
+      "tabId": "tools",
+      "displayName": "Tools",
+      "toolId": "basket",
+      "automationId": "ToolTabToolsButton",
+      "parentTab": "top-tab-strip",
+      "isAdvanced": false,
+      "description": "Manage saved links and local tool shortcuts."
+    },
+    {
+      "tabId": "local-ai",
+      "displayName": "Local AI",
+      "toolId": "settings",
+      "automationId": "ToolTabLocalAiButton",
+      "parentTab": "top-tab-strip",
+      "isAdvanced": false,
+      "description": "Review local brain status, settings, and safety gates."
+    },
+    {
+      "tabId": "autonomy",
+      "displayName": "Autonomy",
+      "toolId": "autonomous-scopes",
+      "automationId": "ToolTabAutonomyButton",
+      "parentTab": "top-tab-strip",
+      "isAdvanced": false,
+      "description": "Preview and control approved autonomous scopes."
+    },
+    {
+      "tabId": "local-docs",
+      "displayName": "Local Docs",
+      "toolId": "local-docs",
+      "automationId": "ToolTabLocalDocsButton",
+      "parentTab": "top-tab-strip",
+      "isAdvanced": false,
+      "description": "Search approved local documents when retrieval is enabled."
+    },
+    {
+      "tabId": "activity",
+      "displayName": "Activity",
+      "toolId": "activity",
+      "automationId": "ToolTabActivityButton",
+      "parentTab": "top-tab-strip",
+      "isAdvanced": true,
+      "description": "Inspect recent audit-ledger activity and helper evidence."
+    },
+    {
+      "tabId": "benchmarks",
+      "displayName": "Benchmarks",
+      "toolId": "benchmarks",
+      "automationId": "ToolTabBenchmarksButton",
+      "parentTab": "top-tab-strip",
+      "isAdvanced": true,
+      "description": "Curate and run reviewed local benchmark cases."
+    },
+    {
+      "tabId": "creative-lab",
+      "displayName": "Creative Lab",
+      "toolId": "creative-lab",
+      "automationId": "ToolTabCreativeLabButton",
+      "parentTab": "top-tab-strip",
+      "isAdvanced": true,
+      "description": "Review learning examples without training or promotion."
+    }
+  ],
+  "controls": [
+    {
+      "automationId": "ToolPopupTopTabStrip",
+      "parentTab": "window",
+      "displayName": "Tool Hub top tabs",
+      "description": "Hosts primary and advanced Tool Hub navigation."
+    },
+    {
+      "automationId": "ToolHubAdvancedToggle",
+      "parentTab": "top-tab-strip",
+      "displayName": "Advanced",
+      "description": "Shows Activity, Benchmarks, and Creative Lab without removing capability."
+    },
+    {
+      "automationId": "PetCommandInput",
+      "parentTab": "tasks",
+      "displayName": "Task command bar",
+      "description": "Creates safe helper task cards from plain language."
+    },
+    {
+      "automationId": "PetTaskOpenReportButton",
+      "parentTab": "tasks",
+      "displayName": "Open report",
+      "description": "Opens the selected task report when a safe artifact path exists."
+    },
+    {
+      "automationId": "LocalDocsBuildButton",
+      "parentTab": "local-docs",
+      "displayName": "Build Index",
+      "description": "Builds the local docs index only when Local Docs is enabled."
+    },
+    {
+      "automationId": "LocalDocsQueryButton",
+      "parentTab": "local-docs",
+      "displayName": "Search",
+      "description": "Queries approved local docs without network access."
+    },
+    {
+      "automationId": "ToolRegistryListPanel",
+      "parentTab": "local-ai",
+      "displayName": "AI-callable tool registry",
+      "description": "Shows each registered tool family with risk, approval, and catalog description."
+    }
+  ],
+  "toolFamilies": [
+    {
+      "toolFamily": "localDocs",
+      "name": "summarize_local_docs",
+      "riskLevel": "Low",
+      "requiresApproval": false,
+      "description": "Summarize approved local Wevito documents."
+    },
+    {
+      "toolFamily": "localResearch",
+      "name": "local_research_packet",
+      "riskLevel": "Low",
+      "requiresApproval": false,
+      "description": "Prepare an offline/local research evidence packet."
+    },
+    {
+      "toolFamily": "spriteAudit",
+      "name": "sprite_audit_report",
+      "riskLevel": "Low",
+      "requiresApproval": false,
+      "description": "Audit sprite/runtime assets and write a report-only packet."
+    },
+    {
+      "toolFamily": "petState",
+      "name": "get_pet_state",
+      "riskLevel": "Low",
+      "requiresApproval": false,
+      "description": "Read current pet state without changing pets."
+    },
+    {
+      "toolFamily": "assetInventory",
+      "name": "asset_inventory_report",
+      "riskLevel": "Low",
+      "requiresApproval": false,
+      "description": "Inventory local Wevito assets."
+    },
+    {
+      "toolFamily": "codeReview",
+      "name": "code_review_report",
+      "riskLevel": "Low",
+      "requiresApproval": false,
+      "description": "Review local code and prepare a report."
+    },
+    {
+      "toolFamily": "codePatchPlan",
+      "name": "code_patch_plan",
+      "riskLevel": "Low",
+      "requiresApproval": false,
+      "description": "Plan a code change without editing files."
+    },
+    {
+      "toolFamily": "buildProof",
+      "name": "build_proof_plan",
+      "riskLevel": "Medium",
+      "requiresApproval": true,
+      "description": "Prepare build proof commands; execution remains approval-gated."
+    },
+    {
+      "toolFamily": "translateText",
+      "name": "translate_text",
+      "riskLevel": "Low",
+      "requiresApproval": false,
+      "description": "Translate user-provided text through approved local or deterministic paths."
+    },
+    {
+      "toolFamily": "audioAssist",
+      "name": "audio_assist_report",
+      "riskLevel": "Low",
+      "requiresApproval": false,
+      "description": "Prepare audio/volume guidance without changing system audio."
+    },
+    {
+      "toolFamily": "screenCapture",
+      "name": "screen_capture_preview",
+      "riskLevel": "Medium",
+      "requiresApproval": true,
+      "description": "Prepare a screen-capture preview; execution remains approval-gated."
+    },
+    {
+      "toolFamily": "petMemory",
+      "name": "retrieve_pet_memory",
+      "riskLevel": "Low",
+      "requiresApproval": false,
+      "description": "Retrieve reviewed local pet memory rows."
+    },
+    {
+      "toolFamily": "retrieve_from_memory",
+      "name": "retrieve_from_memory",
+      "riskLevel": "Low",
+      "requiresApproval": false,
+      "description": "Retrieve matching local memory rows for explicit chat-context deep dives."
+    },
+    {
+      "toolFamily": "bookmark_for_benchmark",
+      "name": "bookmark_for_benchmark",
+      "riskLevel": "Low",
+      "requiresApproval": false,
+      "description": "Bookmark a chat message for a later benchmark review."
+    },
+    {
+      "toolFamily": "pin_message",
+      "name": "pin_message",
+      "riskLevel": "Low",
+      "requiresApproval": false,
+      "description": "Pin a chat message into the local context budget."
+    }
+  ]
+}

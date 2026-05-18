@@ -6,6 +6,21 @@ namespace Wevito.VNext.Tests;
 public sealed class ToolPopupWindowActionTextTests
 {
     [Fact]
+    public void TopTabStripUsesSimplifiedCatalogDrivenTabs()
+    {
+        var xaml = File.ReadAllText(FindRepoFile("vnext", "src", "Wevito.VNext.Shell", "ToolPopupWindow.xaml"));
+
+        Assert.Contains("AutomationId=\"ToolTabPetsButton\"", xaml);
+        Assert.Contains("AutomationId=\"ToolTabTasksButton\"", xaml);
+        Assert.Contains("AutomationId=\"ToolHubAdvancedToggle\"", xaml);
+        Assert.Contains("AutomationId=\"ToolTabActivityButton\"", xaml);
+        Assert.Contains("AutomationId=\"ToolTabBenchmarksButton\"", xaml);
+        Assert.Contains("AutomationId=\"ToolTabCreativeLabButton\"", xaml);
+        Assert.DoesNotContain("Content=\"Chat\"", xaml);
+        Assert.DoesNotContain("Content=\"Agents\"", xaml);
+    }
+
+    [Fact]
     public void PetTasksPanelHasOwnScrollViewerForReportControls()
     {
         var xaml = File.ReadAllText(FindRepoFile("vnext", "src", "Wevito.VNext.Shell", "ToolPopupWindow.xaml"));
