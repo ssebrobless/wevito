@@ -174,6 +174,50 @@ public sealed class SpriteRepairBatchRunnerTests
     }
 
     [Fact]
+    public void BuildPlanForReview_DoesNotCreateCandidateDir()
+    {
+        var fixture = BatchFixture.Create();
+        fixture.WriteRuntime("idle_00.png", "before");
+        var runner = fixture.CreateRunner(commandRunner: new CandidateWritingCommandRunner("after"));
+        var request = fixture.Request();
+
+        var plan = runner.BuildPlanForReview(request);
+
+        Assert.Contains(Path.Combine("sprites_authored", ".candidates"), plan.CandidateOutputDirectory, StringComparison.OrdinalIgnoreCase);
+        Assert.False(Directory.Exists(plan.CandidateOutputDirectory));
+    }
+
+    [Fact]
+    public void BuildPlanForReview_DoesNotRunRepairTool()
+    {
+        var fixture = BatchFixture.Create();
+        fixture.WriteRuntime("idle_00.png", "before");
+        var commandRunner = new CandidateWritingCommandRunner("after");
+        var runner = fixture.CreateRunner(commandRunner: commandRunner);
+
+        var plan = runner.BuildPlanForReview(fixture.Request());
+
+        Assert.False(commandRunner.WasCalled);
+        Assert.Contains("python", plan.CommandLine, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("--out-dir", plan.CommandLine, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void BuildPlanForReview_IncludesTargetPathsWithoutMutatingRuntime()
+    {
+        var fixture = BatchFixture.Create();
+        fixture.WriteRuntime("idle_00.png", "before");
+        var runner = fixture.CreateRunner();
+
+        var plan = runner.BuildPlanForReview(fixture.Request());
+
+        Assert.Contains("sprites_runtime", plan.RuntimeTargetDirectory, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("sprites_runtime/goose/baby/female/blue/idle_00.png", plan.FlaggedFrameRelativePaths);
+        Assert.Contains("sprites_runtime/goose/baby/female/blue/idle_00.png", plan.WouldWriteRelativePaths);
+        Assert.Equal("before", File.ReadAllText(fixture.RuntimeFrame("idle_00.png")));
+    }
+
+    [Fact]
     public async Task RefusesIfCandidateFolderOutsideAuthoredCandidates()
     {
         var fixture = BatchFixture.Create();

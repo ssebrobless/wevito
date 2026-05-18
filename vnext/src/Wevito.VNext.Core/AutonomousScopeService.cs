@@ -286,6 +286,7 @@ public sealed class AutonomousScopeRegistry
 public sealed class SpriteRepairTriageScope : IAutonomousScope
 {
     public const string PacketKind = "sprite_repair_triage_card_drafted";
+    public const string EnrichedPacketKind = "sprite_repair_triage_card_enriched";
     public const string ToolFamily = "sprite-repair-batch-proposal";
 
     private readonly string _queuePath;
@@ -324,7 +325,7 @@ public sealed class SpriteRepairTriageScope : IAutonomousScope
                 continue;
             }
 
-            var card = BuildCard(row, request.RequestedAtUtc);
+            var card = BuildCard(row, request.RequestedAtUtc, ResolveRepoRoot(_queuePath));
             cards = _queueService.AppendDraft(cards, card);
             drafted++;
             _ledger.Record(new EvidencePacket(
@@ -338,6 +339,18 @@ public sealed class SpriteRepairTriageScope : IAutonomousScope
                 DidMutate: false,
                 ArtifactPath: _queuePath,
                 Summary: $"Drafted review-only sprite repair triage card for {row.RowId} priority={row.Priority}.",
+                Status: "Drafted"));
+            _ledger.Record(new EvidencePacket(
+                Guid.NewGuid(),
+                EnrichedPacketKind,
+                card.Id,
+                request.RequestedAtUtc,
+                DidUseNetwork: false,
+                DidUseHostedAi: false,
+                DidUseLocalModel: false,
+                DidMutate: false,
+                ArtifactPath: _queuePath,
+                Summary: $"Enriched sprite repair triage card for {row.RowId} with review-only plan payload.",
                 Status: "Drafted"));
         }
 
@@ -379,8 +392,19 @@ public sealed class SpriteRepairTriageScope : IAutonomousScope
             Items: items));
     }
 
-    private static TaskCard BuildCard(SpriteRepairQueueRow row, DateTimeOffset nowUtc)
+    private static TaskCard BuildCard(SpriteRepairQueueRow row, DateTimeOffset nowUtc, string repoRoot)
     {
+        var runner = new SpriteRepairBatchRunner();
+        var issues = row.Issues.Count > 0 ? row.Issues : BuildFallbackIssues(row);
+        var plans = issues.Select((issue, index) => runner.BuildPlanForReview(new SpriteRepairBatchRequest(
+                repoRoot,
+                row,
+                issue,
+                Path.Combine(repoRoot, "vnext", "artifacts", "sprite-repair-triage-review"),
+                nowUtc,
+                BatchId: $"{row.RowId}-{issue.ColorVariant}-{issue.AnimationFamily}-review-{index + 1:00}")))
+            .ToArray();
+        var payload = BuildReviewPayload(row, plans);
         var intent = new TaskIntent(
             Guid.NewGuid(),
             $"Review sprite repair queue row {row.RowId} ({row.Priority}) and prepare a guarded repair proposal only.",
@@ -406,14 +430,34 @@ public sealed class SpriteRepairTriageScope : IAutonomousScope
             TaskCardStatus.Draft,
             ToolFamily: ToolFamily,
             PolicySnapshot: policy,
-            Timeline: [$"{nowUtc:O} autonomous scope drafted review-only repair proposal."],
-            ResultSummary: "Draft only. No preview, execution, or sprite mutation has run.",
+            Timeline:
+            [
+                $"{nowUtc:O} autonomous scope drafted review-only repair proposal.",
+                $"enriched_payload: plans={plans.Length} flagged_frames={plans.SelectMany(plan => plan.FlaggedFrameRelativePaths).Distinct(StringComparer.OrdinalIgnoreCase).Count()} would_write={plans.SelectMany(plan => plan.WouldWriteRelativePaths).Distinct(StringComparer.OrdinalIgnoreCase).Count()}"
+            ],
+            ResultSummary: BuildResultSummary(row, plans),
             AuditLogPath: "",
             CreatedAtUtc: nowUtc,
-            UpdatedAtUtc: nowUtc);
+            UpdatedAtUtc: nowUtc,
+            ReviewPayload: payload);
     }
 
     private static IReadOnlyList<SpriteRepairQueueRow> ReadPriorityRows(string queuePath)
+    {
+        var repoRoot = ResolveRepoRoot(queuePath);
+        try
+        {
+            return new SpriteRepairQueueReader().Load(queuePath, repoRoot).Rows
+                .Where(IsP0OrP1)
+                .ToArray();
+        }
+        catch (Exception) when (File.Exists(queuePath))
+        {
+            return ReadPriorityRowsFallback(queuePath);
+        }
+    }
+
+    private static IReadOnlyList<SpriteRepairQueueRow> ReadPriorityRowsFallback(string queuePath)
     {
         using var document = JsonDocument.Parse(File.ReadAllText(queuePath));
         if (!document.RootElement.TryGetProperty("rows", out var rows) || rows.ValueKind != JsonValueKind.Array)
@@ -425,21 +469,115 @@ public sealed class SpriteRepairTriageScope : IAutonomousScope
         foreach (var row in rows.EnumerateArray())
         {
             var priority = ReadString(row, "priority");
-            if (!priority.Equals("P0", StringComparison.OrdinalIgnoreCase) &&
-                !priority.Equals("P1", StringComparison.OrdinalIgnoreCase))
+            if (!IsP0OrP1(priority))
             {
                 continue;
             }
 
+            var rowId = ReadString(row, "rowId");
+            var speciesId = ReadString(row, "speciesId");
+            var lifeStage = ReadString(row, "lifeStage");
+            var gender = ReadString(row, "gender");
             result.Add(new SpriteRepairQueueRow(
-                ReadString(row, "rowId"),
+                rowId,
+                speciesId,
+                lifeStage,
+                gender,
                 priority,
-                ReadString(row, "speciesId"),
-                ReadString(row, "lifeStage"),
-                ReadString(row, "gender")));
+                ReadString(row, "status"),
+                1,
+                ["blue"],
+                ["idle"],
+                [],
+                [
+                    new SpriteRepairQueueIssue(
+                        "blue",
+                        "idle",
+                        priority,
+                        [],
+                        [],
+                        "",
+                        "fallback row parsed from minimal repair queue JSON.",
+                        null,
+                        null)
+                ]));
         }
 
         return result;
+    }
+
+    private static IReadOnlyList<SpriteRepairQueueIssue> BuildFallbackIssues(SpriteRepairQueueRow row)
+    {
+        var color = row.ColorsAffected.FirstOrDefault() ?? "blue";
+        var animation = row.AnimationsAffected.FirstOrDefault() ?? "idle";
+        var tool = row.RecommendedTools.FirstOrDefault() ?? "";
+        return
+        [
+            new SpriteRepairQueueIssue(
+                color,
+                animation,
+                row.Priority,
+                [],
+                [],
+                tool,
+                "fallback review issue for row with no issue details.",
+                null,
+                null)
+        ];
+    }
+
+    private static Dictionary<string, string> BuildReviewPayload(SpriteRepairQueueRow row, IReadOnlyList<SpriteRepairBatchPlan> plans)
+    {
+        return new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["schema_version"] = "1",
+            ["row_id"] = row.RowId,
+            ["species"] = row.SpeciesId,
+            ["age"] = row.LifeStage,
+            ["gender"] = row.Gender,
+            ["priority"] = row.Priority,
+            ["flagged_frame_relative_paths"] = string.Join("|", plans.SelectMany(plan => plan.FlaggedFrameRelativePaths).Distinct(StringComparer.OrdinalIgnoreCase)),
+            ["repair_command_lines"] = string.Join("|", plans.Select(plan => plan.CommandLine)),
+            ["candidate_output_directories"] = string.Join("|", plans.Select(plan => plan.CandidateOutputDirectory)),
+            ["runtime_target_directories"] = string.Join("|", plans.Select(plan => plan.RuntimeTargetDirectory)),
+            ["would_write_relative_paths"] = string.Join("|", plans.SelectMany(plan => plan.WouldWriteRelativePaths).Distinct(StringComparer.OrdinalIgnoreCase)),
+            ["plan_summaries"] = string.Join("|", plans.Select(plan => plan.Summary))
+        };
+    }
+
+    private static string BuildResultSummary(SpriteRepairQueueRow row, IReadOnlyList<SpriteRepairBatchPlan> plans)
+    {
+        var flaggedCount = plans.SelectMany(plan => plan.FlaggedFrameRelativePaths).Distinct(StringComparer.OrdinalIgnoreCase).Count();
+        var wouldWriteCount = plans.SelectMany(plan => plan.WouldWriteRelativePaths).Distinct(StringComparer.OrdinalIgnoreCase).Count();
+        return $"Draft only. {row.SpeciesId}/{row.LifeStage}/{row.Gender} has {plans.Count} repair plan(s), {flaggedCount} flagged frame path(s), and {wouldWriteCount} would-write runtime target path(s). No preview, execution, candidate creation, or sprite mutation has run.";
+    }
+
+    private static bool IsP0OrP1(SpriteRepairQueueRow row)
+    {
+        return IsP0OrP1(row.Priority);
+    }
+
+    private static bool IsP0OrP1(string priority)
+    {
+        return priority.Equals("P0", StringComparison.OrdinalIgnoreCase) ||
+               priority.Equals("P1", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string ResolveRepoRoot(string path)
+    {
+        var directory = new DirectoryInfo(Path.GetDirectoryName(Path.GetFullPath(path)) ?? Directory.GetCurrentDirectory());
+        while (directory is not null)
+        {
+            if (Directory.Exists(Path.Combine(directory.FullName, ".git")) ||
+                File.Exists(Path.Combine(directory.FullName, "wevito.godot")))
+            {
+                return directory.FullName;
+            }
+
+            directory = directory.Parent;
+        }
+
+        return Directory.GetCurrentDirectory();
     }
 
     private static string ReadString(JsonElement element, string propertyName)
@@ -454,7 +592,6 @@ public sealed class SpriteRepairTriageScope : IAutonomousScope
         return new AutonomousScopeRunResult(AutonomousScopeService.SpriteRepairTriageScopeId, false, false, cards, "", reason);
     }
 
-    private sealed record SpriteRepairQueueRow(string RowId, string Priority, string SpeciesId, string LifeStage, string Gender);
 }
 
 public sealed class AuditLedgerCleanupScope : IAutonomousScope

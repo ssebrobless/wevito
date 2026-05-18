@@ -359,7 +359,8 @@ public sealed record TaskCard(
     string ResultSummary = "",
     string AuditLogPath = "",
     DateTimeOffset CreatedAtUtc = default,
-    DateTimeOffset UpdatedAtUtc = default);
+    DateTimeOffset UpdatedAtUtc = default,
+    IReadOnlyDictionary<string, string>? ReviewPayload = null);
 
 public sealed record ReviewedExample(
     Guid Id,
