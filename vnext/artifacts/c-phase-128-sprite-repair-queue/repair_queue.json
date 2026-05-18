@@ -17676,7 +17676,7 @@
                      "lifeStage":  "teen",
                      "gender":  "male",
                      "priority":  "P1",
-                     "status":  "queued",
+                     "status":  "done",
                      "issueCount":  24,
                      "colorsAffected":  [
                                             "blue",
@@ -18057,7 +18057,11 @@
                                         "sourcePath":  "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites_runtime\\pigeon\\teen\\male\\yellow\\idle_00.png",
                                         "capturePath":  "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\c-phase-127-matrix-sweep\\cells\\pigeon_teen_male_yellow_idle.png"
                                     }
-                                ]
+                                ],
+                     "completedAtUtc":  "2026-05-18T03:03:01.0465042Z",
+                     "completedByPhase":  "C-PHASE 130.034",
+                     "completionArtifactRoot":  "vnext/artifacts/c-phase-130-batches/034-pigeon-teen-male",
+                     "batchArtifactRoot":  "vnext/artifacts/c-phase-130-batches/034-pigeon-teen-male"
                  },
                  {
                      "rowId":  "pigeon_adult_female",
@@ -29987,8 +29991,8 @@
                  }
              ],
     "statusCounts":  {
-                         "done":  33,
-                         "queued":  27
+                         "done":  34,
+                         "queued":  26
                      },
-    "lastUpdatedUtc":  "2026-05-18T01:36:05.7502658Z"
+    "lastUpdatedUtc":  "2026-05-18T03:03:01.0465042Z"
 }
