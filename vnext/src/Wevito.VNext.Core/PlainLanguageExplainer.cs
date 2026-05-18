@@ -12,6 +12,8 @@ public sealed class PlainLanguageExplainer
     public static IReadOnlyList<string> KnownPacketKinds { get; } =
     [
         "activity_summary",
+        "audit_ledger_cleanup_dry_run",
+        "audit_ledger_cleanup_rolled_back",
         "audit_ledger_cleanup_summary",
         "ai_identity_set",
         "agent_slot_assigned",
@@ -165,6 +167,8 @@ public sealed class PlainLanguageExplainer
         return packetKind switch
         {
             "activity_summary" => "Summarized Wevito's recent helper activity.",
+            "audit_ledger_cleanup_dry_run" => "Previewed audit ledger archive cleanup without moving files.",
+            "audit_ledger_cleanup_rolled_back" => "Restored audit ledger archive files from a cleanup summary.",
             "audit_ledger_cleanup_summary" => "Summary of an audit ledger archive cleanup pass.",
             "ai_identity_set" => "Updated Wevito's local AI identity name.",
             "agent_slot_assigned" => "Assigned a visible pet to an agent slot.",
