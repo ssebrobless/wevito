@@ -1,4 +1,6 @@
+using System.Reflection;
 using Wevito.VNext.Core;
+using Wevito.VNext.Core.Audit;
 
 namespace Wevito.VNext.Tests;
 
@@ -208,6 +210,32 @@ public sealed class PlainLanguageExplainerTests
         Assert.DoesNotContain("Unknown", text, StringComparison.OrdinalIgnoreCase);
     }
 
+    [Theory]
+    [MemberData(nameof(SelfImprovementPacketKindValues))]
+    public void CoversSelfImprovementPacketKinds(string packetKind)
+    {
+        var explainer = new PlainLanguageExplainer();
+
+        var text = explainer.ExplainPacketKind(packetKind);
+
+        Assert.Contains(packetKind, PlainLanguageExplainer.KnownPacketKinds);
+        Assert.False(string.IsNullOrWhiteSpace(text));
+        Assert.Contains("self-improvement", text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Unknown", text, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void PlainLanguageExplainer_ReferencesSelfImprovementKindsThroughConstants()
+    {
+        var sourcePath = Path.Combine(FindRepositoryRoot(), "vnext", "src", "Wevito.VNext.Core", "PlainLanguageExplainer.cs");
+        var source = File.ReadAllText(sourcePath);
+
+        foreach (var packetKind in SelfImprovementPacketKindValues().Select(values => (string)values[0]))
+        {
+            Assert.DoesNotContain($"\"{packetKind}\"", source, StringComparison.Ordinal);
+        }
+    }
+
     [Fact]
     public void Explain_DoesNotExposePrivateSummaryText()
     {
@@ -249,5 +277,30 @@ public sealed class PlainLanguageExplainerTests
             summary,
             status,
             "");
+    }
+
+    public static IEnumerable<object[]> SelfImprovementPacketKindValues()
+    {
+        return typeof(SelfImprovementPacketKinds)
+            .GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
+            .Where(field => field.IsLiteral && !field.IsInitOnly && field.FieldType == typeof(string))
+            .Select(field => new object[] { field.GetRawConstantValue() ?? "" });
+    }
+
+    private static string FindRepositoryRoot()
+    {
+        var directory = new DirectoryInfo(AppContext.BaseDirectory);
+        while (directory is not null)
+        {
+            var candidate = Path.Combine(directory.FullName, "vnext", "src", "Wevito.VNext.Core", "PlainLanguageExplainer.cs");
+            if (File.Exists(candidate))
+            {
+                return directory.FullName;
+            }
+
+            directory = directory.Parent;
+        }
+
+        throw new DirectoryNotFoundException("Could not locate repository root from test output directory.");
     }
 }
