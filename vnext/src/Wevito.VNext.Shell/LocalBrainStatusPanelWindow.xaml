@@ -1,0 +1,112 @@
+<Window x:Class="Wevito.VNext.Shell.LocalBrainStatusPanelWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:automation="clr-namespace:System.Windows.Automation;assembly=PresentationCore"
+        Title="Local Brain Status"
+        Width="560"
+        Height="640"
+        MinWidth="480"
+        MinHeight="520"
+        WindowStartupLocation="CenterOwner"
+        Background="#111820">
+    <Window.Resources>
+        <Style x:Key="PanelButtonStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="#FFEAF7FB" />
+            <Setter Property="Background" Value="#253847" />
+            <Setter Property="BorderBrush" Value="#7DA4B8" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="10,6" />
+            <Setter Property="Margin" Value="0,6,0,0" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Cursor" Value="Hand" />
+        </Style>
+    </Window.Resources>
+    <Border Margin="14" Padding="16" CornerRadius="14" Background="#F61B2228" BorderBrush="#72858B" BorderThickness="1">
+        <DockPanel LastChildFill="True">
+            <StackPanel DockPanel.Dock="Top" Margin="0,0,0,12">
+                <DockPanel>
+                    <TextBlock Text="LOCAL BRAIN"
+                               Foreground="#FFEAF7FB"
+                               FontSize="20"
+                               FontWeight="Bold"
+                               DockPanel.Dock="Left" />
+                    <Button x:Name="RefreshButton"
+                            Content="Refresh"
+                            Width="94"
+                            HorizontalAlignment="Right"
+                            Style="{StaticResource PanelButtonStyle}"
+                            automation:AutomationProperties.AutomationId="LocalBrainRefreshButton"
+                            Click="RefreshButton_OnClick" />
+                </DockPanel>
+                <TextBlock x:Name="StatusText"
+                           Foreground="#FF8DE2B6"
+                           FontSize="13"
+                           FontWeight="SemiBold"
+                           Text="state: starting" />
+                <TextBlock x:Name="RefreshMessageText"
+                           Foreground="#FFB6C6CE"
+                           FontSize="12"
+                           TextWrapping="Wrap"
+                           Text="Panel opened from the BRAIN badge." />
+            </StackPanel>
+
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel>
+                    <Border Padding="10" CornerRadius="10" Background="#CC111820" BorderBrush="#344754" BorderThickness="1">
+                        <StackPanel>
+                            <TextBlock Text="Observed Runtime"
+                                       Foreground="#FFEAF7FB"
+                                       FontWeight="SemiBold" />
+                            <TextBlock x:Name="SummaryText"
+                                       Margin="0,4,0,0"
+                                       Foreground="#FFB6C6CE"
+                                       TextWrapping="Wrap" />
+                            <TextBlock x:Name="ProbeText"
+                                       Margin="0,8,0,0"
+                                       Foreground="#FFB6C6CE"
+                                       TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Border>
+
+                    <Border Margin="0,12,0,0" Padding="10" CornerRadius="10" Background="#CC111820" BorderBrush="#344754" BorderThickness="1">
+                        <StackPanel>
+                            <TextBlock Text="Recommended Setup"
+                                       Foreground="#FFEAF7FB"
+                                       FontWeight="SemiBold" />
+                            <TextBlock x:Name="RecommendedText"
+                                       Margin="0,4,0,0"
+                                       Foreground="#FFB6C6CE"
+                                       TextWrapping="Wrap" />
+                            <TextBlock x:Name="KeepAliveText"
+                                       Margin="0,8,0,0"
+                                       Foreground="#FFB6C6CE"
+                                       TextWrapping="Wrap" />
+                            <TextBox x:Name="FallbackInstallerText"
+                                     Margin="0,8,0,0"
+                                     IsReadOnly="True"
+                                     BorderThickness="0"
+                                     Background="#00111820"
+                                     Foreground="#FFFFD37D"
+                                     TextWrapping="Wrap"
+                                     automation:AutomationProperties.AutomationId="LocalBrainFallbackInstallerNote" />
+                        </StackPanel>
+                    </Border>
+
+                    <Border Margin="0,12,0,0" Padding="10" CornerRadius="10" Background="#CC111820" BorderBrush="#344754" BorderThickness="1">
+                        <StackPanel>
+                            <TextBlock Text="Copy Commands"
+                                       Foreground="#FFEAF7FB"
+                                       FontWeight="SemiBold" />
+                            <TextBlock Text="These buttons only copy text to your clipboard. Wevito will not run winget, Ollama, curl, or any installer for you."
+                                       Margin="0,4,0,4"
+                                       Foreground="#FFB6C6CE"
+                                       TextWrapping="Wrap" />
+                            <ItemsControl x:Name="CommandList"
+                                          automation:AutomationProperties.AutomationId="LocalBrainSetupCommandList" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+        </DockPanel>
+    </Border>
+</Window>
