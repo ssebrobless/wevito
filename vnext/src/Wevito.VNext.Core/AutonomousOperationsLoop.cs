@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Wevito.VNext.Contracts;
+using Wevito.VNext.Core.SelfImprovement;
 
 namespace Wevito.VNext.Core;
 
@@ -27,6 +28,7 @@ public sealed class AutonomousOperationsLoop
     private readonly KillSwitchService? _killSwitchService;
     private readonly UserInteractingWithPetState? _userInteractingWithPetState;
     private readonly AutonomousScopeRegistry? _scopeRegistry;
+    private readonly SupervisedImprovementLoop? _supervisedImprovementLoop;
     private DateTimeOffset _lastIterationAtUtc;
 
     public AutonomousOperationsLoop(
@@ -34,13 +36,15 @@ public sealed class AutonomousOperationsLoop
         AuditLedgerService ledger,
         KillSwitchService? killSwitchService = null,
         UserInteractingWithPetState? userInteractingWithPetState = null,
-        AutonomousScopeRegistry? scopeRegistry = null)
+        AutonomousScopeRegistry? scopeRegistry = null,
+        SupervisedImprovementLoop? supervisedImprovementLoop = null)
     {
         _decisionService = decisionService;
         _ledger = ledger;
         _killSwitchService = killSwitchService;
         _userInteractingWithPetState = userInteractingWithPetState;
         _scopeRegistry = scopeRegistry;
+        _supervisedImprovementLoop = supervisedImprovementLoop;
     }
 
     public AutonomousOperationsResult TryRunIteration(AutonomousOperationsRequest request)
@@ -124,11 +128,29 @@ public sealed class AutonomousOperationsLoop
             request.ArtifactRoot,
             request.RequestedAtUtc,
             request.TaskCards ?? []));
+        var currentCards = scopeResult?.TaskCards ?? request.TaskCards ?? [];
+        var supervisedResult = _supervisedImprovementLoop?.TryRun(new SupervisedImprovementLoopRequest(
+            request.Settings,
+            request.RuntimeStatus,
+            request.ArtifactRoot,
+            request.RequestedAtUtc,
+            currentCards));
         TryWriteSelfImprovementReport(request);
         _lastIterationAtUtc = request.RequestedAtUtc;
-        var didMutate = scopeResult?.DidMutate == true;
-        var summary = scopeResult?.Ran == true
-            ? $"Autonomous beta iteration completed; scopes={scopeResult.Summary}"
+        var didMutate = scopeResult?.DidMutate == true || supervisedResult?.DidMutate == true;
+        var summaryParts = new List<string>();
+        if (scopeResult?.Ran == true)
+        {
+            summaryParts.Add($"scopes={scopeResult.Summary}");
+        }
+
+        if (supervisedResult?.Ran == true)
+        {
+            summaryParts.Add($"supervised={supervisedResult.Summary}");
+        }
+
+        var summary = summaryParts.Count > 0
+            ? $"Autonomous beta iteration completed; {string.Join(" | ", summaryParts)}"
             : "Autonomous beta iteration completed without mutation.";
         return new AutonomousOperationsResult(
             true,
@@ -136,7 +158,7 @@ public sealed class AutonomousOperationsLoop
             folder,
             summary,
             "",
-            scopeResult?.TaskCards ?? request.TaskCards);
+            supervisedResult?.TaskCards ?? currentCards);
     }
 
     private void TryWriteSelfImprovementReport(AutonomousOperationsRequest request)

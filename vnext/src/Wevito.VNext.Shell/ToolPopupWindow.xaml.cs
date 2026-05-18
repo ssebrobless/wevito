@@ -11,6 +11,7 @@ using Wevito.VNext.Contracts;
 using Wevito.VNext.Core;
 using Wevito.VNext.Core.Audit;
 using Wevito.VNext.Core.LocalRetrieval;
+using Wevito.VNext.Core.SelfImprovement;
 using Wevito.VNext.Core.SelfImprovement.Maturity;
 using Wevito.VNext.Core.Settings;
 using Wevito.VNext.Core.Tools;
@@ -31,6 +32,7 @@ public partial class ToolPopupWindow : Window
     private List<LocalDocumentResultRowItem> _localDocumentRows = [];
     private List<EvidenceSummaryRowItem> _evidenceSummaryRows = [];
     private bool _suppressTaskQueueSelection;
+    private IReadOnlyList<TaskCard> _lastTaskCards = [];
     private string _autonomousScopePreviewText = "No autonomous scope preview has run in this session.";
     private string _localDocsStatusText = "Local document retrieval is disabled until Settings enables it.";
 
@@ -99,6 +101,8 @@ public partial class ToolPopupWindow : Window
 
     public event Func<Guid, Task>? PetTaskExecutionRequested;
 
+    public event Func<Guid, UserApplyApproval, Task>? SupervisedApplyApprovalRequested;
+
     public long WindowHandle => new WindowInteropHelper(this).Handle.ToInt64();
 
     public void ConfigureChatServices(IModelAdapter modelAdapter, AuditLedgerService auditLedgerService, KillSwitchService killSwitchService, string repoRoot)
@@ -149,6 +153,7 @@ public partial class ToolPopupWindow : Window
         MaturityClock? maturityClock = null)
     {
         var toolId = string.IsNullOrWhiteSpace(state.ActiveTool.ToolId) ? "basket" : state.ActiveTool.ToolId;
+        _lastTaskCards = state.TaskCards ?? [];
         var showingBasket = string.Equals(toolId, "basket", StringComparison.OrdinalIgnoreCase);
         var showingSettings = string.Equals(toolId, "settings", StringComparison.OrdinalIgnoreCase);
         var showingActivity = string.Equals(toolId, "activity", StringComparison.OrdinalIgnoreCase);
@@ -268,6 +273,8 @@ public partial class ToolPopupWindow : Window
         AutonomousSpriteRepairTriageScopeCheckBox.IsChecked = SpriteRepairTriageScopeCheckBox.IsChecked;
         AutonomousSpriteRepairBatchProposalScopeCheckBox.IsChecked = SpriteRepairBatchProposalScopeCheckBox.IsChecked;
         AutonomousAuditLedgerCleanupScopeCheckBox.IsChecked = AuditLedgerCleanupScopeCheckBox.IsChecked;
+        SupervisedImprovementLoopCheckBox.IsChecked = GetSettingBool(state, SupervisedImprovementLoopSettings.EnabledSetting);
+        RenderSupervisedApprovalCard(state);
         AutonomousScopeStatusText.Text = FormatAutonomousScopeStatus(state.SettingsSnapshot);
         AutonomousScopePanelStatusText.Text = AutonomousScopeStatusText.Text;
         SpriteRepairScopeLastTickText.Text = FormatAutonomousScopeRecentLine(activityRecentLines, AutonomousScopeService.SpriteRepairTriageScopeId);
@@ -1387,6 +1394,32 @@ public partial class ToolPopupWindow : Window
             AutonomousSpriteRepairBatchProposalScopeCheckBox.IsChecked == true);
     }
 
+    private void SupervisedImprovementLoopCheckBox_OnChanged(object sender, RoutedEventArgs e)
+    {
+        PublishSetting(SupervisedImprovementLoopSettings.EnabledSetting, SupervisedImprovementLoopCheckBox.IsChecked == true);
+    }
+
+    private async void SupervisedApplyApprovalButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (SupervisedApplyApprovalRequested is null ||
+            SupervisedApplyApprovalButton.Tag is not Guid cardId)
+        {
+            return;
+        }
+
+        var selectedCard = _lastTaskCards.FirstOrDefault(card => card.Id == cardId);
+        var payload = selectedCard?.ReviewPayload ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        var scopeId = payload.TryGetValue("scope_id", out var scope) ? scope : "";
+        var typedOperationId = SupervisedApplyOperationTextBox.Text?.Trim() ?? "";
+        var approval = new UserApplyApproval(
+            UserConfirmedInThisMessage: true,
+            ConfirmationText: typedOperationId,
+            ConfirmedAtUtc: DateTimeOffset.UtcNow,
+            ApprovedScopeId: scopeId,
+            ApprovedOperationId: typedOperationId);
+        await SupervisedApplyApprovalRequested.Invoke(cardId, approval);
+    }
+
     private void AutonomousAuditLedgerCleanupScopeCheckBox_OnChanged(object sender, RoutedEventArgs e)
     {
         PublishSetting(
@@ -1694,7 +1727,31 @@ public partial class ToolPopupWindow : Window
         var spriteEnabled = AutonomousScopeService.IsEnabled(settings, AutonomousScopeService.SpriteRepairTriageScopeId);
         var proposalEnabled = AutonomousScopeService.IsEnabled(settings, AutonomousScopeService.SpriteRepairBatchProposalScopeId);
         var cleanupEnabled = AutonomousScopeService.IsEnabled(settings, AutonomousScopeService.AuditLedgerCleanupScopeId);
-        return $"Scopes: sprite-repair-triage={(spriteEnabled ? "on" : "off")}, sprite-repair-batch-proposal={(proposalEnabled ? "on" : "off")}, audit-ledger-cleanup={(cleanupEnabled ? "on" : "off")} | autonomous beta={(betaEnabled ? "on" : "off")} | review-only scopes never mutate sprite art.";
+        var supervisedEnabled = SupervisedImprovementLoopSettings.FromSettings(settings).Enabled;
+        return $"Scopes: sprite-repair-triage={(spriteEnabled ? "on" : "off")}, sprite-repair-batch-proposal={(proposalEnabled ? "on" : "off")}, audit-ledger-cleanup={(cleanupEnabled ? "on" : "off")} | supervised-pilot={(supervisedEnabled ? "on" : "off")} | autonomous beta={(betaEnabled ? "on" : "off")} | review-only scopes never mutate sprite art.";
+    }
+
+    private void RenderSupervisedApprovalCard(CompanionState state)
+    {
+        var card = (state.TaskCards ?? []).FirstOrDefault(SupervisedImprovementLoop.IsAwaitingApprovalCard);
+        if (card is null || card.ReviewPayload is null)
+        {
+            SupervisedApplyApprovalCard.Visibility = Visibility.Collapsed;
+            SupervisedApplyApprovalText.Text = "";
+            SupervisedApplyApprovalButton.Tag = null;
+            return;
+        }
+
+        var operationId = card.ReviewPayload.TryGetValue("operation_id", out var operation) ? operation : "";
+        var scopeId = card.ReviewPayload.TryGetValue("scope_id", out var scope) ? scope : "";
+        SupervisedApplyApprovalCard.Visibility = Visibility.Visible;
+        SupervisedApplyApprovalButton.Tag = card.Id;
+        SupervisedApplyApprovalText.Text = string.Join(Environment.NewLine, [
+            $"Scope: {scopeId}",
+            $"Operation id: {operationId}",
+            "Type the operation id exactly, then click Approve apply.",
+            "v0 still refuses safely after validation because the apply runner is not implemented."
+        ]);
     }
 
     private static string FormatAutonomousScopeRecentLine(IReadOnlyList<string>? recentLines, string scopeId)
