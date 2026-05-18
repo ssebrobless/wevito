@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using System.Text.Json;
+using System.Threading;
 using Wevito.VNext.Contracts;
 
 namespace Wevito.VNext.Core;
@@ -26,11 +27,45 @@ public sealed record AutonomousScopeRunResult(
     string Summary,
     string BlockReason = "");
 
+public sealed record AutonomousScopeEvidenceFlags(
+    bool DidUseNetwork,
+    bool DidUseHostedAi,
+    bool DidUseLocalModel,
+    bool DidMutate)
+{
+    public static AutonomousScopeEvidenceFlags PreviewOnly { get; } = new(false, false, false, false);
+}
+
+public sealed record AutonomousScopePreviewItem(
+    string Label,
+    string SourcePath = "",
+    string DestinationPath = "",
+    string Sha256 = "",
+    int? AgeDays = null);
+
+public sealed record AutonomousScopePreview(
+    string ScopeId,
+    string Summary,
+    int ActionCount,
+    AutonomousScopeEvidenceFlags EvidenceFlags,
+    string BlockReason = "",
+    IReadOnlyList<AutonomousScopePreviewItem>? Items = null)
+{
+    public IReadOnlyList<AutonomousScopePreviewItem> PlannedItems { get; } = Items ?? [];
+
+    public static AutonomousScopePreview Blocked(string scopeId, string reason)
+    {
+        return new AutonomousScopePreview(scopeId, "Preview blocked before any scope inspection.", 0, AutonomousScopeEvidenceFlags.PreviewOnly, reason);
+    }
+}
+
 public interface IAutonomousScope
 {
     AutonomousScopeDescriptor Descriptor { get; }
 
     AutonomousScopeRunResult TryRun(AutonomousScopeRunRequest request);
+
+    Task<AutonomousScopePreview> DescribePlannedActionsAsync(CancellationToken cancellationToken);
 }
 
 public sealed class AutonomousScopeService
@@ -39,6 +74,7 @@ public sealed class AutonomousScopeService
     public const string AuditLedgerCleanupScopeId = "audit-ledger-cleanup";
     public const string EnabledChangedPacketKind = "autonomous_scope_enabled_changed";
     public const string TickPacketKind = "autonomous_scope_tick";
+    public const string PreviewPacketKind = "autonomous_scope_preview";
 
     public static IReadOnlyList<AutonomousScopeDescriptor> KnownScopes { get; } =
     [
@@ -149,6 +185,52 @@ public sealed class AutonomousScopeService
             ArtifactPath: "",
             Summary: summary,
             Status: "Completed"));
+    }
+
+    public async Task<AutonomousScopePreview> PreviewAsync(
+        string scopeId,
+        IReadOnlyList<IAutonomousScope> scopes,
+        CancellationToken cancellationToken = default)
+    {
+        if (_killSwitchService?.IsActive() == true)
+        {
+            return AutonomousScopePreview.Blocked(scopeId, "kill_switch=true");
+        }
+
+        var scope = scopes.FirstOrDefault(candidate =>
+            candidate.Descriptor.ScopeId.Equals(scopeId, StringComparison.OrdinalIgnoreCase));
+        if (scope is null)
+        {
+            var missingPreview = AutonomousScopePreview.Blocked(scopeId, "scope_not_registered");
+            RecordPreview(missingPreview, DateTimeOffset.UtcNow, "Blocked");
+            return missingPreview;
+        }
+
+        var preview = await scope.DescribePlannedActionsAsync(cancellationToken);
+        RecordPreview(preview, DateTimeOffset.UtcNow, string.IsNullOrWhiteSpace(preview.BlockReason) ? "PreviewReady" : "Blocked");
+        return preview;
+    }
+
+    private void RecordPreview(AutonomousScopePreview preview, DateTimeOffset nowUtc, string status)
+    {
+        if (_killSwitchService?.IsActive() == true)
+        {
+            return;
+        }
+
+        _ledger.Record(new EvidencePacket(
+            Guid.NewGuid(),
+            PreviewPacketKind,
+            null,
+            nowUtc,
+            preview.EvidenceFlags.DidUseNetwork,
+            preview.EvidenceFlags.DidUseHostedAi,
+            preview.EvidenceFlags.DidUseLocalModel,
+            preview.EvidenceFlags.DidMutate,
+            ArtifactPath: "",
+            Summary: $"{preview.ScopeId}: {preview.Summary}",
+            Status: status,
+            Error: preview.BlockReason));
     }
 }
 
@@ -265,6 +347,36 @@ public sealed class SpriteRepairTriageScope : IAutonomousScope
             false,
             cards,
             $"drafted {drafted} sprite repair triage card(s).");
+    }
+
+    public Task<AutonomousScopePreview> DescribePlannedActionsAsync(CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        if (!File.Exists(_queuePath))
+        {
+            return Task.FromResult(new AutonomousScopePreview(
+                Descriptor.ScopeId,
+                $"No cards would be drafted because the queue is missing: {_queuePath}",
+                0,
+                AutonomousScopeEvidenceFlags.PreviewOnly,
+                "queue_missing"));
+        }
+
+        var rows = ReadPriorityRows(_queuePath).Take(5).ToList();
+        var items = rows
+            .Select(row => new AutonomousScopePreviewItem(
+                $"{row.Priority} {row.RowId} -> draft review-only sprite repair card",
+                SourcePath: _queuePath))
+            .ToList();
+        var summary = rows.Count == 0
+            ? "No P0/P1 sprite repair rows would draft cards."
+            : $"Would draft {rows.Count} review-only sprite repair card(s) on the next eligible tick.";
+        return Task.FromResult(new AutonomousScopePreview(
+            Descriptor.ScopeId,
+            summary,
+            rows.Count,
+            AutonomousScopeEvidenceFlags.PreviewOnly,
+            Items: items));
     }
 
     private static TaskCard BuildCard(SpriteRepairQueueRow row, DateTimeOffset nowUtc)
@@ -420,6 +532,54 @@ public sealed class AuditLedgerCleanupScope : IAutonomousScope
             Summary: summary,
             Status: "Completed"));
         return new AutonomousScopeRunResult(Descriptor.ScopeId, true, moved.Count > 0, request.ExistingTaskCards, summary);
+    }
+
+    public Task<AutonomousScopePreview> DescribePlannedActionsAsync(CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        if (!Directory.Exists(_auditRoot))
+        {
+            return Task.FromResult(new AutonomousScopePreview(
+                Descriptor.ScopeId,
+                $"No audit files would move because the audit root is missing: {_auditRoot}",
+                0,
+                AutonomousScopeEvidenceFlags.PreviewOnly,
+                "audit_root_missing"));
+        }
+
+        var archiveRoot = Path.Combine(_auditRoot, "archive");
+        var cutoff = DateTimeOffset.UtcNow.UtcDateTime.AddDays(-30);
+        var items = new List<AutonomousScopePreviewItem>();
+        foreach (var file in new DirectoryInfo(_auditRoot).EnumerateFiles("*.jsonl", SearchOption.TopDirectoryOnly))
+        {
+            if (!IsArchivedLedgerFile(file) || file.LastWriteTimeUtc > cutoff)
+            {
+                continue;
+            }
+
+            var destination = Path.Combine(archiveRoot, file.Name);
+            if (File.Exists(destination))
+            {
+                destination = Path.Combine(archiveRoot, $"{Path.GetFileNameWithoutExtension(file.Name)}-{DateTimeOffset.UtcNow:yyyyMMddHHmmss}.jsonl");
+            }
+
+            items.Add(new AutonomousScopePreviewItem(
+                $"archive old audit JSONL {file.Name}",
+                SourcePath: file.FullName,
+                DestinationPath: destination,
+                Sha256: Sha256(file.FullName),
+                AgeDays: Math.Max(0, (int)Math.Floor((DateTimeOffset.UtcNow.UtcDateTime - file.LastWriteTimeUtc).TotalDays))));
+        }
+
+        var summary = items.Count == 0
+            ? "No old archived audit JSONL files would move."
+            : $"Would move {items.Count} old archived audit JSONL file(s) into archive/.";
+        return Task.FromResult(new AutonomousScopePreview(
+            Descriptor.ScopeId,
+            summary,
+            items.Count,
+            AutonomousScopeEvidenceFlags.PreviewOnly,
+            Items: items));
     }
 
     internal static bool IsArchivedLedgerFile(FileInfo file)
