@@ -20901,7 +20901,7 @@
                      "lifeStage":  "teen",
                      "gender":  "female",
                      "priority":  "P1",
-                     "status":  "queued",
+                     "status":  "done",
                      "issueCount":  12,
                      "colorsAffected":  [
                                             "blue",
@@ -21099,7 +21099,11 @@
                                         "sourcePath":  null,
                                         "capturePath":  null
                                     }
-                                ]
+                                ],
+                     "completedAtUtc":  "2026-05-18T04:54:27.6538566Z",
+                     "completedByPhase":  "C-PHASE 130.045",
+                     "completionArtifactRoot":  "vnext/artifacts/c-phase-130-batches/045-rat-teen-female",
+                     "batchArtifactRoot":  "vnext/artifacts/c-phase-130-batches/045-rat-teen-female"
                  },
                  {
                      "rowId":  "rat_teen_male",
@@ -30031,8 +30035,8 @@
                  }
              ],
     "statusCounts":  {
-                         "done":  44,
-                         "queued":  16
+                         "done":  45,
+                         "queued":  15
                      },
-    "lastUpdatedUtc":  "2026-05-18T04:47:50.9599160Z"
+    "lastUpdatedUtc":  "2026-05-18T04:54:27.6608379Z"
 }
