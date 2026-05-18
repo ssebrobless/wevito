@@ -260,6 +260,7 @@
                     <Button x:Name="TasksTabButton" Margin="0,0,6,0" Padding="7,4" Style="{StaticResource PopupMiniButtonStyle}" Content="Tasks" Tag="helpers" Click="ToolTabButton_OnClick" automation:AutomationProperties.AutomationId="ToolTabTasksButton" />
                     <Button x:Name="ToolsTabButton" Margin="0,0,6,0" Padding="7,4" Style="{StaticResource PopupMiniButtonStyle}" Content="Tools" Tag="basket" Click="ToolTabButton_OnClick" automation:AutomationProperties.AutomationId="ToolTabToolsButton" />
                     <Button x:Name="LocalAiTabButton" Margin="0,0,6,0" Padding="7,4" Style="{StaticResource PopupMiniButtonStyle}" Content="Local AI" Tag="settings" Click="ToolTabButton_OnClick" automation:AutomationProperties.AutomationId="ToolTabLocalAiButton" />
+                    <Button x:Name="EvidenceTabButton" Margin="0,0,6,0" Padding="7,4" Style="{StaticResource PopupMiniButtonStyle}" Content="Evidence" Tag="evidence" Click="ToolTabButton_OnClick" automation:AutomationProperties.AutomationId="ToolTabEvidenceButton" />
                     <Button x:Name="AutonomyTabButton" Margin="0,0,6,0" Padding="7,4" Style="{StaticResource PopupMiniButtonStyle}" Content="Autonomy" Tag="autonomous-scopes" Click="ToolTabButton_OnClick" automation:AutomationProperties.AutomationId="ToolTabAutonomyButton" />
                     <Button x:Name="LocalDocsTabButton" Margin="0,0,6,0" Padding="7,4" Style="{StaticResource PopupMiniButtonStyle}" Content="Local Docs" Tag="local-docs" Click="ToolTabButton_OnClick" Visibility="Collapsed" automation:AutomationProperties.AutomationId="ToolTabLocalDocsButton" />
                     <CheckBox x:Name="AdvancedToolsToggle" Margin="0,0,8,0" VerticalAlignment="Center" Style="{StaticResource PopupCheckBoxStyle}" Content="Advanced" Checked="AdvancedToolsToggle_OnChanged" Unchecked="AdvancedToolsToggle_OnChanged" automation:AutomationProperties.AutomationId="ToolHubAdvancedToggle" />
@@ -1402,6 +1403,88 @@
                             <DataGridTextColumn Header="Line" Binding="{Binding Line}" Width="55" />
                             <DataGridTextColumn Header="Snippet" Binding="{Binding Snippet}" Width="3*" />
                             <DataGridTextColumn Header="bm25" Binding="{Binding Score}" Width="75" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </StackPanel>
+
+                <StackPanel x:Name="EvidencePanel"
+                            Visibility="Collapsed">
+                    <TextBlock Text="Evidence"
+                               Foreground="#FFF0F4F5"
+                               FontSize="13"
+                               FontWeight="SemiBold" />
+                    <TextBlock Text="Shows what Wevito actually did, did not do, and why using the append-only audit ledger."
+                               Margin="0,6,0,0"
+                               Foreground="#FFBFD2DC"
+                               FontSize="10"
+                               TextWrapping="Wrap" />
+                    <UniformGrid Margin="0,10,0,0"
+                                 Columns="3">
+                        <StackPanel Margin="0,0,6,0">
+                            <TextBlock Text="Date range"
+                                       Foreground="#FFD6DCDE"
+                                       FontSize="10" />
+                            <ComboBox x:Name="EvidenceDateRangeComboBox"
+                                      Style="{StaticResource PopupComboBoxStyle}"
+                                      SelectedValuePath="Tag"
+                                      SelectionChanged="EvidenceFilterComboBox_OnSelectionChanged"
+                                      automation:AutomationProperties.AutomationId="EvidenceDateRangeComboBox">
+                                <ComboBoxItem Content="Last 24h" Tag="24h" />
+                                <ComboBoxItem Content="Last 7d" Tag="7d" />
+                                <ComboBoxItem Content="Last 30d" Tag="30d" />
+                                <ComboBoxItem Content="All" Tag="all" />
+                            </ComboBox>
+                        </StackPanel>
+                        <StackPanel Margin="0,0,6,0">
+                            <TextBlock Text="Max packets"
+                                       Foreground="#FFD6DCDE"
+                                       FontSize="10" />
+                            <ComboBox x:Name="EvidenceMaxPacketsComboBox"
+                                      Style="{StaticResource PopupComboBoxStyle}"
+                                      SelectedValuePath="Tag"
+                                      SelectionChanged="EvidenceFilterComboBox_OnSelectionChanged"
+                                      automation:AutomationProperties.AutomationId="EvidenceMaxPacketsComboBox">
+                                <ComboBoxItem Content="100" Tag="100" />
+                                <ComboBoxItem Content="250" Tag="250" />
+                                <ComboBoxItem Content="500" Tag="500" />
+                                <ComboBoxItem Content="1000" Tag="1000" />
+                            </ComboBox>
+                        </StackPanel>
+                        <Button x:Name="EvidenceExportButton"
+                                Margin="0,14,0,0"
+                                Style="{StaticResource PopupButtonStyle}"
+                                Content="EXPORT JSON"
+                                Click="EvidenceExportButton_OnClick"
+                                automation:AutomationProperties.AutomationId="EvidenceExportButton" />
+                    </UniformGrid>
+                    <TextBlock x:Name="EvidenceStatusText"
+                               Margin="0,8,0,0"
+                               Foreground="#FFDCE9EF"
+                               FontSize="10"
+                               TextWrapping="Wrap"
+                               automation:AutomationProperties.AutomationId="EvidenceStatusText" />
+                    <DataGrid x:Name="EvidenceSummaryGrid"
+                              Margin="0,10,0,0"
+                              MaxHeight="300"
+                              AutoGenerateColumns="False"
+                              HeadersVisibility="Column"
+                              CanUserAddRows="False"
+                              CanUserDeleteRows="False"
+                              IsReadOnly="True"
+                              Background="#0D151D"
+                              Foreground="#FFEAF6F7"
+                              BorderBrush="#425D78"
+                              GridLinesVisibility="None"
+                              automation:AutomationProperties.AutomationId="EvidenceSummaryGrid">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Kind" Binding="{Binding PacketKind}" Width="2*" />
+                            <DataGridTextColumn Header="Count" Binding="{Binding Count}" Width="60" />
+                            <DataGridTextColumn Header="Last seen" Binding="{Binding LastSeen}" Width="120" />
+                            <DataGridTextColumn Header="Mut" Binding="{Binding MutationYesCount}" Width="50" />
+                            <DataGridTextColumn Header="Net" Binding="{Binding NetworkYesCount}" Width="50" />
+                            <DataGridTextColumn Header="Hosted" Binding="{Binding HostedAiYesCount}" Width="60" />
+                            <DataGridTextColumn Header="Local" Binding="{Binding LocalModelYesCount}" Width="55" />
+                            <DataGridTextColumn Header="Refused" Binding="{Binding RefusalCount}" Width="65" />
                         </DataGrid.Columns>
                     </DataGrid>
                 </StackPanel>

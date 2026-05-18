@@ -14,6 +14,7 @@ public static class ToolCatalog
         new("tasks", "Tasks", "helpers", "ToolTabTasksButton", false, "Ask Wevito helpers for report-only task cards."),
         new("tools", "Tools", "basket", "ToolTabToolsButton", false, "Manage saved links and local tool shortcuts."),
         new("local-ai", "Local AI", "settings", "ToolTabLocalAiButton", false, "Review local brain status, settings, and safety gates."),
+        new("evidence", "Evidence", "evidence", "ToolTabEvidenceButton", false, "Summarize what Wevito did, did not do, and why."),
         new("autonomy", "Autonomy", "autonomous-scopes", "ToolTabAutonomyButton", false, "Preview and control approved autonomous scopes."),
         new("local-docs", "Local Docs", "local-docs", "ToolTabLocalDocsButton", false, "Search approved local documents when retrieval is enabled."),
         new("activity", "Activity", "activity", "ToolTabActivityButton", true, "Inspect recent audit-ledger activity and helper evidence."),

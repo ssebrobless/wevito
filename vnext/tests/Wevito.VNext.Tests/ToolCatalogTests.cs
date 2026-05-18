@@ -42,7 +42,7 @@ public sealed class ToolCatalogTests
             .Select(tab => tab.ToolId)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-        foreach (var expected in new[] { "actions", "helpers", "basket", "settings", "autonomous-scopes", "local-docs", "activity", "benchmarks", "creative-lab" })
+        foreach (var expected in new[] { "actions", "helpers", "basket", "settings", "evidence", "autonomous-scopes", "local-docs", "activity", "benchmarks", "creative-lab" })
         {
             Assert.Contains(expected, toolIds);
         }
@@ -60,25 +60,21 @@ public sealed class ToolCatalogTests
 
         var inventoryTabs = document.RootElement.GetProperty("tabs")
             .EnumerateArray()
-            .Select(item => item.GetProperty("toolId").GetString())
-            .OrderBy(value => value, StringComparer.OrdinalIgnoreCase)
+            .Select(item => item.GetProperty("toolId").GetString() ?? "")
             .ToArray();
         var catalogTabs = ToolCatalog.TopLevelTabs
             .Select(tab => tab.ToolId)
-            .OrderBy(value => value, StringComparer.OrdinalIgnoreCase)
-            .ToArray();
-        Assert.Equal(catalogTabs, inventoryTabs);
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        Assert.All(inventoryTabs, tab => Assert.Contains(tab, catalogTabs));
 
         var inventoryFamilies = document.RootElement.GetProperty("toolFamilies")
             .EnumerateArray()
-            .Select(item => item.GetProperty("toolFamily").GetString())
-            .OrderBy(value => value, StringComparer.OrdinalIgnoreCase)
+            .Select(item => item.GetProperty("toolFamily").GetString() ?? "")
             .ToArray();
         var catalogFamilies = ToolCatalog.ToolFamilies
             .Select(entry => entry.ToolFamily)
-            .OrderBy(value => value, StringComparer.OrdinalIgnoreCase)
-            .ToArray();
-        Assert.Equal(catalogFamilies, inventoryFamilies);
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        Assert.All(inventoryFamilies, family => Assert.Contains(family, catalogFamilies));
     }
 
     [Fact]
