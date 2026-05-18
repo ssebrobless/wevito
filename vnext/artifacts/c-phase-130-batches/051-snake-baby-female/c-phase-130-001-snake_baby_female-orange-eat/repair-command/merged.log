@@ -1,0 +1,17 @@
+commandId: sprite-repair-batch
+command: python C:\Users\fishe\Documents\projects\wevito\tools\repair_runtime_sprite_canvas_padding.py --repo-root C:\Users\fishe\Documents\projects\wevito --row-id snake_baby_female --species snake --age baby --gender female --color orange --animation eat --out-dir C:\Users\fishe\Documents\projects\wevito\sprites_authored\.candidates\c-phase-130-001-snake_baby_female-orange-eat --source-path C:\Users\fishe\Documents\projects\wevito\sprites_runtime\snake\baby\female\orange\eat_00.png
+status: MutationDetected
+exitCode: 0
+mutationDetected: True
+
+mutatedProtectedPaths:
+- sprites_authored/.candidates/c-phase-130-001-snake_baby_female-orange-eat/candidate-summary.json
+- sprites_authored/.candidates/c-phase-130-001-snake_baby_female-orange-eat/eat_00.png
+- sprites_authored/.candidates/c-phase-130-001-snake_baby_female-orange-eat/eat_01.png
+- sprites_authored/.candidates/c-phase-130-001-snake_baby_female-orange-eat/eat_02.png
+- sprites_authored/.candidates/c-phase-130-001-snake_baby_female-orange-eat/eat_03.png
+
+## stdout
+exported 4 padded candidate frame(s) to C:\Users\fishe\Documents\projects\wevito\sprites_authored\.candidates\c-phase-130-001-snake_baby_female-orange-eat
+
+## stderr
