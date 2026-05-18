@@ -11,6 +11,7 @@ using Wevito.VNext.Contracts;
 using Wevito.VNext.Core;
 using Wevito.VNext.Core.LocalRetrieval;
 using Wevito.VNext.Core.Settings;
+using Wevito.VNext.Core.Tools;
 
 namespace Wevito.VNext.Shell;
 
@@ -149,6 +150,7 @@ public partial class ToolPopupWindow : Window
         var showingBenchmarks = string.Equals(toolId, "benchmarks", StringComparison.OrdinalIgnoreCase);
         var showingAutonomousScopes = string.Equals(toolId, "autonomous-scopes", StringComparison.OrdinalIgnoreCase);
         var localDocsEnabled = GetSettingBool(state, SettingKeys.LocalDocumentRetrievalEnabled);
+        var advancedToolsVisible = GetSettingBool(state, ToolCatalog.AdvancedToolsVisibleSetting);
         var showingLocalDocs = localDocsEnabled && string.Equals(toolId, "local-docs", StringComparison.OrdinalIgnoreCase);
         var showingActionMenu = string.Equals(toolId, "actions", StringComparison.OrdinalIgnoreCase);
         var showingAction = toolId.StartsWith("action:", StringComparison.OrdinalIgnoreCase);
@@ -165,7 +167,11 @@ public partial class ToolPopupWindow : Window
         ActionPanel.Visibility = showingAction ? Visibility.Visible : Visibility.Collapsed;
         SettingsPanel.Visibility = showingSettings || showingActivity ? Visibility.Visible : Visibility.Collapsed;
         AutonomousScopesPanel.Visibility = showingAutonomousScopes ? Visibility.Visible : Visibility.Collapsed;
+        ApplyToolCatalogTabMetadata(localDocsEnabled, advancedToolsVisible);
         LocalDocsTabButton.Visibility = localDocsEnabled ? Visibility.Visible : Visibility.Collapsed;
+        ActivityTabButton.Visibility = advancedToolsVisible ? Visibility.Visible : Visibility.Collapsed;
+        BenchmarksTabButton.Visibility = advancedToolsVisible ? Visibility.Visible : Visibility.Collapsed;
+        CreativeLabTabButton.Visibility = advancedToolsVisible ? Visibility.Visible : Visibility.Collapsed;
         LocalDocsPanel.Visibility = showingLocalDocs ? Visibility.Visible : Visibility.Collapsed;
         PetCommandPanel.Visibility = showingPetCommand ? Visibility.Visible : Visibility.Collapsed;
         BenchmarksPanel.Visibility = showingBenchmarks ? Visibility.Visible : Visibility.Collapsed;
@@ -226,6 +232,7 @@ public partial class ToolPopupWindow : Window
         }
 
         _suppressSettingEvents = true;
+        AdvancedToolsToggle.IsChecked = advancedToolsVisible;
         CompactHudCheckBox.IsChecked = GetSettingBool(state, "compact_hud");
         ShowPetNamesCheckBox.IsChecked = GetSettingBool(state, "show_pet_names");
         ShowStatusSummaryCheckBox.IsChecked = GetSettingBool(state, "show_status_summary", true);
@@ -928,6 +935,11 @@ public partial class ToolPopupWindow : Window
         {
             await ToolTabRequested.Invoke(toolId);
         }
+    }
+
+    private void AdvancedToolsToggle_OnChanged(object sender, RoutedEventArgs e)
+    {
+        PublishSetting(ToolCatalog.AdvancedToolsVisibleSetting, (AdvancedToolsToggle.IsChecked == true).ToString());
     }
 
     private async void LocalDocsBuildButton_OnClick(object sender, RoutedEventArgs e)
@@ -1697,6 +1709,7 @@ public partial class ToolPopupWindow : Window
         ToolRegistryListPanel.Children.Clear();
         foreach (var tool in registry.Descriptors)
         {
+            var catalogEntry = ToolCatalog.FindFamily(tool.ToolFamily);
             var checkBox = new CheckBox
             {
                 Margin = new Thickness(0, 4, 0, 0),
@@ -1704,7 +1717,7 @@ public partial class ToolPopupWindow : Window
                 Foreground = Brushes.WhiteSmoke,
                 IsChecked = !registry.IsDisabled(tool.ToolFamily),
                 Tag = tool.ToolFamily,
-                Content = $"{tool.ToolFamily} - {tool.RiskLevel} - {(tool.RequiresApproval ? "approval required" : "no approval")}"
+                Content = $"{tool.ToolFamily} - {tool.RiskLevel} - {(tool.RequiresApproval ? "approval required" : "no approval")} - {catalogEntry?.Description ?? tool.Description}"
             };
             checkBox.Checked += ToolRegistryCheckBox_OnChanged;
             checkBox.Unchecked += ToolRegistryCheckBox_OnChanged;
@@ -1719,6 +1732,41 @@ public partial class ToolPopupWindow : Window
                 FontSize = 10,
                 Text = "No AI-callable tools are registered."
             });
+        }
+    }
+
+    private void ApplyToolCatalogTabMetadata(bool localDocsEnabled, bool advancedToolsVisible)
+    {
+        ApplyTab(PetsTabButton);
+        ApplyTab(TasksTabButton);
+        ApplyTab(ToolsTabButton);
+        ApplyTab(LocalAiTabButton);
+        ApplyTab(AutonomyTabButton);
+        ApplyTab(LocalDocsTabButton);
+        ApplyTab(ActivityTabButton);
+        ApplyTab(BenchmarksTabButton);
+        ApplyTab(CreativeLabTabButton);
+
+        AdvancedToolsToggle.ToolTip = advancedToolsVisible
+            ? "Hide advanced Tool Hub tabs."
+            : "Show advanced Tool Hub tabs.";
+        LocalDocsTabButton.Visibility = localDocsEnabled ? Visibility.Visible : Visibility.Collapsed;
+
+        void ApplyTab(Button button)
+        {
+            if (button.Tag is not string toolId)
+            {
+                return;
+            }
+
+            var tab = ToolCatalog.FindTabByToolId(toolId);
+            if (tab is null)
+            {
+                return;
+            }
+
+            button.Content = tab.DisplayName;
+            button.ToolTip = tab.Description;
         }
     }
 

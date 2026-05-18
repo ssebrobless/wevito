@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Wevito.VNext.Contracts;
+using Wevito.VNext.Core.Tools;
 
 namespace Wevito.VNext.Core;
 
@@ -116,24 +117,11 @@ public sealed class ToolRegistry
 
     public static IReadOnlyList<ToolDescriptor> BuildDefaultDescriptors(AgentToolDispatcher dispatcher)
     {
-        return
-        [
-            Preview("localDocs", "summarize_local_docs", "Summarize approved local Wevito documents.", ToolRiskLevel.Low, false, dispatcher),
-            Preview("localResearch", "local_research_packet", "Prepare an offline/local research evidence packet.", ToolRiskLevel.Low, false, dispatcher),
-            Preview("spriteAudit", "sprite_audit_report", "Audit sprite/runtime assets and write a report-only packet.", ToolRiskLevel.Low, false, dispatcher),
-            Preview("petState", "get_pet_state", "Read current pet state without changing pets.", ToolRiskLevel.Low, false, dispatcher),
-            Preview("assetInventory", "asset_inventory_report", "Inventory local Wevito assets.", ToolRiskLevel.Low, false, dispatcher),
-            Preview("codeReview", "code_review_report", "Review local code and prepare a report.", ToolRiskLevel.Low, false, dispatcher),
-            Preview("codePatchPlan", "code_patch_plan", "Plan a code change without editing files.", ToolRiskLevel.Low, false, dispatcher),
-            Preview("buildProof", "build_proof_plan", "Prepare build proof commands; execution remains approval-gated.", ToolRiskLevel.Medium, true, dispatcher),
-            Preview("translateText", "translate_text", "Translate user-provided text locally or through approved deterministic paths.", ToolRiskLevel.Low, false, dispatcher),
-            Preview("audioAssist", "audio_assist_report", "Prepare audio/volume guidance without changing system audio.", ToolRiskLevel.Low, false, dispatcher),
-            Preview("screenCapture", "screen_capture_preview", "Prepare a screen-capture preview; capture execution remains approval-gated.", ToolRiskLevel.Medium, true, dispatcher),
-            Preview("petMemory", "retrieve_pet_memory", "Retrieve reviewed local pet memory rows.", ToolRiskLevel.Low, false, dispatcher),
-            BuiltIn("retrieve_from_memory", "retrieve_from_memory", "Retrieve matching local memory rows for explicit chat-context deep dives."),
-            BuiltIn("bookmark_for_benchmark", "bookmark_for_benchmark", "Bookmark a chat message for a later benchmark review."),
-            BuiltIn("pin_message", "pin_message", "Pin a chat message into the local context budget.")
-        ];
+        return ToolCatalog.ToolFamilies
+            .Select(entry => entry.IsBuiltIn
+                ? BuiltIn(entry.ToolFamily, entry.Name, entry.Description)
+                : Preview(entry.ToolFamily, entry.Name, entry.Description, entry.RiskLevel, entry.RequiresApproval, dispatcher))
+            .ToList();
     }
 
     private static ToolDescriptor Preview(

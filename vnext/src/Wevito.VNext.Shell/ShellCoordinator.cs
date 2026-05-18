@@ -9,6 +9,7 @@ using Wevito.VNext.Contracts;
 using Wevito.VNext.Core;
 using Wevito.VNext.Core.LocalRetrieval;
 using Wevito.VNext.Core.Settings;
+using Wevito.VNext.Core.Tools;
 
 namespace Wevito.VNext.Shell;
 
@@ -277,6 +278,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _state = await _repository.LoadAsync() ?? defaultStateFactory.Create(_content);
         _state = HydrateLoadedState(_state, _content);
         _state = ApplyAuditScenarioOverride(_state, _content);
+        _state = RecordToolHubLayoutChangedOnce(_state);
         _processPriorityManagerService.ApplyBelowNormalToCurrentProcess(_state.SettingsSnapshot);
         _coexistenceTriggerService.EnsureDefaultAppListFile();
         _doNotDisturbScheduleService.EnsureDefaultScheduleFile();
@@ -3179,7 +3181,35 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         hydrated.TryAdd(SettingKeys.LocalDocumentRetrievalEnabled, bool.FalseString);
         hydrated.TryAdd(SettingKeys.LocalDocumentRetrievalRoot, SettingKeys.DefaultLocalDocumentRetrievalRoot());
         hydrated.TryAdd(SettingKeys.LocalDocumentRetrievalMaxFileBytes, SettingKeys.LocalDocumentRetrievalDefaultMaxFileBytes);
+        hydrated.TryAdd(ToolCatalog.AdvancedToolsVisibleSetting, bool.FalseString);
         return hydrated;
+    }
+
+    private CompanionState RecordToolHubLayoutChangedOnce(CompanionState state)
+    {
+        if (GetSettingBool(state.SettingsSnapshot, ToolCatalog.LayoutAnnouncementSetting) ||
+            KillSwitchService.IsActive(state.SettingsSnapshot))
+        {
+            return state;
+        }
+
+        _auditLedgerService.Record(new EvidencePacket(
+            Guid.NewGuid(),
+            ToolCatalog.LayoutChangedPacketKind,
+            TaskCardId: null,
+            DateTimeOffset.UtcNow,
+            DidUseNetwork: false,
+            DidUseHostedAi: false,
+            DidUseLocalModel: false,
+            DidMutate: false,
+            ArtifactPath: "",
+            Summary: "Tool Hub layout v1 loaded: primary tabs stay visible, advanced tabs are hidden behind the Advanced toggle.",
+            Status: "Completed"));
+
+        return state with
+        {
+            SettingsSnapshot = WithSetting(state.SettingsSnapshot, ToolCatalog.LayoutAnnouncementSetting, bool.TrueString)
+        };
     }
 
     private static string ResolveDataRoot()
