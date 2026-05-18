@@ -1,0 +1,67 @@
+{
+  "generated_at_utc": "2026-05-17T22:13:44.307780+00:00",
+  "runtime_root": "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites_runtime",
+  "species_count": 10,
+  "sheets": [
+    {
+      "species": "crow",
+      "path": "vnext/artifacts/c-phase-130-batches/027-goose-teen-female/contact-sheets/crow.png",
+      "rows": 360,
+      "frames": 1368
+    },
+    {
+      "species": "deer",
+      "path": "vnext/artifacts/c-phase-130-batches/027-goose-teen-female/contact-sheets/deer.png",
+      "rows": 366,
+      "frames": 1392
+    },
+    {
+      "species": "fox",
+      "path": "vnext/artifacts/c-phase-130-batches/027-goose-teen-female/contact-sheets/fox.png",
+      "rows": 360,
+      "frames": 1368
+    },
+    {
+      "species": "frog",
+      "path": "vnext/artifacts/c-phase-130-batches/027-goose-teen-female/contact-sheets/frog.png",
+      "rows": 396,
+      "frames": 1512
+    },
+    {
+      "species": "goose",
+      "path": "vnext/artifacts/c-phase-130-batches/027-goose-teen-female/contact-sheets/goose.png",
+      "rows": 346,
+      "frames": 1314
+    },
+    {
+      "species": "pigeon",
+      "path": "vnext/artifacts/c-phase-130-batches/027-goose-teen-female/contact-sheets/pigeon.png",
+      "rows": 288,
+      "frames": 1080
+    },
+    {
+      "species": "raccoon",
+      "path": "vnext/artifacts/c-phase-130-batches/027-goose-teen-female/contact-sheets/raccoon.png",
+      "rows": 288,
+      "frames": 1080
+    },
+    {
+      "species": "rat",
+      "path": "vnext/artifacts/c-phase-130-batches/027-goose-teen-female/contact-sheets/rat.png",
+      "rows": 288,
+      "frames": 1080
+    },
+    {
+      "species": "snake",
+      "path": "vnext/artifacts/c-phase-130-batches/027-goose-teen-female/contact-sheets/snake.png",
+      "rows": 288,
+      "frames": 1080
+    },
+    {
+      "species": "squirrel",
+      "path": "vnext/artifacts/c-phase-130-batches/027-goose-teen-female/contact-sheets/squirrel.png",
+      "rows": 288,
+      "frames": 1080
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+commandId: sprite-repair-batch
+command: python C:\Users\fishe\Documents\projects\wevito\tools\repair_runtime_sprite_canvas_padding.py --repo-root C:\Users\fishe\Documents\projects\wevito --row-id goose_teen_female --species goose --age teen --gender female --color yellow --animation sad --out-dir C:\Users\fishe\Documents\projects\wevito\sprites_authored\.candidates\c-phase-130-001-goose_teen_female-yellow-sad --source-path C:\Users\fishe\Documents\projects\wevito\sprites_runtime\goose\teen\female\yellow\sad_00.png
+status: MutationDetected
+exitCode: 0
+mutationDetected: True
+
+mutatedProtectedPaths:
+- sprites_authored/.candidates/c-phase-130-001-goose_teen_female-yellow-sad/candidate-summary.json
+- sprites_authored/.candidates/c-phase-130-001-goose_teen_female-yellow-sad/sad_00.png
+- sprites_authored/.candidates/c-phase-130-001-goose_teen_female-yellow-sad/sad_01.png
+
+## stdout
+exported 2 padded candidate frame(s) to C:\Users\fishe\Documents\projects\wevito\sprites_authored\.candidates\c-phase-130-001-goose_teen_female-yellow-sad
+
+## stderr
