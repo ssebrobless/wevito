@@ -29469,7 +29469,7 @@
                      "lifeStage":  "teen",
                      "gender":  "male",
                      "priority":  "P1",
-                     "status":  "queued",
+                     "status":  "done",
                      "issueCount":  12,
                      "colorsAffected":  [
                                             "blue",
@@ -29667,7 +29667,11 @@
                                         "sourcePath":  null,
                                         "capturePath":  null
                                     }
-                                ]
+                                ],
+                     "completedAtUtc":  "2026-05-18T07:35:46.6051704Z",
+                     "completedByPhase":  "C-PHASE 130.058",
+                     "completionArtifactRoot":  "vnext/artifacts/c-phase-130-batches/058-squirrel-teen-male",
+                     "batchArtifactRoot":  "vnext/artifacts/c-phase-130-batches/058-squirrel-teen-male"
                  },
                  {
                      "rowId":  "squirrel_adult_female",
@@ -30083,8 +30087,8 @@
                  }
              ],
     "statusCounts":  {
-                         "done":  57,
-                         "queued":  3
+                         "done":  58,
+                         "queued":  2
                      },
-    "lastUpdatedUtc":  "2026-05-18T07:23:29.7435255Z"
+    "lastUpdatedUtc":  "2026-05-18T07:35:46.6161401Z"
 }
