@@ -16588,7 +16588,7 @@
                      "lifeStage":  "baby",
                      "gender":  "female",
                      "priority":  "P1",
-                     "status":  "queued",
+                     "status":  "done",
                      "issueCount":  24,
                      "colorsAffected":  [
                                             "blue",
@@ -16969,7 +16969,11 @@
                                         "sourcePath":  "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites_runtime\\pigeon\\baby\\female\\yellow\\idle_00.png",
                                         "capturePath":  "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\c-phase-127-matrix-sweep\\cells\\pigeon_baby_female_yellow_idle.png"
                                     }
-                                ]
+                                ],
+                     "completedAtUtc":  "2026-05-18T01:15:49.7227890Z",
+                     "completedByPhase":  "C-PHASE 130.031",
+                     "completionArtifactRoot":  "vnext/artifacts/c-phase-130-batches/031-pigeon-baby-female",
+                     "batchArtifactRoot":  "vnext/artifacts/c-phase-130-batches/031-pigeon-baby-female"
                  },
                  {
                      "rowId":  "pigeon_baby_male",
@@ -29975,10 +29979,8 @@
                  }
              ],
     "statusCounts":  {
-                         "done":  30,
-                         "queued":  30,
-                         "awaiting_review":  0,
-                         "paused":  0
+                         "done":  31,
+                         "queued":  29
                      },
-    "lastUpdatedUtc":  "2026-05-18T01:03:02.8101400Z"
+    "lastUpdatedUtc":  "2026-05-18T01:15:49.7227890Z"
 }
