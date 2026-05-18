@@ -21111,7 +21111,7 @@
                      "lifeStage":  "teen",
                      "gender":  "male",
                      "priority":  "P1",
-                     "status":  "queued",
+                     "status":  "done",
                      "issueCount":  12,
                      "colorsAffected":  [
                                             "blue",
@@ -21309,7 +21309,11 @@
                                         "sourcePath":  null,
                                         "capturePath":  null
                                     }
-                                ]
+                                ],
+                     "completedAtUtc":  "2026-05-18T05:01:27.0810439Z",
+                     "completedByPhase":  "C-PHASE 130.046",
+                     "completionArtifactRoot":  "vnext/artifacts/c-phase-130-batches/046-rat-teen-male",
+                     "batchArtifactRoot":  "vnext/artifacts/c-phase-130-batches/046-rat-teen-male"
                  },
                  {
                      "rowId":  "rat_adult_female",
@@ -30035,8 +30039,8 @@
                  }
              ],
     "statusCounts":  {
-                         "done":  45,
-                         "queued":  15
+                         "done":  46,
+                         "queued":  14
                      },
-    "lastUpdatedUtc":  "2026-05-18T04:54:27.6608379Z"
+    "lastUpdatedUtc":  "2026-05-18T05:01:27.0880257Z"
 }
