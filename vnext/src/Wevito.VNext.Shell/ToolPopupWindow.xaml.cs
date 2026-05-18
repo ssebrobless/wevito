@@ -261,12 +261,15 @@ public partial class ToolPopupWindow : Window
         AutonomousBetaTryButton.IsEnabled = PromotionCriteriaSnapshot.CanEnableAutonomousBetaEntry(promotionDecision, state.SettingsSnapshot);
         AutonomousBetaTryHelpText.Text = FormatAutonomousBetaTryHelp(promotionDecision, state.SettingsSnapshot);
         SpriteRepairTriageScopeCheckBox.IsChecked = GetSettingBool(state, AutonomousScopeService.BuildEnabledSettingKey(AutonomousScopeService.SpriteRepairTriageScopeId));
+        SpriteRepairBatchProposalScopeCheckBox.IsChecked = GetSettingBool(state, AutonomousScopeService.BuildEnabledSettingKey(AutonomousScopeService.SpriteRepairBatchProposalScopeId));
         AuditLedgerCleanupScopeCheckBox.IsChecked = GetSettingBool(state, AutonomousScopeService.BuildEnabledSettingKey(AutonomousScopeService.AuditLedgerCleanupScopeId));
         AutonomousSpriteRepairTriageScopeCheckBox.IsChecked = SpriteRepairTriageScopeCheckBox.IsChecked;
+        AutonomousSpriteRepairBatchProposalScopeCheckBox.IsChecked = SpriteRepairBatchProposalScopeCheckBox.IsChecked;
         AutonomousAuditLedgerCleanupScopeCheckBox.IsChecked = AuditLedgerCleanupScopeCheckBox.IsChecked;
         AutonomousScopeStatusText.Text = FormatAutonomousScopeStatus(state.SettingsSnapshot);
         AutonomousScopePanelStatusText.Text = AutonomousScopeStatusText.Text;
         SpriteRepairScopeLastTickText.Text = FormatAutonomousScopeRecentLine(activityRecentLines, AutonomousScopeService.SpriteRepairTriageScopeId);
+        SpriteRepairBatchProposalScopeLastTickText.Text = FormatAutonomousScopeRecentLine(activityRecentLines, AutonomousScopeService.SpriteRepairBatchProposalScopeId);
         AuditCleanupScopeLastTickText.Text = FormatAutonomousScopeRecentLine(activityRecentLines, AutonomousScopeService.AuditLedgerCleanupScopeId);
         AutonomousScopePreviewText.Text = _autonomousScopePreviewText;
         RuntimeNoFocusStealCheckBox.IsChecked = GetSettingBool(state, RuntimeSupervisorService.NoFocusStealSetting, true);
@@ -419,6 +422,7 @@ public partial class ToolPopupWindow : Window
             if (TryToggleCheckBox(SchedulerEnabledCheckBox, localPoint)) { return true; }
             if (await TryInvokeButtonAsync(AutonomousBetaTryButton, localPoint, RequestAutonomousBetaConsentAsync)) { return true; }
             if (TryToggleCheckBox(SpriteRepairTriageScopeCheckBox, localPoint)) { return true; }
+            if (TryToggleCheckBox(SpriteRepairBatchProposalScopeCheckBox, localPoint)) { return true; }
             if (TryToggleCheckBox(AuditLedgerCleanupScopeCheckBox, localPoint)) { return true; }
             if (TryToggleCheckBox(RuntimeNoFocusStealCheckBox, localPoint)) { return true; }
             if (TryToggleCheckBox(RuntimeAutoQuietFullscreenCheckBox, localPoint)) { return true; }
@@ -1353,6 +1357,13 @@ public partial class ToolPopupWindow : Window
             SpriteRepairTriageScopeCheckBox.IsChecked == true);
     }
 
+    private void SpriteRepairBatchProposalScopeCheckBox_OnChanged(object sender, RoutedEventArgs e)
+    {
+        PublishSetting(
+            AutonomousScopeService.BuildEnabledSettingKey(AutonomousScopeService.SpriteRepairBatchProposalScopeId),
+            SpriteRepairBatchProposalScopeCheckBox.IsChecked == true);
+    }
+
     private void AuditLedgerCleanupScopeCheckBox_OnChanged(object sender, RoutedEventArgs e)
     {
         PublishSetting(
@@ -1365,6 +1376,13 @@ public partial class ToolPopupWindow : Window
         PublishSetting(
             AutonomousScopeService.BuildEnabledSettingKey(AutonomousScopeService.SpriteRepairTriageScopeId),
             AutonomousSpriteRepairTriageScopeCheckBox.IsChecked == true);
+    }
+
+    private void AutonomousSpriteRepairBatchProposalScopeCheckBox_OnChanged(object sender, RoutedEventArgs e)
+    {
+        PublishSetting(
+            AutonomousScopeService.BuildEnabledSettingKey(AutonomousScopeService.SpriteRepairBatchProposalScopeId),
+            AutonomousSpriteRepairBatchProposalScopeCheckBox.IsChecked == true);
     }
 
     private void AutonomousAuditLedgerCleanupScopeCheckBox_OnChanged(object sender, RoutedEventArgs e)
@@ -1672,8 +1690,9 @@ public partial class ToolPopupWindow : Window
     {
         var betaEnabled = GetSettingsBool(settings, AutonomousOperationsConfig.EnabledSetting);
         var spriteEnabled = AutonomousScopeService.IsEnabled(settings, AutonomousScopeService.SpriteRepairTriageScopeId);
+        var proposalEnabled = AutonomousScopeService.IsEnabled(settings, AutonomousScopeService.SpriteRepairBatchProposalScopeId);
         var cleanupEnabled = AutonomousScopeService.IsEnabled(settings, AutonomousScopeService.AuditLedgerCleanupScopeId);
-        return $"Scopes: sprite-repair-triage={(spriteEnabled ? "on" : "off")}, audit-ledger-cleanup={(cleanupEnabled ? "on" : "off")} | autonomous beta={(betaEnabled ? "on" : "off")} | cards draft only; sprite art never mutates here.";
+        return $"Scopes: sprite-repair-triage={(spriteEnabled ? "on" : "off")}, sprite-repair-batch-proposal={(proposalEnabled ? "on" : "off")}, audit-ledger-cleanup={(cleanupEnabled ? "on" : "off")} | autonomous beta={(betaEnabled ? "on" : "off")} | review-only scopes never mutate sprite art.";
     }
 
     private static string FormatAutonomousScopeRecentLine(IReadOnlyList<string>? recentLines, string scopeId)

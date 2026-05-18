@@ -740,6 +740,14 @@
                                       Foreground="#FFF0F4F5"
                                       Checked="SpriteRepairTriageScopeCheckBox_OnChanged"
                                       Unchecked="SpriteRepairTriageScopeCheckBox_OnChanged" />
+                            <CheckBox x:Name="SpriteRepairBatchProposalScopeCheckBox"
+                                      Margin="0,6,0,0"
+                                      Style="{StaticResource PopupCheckBoxStyle}"
+                                      automation:AutomationProperties.AutomationId="SpriteRepairBatchProposalScopeCheckBox"
+                                      Content="Sprite-repair batch proposal - Review only. No sprite mutation. No apply."
+                                      Foreground="#FFF0F4F5"
+                                      Checked="SpriteRepairBatchProposalScopeCheckBox_OnChanged"
+                                      Unchecked="SpriteRepairBatchProposalScopeCheckBox_OnChanged" />
                             <CheckBox x:Name="AuditLedgerCleanupScopeCheckBox"
                                       Margin="0,6,0,0"
                                       Style="{StaticResource PopupCheckBoxStyle}"
@@ -1219,6 +1227,46 @@
                                     automation:AutomationProperties.AutomationId="AutonomousSpriteRepairPreviewButton"
                                     Content="Run Once Now (Preview)"
                                     Tag="sprite-repair-triage"
+                                    Click="AutonomousScopePreviewButton_OnClick" />
+                        </Grid>
+                    </Border>
+
+                    <Border Margin="0,10,0,0"
+                            Padding="10"
+                            CornerRadius="10"
+                            BorderBrush="#3355A6E6"
+                            BorderThickness="1"
+                            Background="#102B2F">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <CheckBox x:Name="AutonomousSpriteRepairBatchProposalScopeCheckBox"
+                                          Style="{StaticResource PopupCheckBoxStyle}"
+                                          automation:AutomationProperties.AutomationId="AutonomousSpriteRepairBatchProposalScopeCheckBox"
+                                          Content="sprite-repair-batch-proposal enabled"
+                                          Foreground="#FFF0F4F5"
+                                          Checked="AutonomousSpriteRepairBatchProposalScopeCheckBox_OnChanged"
+                                          Unchecked="AutonomousSpriteRepairBatchProposalScopeCheckBox_OnChanged" />
+                                <TextBlock Text="Review only. No sprite mutation. No apply. Drafts self-improvement proposal, dry-run, and eval evidence packets."
+                                           Margin="0,4,0,0"
+                                           Foreground="#FF9FB7C4"
+                                           FontSize="10"
+                                           TextWrapping="Wrap" />
+                                <TextBlock x:Name="SpriteRepairBatchProposalScopeLastTickText"
+                                           Margin="0,4,0,0"
+                                           Foreground="#FFBED6E3"
+                                           FontSize="10"
+                                           TextWrapping="Wrap" />
+                            </StackPanel>
+                            <Button Grid.Column="1"
+                                    Margin="10,0,0,0"
+                                    Style="{StaticResource PopupButtonStyle}"
+                                    automation:AutomationProperties.AutomationId="AutonomousSpriteRepairBatchProposalPreviewButton"
+                                    Content="Run Once Now (Preview)"
+                                    Tag="sprite-repair-batch-proposal"
                                     Click="AutonomousScopePreviewButton_OnClick" />
                         </Grid>
                     </Border>

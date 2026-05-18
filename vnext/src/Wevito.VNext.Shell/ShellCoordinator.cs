@@ -9,6 +9,7 @@ using Wevito.VNext.Contracts;
 using Wevito.VNext.Core;
 using Wevito.VNext.Core.Audit;
 using Wevito.VNext.Core.LocalRetrieval;
+using Wevito.VNext.Core.SelfImprovement.Experiments;
 using Wevito.VNext.Core.Settings;
 using Wevito.VNext.Core.Tools;
 
@@ -174,6 +175,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _autonomousScopes =
         [
             new SpriteRepairTriageScope(Path.Combine(repoRoot, "vnext", "artifacts", "c-phase-128-sprite-repair-queue", "repair_queue.json"), _auditLedgerService, _petTaskCardQueueService),
+            new SpriteRepairBatchProposalScope(Path.Combine(repoRoot, "vnext", "artifacts", "c-phase-128-sprite-repair-queue", "repair_queue.json"), _auditLedgerService),
             new AuditLedgerCleanupScope(Path.GetDirectoryName(_auditLedgerService.DatabasePath) ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Wevito", "audit"), _auditLedgerService)
         ];
         var autonomousScopeRegistry = new AutonomousScopeRegistry(_autonomousScopeService, _autonomousScopes);
