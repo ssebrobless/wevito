@@ -1,0 +1,17 @@
+commandId: sprite-repair-batch
+command: python C:\Users\fishe\Documents\projects\wevito\tools\generate_runtime_pose_sprites.py --repo-root C:\Users\fishe\Documents\projects\wevito --row-id squirrel_baby_female --species squirrel --age baby --gender female --color violet --animation groom --out-dir C:\Users\fishe\Documents\projects\wevito\sprites_authored\.candidates\c-phase-130-001-squirrel_baby_female-violet-groom
+status: MutationDetected
+exitCode: 0
+mutationDetected: True
+
+mutatedProtectedPaths:
+- sprites_authored/.candidates/c-phase-130-001-squirrel_baby_female-violet-groom/candidate-summary.json
+- sprites_authored/.candidates/c-phase-130-001-squirrel_baby_female-violet-groom/groom_00.png
+- sprites_authored/.candidates/c-phase-130-001-squirrel_baby_female-violet-groom/groom_01.png
+- sprites_authored/.candidates/c-phase-130-001-squirrel_baby_female-violet-groom/groom_02.png
+- sprites_authored/.candidates/c-phase-130-001-squirrel_baby_female-violet-groom/groom_03.png
+
+## stdout
+exported 4 groom candidate frame(s) to C:\Users\fishe\Documents\projects\wevito\sprites_authored\.candidates\c-phase-130-001-squirrel_baby_female-violet-groom
+
+## stderr

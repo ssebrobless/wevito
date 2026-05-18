@@ -28839,7 +28839,7 @@
                      "lifeStage":  "baby",
                      "gender":  "female",
                      "priority":  "P1",
-                     "status":  "queued",
+                     "status":  "done",
                      "issueCount":  12,
                      "colorsAffected":  [
                                             "blue",
@@ -29037,7 +29037,11 @@
                                         "sourcePath":  null,
                                         "capturePath":  null
                                     }
-                                ]
+                                ],
+                     "completedAtUtc":  "2026-05-18T07:05:39.2846271Z",
+                     "completedByPhase":  "C-PHASE 130.055",
+                     "completionArtifactRoot":  "vnext/artifacts/c-phase-130-batches/055-squirrel-baby-female",
+                     "batchArtifactRoot":  "vnext/artifacts/c-phase-130-batches/055-squirrel-baby-female"
                  },
                  {
                      "rowId":  "squirrel_baby_male",
@@ -30071,8 +30075,8 @@
                  }
              ],
     "statusCounts":  {
-                         "done":  54,
-                         "queued":  6
+                         "done":  55,
+                         "queued":  5
                      },
-    "lastUpdatedUtc":  "2026-05-18T06:58:18.5854580Z"
+    "lastUpdatedUtc":  "2026-05-18T07:05:39.2926046Z"
 }
