@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Wevito.VNext.Core.Settings;
 
 namespace Wevito.VNext.Core;
 
@@ -114,6 +115,7 @@ public sealed class SoakRunnerService
                      AutonomousOperationsConfig.EnabledSetting,
                      AutonomousTaskScheduler.SchedulerPreviewDispatchApprovedSetting,
                      WebResearchConnector.WebSearchEnabledSetting,
+                     SettingKeys.LocalDocumentRetrievalEnabled,
                      ModelProviderModeService.HostedProviderApprovedSetting
                  })
         {

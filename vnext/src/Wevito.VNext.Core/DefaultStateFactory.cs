@@ -1,4 +1,5 @@
 using Wevito.VNext.Contracts;
+using Wevito.VNext.Core.Settings;
 
 namespace Wevito.VNext.Core;
 
@@ -44,7 +45,10 @@ public sealed class DefaultStateFactory
                 [CoexistenceTriggerService.NetworkThresholdSetting] = "80",
                 [DoNotDisturbScheduleService.EnabledSetting] = bool.FalseString,
                 [DoNotDisturbScheduleService.ScheduleSetting] = "[]",
-                [DoNotDisturbScheduleService.QuickToggleUntilUtcSetting] = ""
+                [DoNotDisturbScheduleService.QuickToggleUntilUtcSetting] = "",
+                [SettingKeys.LocalDocumentRetrievalEnabled] = bool.FalseString,
+                [SettingKeys.LocalDocumentRetrievalRoot] = SettingKeys.DefaultLocalDocumentRetrievalRoot(),
+                [SettingKeys.LocalDocumentRetrievalMaxFileBytes] = SettingKeys.LocalDocumentRetrievalDefaultMaxFileBytes
             },
             []);
     }

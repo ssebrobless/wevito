@@ -9,6 +9,8 @@ using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Wevito.VNext.Contracts;
 using Wevito.VNext.Core;
+using Wevito.VNext.Core.LocalRetrieval;
+using Wevito.VNext.Core.Settings;
 
 namespace Wevito.VNext.Shell;
 
@@ -23,8 +25,10 @@ public partial class ToolPopupWindow : Window
     private List<BasketRowItem> _basketRows = [];
     private List<ActionOptionRowItem> _actionRows = [];
     private List<PetTaskQueueRowItem> _taskQueueRows = [];
+    private List<LocalDocumentResultRowItem> _localDocumentRows = [];
     private bool _suppressTaskQueueSelection;
     private string _autonomousScopePreviewText = "No autonomous scope preview has run in this session.";
+    private string _localDocsStatusText = "Local document retrieval is disabled until Settings enables it.";
 
     public ToolPopupWindow()
     {
@@ -74,6 +78,10 @@ public partial class ToolPopupWindow : Window
     public event Func<string, Task>? PetCommandSubmitted;
 
     public event Func<string, Task>? ToolTabRequested;
+
+    public event Func<Task>? LocalDocsBuildRequested;
+
+    public event Func<string, Task>? LocalDocsQueryRequested;
 
     public event Func<Task>? RunFirstLaunchWizardRequested;
 
@@ -140,6 +148,8 @@ public partial class ToolPopupWindow : Window
         var showingPetCommand = string.Equals(toolId, "helpers", StringComparison.OrdinalIgnoreCase);
         var showingBenchmarks = string.Equals(toolId, "benchmarks", StringComparison.OrdinalIgnoreCase);
         var showingAutonomousScopes = string.Equals(toolId, "autonomous-scopes", StringComparison.OrdinalIgnoreCase);
+        var localDocsEnabled = GetSettingBool(state, SettingKeys.LocalDocumentRetrievalEnabled);
+        var showingLocalDocs = localDocsEnabled && string.Equals(toolId, "local-docs", StringComparison.OrdinalIgnoreCase);
         var showingActionMenu = string.Equals(toolId, "actions", StringComparison.OrdinalIgnoreCase);
         var showingAction = toolId.StartsWith("action:", StringComparison.OrdinalIgnoreCase);
         var actionId = showingAction ? toolId["action:".Length..] : string.Empty;
@@ -147,14 +157,16 @@ public partial class ToolPopupWindow : Window
             ? content.Actions.FirstOrDefault(action => string.Equals(action.Id, actionId, StringComparison.OrdinalIgnoreCase))
             : null;
 
-        Title = showingBasket ? "Wevito Tools" : showingDev ? "Wevito Dev Tools" : showingPetCommand ? "Wevito Chat" : showingBenchmarks ? "Wevito Benchmarks" : showingAutonomousScopes ? "Wevito Autonomy" : showingActivity ? "Wevito Activity" : showingActionMenu ? "Wevito Actions" : showingAction ? $"Wevito {actionDefinition?.DisplayName ?? "Action"}" : "Wevito Settings";
-        PopupTitle.Text = showingBasket ? "Tools" : showingDev ? "Dev Tools" : showingPetCommand ? "Chat" : showingBenchmarks ? "Benchmarks" : showingAutonomousScopes ? "Autonomy" : showingActivity ? "Activity" : showingActionMenu ? "Actions" : showingAction ? (actionDefinition?.DisplayName ?? "Action") : "Settings";
+        Title = showingBasket ? "Wevito Tools" : showingDev ? "Wevito Dev Tools" : showingPetCommand ? "Wevito Chat" : showingBenchmarks ? "Wevito Benchmarks" : showingAutonomousScopes ? "Wevito Autonomy" : showingLocalDocs ? "Wevito Local Docs" : showingActivity ? "Wevito Activity" : showingActionMenu ? "Wevito Actions" : showingAction ? $"Wevito {actionDefinition?.DisplayName ?? "Action"}" : "Wevito Settings";
+        PopupTitle.Text = showingBasket ? "Tools" : showingDev ? "Dev Tools" : showingPetCommand ? "Chat" : showingBenchmarks ? "Benchmarks" : showingAutonomousScopes ? "Autonomy" : showingLocalDocs ? "Local Docs" : showingActivity ? "Activity" : showingActionMenu ? "Actions" : showingAction ? (actionDefinition?.DisplayName ?? "Action") : "Settings";
         BasketPanel.Visibility = showingBasket ? Visibility.Visible : Visibility.Collapsed;
         BasketButtons.Visibility = showingBasket ? Visibility.Visible : Visibility.Collapsed;
         ActionMenuPanel.Visibility = showingActionMenu ? Visibility.Visible : Visibility.Collapsed;
         ActionPanel.Visibility = showingAction ? Visibility.Visible : Visibility.Collapsed;
         SettingsPanel.Visibility = showingSettings || showingActivity ? Visibility.Visible : Visibility.Collapsed;
         AutonomousScopesPanel.Visibility = showingAutonomousScopes ? Visibility.Visible : Visibility.Collapsed;
+        LocalDocsTabButton.Visibility = localDocsEnabled ? Visibility.Visible : Visibility.Collapsed;
+        LocalDocsPanel.Visibility = showingLocalDocs ? Visibility.Visible : Visibility.Collapsed;
         PetCommandPanel.Visibility = showingPetCommand ? Visibility.Visible : Visibility.Collapsed;
         BenchmarksPanel.Visibility = showingBenchmarks ? Visibility.Visible : Visibility.Collapsed;
         PetTaskReportOnlyBadge.Visibility = showingPetCommand ? Visibility.Visible : Visibility.Collapsed;
@@ -207,6 +219,10 @@ public partial class ToolPopupWindow : Window
         else if (showingBenchmarks)
         {
             RenderBenchmarksPanel(state);
+        }
+        else if (showingLocalDocs)
+        {
+            RenderLocalDocsPanel(state);
         }
 
         _suppressSettingEvents = true;
@@ -265,6 +281,7 @@ public partial class ToolPopupWindow : Window
         PetModelFirstCallConsentButton.IsEnabled = !modelFirstCallApproved;
         LocalAiRuntimeStatusText.Text = FormatLocalAiRuntimeStatus(state);
         ReasoningModelStatusText.Text = FormatReasoningModelStatus(state);
+        LocalDocumentRetrievalEnabledCheckBox.IsChecked = localDocsEnabled;
         RenderToolRegistryList(state);
         var webSearchEnabled = GetSettingBool(state, WebResearchConnector.WebSearchEnabledSetting);
         var webBackend = state.SettingsSnapshot.TryGetValue(WebResearchConnector.WebBackendSetting, out var backend) ? backend : "offline";
@@ -299,6 +316,24 @@ public partial class ToolPopupWindow : Window
     {
         _closingSilently = true;
         Close();
+    }
+
+    public void SetLocalDocsStatus(string status)
+    {
+        _localDocsStatusText = string.IsNullOrWhiteSpace(status) ? "Local Docs is waiting." : status;
+        if (IsLoaded)
+        {
+            LocalDocsStatusText.Text = _localDocsStatusText;
+        }
+    }
+
+    public void SetLocalDocsResults(IReadOnlyList<LocalDocumentSnippet> snippets)
+    {
+        _localDocumentRows = snippets.Select(LocalDocumentResultRowItem.From).ToList();
+        if (IsLoaded)
+        {
+            LocalDocsResultsGrid.ItemsSource = _localDocumentRows;
+        }
     }
 
     public async Task<bool> TryInvokeOverlayClickAsync(PointInt screenPosition)
@@ -895,6 +930,22 @@ public partial class ToolPopupWindow : Window
         }
     }
 
+    private async void LocalDocsBuildButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (LocalDocsBuildRequested is not null)
+        {
+            await LocalDocsBuildRequested.Invoke();
+        }
+    }
+
+    private async void LocalDocsQueryButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (LocalDocsQueryRequested is not null)
+        {
+            await LocalDocsQueryRequested.Invoke(LocalDocsQueryTextBox.Text ?? string.Empty);
+        }
+    }
+
     private async void RunFirstLaunchWizardButton_OnClick(object sender, RoutedEventArgs e)
     {
         if (RunFirstLaunchWizardRequested is not null)
@@ -1234,6 +1285,11 @@ public partial class ToolPopupWindow : Window
     private void PetModelAdapterEnabledCheckBox_OnChanged(object sender, RoutedEventArgs e)
     {
         PublishSetting("pet_model_adapter_enabled", PetModelAdapterEnabledCheckBox.IsChecked == true);
+    }
+
+    private void LocalDocumentRetrievalEnabledCheckBox_OnChanged(object sender, RoutedEventArgs e)
+    {
+        PublishSetting(SettingKeys.LocalDocumentRetrievalEnabled, LocalDocumentRetrievalEnabledCheckBox.IsChecked == true);
     }
 
     private async void AutonomousScopePreviewButton_OnClick(object sender, RoutedEventArgs e)
@@ -1664,6 +1720,20 @@ public partial class ToolPopupWindow : Window
                 Text = "No AI-callable tools are registered."
             });
         }
+    }
+
+    private void RenderLocalDocsPanel(CompanionState state)
+    {
+        var root = state.SettingsSnapshot.TryGetValue(SettingKeys.LocalDocumentRetrievalRoot, out var configuredRoot)
+            ? configuredRoot
+            : SettingKeys.DefaultLocalDocumentRetrievalRoot();
+        var maxBytes = state.SettingsSnapshot.TryGetValue(SettingKeys.LocalDocumentRetrievalMaxFileBytes, out var configuredMax)
+            ? configuredMax
+            : SettingKeys.LocalDocumentRetrievalDefaultMaxFileBytes;
+        LocalDocsRootText.Text = $"Root: {root}";
+        LocalDocsPolicyText.Text = $"Default-off local search. File types: .md, .txt, .json. Max file bytes: {maxBytes}. No model and no network.";
+        LocalDocsStatusText.Text = _localDocsStatusText;
+        LocalDocsResultsGrid.ItemsSource = _localDocumentRows;
     }
 
     private static string FormatReasoningModelStatus(CompanionState state)
@@ -2484,6 +2554,22 @@ internal sealed record PetTaskQueueRowItem(
     string NextAllowedAction,
     bool CanExecute,
     string AuditLogPath);
+
+internal sealed record LocalDocumentResultRowItem(
+    string Path,
+    int Line,
+    string Snippet,
+    string Score)
+{
+    public static LocalDocumentResultRowItem From(LocalDocumentSnippet snippet)
+    {
+        return new LocalDocumentResultRowItem(
+            snippet.RelativePath,
+            snippet.LineNumber,
+            snippet.SnippetText,
+            snippet.Score.ToString("0.000000"));
+    }
+}
 
 internal sealed record DevConditionOption(
     string Id,
