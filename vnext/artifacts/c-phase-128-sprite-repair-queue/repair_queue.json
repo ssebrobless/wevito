@@ -18462,7 +18462,7 @@
                      "lifeStage":  "adult",
                      "gender":  "male",
                      "priority":  "P1",
-                     "status":  "queued",
+                     "status":  "done",
                      "issueCount":  24,
                      "colorsAffected":  [
                                             "blue",
@@ -18843,7 +18843,11 @@
                                         "sourcePath":  "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites_runtime\\pigeon\\adult\\male\\yellow\\idle_00.png",
                                         "capturePath":  "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\c-phase-127-matrix-sweep\\cells\\pigeon_adult_male_yellow_idle.png"
                                     }
-                                ]
+                                ],
+                     "completedAtUtc":  "2026-05-18T03:26:46.3589649Z",
+                     "completedByPhase":  "C-PHASE 130.036",
+                     "completionArtifactRoot":  "vnext/artifacts/c-phase-130-batches/036-pigeon-adult-male",
+                     "batchArtifactRoot":  "vnext/artifacts/c-phase-130-batches/036-pigeon-adult-male"
                  },
                  {
                      "rowId":  "raccoon_baby_female",
@@ -29995,8 +29999,8 @@
                  }
              ],
     "statusCounts":  {
-                         "done":  35,
-                         "queued":  25
+                         "done":  36,
+                         "queued":  24
                      },
-    "lastUpdatedUtc":  "2026-05-18T03:14:01.9390858Z"
+    "lastUpdatedUtc":  "2026-05-18T03:26:46.3589649Z"
 }
