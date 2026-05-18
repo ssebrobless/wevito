@@ -20088,7 +20088,7 @@
                      "lifeStage":  "adult",
                      "gender":  "male",
                      "priority":  "P1",
-                     "status":  "queued",
+                     "status":  "done",
                      "issueCount":  24,
                      "colorsAffected":  [
                                             "blue",
@@ -20469,7 +20469,11 @@
                                         "sourcePath":  "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites_runtime\\raccoon\\adult\\male\\yellow\\idle_00.png",
                                         "capturePath":  "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\c-phase-127-matrix-sweep\\cells\\raccoon_adult_male_yellow_idle.png"
                                     }
-                                ]
+                                ],
+                     "completedAtUtc":  "2026-05-18T04:29:18.5628096Z",
+                     "completedByPhase":  "C-PHASE 130.042",
+                     "completionArtifactRoot":  "vnext/artifacts/c-phase-130-batches/042-raccoon-adult-male",
+                     "batchArtifactRoot":  "vnext/artifacts/c-phase-130-batches/042-raccoon-adult-male"
                  },
                  {
                      "rowId":  "rat_baby_female",
@@ -30019,8 +30023,8 @@
                  }
              ],
     "statusCounts":  {
-                         "done":  41,
-                         "queued":  19
+                         "done":  42,
+                         "queued":  18
                      },
-    "lastUpdatedUtc":  "2026-05-18T04:13:38.6565920Z"
+    "lastUpdatedUtc":  "2026-05-18T04:29:18.5628096Z"
 }
