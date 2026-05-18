@@ -27878,7 +27878,7 @@
                      "lifeStage":  "adult",
                      "gender":  "male",
                      "priority":  "P1",
-                     "status":  "queued",
+                     "status":  "done",
                      "issueCount":  60,
                      "colorsAffected":  [
                                             "blue",
@@ -28811,7 +28811,11 @@
                                         "sourcePath":  "C:\\Users\\fishe\\Documents\\projects\\wevito\\sprites_runtime\\snake\\adult\\male\\yellow\\walk_00.png",
                                         "capturePath":  "C:\\Users\\fishe\\Documents\\projects\\wevito\\vnext\\artifacts\\c-phase-127-matrix-sweep\\cells\\snake_adult_male_yellow_walk.png"
                                     }
-                                ]
+                                ],
+                     "completedAtUtc":  "2026-05-18T06:00:47.3171124Z",
+                     "completedByPhase":  "C-PHASE 130.050",
+                     "completionArtifactRoot":  "vnext/artifacts/c-phase-130-batches/050-snake-adult-male",
+                     "batchArtifactRoot":  "vnext/artifacts/c-phase-130-batches/050-snake-adult-male"
                  },
                  {
                      "rowId":  "squirrel_baby_female",
@@ -30051,8 +30055,8 @@
                  }
              ],
     "statusCounts":  {
-                         "done":  49,
-                         "queued":  11
+                         "done":  50,
+                         "queued":  10
                      },
-    "lastUpdatedUtc":  "2026-05-18T05:45:17.3845515Z"
+    "lastUpdatedUtc":  "2026-05-18T06:00:47.3171124Z"
 }
