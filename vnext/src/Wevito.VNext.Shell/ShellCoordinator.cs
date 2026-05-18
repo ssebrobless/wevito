@@ -60,6 +60,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private readonly DailyEvidenceSnapshotService _dailyEvidenceSnapshotService;
     private readonly AutonomousTaskScheduler _autonomousTaskScheduler;
     private readonly AutonomousBetaDecisionService _autonomousBetaDecisionService;
+    private readonly AutonomousScopeService _autonomousScopeService;
     private readonly AutonomousOperationsLoop _autonomousOperationsLoop;
     private readonly TranslationExecutionAdapter _translationExecutionAdapter = new();
     private readonly AudioAssistExecutionAdapter _audioAssistExecutionAdapter = new();
@@ -149,7 +150,14 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _petTaskAdapterPreviewDispatcher = new AgentToolDispatcher(activeLocalModelAdapter: activeLocalModelAdapter, auditLedgerService: _auditLedgerService, killSwitchService: _killSwitchService);
         _autonomousTaskScheduler = new AutonomousTaskScheduler(_runtimeSupervisorService, _runtimeBudgetMeter, _auditLedgerService, _killSwitchService);
         _autonomousBetaDecisionService = new AutonomousBetaDecisionService(_auditLedgerService);
-        _autonomousOperationsLoop = new AutonomousOperationsLoop(_autonomousBetaDecisionService, _auditLedgerService, _killSwitchService);
+        _autonomousScopeService = new AutonomousScopeService(_auditLedgerService, _killSwitchService);
+        var repoRoot = ResolveRepoRootOrBaseDirectory();
+        var autonomousScopeRegistry = new AutonomousScopeRegistry(_autonomousScopeService,
+        [
+            new SpriteRepairTriageScope(Path.Combine(repoRoot, "vnext", "artifacts", "c-phase-128-sprite-repair-queue", "repair_queue.json"), _auditLedgerService, _petTaskCardQueueService),
+            new AuditLedgerCleanupScope(Path.GetDirectoryName(_auditLedgerService.DatabasePath) ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Wevito", "audit"), _auditLedgerService)
+        ]);
+        _autonomousOperationsLoop = new AutonomousOperationsLoop(_autonomousBetaDecisionService, _auditLedgerService, _killSwitchService, scopeRegistry: autonomousScopeRegistry);
         _screenCaptureExecutionAdapter = new ScreenCaptureExecutionAdapter(new WindowsGraphicsCaptureBackend(() => _homeWindow));
         _tickTimer = new DispatcherTimer(DispatcherPriority.Render)
         {
@@ -530,14 +538,27 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             _state.SettingsSnapshot,
             supervisorStatus,
             Path.Combine(ResolveRepoRootOrBaseDirectory(), "vnext", "artifacts", "pet-tasks"),
-            now));
+            now,
+            _state.TaskCards ?? []));
         if (!result.Ran)
         {
             return;
         }
 
+        if (result.TaskCards is not null)
+        {
+            _state = _state with { TaskCards = result.TaskCards };
+            _petCommandBarState = BuildChatInputBarState(
+                BuildHelperProfiles(_state.ActivePets),
+                result.TaskCards,
+                _petWellbeingInterpreter.BuildSnapshots(_state.ActivePets));
+            _ = PersistAsync();
+        }
+
         TraceLog.Write("autonomous-beta", $"iteration artifact={result.ArtifactFolder} mutate={result.DidMutate}");
-        SetFeedback("Autonomous beta wrote a proposal-only activity packet. No mutation was applied.");
+        SetFeedback(result.DidMutate
+            ? "Autonomous beta ran an enabled scope and recorded an audit-safe file move."
+            : "Autonomous beta wrote a proposal-only activity packet. No sprite mutation was applied.");
     }
 
     private void ApplyModeAndLayout()
@@ -1970,8 +1991,30 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         };
         _state = _state with { SettingsSnapshot = nextSettings };
         TraceLog.Write("settings", $"{key}={value}");
+        if (TryParseAutonomousScopeSetting(key, out var scopeId) && bool.TryParse(value, out var enabled))
+        {
+            _autonomousScopeService.RecordEnabledChanged(scopeId, enabled, DateTimeOffset.UtcNow);
+        }
+
         ApplyModeAndLayout();
         _ = PersistAsync();
+    }
+
+    private static bool TryParseAutonomousScopeSetting(string key, out string scopeId)
+    {
+        const string prefix = "autonomous_scope_";
+        const string suffix = "_enabled";
+        scopeId = "";
+        if (!key.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) ||
+            !key.EndsWith(suffix, StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        var parsedScopeId = key[prefix.Length..^suffix.Length];
+        scopeId = parsedScopeId;
+        return AutonomousScopeService.KnownScopes.Any(scope =>
+            scope.ScopeId.Equals(parsedScopeId, StringComparison.OrdinalIgnoreCase));
     }
 
     private async Task SaveAsync()
