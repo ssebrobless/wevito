@@ -33,6 +33,7 @@ public partial class ToolPopupWindow : Window
     private List<EvidenceSummaryRowItem> _evidenceSummaryRows = [];
     private List<CapabilityFlagAuditRowItem> _capabilityFlagRows = [];
     private List<OperationTimelineRowItem> _operationTimelineRows = [];
+    private List<RefusedApprovalReasonRowItem> _refusedApprovalReasonRows = [];
     private bool _suppressTaskQueueSelection;
     private IReadOnlyList<TaskCard> _lastTaskCards = [];
     private string _autonomousScopePreviewText = "No autonomous scope preview has run in this session.";
@@ -1961,6 +1962,7 @@ public partial class ToolPopupWindow : Window
             ? "Capability flags are waiting for shell state."
             : $"{_capabilityFlagRows.Count} capability flag(s). Read-only inventory; this panel cannot flip settings.";
         RenderOperationTimeline(state);
+        RenderRefusedApprovals(state);
         if (summary is null)
         {
             _evidenceSummaryRows = [];
@@ -2013,6 +2015,21 @@ public partial class ToolPopupWindow : Window
             : rows.Count == 1 && rows[0].PacketKind.Equals("blocked", StringComparison.OrdinalIgnoreCase)
                 ? rows[0].PlainLanguage
                 : $"{_operationTimelineRows.Count} self-improvement packet row(s). Plain-language only; raw ledger text is hidden.";
+    }
+
+    private void RenderRefusedApprovals(CompanionState state)
+    {
+        var service = new RefusedApprovalAggregateService(
+            new AuditLedgerService().DatabasePath,
+            new KillSwitchService(() => state.SettingsSnapshot));
+        var aggregate = service.Build();
+        _refusedApprovalReasonRows = RefusedApprovalReasonRowItem.From(aggregate);
+        RefusedApprovalReasonGrid.ItemsSource = _refusedApprovalReasonRows;
+        RefusedApprovalStatusText.Text = aggregate.IsBlocked
+            ? $"Blocked: {aggregate.BlockedReason}"
+            : aggregate.Total == 0
+                ? "No refused self-improvement apply packets found."
+                : $"{aggregate.Total} refused self-improvement apply packet(s). Unknown reason text is hashed, not displayed.";
     }
 
     private void RenderMaturityClock(MaturityClock? maturityClock)
@@ -2953,6 +2970,37 @@ internal sealed record OperationTimelineRowItem(
             row.StatusBadge,
             row.DidMutate ? "yes" : "no",
             row.DidUseLocalModel ? "yes" : "no");
+    }
+}
+
+internal sealed record RefusedApprovalReasonRowItem(
+    string Reason,
+    string Meaning,
+    int Count)
+{
+    public static List<RefusedApprovalReasonRowItem> From(RefusedApprovalAggregate aggregate)
+    {
+        if (aggregate.IsBlocked)
+        {
+            return [];
+        }
+
+        var rows = aggregate.ByReason
+            .OrderBy(pair => pair.Key, StringComparer.Ordinal)
+            .Select(pair => new RefusedApprovalReasonRowItem(
+                pair.Key,
+                RefusedApprovalAggregateService.FormatReasonForDisplay(pair.Key),
+                pair.Value))
+            .ToList();
+
+        rows.AddRange(aggregate.OtherBucketByHashPrefix
+            .OrderBy(pair => pair.Key, StringComparer.Ordinal)
+            .Select(pair => new RefusedApprovalReasonRowItem(
+                $"other:{pair.Key}",
+                "Other refused reason; raw text hidden.",
+                pair.Value)));
+
+        return rows;
     }
 }
 
