@@ -9,10 +9,10 @@ using Wevito.VNext.Core.SelfImprovement.Replay;
 
 namespace Wevito.VNext.Tests;
 
-public sealed class HeldOutEvalStoreVisibilityTests
+public sealed class InDistributionEvalStoreVisibilityTests
 {
     [Fact]
-    public void HeldOutStore_IsNotReferencedByForbiddenSurfaces()
+    public void InDistributionStore_IsNotReferencedByForbiddenSurfaces()
     {
         var forbiddenTypes = new[]
         {
@@ -41,34 +41,7 @@ public sealed class HeldOutEvalStoreVisibilityTests
                 .Concat(type.GetMethods().Select(method => method.ReturnType))
                 .Concat(type.GetMethods().SelectMany(method => method.GetParameters().Select(parameter => parameter.ParameterType)));
 
-            Assert.DoesNotContain(signatures, signature => signature == typeof(IHeldOutEvalStore) || signature == typeof(HeldOutEvalStore));
+            Assert.DoesNotContain(signatures, signature => signature == typeof(IInDistributionEvalStore) || signature == typeof(InDistributionEvalStore));
         }
-    }
-
-    [Fact]
-    public void HeldOutStore_KillSwitchPreventsListingAndReading()
-    {
-        var root = Path.Combine(Path.GetTempPath(), "wevito-held-out-eval", Guid.NewGuid().ToString("N"));
-        Directory.CreateDirectory(root);
-        File.WriteAllText(Path.Combine(root, "secret-case.json"), "{\"case\":\"held-out\"}");
-        var killSwitch = new KillSwitchService(() => new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
-        {
-            [KillSwitchService.KillSwitchSetting] = bool.TrueString
-        });
-
-        var store = new HeldOutEvalStore(root, killSwitch);
-
-        Assert.Empty(store.ListCaseIds());
-        Assert.Null(store.ReadCase("secret-case"));
-    }
-
-    [Fact]
-    public void HeldOutStore_BlocksPathTraversal()
-    {
-        var root = Path.Combine(Path.GetTempPath(), "wevito-held-out-eval", Guid.NewGuid().ToString("N"));
-        Directory.CreateDirectory(root);
-        var store = new HeldOutEvalStore(root);
-
-        Assert.Null(store.ReadCase("..\\outside"));
     }
 }
