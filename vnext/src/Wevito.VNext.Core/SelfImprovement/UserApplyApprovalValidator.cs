@@ -8,6 +8,7 @@ public sealed class UserApplyApprovalValidator : IRequiresUserApplyApproval
         UserApplyApproval? approval,
         string expectedScopeId,
         string expectedOperationId,
+        string expectedScopeHash,
         DateTimeOffset nowUtc)
     {
         if (approval is null)
@@ -18,6 +19,12 @@ public sealed class UserApplyApprovalValidator : IRequiresUserApplyApproval
         if (!approval.UserConfirmedInThisMessage)
         {
             return new ApprovalResult.Refused("not_confirmed_in_this_message");
+        }
+
+        if (string.IsNullOrWhiteSpace(approval.ApprovedScopeHash) ||
+            !string.Equals(approval.ApprovedScopeHash, expectedScopeHash, StringComparison.Ordinal))
+        {
+            return new ApprovalResult.Refused("scope_hash_mismatch");
         }
 
         if (string.IsNullOrWhiteSpace(approval.ConfirmationText))

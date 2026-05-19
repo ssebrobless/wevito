@@ -6,5 +6,6 @@ public interface IRequiresUserApplyApproval
         UserApplyApproval? approval,
         string expectedScopeId,
         string expectedOperationId,
+        string expectedScopeHash,
         DateTimeOffset nowUtc);
 }

@@ -6,6 +6,7 @@ namespace Wevito.VNext.Tests;
 public sealed class UserApplyApprovalValidatorTests
 {
     private static readonly DateTimeOffset Now = new(2026, 5, 18, 12, 0, 0, TimeSpan.Zero);
+    private const string ExpectedScopeHash = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
 
     [Fact]
     public void ValidateUserApplyApproval_AcceptsFreshMatchingApproval()
@@ -14,6 +15,7 @@ public sealed class UserApplyApprovalValidatorTests
             ValidApproval(),
             "sprite-repair-batch-proposal",
             "apply-candidate-001",
+            ExpectedScopeHash,
             Now);
 
         Assert.IsType<ApprovalResult.Accepted>(result);
@@ -36,6 +38,27 @@ public sealed class UserApplyApprovalValidatorTests
     }
 
     [Fact]
+    public void ValidateUserApplyApproval_RefusesMissingScopeHash()
+    {
+        var result = Validate(ValidApproval() with { ApprovedScopeHash = "" });
+
+        AssertRefused(result, "scope_hash_mismatch");
+    }
+
+    [Fact]
+    public void ValidateUserApplyApproval_RefusesScopeHashMismatchBeforeScopeMismatch()
+    {
+        var result = new UserApplyApprovalValidator().ValidateUserApplyApproval(
+            ValidApproval() with { ApprovedScopeHash = "bad-hash", ApprovedScopeId = "wrong-scope" },
+            "sprite-repair-batch-proposal",
+            "apply-candidate-001",
+            ExpectedScopeHash,
+            Now);
+
+        AssertRefused(result, "scope_hash_mismatch");
+    }
+
+    [Fact]
     public void ValidateUserApplyApproval_RefusesStaleConfirmation()
     {
         var result = Validate(ValidApproval() with { ConfirmedAtUtc = Now.AddSeconds(-61) });
@@ -50,6 +73,7 @@ public sealed class UserApplyApprovalValidatorTests
             ValidApproval(),
             "different-scope",
             "apply-candidate-001",
+            ExpectedScopeHash,
             Now);
 
         AssertRefused(result, "scope_id_mismatch");
@@ -62,6 +86,7 @@ public sealed class UserApplyApprovalValidatorTests
             ValidApproval(),
             "sprite-repair-batch-proposal",
             "different-operation",
+            ExpectedScopeHash,
             Now);
 
         AssertRefused(result, "operation_id_mismatch");
@@ -76,11 +101,12 @@ public sealed class UserApplyApprovalValidatorTests
             null,
             "sprite-repair-batch-proposal",
             "apply-candidate-001",
+            ExpectedScopeHash,
             Now));
 
         Assert.Null(exception);
         AssertRefused(
-            validator.ValidateUserApplyApproval(null, "sprite-repair-batch-proposal", "apply-candidate-001", Now),
+            validator.ValidateUserApplyApproval(null, "sprite-repair-batch-proposal", "apply-candidate-001", ExpectedScopeHash, Now),
             "approval_missing");
     }
 
@@ -98,6 +124,7 @@ public sealed class UserApplyApprovalValidatorTests
         Assert.Equal(
             [
                 typeof(UserApplyApproval),
+                typeof(string),
                 typeof(string),
                 typeof(string),
                 typeof(DateTimeOffset)
@@ -146,6 +173,7 @@ public sealed class UserApplyApprovalValidatorTests
             approval,
             "sprite-repair-batch-proposal",
             "apply-candidate-001",
+            ExpectedScopeHash,
             Now);
     }
 
@@ -156,7 +184,8 @@ public sealed class UserApplyApprovalValidatorTests
             ConfirmationText: "I approve applying operation apply-candidate-001 for sprite-repair-batch-proposal.",
             ConfirmedAtUtc: Now,
             ApprovedScopeId: "sprite-repair-batch-proposal",
-            ApprovedOperationId: "apply-candidate-001");
+            ApprovedOperationId: "apply-candidate-001",
+            ApprovedScopeHash: ExpectedScopeHash);
     }
 
     private static void AssertRefused(ApprovalResult result, string reason)

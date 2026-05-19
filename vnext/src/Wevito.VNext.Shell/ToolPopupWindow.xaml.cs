@@ -1410,13 +1410,15 @@ public partial class ToolPopupWindow : Window
         var selectedCard = _lastTaskCards.FirstOrDefault(card => card.Id == cardId);
         var payload = selectedCard?.ReviewPayload ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         var scopeId = payload.TryGetValue("scope_id", out var scope) ? scope : "";
+        var scopeHash = payload.TryGetValue("scope_hash", out var hash) ? hash : "";
         var typedOperationId = SupervisedApplyOperationTextBox.Text?.Trim() ?? "";
         var approval = new UserApplyApproval(
             UserConfirmedInThisMessage: true,
             ConfirmationText: typedOperationId,
             ConfirmedAtUtc: DateTimeOffset.UtcNow,
             ApprovedScopeId: scopeId,
-            ApprovedOperationId: typedOperationId);
+            ApprovedOperationId: typedOperationId,
+            ApprovedScopeHash: scopeHash);
         await SupervisedApplyApprovalRequested.Invoke(cardId, approval);
     }
 
@@ -1738,12 +1740,14 @@ public partial class ToolPopupWindow : Window
         {
             SupervisedApplyApprovalCard.Visibility = Visibility.Collapsed;
             SupervisedApplyApprovalText.Text = "";
+            SupervisedApplyScopeHashText.Text = "";
             SupervisedApplyApprovalButton.Tag = null;
             return;
         }
 
         var operationId = card.ReviewPayload.TryGetValue("operation_id", out var operation) ? operation : "";
         var scopeId = card.ReviewPayload.TryGetValue("scope_id", out var scope) ? scope : "";
+        var scopeHash = card.ReviewPayload.TryGetValue("scope_hash", out var hash) ? hash : "";
         SupervisedApplyApprovalCard.Visibility = Visibility.Visible;
         SupervisedApplyApprovalButton.Tag = card.Id;
         SupervisedApplyApprovalText.Text = string.Join(Environment.NewLine, [
@@ -1752,6 +1756,7 @@ public partial class ToolPopupWindow : Window
             "Type the operation id exactly, then click Approve apply.",
             "v0 still refuses safely after validation because the apply runner is not implemented."
         ]);
+        SupervisedApplyScopeHashText.Text = $"Bound scope hash: {scopeHash}";
     }
 
     private static string FormatAutonomousScopeRecentLine(IReadOnlyList<string>? recentLines, string scopeId)

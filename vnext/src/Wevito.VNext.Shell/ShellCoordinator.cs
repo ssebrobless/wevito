@@ -1652,10 +1652,12 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         var payload = card.ReviewPayload ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         var expectedScopeId = payload.TryGetValue("scope_id", out var scopeId) ? scopeId : "";
         var expectedOperationId = payload.TryGetValue("operation_id", out var operationId) ? operationId : "";
+        var expectedScopeHash = payload.TryGetValue("scope_hash", out var scopeHash) ? scopeHash : "";
         var result = _supervisedImprovementLoop.HandleApplyApproval(
             approval,
             expectedScopeId,
             expectedOperationId,
+            expectedScopeHash,
             card.Id,
             DateTimeOffset.UtcNow,
             _state.TaskCards ?? []);

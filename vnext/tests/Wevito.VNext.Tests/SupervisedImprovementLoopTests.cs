@@ -3,6 +3,7 @@ using Wevito.VNext.Core;
 using Wevito.VNext.Core.Audit;
 using Wevito.VNext.Core.SelfImprovement;
 using Wevito.VNext.Core.SelfImprovement.Experiments;
+using System.Text.Json;
 
 namespace Wevito.VNext.Tests;
 
@@ -24,7 +25,7 @@ public sealed class SupervisedImprovementLoopTests
         var root = TempRoot();
         var ledger = new AuditLedgerService(Path.Combine(root, "ledger.sqlite"));
         var loop = new SupervisedImprovementLoop(ledger);
-        var proposalCard = ProposalCard();
+        var proposalCard = ProposalCard(root);
 
         var result = loop.TryRun(Request(root, Settings(pilotEnabled: false, betaEnabled: true, proposalScopeEnabled: true), [proposalCard]));
 
@@ -39,7 +40,7 @@ public sealed class SupervisedImprovementLoopTests
         var root = TempRoot();
         var ledger = new AuditLedgerService(Path.Combine(root, "ledger.sqlite"));
         var loop = new SupervisedImprovementLoop(ledger);
-        var proposalCard = ProposalCard();
+        var proposalCard = ProposalCard(root);
 
         var result = loop.TryRun(Request(root, Settings(pilotEnabled: true, betaEnabled: true, proposalScopeEnabled: true), [proposalCard]));
 
@@ -48,7 +49,10 @@ public sealed class SupervisedImprovementLoopTests
         var approvalCard = Assert.Single(result.TaskCards.Where(SupervisedImprovementLoop.IsAwaitingApprovalCard));
         Assert.Equal(TaskCardStatus.WaitingForApproval, approvalCard.Status);
         Assert.Equal(SupervisedImprovementLoop.BuildOperationId(proposalCard), approvalCard.ReviewPayload!["operation_id"]);
+        Assert.Matches("^[0-9a-f]{64}$", approvalCard.ReviewPayload["scope_hash"]);
         Assert.True(File.Exists(approvalCard.AuditLogPath));
+        using var artifact = JsonDocument.Parse(File.ReadAllText(approvalCard.AuditLogPath));
+        Assert.Equal(approvalCard.ReviewPayload["scope_hash"], artifact.RootElement.GetProperty("scopeHash").GetString());
         var rows = ledger.Snapshot(Now.AddMinutes(-1), Now.AddMinutes(1));
         Assert.Contains(rows, row => row.PacketKind == SelfImprovementPacketKinds.ApplyAwaitingApproval && !row.DidMutate);
     }
@@ -59,7 +63,7 @@ public sealed class SupervisedImprovementLoopTests
         var root = TempRoot();
         var ledger = new AuditLedgerService(Path.Combine(root, "ledger.sqlite"));
         var loop = new SupervisedImprovementLoop(ledger);
-        var proposalCard = ProposalCard();
+        var proposalCard = ProposalCard(root);
         var first = loop.TryRun(Request(root, Settings(pilotEnabled: true, betaEnabled: true, proposalScopeEnabled: true), [proposalCard]));
 
         var second = loop.TryRun(Request(root, Settings(pilotEnabled: true, betaEnabled: true, proposalScopeEnabled: true), first.TaskCards));
@@ -75,16 +79,18 @@ public sealed class SupervisedImprovementLoopTests
         var root = TempRoot();
         var ledger = new AuditLedgerService(Path.Combine(root, "ledger.sqlite"));
         var loop = new SupervisedImprovementLoop(ledger);
-        var proposalCard = ProposalCard();
+        var proposalCard = ProposalCard(root);
         var tick = loop.TryRun(Request(root, Settings(pilotEnabled: true, betaEnabled: true, proposalScopeEnabled: true), [proposalCard]));
         var approvalCard = Assert.Single(tick.TaskCards.Where(SupervisedImprovementLoop.IsAwaitingApprovalCard));
         var operationId = approvalCard.ReviewPayload!["operation_id"];
-        var approval = new UserApplyApproval(true, operationId, Now, AutonomousScopeService.SpriteRepairBatchProposalScopeId, operationId);
+        var scopeHash = approvalCard.ReviewPayload["scope_hash"];
+        var approval = new UserApplyApproval(true, operationId, Now, AutonomousScopeService.SpriteRepairBatchProposalScopeId, operationId, scopeHash);
 
         var result = loop.HandleApplyApproval(
             approval,
             AutonomousScopeService.SpriteRepairBatchProposalScopeId,
             operationId,
+            scopeHash,
             approvalCard.Id,
             Now,
             tick.TaskCards);
@@ -102,12 +108,13 @@ public sealed class SupervisedImprovementLoopTests
         var root = TempRoot();
         var ledger = new AuditLedgerService(Path.Combine(root, "ledger.sqlite"));
         var loop = new SupervisedImprovementLoop(ledger);
-        var approval = new UserApplyApproval(true, "wrong", Now, AutonomousScopeService.SpriteRepairBatchProposalScopeId, "wrong");
+        var approval = new UserApplyApproval(true, "wrong", Now, AutonomousScopeService.SpriteRepairBatchProposalScopeId, "wrong", "expected-scope-hash");
 
         var result = loop.HandleApplyApproval(
             approval,
             AutonomousScopeService.SpriteRepairBatchProposalScopeId,
             "expected-operation",
+            "expected-scope-hash",
             Guid.NewGuid(),
             Now,
             []);
@@ -116,6 +123,33 @@ public sealed class SupervisedImprovementLoopTests
         Assert.Equal("operation_id_mismatch", refused.Reason);
         var rows = ledger.Snapshot(Now.AddMinutes(-1), Now.AddMinutes(1));
         Assert.Contains(rows, row => row.PacketKind == SelfImprovementPacketKinds.ApplyRefused && row.Error == "operation_id_mismatch");
+    }
+
+    [Fact]
+    public void HandleApplyApproval_ScopeHashMismatch_WritesRefusedPacket()
+    {
+        var root = TempRoot();
+        var ledger = new AuditLedgerService(Path.Combine(root, "ledger.sqlite"));
+        var loop = new SupervisedImprovementLoop(ledger);
+        var proposalCard = ProposalCard(root);
+        var tick = loop.TryRun(Request(root, Settings(pilotEnabled: true, betaEnabled: true, proposalScopeEnabled: true), [proposalCard]));
+        var approvalCard = Assert.Single(tick.TaskCards.Where(SupervisedImprovementLoop.IsAwaitingApprovalCard));
+        var operationId = approvalCard.ReviewPayload!["operation_id"];
+        var approval = new UserApplyApproval(true, operationId, Now, AutonomousScopeService.SpriteRepairBatchProposalScopeId, operationId, "wrong-scope-hash");
+
+        var result = loop.HandleApplyApproval(
+            approval,
+            AutonomousScopeService.SpriteRepairBatchProposalScopeId,
+            operationId,
+            approvalCard.ReviewPayload["scope_hash"],
+            approvalCard.Id,
+            Now,
+            tick.TaskCards);
+
+        var refused = Assert.IsType<ApprovalResult.Refused>(result.ValidationResult);
+        Assert.Equal("scope_hash_mismatch", refused.Reason);
+        var rows = ledger.Snapshot(Now.AddMinutes(-1), Now.AddMinutes(1));
+        Assert.Contains(rows, row => row.PacketKind == SelfImprovementPacketKinds.ApplyRefused && row.Error == "scope_hash_mismatch");
     }
 
     private static SupervisedImprovementLoopRequest Request(string root, IReadOnlyDictionary<string, string> settings, IReadOnlyList<TaskCard> cards)
@@ -140,8 +174,16 @@ public sealed class SupervisedImprovementLoopTests
         };
     }
 
-    private static TaskCard ProposalCard()
+    private static TaskCard ProposalCard(string root)
     {
+        var artifactRoot = Path.Combine(root, "source-artifacts");
+        Directory.CreateDirectory(artifactRoot);
+        var proposalPath = Path.Combine(artifactRoot, "proposal.json");
+        var dryRunPath = Path.Combine(artifactRoot, "dry-run.json");
+        var evalPath = Path.Combine(artifactRoot, "eval.json");
+        File.WriteAllText(proposalPath, """{"kind":"proposal"}""");
+        File.WriteAllText(dryRunPath, """{"kind":"dry-run"}""");
+        File.WriteAllText(evalPath, """{"kind":"eval"}""");
         var intent = new TaskIntent(
             Guid.NewGuid(),
             "Review self-improvement sprite repair proposal.",
@@ -158,9 +200,9 @@ public sealed class SupervisedImprovementLoopTests
             UpdatedAtUtc: Now,
             ReviewPayload: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
-                ["proposal_path"] = "proposal.json",
-                ["dry_run_path"] = "dry-run.json",
-                ["eval_path"] = "eval.json"
+                ["proposal_path"] = proposalPath,
+                ["dry_run_path"] = dryRunPath,
+                ["eval_path"] = evalPath
             });
     }
 
