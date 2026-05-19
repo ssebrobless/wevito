@@ -152,7 +152,8 @@ public partial class ToolPopupWindow : Window
         EvidenceCollectionStatus? evidenceStatus = null,
         EvidenceSummary? evidenceSummary = null,
         MaturityClock? maturityClock = null,
-        IReadOnlyList<CapabilityFlagAuditRow>? capabilityFlagRows = null)
+        IReadOnlyList<CapabilityFlagAuditRow>? capabilityFlagRows = null,
+        ApprovalCardDetail? approvalCardDetail = null)
     {
         var toolId = string.IsNullOrWhiteSpace(state.ActiveTool.ToolId) ? "basket" : state.ActiveTool.ToolId;
         _lastTaskCards = state.TaskCards ?? [];
@@ -276,7 +277,7 @@ public partial class ToolPopupWindow : Window
         AutonomousSpriteRepairBatchProposalScopeCheckBox.IsChecked = SpriteRepairBatchProposalScopeCheckBox.IsChecked;
         AutonomousAuditLedgerCleanupScopeCheckBox.IsChecked = AuditLedgerCleanupScopeCheckBox.IsChecked;
         SupervisedImprovementLoopCheckBox.IsChecked = GetSettingBool(state, SupervisedImprovementLoopSettings.EnabledSetting);
-        RenderSupervisedApprovalCard(state);
+        RenderSupervisedApprovalCard(state, approvalCardDetail);
         AutonomousScopeStatusText.Text = FormatAutonomousScopeStatus(state.SettingsSnapshot);
         AutonomousScopePanelStatusText.Text = AutonomousScopeStatusText.Text;
         SpriteRepairScopeLastTickText.Text = FormatAutonomousScopeRecentLine(activityRecentLines, AutonomousScopeService.SpriteRepairTriageScopeId);
@@ -1735,7 +1736,7 @@ public partial class ToolPopupWindow : Window
         return $"Scopes: sprite-repair-triage={(spriteEnabled ? "on" : "off")}, sprite-repair-batch-proposal={(proposalEnabled ? "on" : "off")}, audit-ledger-cleanup={(cleanupEnabled ? "on" : "off")} | supervised-pilot={(supervisedEnabled ? "on" : "off")} | autonomous beta={(betaEnabled ? "on" : "off")} | review-only scopes never mutate sprite art.";
     }
 
-    private void RenderSupervisedApprovalCard(CompanionState state)
+    private void RenderSupervisedApprovalCard(CompanionState state, ApprovalCardDetail? detail)
     {
         var card = (state.TaskCards ?? []).FirstOrDefault(SupervisedImprovementLoop.IsAwaitingApprovalCard);
         if (card is null || card.ReviewPayload is null)
@@ -1743,6 +1744,9 @@ public partial class ToolPopupWindow : Window
             SupervisedApplyApprovalCard.Visibility = Visibility.Collapsed;
             SupervisedApplyApprovalText.Text = "";
             SupervisedApplyScopeHashText.Text = "";
+            SupervisedApplyDetailText.Text = "";
+            SupervisedApplyInputFilesText.Text = "";
+            SupervisedApplyPacketChainText.Text = "";
             SupervisedApplyApprovalButton.Tag = null;
             return;
         }
@@ -1759,6 +1763,40 @@ public partial class ToolPopupWindow : Window
             "v0 still refuses safely after validation because the apply runner is not implemented."
         ]);
         SupervisedApplyScopeHashText.Text = $"Bound scope hash: {scopeHash}";
+        RenderSupervisedApprovalDetail(detail);
+    }
+
+    private void RenderSupervisedApprovalDetail(ApprovalCardDetail? detail)
+    {
+        if (detail is null)
+        {
+            SupervisedApplyDetailText.Text = "Detail: waiting for ledger row and artifact JSON.";
+            SupervisedApplyInputFilesText.Text = "";
+            SupervisedApplyPacketChainText.Text = "";
+            return;
+        }
+
+        if (detail.Blocked)
+        {
+            SupervisedApplyDetailText.Text = $"Detail blocked: {detail.BlockedReason}";
+            SupervisedApplyInputFilesText.Text = "";
+            SupervisedApplyPacketChainText.Text = "";
+            return;
+        }
+
+        SupervisedApplyDetailText.Text = string.Join(Environment.NewLine, [
+            $"Operation: {detail.OperationId}",
+            $"Scope: {detail.ScopeId}",
+            $"Scope hash: {detail.ScopeHash}",
+            $"Artifact JSON: {detail.ArtifactJsonPath}",
+            $"Safety: {detail.SafetyCopy}"
+        ]);
+        SupervisedApplyInputFilesText.Text = detail.InputFiles.Count == 0
+            ? "Input files: none"
+            : string.Join(Environment.NewLine, detail.InputFiles.Select(file => $"{file.Role}: {file.Sha256} | {file.Path}"));
+        SupervisedApplyPacketChainText.Text = detail.ExpectedPacketChain.Count == 0
+            ? "Expected packet chain: none"
+            : string.Join(" -> ", detail.ExpectedPacketChain);
     }
 
     private static string FormatAutonomousScopeRecentLine(IReadOnlyList<string>? recentLines, string scopeId)
