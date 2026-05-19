@@ -29,6 +29,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wevito.Tools.SnapshotExport
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wevito.Tools.SnapshotVerify", "tools\Wevito.Tools.SnapshotVerify\Wevito.Tools.SnapshotVerify.csproj", "{347A19BB-EE37-434D-B11B-7264B51F4840}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wevito.Tools.ReplayRunner", "tools\Wevito.Tools.ReplayRunner\Wevito.Tools.ReplayRunner.csproj", "{3503CB9D-D580-4616-B26B-494342B6EB00}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -78,6 +80,10 @@ Global
 		{347A19BB-EE37-434D-B11B-7264B51F4840}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{347A19BB-EE37-434D-B11B-7264B51F4840}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{347A19BB-EE37-434D-B11B-7264B51F4840}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3503CB9D-D580-4616-B26B-494342B6EB00}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3503CB9D-D580-4616-B26B-494342B6EB00}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3503CB9D-D580-4616-B26B-494342B6EB00}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3503CB9D-D580-4616-B26B-494342B6EB00}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{08CCF05A-F156-4F1F-9ABC-89A6CA8E6617} = {F1D341DF-FB7A-4A44-86B2-08DCC52BF37C}
@@ -90,5 +96,6 @@ Global
 		{A98B9DDA-16D2-4160-9329-B23538C0A1E9} = {7CBCBE30-B310-4FF2-A7FB-D89D78287AB0}
 		{41E71068-1FCD-447E-B946-006289E26C6A} = {7CBCBE30-B310-4FF2-A7FB-D89D78287AB0}
 		{347A19BB-EE37-434D-B11B-7264B51F4840} = {7CBCBE30-B310-4FF2-A7FB-D89D78287AB0}
+		{3503CB9D-D580-4616-B26B-494342B6EB00} = {7CBCBE30-B310-4FF2-A7FB-D89D78287AB0}
 	EndGlobalSection
 EndGlobal
