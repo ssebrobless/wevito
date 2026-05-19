@@ -33,6 +33,8 @@ public static class KillSwitchCoverageAllowList
         typeof(SupervisedImprovementLoopRequest).FullName!, // immutable loop request DTO.
         typeof(SupervisedImprovementLoopResult).FullName!, // immutable loop result DTO.
         typeof(SupervisedImprovementApprovalResult).FullName!, // immutable approval result DTO.
+        typeof(PrerequisiteEntry).FullName!, // immutable apply-runner prerequisite-check entry DTO.
+        typeof(ApplyRunnerPrerequisiteCheckResult).FullName!, // immutable apply-runner prerequisite-check result DTO.
         typeof(SupervisedImprovementLoopSettings).FullName!, // immutable settings DTO plus parser.
         typeof(UserApplyApproval).FullName!, // user-entered approval DTO.
         typeof(UserApplyApprovalValidator).FullName!, // pure validator; no IO, loop, model call, or mutation.
