@@ -1269,6 +1269,13 @@
                                                Foreground="#FFD6DCDE"
                                                FontSize="10"
                                                TextWrapping="Wrap" />
+                                    <TextBlock x:Name="SupervisedApplyScopeHashText"
+                                               Margin="0,6,0,0"
+                                               FontFamily="Consolas"
+                                               Foreground="#FFE1D6A8"
+                                               FontSize="10"
+                                               TextWrapping="Wrap"
+                                               automation:AutomationProperties.AutomationId="SupervisedApplyScopeHashText" />
                                     <TextBox x:Name="SupervisedApplyOperationTextBox"
                                              Margin="0,8,0,0"
                                              Style="{StaticResource PopupTextBoxStyle}"

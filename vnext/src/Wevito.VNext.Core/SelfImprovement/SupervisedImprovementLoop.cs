@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using System.Text.Json;
 using Wevito.VNext.Contracts;
 using Wevito.VNext.Core.Audit;
@@ -29,6 +30,7 @@ public sealed class SupervisedImprovementLoop
 {
     public const string ApprovalToolFamily = "self-improvement-apply-awaiting-approval";
     public const string ApplyRunnerNotImplementedReason = "apply_runner_not_implemented_in_v0";
+    private const string ExperimentManifestVersion = "1";
 
     private readonly AuditLedgerService _ledger;
     private readonly UserApplyApprovalValidator _approvalValidator;
@@ -93,8 +95,12 @@ public sealed class SupervisedImprovementLoop
         }
 
         var operationId = BuildOperationId(proposalCard);
-        var artifactPath = WriteAwaitingApprovalArtifact(request, proposalCard, operationId);
-        var approvalCard = BuildAwaitingApprovalCard(request.RequestedAtUtc, proposalCard, operationId, artifactPath);
+        var proposalPath = GetPayloadValue(proposalCard, "proposal_path");
+        var dryRunPath = GetPayloadValue(proposalCard, "dry_run_path");
+        var evalPath = GetPayloadValue(proposalCard, "eval_path");
+        var scopeHash = BuildScopeHash(operationId, proposalPath, dryRunPath, evalPath);
+        var artifactPath = WriteAwaitingApprovalArtifact(request, proposalCard, operationId, scopeHash);
+        var approvalCard = BuildAwaitingApprovalCard(request.RequestedAtUtc, proposalCard, operationId, artifactPath, scopeHash);
         Record(
             SelfImprovementPacketKinds.ApplyAwaitingApproval,
             approvalCard.Id,
@@ -114,6 +120,7 @@ public sealed class SupervisedImprovementLoop
         UserApplyApproval? approval,
         string expectedScopeId,
         string expectedOperationId,
+        string expectedScopeHash,
         Guid taskCardId,
         DateTimeOffset nowUtc,
         IReadOnlyList<TaskCard> existingTaskCards)
@@ -128,6 +135,7 @@ public sealed class SupervisedImprovementLoop
             approval,
             expectedScopeId,
             expectedOperationId,
+            expectedScopeHash,
             nowUtc);
 
         if (validationResult is ApprovalResult.Refused refused)
@@ -173,7 +181,8 @@ public sealed class SupervisedImprovementLoop
         DateTimeOffset timestamp,
         TaskCard proposalCard,
         string operationId,
-        string artifactPath)
+        string artifactPath,
+        string scopeHash)
     {
         var intent = new TaskIntent(
             Guid.NewGuid(),
@@ -205,6 +214,7 @@ public sealed class SupervisedImprovementLoop
                 $"{timestamp:O} supervised loop prepared explicit apply approval card.",
                 $"source_task_card_id={proposalCard.Id}",
                 $"operation_id={operationId}",
+                $"scope_hash={scopeHash}",
                 "apply_runner=not_implemented_in_v0"
             ],
             ResultSummary: "Awaiting explicit user approval. No apply has run, and the v0 apply runner still refuses safely.",
@@ -216,6 +226,7 @@ public sealed class SupervisedImprovementLoop
                 ["packet_kind"] = SelfImprovementPacketKinds.ApplyAwaitingApproval,
                 ["scope_id"] = AutonomousScopeService.SpriteRepairBatchProposalScopeId,
                 ["operation_id"] = operationId,
+                ["scope_hash"] = scopeHash,
                 ["source_task_card_id"] = proposalCard.Id.ToString(),
                 ["artifact_path"] = artifactPath
             });
@@ -224,7 +235,8 @@ public sealed class SupervisedImprovementLoop
     private static string WriteAwaitingApprovalArtifact(
         SupervisedImprovementLoopRequest request,
         TaskCard proposalCard,
-        string operationId)
+        string operationId,
+        string scopeHash)
     {
         var root = Path.Combine(request.ArtifactRoot, "supervised-improvement-pilot", operationId);
         Directory.CreateDirectory(root);
@@ -236,6 +248,7 @@ public sealed class SupervisedImprovementLoop
             packetKind = SelfImprovementPacketKinds.ApplyAwaitingApproval,
             scopeId = AutonomousScopeService.SpriteRepairBatchProposalScopeId,
             operationId,
+            scopeHash,
             sourceTaskCardId = proposalCard.Id,
             proposalPath = proposalCard.ReviewPayload?.TryGetValue("proposal_path", out var proposalPath) == true ? proposalPath : "",
             dryRunPath = proposalCard.ReviewPayload?.TryGetValue("dry_run_path", out var dryRunPath) == true ? dryRunPath : "",
@@ -245,6 +258,39 @@ public sealed class SupervisedImprovementLoop
             approvalRequired = true
         }, JsonDefaults.Options));
         return path;
+    }
+
+    private static string BuildScopeHash(string operationId, string proposalPath, string dryRunPath, string evalPath)
+    {
+        return ScopeHash.Compute(new ScopeHashInputs(
+            AutonomousScopeService.SpriteRepairBatchProposalScopeId,
+            operationId,
+            ComputeFileSha256(proposalPath),
+            ComputeFileSha256(dryRunPath),
+            ComputeFileSha256(evalPath),
+            ExperimentManifestVersion,
+            [
+                SelfImprovementPacketKinds.ProposalDrafted,
+                SelfImprovementPacketKinds.DryRunCompleted,
+                SelfImprovementPacketKinds.EvalCompleted,
+                SelfImprovementPacketKinds.ApplyAwaitingApproval
+            ]));
+    }
+
+    private static string ComputeFileSha256(string path)
+    {
+        if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
+        {
+            return "";
+        }
+
+        using var stream = File.OpenRead(path);
+        return Convert.ToHexString(SHA256.HashData(stream)).ToLowerInvariant();
+    }
+
+    private static string GetPayloadValue(TaskCard card, string key)
+    {
+        return card.ReviewPayload?.TryGetValue(key, out var value) == true ? value : "";
     }
 
     private void RecordRefusal(Guid taskCardId, DateTimeOffset nowUtc, string reason)

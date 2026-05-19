@@ -5,4 +5,5 @@ public sealed record UserApplyApproval(
     string ConfirmationText,
     DateTimeOffset ConfirmedAtUtc,
     string ApprovedScopeId,
-    string ApprovedOperationId);
+    string ApprovedOperationId,
+    string ApprovedScopeHash);
