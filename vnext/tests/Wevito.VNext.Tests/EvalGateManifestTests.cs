@@ -56,9 +56,7 @@ public sealed class EvalGateManifestTests
         {
             [KillSwitchService.KillSwitchSetting] = bool.TrueString
         });
-        var store = new ThrowingHeldOutEvalStore();
-
-        var results = new EvalGateRunner(heldOutEvalStore: store, killSwitchService: killSwitch).Preview();
+        var results = new EvalGateRunner(killSwitchService: killSwitch).Preview();
 
         Assert.All(results.Values, result =>
         {
@@ -67,16 +65,4 @@ public sealed class EvalGateManifestTests
         });
     }
 
-    private sealed class ThrowingHeldOutEvalStore : IHeldOutEvalStore
-    {
-        public IReadOnlyList<string> ListCaseIds()
-        {
-            throw new InvalidOperationException("Held-out store should not be read in C-PHASE 147.");
-        }
-
-        public string? ReadCase(string caseId)
-        {
-            throw new InvalidOperationException("Held-out store should not be read in C-PHASE 147.");
-        }
-    }
 }

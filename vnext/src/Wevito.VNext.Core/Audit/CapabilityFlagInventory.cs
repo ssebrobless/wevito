@@ -1,4 +1,5 @@
 using Wevito.VNext.Core.SelfImprovement;
+using Wevito.VNext.Core.SelfImprovement.Eval;
 using Wevito.VNext.Core.SelfImprovement.Invariants;
 using Wevito.VNext.Core.Settings;
 
@@ -28,6 +29,7 @@ public static class CapabilityFlagInventory
         new(AutonomousScopeService.BuildEnabledSettingKey(AutonomousScopeService.SpriteRepairBatchProposalScopeId), bool.FalseString, "Allows the sprite-repair batch proposal scope to draft proposal packets."),
         new(SupervisedImprovementLoopSettings.EnabledSetting, bool.FalseString, "Allows the supervised self-improvement loop to draft proposal-only task cards."),
         new(InvariantViolationWatchdog.EnabledSetting, bool.FalseString, "Allows the invariant watchdog to scan the audit ledger and write reset packets only."),
+        new(EvalGateRunner.EnabledSetting, bool.FalseString, "Allows the eval gate runner v1 to execute the cheap deterministic gates only (Build / UnitTests / ScopeHash). All other gates remain NotApplicable."),
         new(PetModelAdapterEnabledSetting, bool.FalseString, "Allows helper previews to request model-written summaries after approval gates."),
         new(PetModelFirstCallApprovedSetting, bool.FalseString, "Records whether the first model-call consent notice has been acknowledged."),
         new(ModelProviderModeService.LocalProviderAvailableSetting, bool.FalseString, "Marks a loopback local model runtime as available for local-only routing."),
