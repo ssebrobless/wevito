@@ -15,13 +15,16 @@ public sealed class ExperimentRegistryTests
     }
 
     [Fact]
-    public void CompositionRoot_RegistersFirstReviewOnlyExperimentKind()
+    public void CompositionRoot_RegistersReviewOnlyExperimentKinds()
     {
         var registry = ShellCompositionRoot.CreateExperimentRegistry();
 
-        var descriptor = Assert.Single(registry.RegisteredKinds);
-        Assert.Equal(SpriteRepairBatchProposalDescriptor.Kind, descriptor.Kind.Value);
-        Assert.False(descriptor.EnabledByDefault);
+        Assert.Contains(registry.RegisteredKinds, descriptor =>
+            descriptor.Kind.Value == SpriteRepairBatchProposalDescriptor.Kind &&
+            descriptor.EnabledByDefault == false);
+        Assert.Contains(registry.RegisteredKinds, descriptor =>
+            descriptor.Kind.Value == EvalCoverageProposalDescriptor.Kind &&
+            descriptor.EnabledByDefault == false);
     }
 
     [Fact]

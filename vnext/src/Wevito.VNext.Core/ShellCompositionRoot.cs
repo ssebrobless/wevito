@@ -33,6 +33,21 @@ public static class ShellCompositionRoot
         return new InDistributionEvalStore(root, killSwitchService);
     }
 
+    public static EvalCoverageProposalScope CreateEvalCoverageProposalScope(
+        AuditLedgerService ledger,
+        KillSwitchService? killSwitchService = null,
+        Action<string>? commandObserver = null)
+    {
+        return new EvalCoverageProposalScope(
+            ledger.DatabasePath,
+            ledger,
+            CreateConstitutionalDecisionService(killSwitchService),
+            new ConstitutionalReviewedEmitter(ledger),
+            new EvalGateRunner(killSwitchService: killSwitchService),
+            killSwitchService,
+            commandObserver);
+    }
+
     public static ConstitutionalDecisionService CreateConstitutionalDecisionService(KillSwitchService? killSwitchService = null)
     {
         return new ConstitutionalDecisionService(killSwitchService, CreateExperimentRegistry());
@@ -40,6 +55,8 @@ public static class ShellCompositionRoot
 
     public static ExperimentRegistry CreateExperimentRegistry()
     {
-        return ExperimentRegistry.ForCompositionRoot(SpriteRepairBatchProposalDescriptor.Descriptor);
+        return ExperimentRegistry.ForCompositionRoot(
+            SpriteRepairBatchProposalDescriptor.Descriptor,
+            EvalCoverageProposalDescriptor.Descriptor);
     }
 }

@@ -97,6 +97,7 @@ public sealed class AutonomousScopeService
 {
     public const string SpriteRepairTriageScopeId = "sprite-repair-triage";
     public const string SpriteRepairBatchProposalScopeId = "sprite-repair-batch-proposal";
+    public const string EvalCoverageProposalScopeId = "eval-coverage-proposal";
     public const string AuditLedgerCleanupScopeId = "audit-ledger-cleanup";
     public const string EnabledChangedPacketKind = "autonomous_scope_enabled_changed";
     public const string TickPacketKind = "autonomous_scope_tick";
@@ -114,6 +115,12 @@ public sealed class AutonomousScopeService
             SpriteRepairBatchProposalScopeId,
             "Sprite-repair batch proposal",
             "Review only. No sprite mutation. No apply. Drafts a supervised self-improvement repair proposal packet.",
+            TimeSpan.FromMinutes(30),
+            CanMutate: false),
+        new AutonomousScopeDescriptor(
+            EvalCoverageProposalScopeId,
+            "Eval coverage proposal (review-only)",
+            "Review only. No mutation. No apply. Drafts an eval coverage gap proposal packet.",
             TimeSpan.FromMinutes(30),
             CanMutate: false),
         new AutonomousScopeDescriptor(

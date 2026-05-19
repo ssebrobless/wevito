@@ -16,8 +16,8 @@ public sealed class SpriteRepairBatchProposalScopeTests
     {
         var registry = ShellCompositionRoot.CreateExperimentRegistry();
 
-        var descriptor = Assert.Single(registry.RegisteredKinds);
-        Assert.Equal(SpriteRepairBatchProposalDescriptor.Kind, descriptor.Kind.Value);
+        var descriptor = Assert.Single(registry.RegisteredKinds, descriptor =>
+            descriptor.Kind.Value == SpriteRepairBatchProposalDescriptor.Kind);
         Assert.False(descriptor.EnabledByDefault);
     }
 

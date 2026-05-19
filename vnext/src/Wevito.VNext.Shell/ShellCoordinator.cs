@@ -186,6 +186,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         [
             new SpriteRepairTriageScope(Path.Combine(repoRoot, "vnext", "artifacts", "c-phase-128-sprite-repair-queue", "repair_queue.json"), _auditLedgerService, _petTaskCardQueueService),
             new SpriteRepairBatchProposalScope(Path.Combine(repoRoot, "vnext", "artifacts", "c-phase-128-sprite-repair-queue", "repair_queue.json"), _auditLedgerService),
+            ShellCompositionRoot.CreateEvalCoverageProposalScope(_auditLedgerService, _killSwitchService),
             new AuditLedgerCleanupScope(Path.GetDirectoryName(_auditLedgerService.DatabasePath) ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Wevito", "audit"), _auditLedgerService)
         ];
         var autonomousScopeRegistry = new AutonomousScopeRegistry(_autonomousScopeService, _autonomousScopes);
