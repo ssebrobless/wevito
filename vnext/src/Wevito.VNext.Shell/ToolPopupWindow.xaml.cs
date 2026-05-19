@@ -31,6 +31,7 @@ public partial class ToolPopupWindow : Window
     private List<PetTaskQueueRowItem> _taskQueueRows = [];
     private List<LocalDocumentResultRowItem> _localDocumentRows = [];
     private List<EvidenceSummaryRowItem> _evidenceSummaryRows = [];
+    private List<CapabilityFlagAuditRowItem> _capabilityFlagRows = [];
     private bool _suppressTaskQueueSelection;
     private IReadOnlyList<TaskCard> _lastTaskCards = [];
     private string _autonomousScopePreviewText = "No autonomous scope preview has run in this session.";
@@ -150,7 +151,8 @@ public partial class ToolPopupWindow : Window
         IReadOnlyList<string>? activityRecentLines = null,
         EvidenceCollectionStatus? evidenceStatus = null,
         EvidenceSummary? evidenceSummary = null,
-        MaturityClock? maturityClock = null)
+        MaturityClock? maturityClock = null,
+        IReadOnlyList<CapabilityFlagAuditRow>? capabilityFlagRows = null)
     {
         var toolId = string.IsNullOrWhiteSpace(state.ActiveTool.ToolId) ? "basket" : state.ActiveTool.ToolId;
         _lastTaskCards = state.TaskCards ?? [];
@@ -246,7 +248,7 @@ public partial class ToolPopupWindow : Window
         }
         else if (showingEvidence)
         {
-            RenderEvidencePanel(state, evidenceSummary, maturityClock);
+            RenderEvidencePanel(state, evidenceSummary, maturityClock, capabilityFlagRows);
         }
 
         _suppressSettingEvents = true;
@@ -1900,9 +1902,20 @@ public partial class ToolPopupWindow : Window
         LocalDocsResultsGrid.ItemsSource = _localDocumentRows;
     }
 
-    private void RenderEvidencePanel(CompanionState state, EvidenceSummary? summary, MaturityClock? maturityClock)
+    private void RenderEvidencePanel(
+        CompanionState state,
+        EvidenceSummary? summary,
+        MaturityClock? maturityClock,
+        IReadOnlyList<CapabilityFlagAuditRow>? capabilityFlagRows)
     {
         RenderMaturityClock(maturityClock);
+        _capabilityFlagRows = (capabilityFlagRows ?? [])
+            .Select(CapabilityFlagAuditRowItem.From)
+            .ToList();
+        CapabilityFlagGrid.ItemsSource = _capabilityFlagRows;
+        CapabilityFlagStatusText.Text = _capabilityFlagRows.Count == 0
+            ? "Capability flags are waiting for shell state."
+            : $"{_capabilityFlagRows.Count} capability flag(s). Read-only inventory; this panel cannot flip settings.";
         if (summary is null)
         {
             _evidenceSummaryRows = [];
@@ -2834,6 +2847,24 @@ internal sealed record EvidenceSummaryRowItem(
             row.HostedAiYesCount,
             row.LocalModelYesCount,
             row.RefusalCount);
+    }
+}
+
+internal sealed record CapabilityFlagAuditRowItem(
+    string Name,
+    string DefaultValue,
+    string CurrentValue,
+    string State,
+    string PlainLanguage)
+{
+    public static CapabilityFlagAuditRowItem From(CapabilityFlagAuditRow row)
+    {
+        return new CapabilityFlagAuditRowItem(
+            row.Name,
+            string.IsNullOrEmpty(row.DefaultValue) ? "(empty)" : row.DefaultValue,
+            string.IsNullOrEmpty(row.CurrentValue) ? "(empty)" : row.CurrentValue,
+            row.IsDefault ? "default" : "overridden",
+            row.PlainLanguage);
     }
 }
 
