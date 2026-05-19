@@ -4,6 +4,7 @@ using Wevito.VNext.Core.SelfImprovement.Experiments;
 using Wevito.VNext.Core.SelfImprovement.Invariants;
 using Wevito.VNext.Core.SelfImprovement.Judge;
 using Wevito.VNext.Core.SelfImprovement.Replay;
+using Wevito.VNext.Core.SelfImprovement.Scoring;
 
 namespace Wevito.VNext.Core;
 
@@ -58,6 +59,11 @@ public static class ShellCompositionRoot
             "artifacts");
 
         return new ReplayResultStore(root, killSwitchService);
+    }
+
+    public static ILocalScoringProvider CreateLocalScoringProvider(KillSwitchService? killSwitchService = null)
+    {
+        return new NotConfiguredScoringProvider(killSwitchService);
     }
 
     public static EvalCoverageProposalScope CreateEvalCoverageProposalScope(

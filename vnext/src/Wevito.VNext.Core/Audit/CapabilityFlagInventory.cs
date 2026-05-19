@@ -2,6 +2,7 @@ using Wevito.VNext.Core.SelfImprovement;
 using Wevito.VNext.Core.SelfImprovement.Eval;
 using Wevito.VNext.Core.SelfImprovement.Invariants;
 using Wevito.VNext.Core.SelfImprovement.Judge;
+using Wevito.VNext.Core.SelfImprovement.Scoring;
 using Wevito.VNext.Core.Settings;
 
 namespace Wevito.VNext.Core.Audit;
@@ -33,6 +34,7 @@ public static class CapabilityFlagInventory
         new(InvariantViolationWatchdog.EnabledSetting, bool.FalseString, "Allows the invariant watchdog to scan the audit ledger and write reset packets only."),
         new(EvalGateRunner.EnabledSetting, bool.FalseString, "Allows the eval gate runner v1 to execute the cheap deterministic gates only (Build / UnitTests / ScopeHash). All other gates remain NotApplicable."),
         new(HeuristicJudgeService.EnabledSetting, bool.FalseString, "Allows the heuristic judge service to write deterministic critique packets for open self-improvement proposals."),
+        new(NotConfiguredScoringProvider.EnabledSetting, bool.FalseString, "Allows a local-only scoring provider to score self-improvement proposals via loopback. Default off; provider must also declare itself configured."),
         new(PetModelAdapterEnabledSetting, bool.FalseString, "Allows helper previews to request model-written summaries after approval gates."),
         new(PetModelFirstCallApprovedSetting, bool.FalseString, "Records whether the first model-call consent notice has been acknowledged."),
         new(ModelProviderModeService.LocalProviderAvailableSetting, bool.FalseString, "Marks a loopback local model runtime as available for local-only routing."),
