@@ -73,6 +73,28 @@ public static class ShellCompositionRoot
         return new CapabilitiesAndGatesService(settingsProvider, killSwitchService);
     }
 
+    public static ApplyRunnerPrerequisiteCheckService CreateApplyRunnerPrerequisiteCheckService(
+        AuditLedgerService ledger,
+        IHeldOutEvalStore heldOutEvalStore,
+        IInDistributionEvalStore inDistributionEvalStore,
+        Func<IReadOnlyDictionary<string, string>>? settingsProvider = null,
+        KillSwitchService? killSwitchService = null)
+    {
+        var artifactsRoot = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "WevitoVNext",
+            "artifacts");
+
+        return new ApplyRunnerPrerequisiteCheckService(
+            artifactsRoot,
+            ledger.DatabasePath,
+            ledger,
+            heldOutEvalStore,
+            inDistributionEvalStore,
+            killSwitchService,
+            settingsProvider);
+    }
+
     public static EvalCoverageProposalScope CreateEvalCoverageProposalScope(
         AuditLedgerService ledger,
         KillSwitchService? killSwitchService = null,

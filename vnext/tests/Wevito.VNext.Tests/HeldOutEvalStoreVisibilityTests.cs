@@ -14,6 +14,9 @@ public sealed class HeldOutEvalStoreVisibilityTests
     [Fact]
     public void HeldOutStore_IsNotReferencedByForbiddenSurfaces()
     {
+        // ApplyRunnerPrerequisiteCheckService is the one explicit C-PHASE 174 exception:
+        // it may receive IHeldOutEvalStore only so ApplyRunnerPrerequisiteHeldOutAccessTests
+        // can prove it calls ListCaseIds() and never reads held-out case contents.
         var forbiddenTypes = new[]
         {
             typeof(ToolRegistry),
