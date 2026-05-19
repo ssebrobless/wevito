@@ -1303,11 +1303,11 @@
                                                        automation:AutomationProperties.AutomationId="SupervisedApplyPacketChainText" />
                                         </StackPanel>
                                     </Expander>
-                                    <Expander Header="Proposal diff (read-only)"
-                                              Margin="0,8,0,0"
-                                              Foreground="#FFEAF6F7"
-                                              IsExpanded="False"
-                                              automation:AutomationProperties.AutomationId="SupervisedProposalDiffExpander">
+                                     <Expander Header="Proposal diff (read-only)"
+                                               Margin="0,8,0,0"
+                                               Foreground="#FFEAF6F7"
+                                               IsExpanded="False"
+                                               automation:AutomationProperties.AutomationId="SupervisedProposalDiffExpander">
                                         <StackPanel Margin="0,8,0,0">
                                             <TextBlock x:Name="SupervisedProposalDiffStatusText"
                                                        Foreground="#FFD6DCDE"
@@ -1347,19 +1347,39 @@
                                                        FontSize="9"
                                                        TextWrapping="Wrap"
                                                        automation:AutomationProperties.AutomationId="SupervisedProposalDiffEvalText" />
-                                            <TextBlock x:Name="SupervisedProposalDiffHashesText"
-                                                       Margin="0,8,0,0"
-                                                       FontFamily="Consolas"
-                                                       Foreground="#FFE1D6A8"
-                                                       FontSize="9"
-                                                       TextWrapping="Wrap"
-                                                       automation:AutomationProperties.AutomationId="SupervisedProposalDiffHashesText" />
-                                        </StackPanel>
-                                    </Expander>
-                                    <TextBox x:Name="SupervisedApplyOperationTextBox"
-                                             Margin="0,8,0,0"
-                                             Style="{StaticResource PopupTextBoxStyle}"
-                                             automation:AutomationProperties.AutomationId="SupervisedApplyOperationTextBox" />
+                                             <TextBlock x:Name="SupervisedProposalDiffHashesText"
+                                                        Margin="0,8,0,0"
+                                                        FontFamily="Consolas"
+                                                        Foreground="#FFE1D6A8"
+                                                        FontSize="9"
+                                                        TextWrapping="Wrap"
+                                                        automation:AutomationProperties.AutomationId="SupervisedProposalDiffHashesText" />
+                                         </StackPanel>
+                                     </Expander>
+                                     <Expander Header="Replay log (read-only)"
+                                               Margin="0,8,0,0"
+                                               Foreground="#FFEAF6F7"
+                                               IsExpanded="False"
+                                               automation:AutomationProperties.AutomationId="SupervisedReplayLogExpander">
+                                         <StackPanel Margin="0,8,0,0">
+                                             <TextBlock x:Name="SupervisedReplayLogStatusText"
+                                                        Foreground="#FFD6DCDE"
+                                                        FontSize="10"
+                                                        TextWrapping="Wrap"
+                                                        automation:AutomationProperties.AutomationId="SupervisedReplayLogStatusText" />
+                                             <TextBlock x:Name="SupervisedReplayLogDiffsText"
+                                                        Margin="0,8,0,0"
+                                                        FontFamily="Consolas"
+                                                        Foreground="#FFBFD2DC"
+                                                        FontSize="9"
+                                                        TextWrapping="Wrap"
+                                                        automation:AutomationProperties.AutomationId="SupervisedReplayLogDiffsText" />
+                                         </StackPanel>
+                                     </Expander>
+                                     <TextBox x:Name="SupervisedApplyOperationTextBox"
+                                              Margin="0,8,0,0"
+                                              Style="{StaticResource PopupTextBoxStyle}"
+                                              automation:AutomationProperties.AutomationId="SupervisedApplyOperationTextBox" />
                                     <Button x:Name="SupervisedApplyApprovalButton"
                                             Margin="0,8,0,0"
                                             HorizontalAlignment="Left"

@@ -13,6 +13,7 @@ using Wevito.VNext.Core.Audit;
 using Wevito.VNext.Core.LocalRetrieval;
 using Wevito.VNext.Core.SelfImprovement;
 using Wevito.VNext.Core.SelfImprovement.Maturity;
+using Wevito.VNext.Core.SelfImprovement.Replay;
 using Wevito.VNext.Core.Settings;
 using Wevito.VNext.Core.Tools;
 
@@ -156,7 +157,8 @@ public partial class ToolPopupWindow : Window
         MaturityClock? maturityClock = null,
         IReadOnlyList<CapabilityFlagAuditRow>? capabilityFlagRows = null,
         ApprovalCardDetail? approvalCardDetail = null,
-        ProposalDiffExplanation? proposalDiffExplanation = null)
+        ProposalDiffExplanation? proposalDiffExplanation = null,
+        ReplayResultSummary? replayResultSummary = null)
     {
         var toolId = string.IsNullOrWhiteSpace(state.ActiveTool.ToolId) ? "basket" : state.ActiveTool.ToolId;
         _lastTaskCards = state.TaskCards ?? [];
@@ -280,7 +282,7 @@ public partial class ToolPopupWindow : Window
         AutonomousSpriteRepairBatchProposalScopeCheckBox.IsChecked = SpriteRepairBatchProposalScopeCheckBox.IsChecked;
         AutonomousAuditLedgerCleanupScopeCheckBox.IsChecked = AuditLedgerCleanupScopeCheckBox.IsChecked;
         SupervisedImprovementLoopCheckBox.IsChecked = GetSettingBool(state, SupervisedImprovementLoopSettings.EnabledSetting);
-        RenderSupervisedApprovalCard(state, approvalCardDetail, proposalDiffExplanation);
+        RenderSupervisedApprovalCard(state, approvalCardDetail, proposalDiffExplanation, replayResultSummary);
         AutonomousScopeStatusText.Text = FormatAutonomousScopeStatus(state.SettingsSnapshot);
         AutonomousScopePanelStatusText.Text = AutonomousScopeStatusText.Text;
         SpriteRepairScopeLastTickText.Text = FormatAutonomousScopeRecentLine(activityRecentLines, AutonomousScopeService.SpriteRepairTriageScopeId);
@@ -1747,7 +1749,8 @@ public partial class ToolPopupWindow : Window
     private void RenderSupervisedApprovalCard(
         CompanionState state,
         ApprovalCardDetail? detail,
-        ProposalDiffExplanation? proposalDiffExplanation)
+        ProposalDiffExplanation? proposalDiffExplanation,
+        ReplayResultSummary? replayResultSummary)
     {
         var card = (state.TaskCards ?? []).FirstOrDefault(SupervisedImprovementLoop.IsAwaitingApprovalCard);
         if (card is null || card.ReviewPayload is null)
@@ -1763,6 +1766,8 @@ public partial class ToolPopupWindow : Window
             SupervisedProposalDiffToolsText.Text = "";
             SupervisedProposalDiffEvalText.Text = "";
             SupervisedProposalDiffHashesText.Text = "";
+            SupervisedReplayLogStatusText.Text = "";
+            SupervisedReplayLogDiffsText.Text = "";
             SupervisedApplyApprovalButton.Tag = null;
             return;
         }
@@ -1781,6 +1786,7 @@ public partial class ToolPopupWindow : Window
         SupervisedApplyScopeHashText.Text = $"Bound scope hash: {scopeHash}";
         RenderSupervisedApprovalDetail(detail);
         RenderProposalDiffExplanation(proposalDiffExplanation);
+        RenderReplayLog(replayResultSummary);
     }
 
     private void RenderSupervisedApprovalDetail(ApprovalCardDetail? detail)
@@ -1856,6 +1862,37 @@ public partial class ToolPopupWindow : Window
             $"Scope hash: {explanation.ScopeHash}",
             $"Manifest hash: {explanation.ManifestHash}"
         ]);
+    }
+
+    private void RenderReplayLog(ReplayResultSummary? summary)
+    {
+        if (summary is null)
+        {
+            SupervisedReplayLogStatusText.Text = "No replay result available.";
+            SupervisedReplayLogDiffsText.Text = "";
+            return;
+        }
+
+        SupervisedReplayLogStatusText.Text = string.Join(Environment.NewLine, [
+            $"Operation: {summary.OperationId}",
+            $"Result: {summary.ResultKind}",
+            $"Diff count: {summary.DiffCount}",
+            $"Replayed: {summary.ReplayedAtUtc.ToLocalTime():MM/dd HH:mm}",
+            "Read-only replay summary. This panel cannot rerun, approve, apply, mutate, or flip any capability flag."
+        ]);
+        SupervisedReplayLogDiffsText.Text = summary.FirstTenDiffs.Count == 0
+            ? "Diffs: none"
+            : string.Join(Environment.NewLine, summary.FirstTenDiffs.Take(10).Select(diff => $"- {Truncate(diff, 256)}"));
+    }
+
+    private static string Truncate(string value, int maxLength)
+    {
+        if (value.Length <= maxLength)
+        {
+            return value;
+        }
+
+        return value[..maxLength];
     }
 
     private static string FormatAutonomousScopeRecentLine(IReadOnlyList<string>? recentLines, string scopeId)

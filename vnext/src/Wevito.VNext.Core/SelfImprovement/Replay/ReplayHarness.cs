@@ -50,6 +50,49 @@ public sealed class ReplayHarness
         return Compare(capture.Packets, packets);
     }
 
+    public void WriteResult(string path, ReplayComparisonResult result, ReplayCapture capture, DateTimeOffset replayedAtUtc)
+    {
+        if (_killSwitch?.IsActive() == true)
+        {
+            throw new InvalidOperationException("kill_switch=true");
+        }
+
+        var fullPath = Path.GetFullPath(path);
+        if (!IsUnderVNextArtifacts(fullPath))
+        {
+            throw new InvalidOperationException("replay_result_outside_vnext_artifacts");
+        }
+
+        Directory.CreateDirectory(Path.GetDirectoryName(fullPath) ?? ".");
+        File.WriteAllText(fullPath, JsonSerializer.Serialize(ToSummary(result, capture, replayedAtUtc), JsonDefaults.Options));
+    }
+
+    private static ReplayResultSummary ToSummary(ReplayComparisonResult result, ReplayCapture capture, DateTimeOffset replayedAtUtc)
+    {
+        return result switch
+        {
+            ReplayComparisonResult.Identical => new ReplayResultSummary(
+                capture.OperationId,
+                "Identical",
+                0,
+                replayedAtUtc,
+                []),
+            ReplayComparisonResult.Diverged diverged => new ReplayResultSummary(
+                capture.OperationId,
+                "Diverged",
+                diverged.Diffs.Count,
+                replayedAtUtc,
+                diverged.Diffs.Take(10).ToArray()),
+            ReplayComparisonResult.NotApplicable notApplicable => new ReplayResultSummary(
+                capture.OperationId,
+                "NotApplicable",
+                0,
+                replayedAtUtc,
+                [notApplicable.Reason]),
+            _ => new ReplayResultSummary(capture.OperationId, "NotApplicable", 0, replayedAtUtc, ["unknown_result"])
+        };
+    }
+
     private static ReplayComparisonResult Compare(IReadOnlyList<EvidencePacket> expected, IReadOnlyList<EvidencePacket> actual)
     {
         var diffs = new List<string>();
@@ -116,5 +159,20 @@ public sealed class ReplayHarness
         var marker = $"{Path.DirectorySeparatorChar}sprite-repair-batch-proposal{Path.DirectorySeparatorChar}";
         var index = artifactPath.IndexOf(marker, StringComparison.OrdinalIgnoreCase);
         return index <= 0 ? "" : artifactPath[..index];
+    }
+
+    private static bool IsUnderVNextArtifacts(string fullPath)
+    {
+        var parts = fullPath.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+        for (var index = 0; index < parts.Length - 1; index++)
+        {
+            if (string.Equals(parts[index], "vnext", StringComparison.OrdinalIgnoreCase) &&
+                string.Equals(parts[index + 1], "artifacts", StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

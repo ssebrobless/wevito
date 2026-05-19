@@ -3,6 +3,7 @@ using Wevito.VNext.Core.SelfImprovement.Eval;
 using Wevito.VNext.Core.SelfImprovement.Experiments;
 using Wevito.VNext.Core.SelfImprovement.Invariants;
 using Wevito.VNext.Core.SelfImprovement.Judge;
+using Wevito.VNext.Core.SelfImprovement.Replay;
 
 namespace Wevito.VNext.Core;
 
@@ -47,6 +48,16 @@ public static class ShellCompositionRoot
         KillSwitchService? killSwitchService = null)
     {
         return new ProposalDiffExplainerService(ledger.DatabasePath, killSwitchService);
+    }
+
+    public static ReplayResultStore CreateReplayResultStore(KillSwitchService killSwitchService)
+    {
+        var root = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "WevitoVNext",
+            "artifacts");
+
+        return new ReplayResultStore(root, killSwitchService);
     }
 
     public static EvalCoverageProposalScope CreateEvalCoverageProposalScope(

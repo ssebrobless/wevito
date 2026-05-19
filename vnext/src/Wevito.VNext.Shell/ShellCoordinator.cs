@@ -14,6 +14,7 @@ using Wevito.VNext.Core.SelfImprovement.Experiments;
 using Wevito.VNext.Core.SelfImprovement.Invariants;
 using Wevito.VNext.Core.SelfImprovement.Judge;
 using Wevito.VNext.Core.SelfImprovement.Maturity;
+using Wevito.VNext.Core.SelfImprovement.Replay;
 using Wevito.VNext.Core.Settings;
 using Wevito.VNext.Core.Tools;
 
@@ -81,6 +82,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private readonly HeuristicJudgeService _heuristicJudgeService;
     private readonly ApprovalCardDetailService _approvalCardDetailService;
     private readonly ProposalDiffExplainerService _proposalDiffExplainerService;
+    private readonly ReplayResultStore _replayResultStore;
     private readonly AutonomousOperationsLoop _autonomousOperationsLoop;
     private readonly TranslationExecutionAdapter _translationExecutionAdapter = new();
     private readonly AudioAssistExecutionAdapter _audioAssistExecutionAdapter = new();
@@ -204,6 +206,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             () => _state?.SettingsSnapshot ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase));
         _approvalCardDetailService = new ApprovalCardDetailService(_auditLedgerService.DatabasePath, _killSwitchService);
         _proposalDiffExplainerService = ShellCompositionRoot.CreateProposalDiffExplainerService(_auditLedgerService, _killSwitchService);
+        _replayResultStore = ShellCompositionRoot.CreateReplayResultStore(_killSwitchService);
         _autonomousOperationsLoop = new AutonomousOperationsLoop(_autonomousBetaDecisionService, _auditLedgerService, _killSwitchService, scopeRegistry: autonomousScopeRegistry, supervisedImprovementLoop: _supervisedImprovementLoop);
         _screenCaptureExecutionAdapter = new ScreenCaptureExecutionAdapter(new WindowsGraphicsCaptureBackend(() => _homeWindow));
         _tickTimer = new DispatcherTimer(DispatcherPriority.Render)
@@ -833,10 +836,11 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         var maturityClock = _maturityScoreboardService.BuildScoreboard(now);
         var approvalCardDetail = BuildApprovalCardDetail();
         var proposalDiffExplanation = BuildProposalDiffExplanation();
+        var replayResultSummary = BuildReplayResultSummary();
 
         _homeWindow.Render(_state, environment, _feedbackText, _assetService, needSnapshot, aggregateStatuses, actionEnabled, habitatLoadout, evidenceStatus, _localBrainStatus);
         _roamBandWindow.Render(_state, _assetService, liveStatus, liveBannerText, supervisorStatus, killSwitchActive, evidenceStatus, desktopAssetOpacity);
-        _toolPopupWindow.Render(_state, _content, habitatLoadout, _assetService, _devToolsEnabled, petCommandBarState, supervisorStatus, activitySummary, autonomousDecision, promotionDecision, liveRecentLines, evidenceStatus, evidenceSummary, maturityClock, capabilityFlagRows, approvalCardDetail, proposalDiffExplanation);
+        _toolPopupWindow.Render(_state, _content, habitatLoadout, _assetService, _devToolsEnabled, petCommandBarState, supervisorStatus, activitySummary, autonomousDecision, promotionDecision, liveRecentLines, evidenceStatus, evidenceSummary, maturityClock, capabilityFlagRows, approvalCardDetail, proposalDiffExplanation, replayResultSummary);
     }
 
     private ApprovalCardDetail? BuildApprovalCardDetail()
@@ -861,6 +865,24 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         }
 
         return _proposalDiffExplainerService.Explain(operationId);
+    }
+
+    public ReplayResultSummary? GetReplayResultSummary()
+    {
+        return BuildReplayResultSummary();
+    }
+
+    private ReplayResultSummary? BuildReplayResultSummary()
+    {
+        var card = _state?.TaskCards?.FirstOrDefault(SupervisedImprovementLoop.IsAwaitingApprovalCard);
+        if (card?.ReviewPayload is null ||
+            !card.ReviewPayload.TryGetValue("operation_id", out var operationId) ||
+            string.IsNullOrWhiteSpace(operationId))
+        {
+            return null;
+        }
+
+        return _replayResultStore.GetLatest(operationId);
     }
 
     private async Task EnableAutonomousBetaAfterConsentAsync()
