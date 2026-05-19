@@ -1724,6 +1724,45 @@
                             </DataGrid>
                         </StackPanel>
                     </Border>
+                    <Border Margin="0,10,0,0"
+                            Padding="8"
+                            Background="#101E2A"
+                            BorderBrush="#496E86"
+                            BorderThickness="1"
+                            CornerRadius="6"
+                            automation:AutomationProperties.AutomationId="RefusedApprovalPanel">
+                        <StackPanel>
+                            <TextBlock Text="Refused approvals"
+                                       Foreground="#FFF0F4F5"
+                                       FontSize="12"
+                                       FontWeight="SemiBold" />
+                            <TextBlock x:Name="RefusedApprovalStatusText"
+                                       Margin="0,4,0,0"
+                                       Foreground="#FFBFD2DC"
+                                       FontSize="10"
+                                       TextWrapping="Wrap"
+                                       automation:AutomationProperties.AutomationId="RefusedApprovalStatusText" />
+                            <DataGrid x:Name="RefusedApprovalReasonGrid"
+                                      Margin="0,8,0,0"
+                                      MaxHeight="160"
+                                      AutoGenerateColumns="False"
+                                      HeadersVisibility="Column"
+                                      CanUserAddRows="False"
+                                      CanUserDeleteRows="False"
+                                      IsReadOnly="True"
+                                      Background="#0D151D"
+                                      Foreground="#FFEAF6F7"
+                                      BorderBrush="#425D78"
+                                      GridLinesVisibility="None"
+                                      automation:AutomationProperties.AutomationId="RefusedApprovalReasonGrid">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Reason" Binding="{Binding Reason}" Width="2*" />
+                                    <DataGridTextColumn Header="Meaning" Binding="{Binding Meaning}" Width="3*" />
+                                    <DataGridTextColumn Header="Count" Binding="{Binding Count}" Width="70" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </StackPanel>
+                    </Border>
                     <DataGrid x:Name="EvidenceSummaryGrid"
                               Margin="0,10,0,0"
                               MaxHeight="300"
