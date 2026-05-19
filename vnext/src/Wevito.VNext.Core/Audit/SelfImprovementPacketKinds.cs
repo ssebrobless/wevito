@@ -11,4 +11,5 @@ public static class SelfImprovementPacketKinds
     public const string ApplyCompleted = "self_improvement_apply_completed";
     public const string RollbackVerified = "self_improvement_rollback_verified";
     public const string MaturityClockReset = "self_improvement_maturity_clock_reset";
+    public const string JudgeCritique = "self_improvement_judge_critique";
 }
