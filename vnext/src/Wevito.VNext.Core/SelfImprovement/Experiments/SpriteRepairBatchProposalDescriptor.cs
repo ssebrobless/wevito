@@ -9,5 +9,6 @@ public static class SpriteRepairBatchProposalDescriptor
         new ExperimentKind(Kind),
         "Sprite-repair batch proposal",
         "Review-only dry-run proposal for a guarded sprite repair batch. No sprite mutation. No apply.",
-        EnabledByDefault: false);
+        EnabledByDefault: false,
+        ManifestVersion: "1");
 }

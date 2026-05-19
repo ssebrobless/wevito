@@ -25,6 +25,24 @@ public sealed class ScopeHashTests
     }
 
     [Fact]
+    public void Compute_ExperimentManifestHashChange_ChangesHash()
+    {
+        var baseline = ScopeHash.Compute(Inputs());
+        var changed = ScopeHash.Compute(Inputs(experimentManifestHash: new string('f', 64)));
+
+        Assert.NotEqual(baseline, changed);
+    }
+
+    [Fact]
+    public void Compute_EmptyExperimentManifestHashDiffersFromNonEmpty()
+    {
+        var empty = ScopeHash.Compute(Inputs(experimentManifestHash: ""));
+        var nonEmpty = ScopeHash.Compute(Inputs(experimentManifestHash: new string('e', 64)));
+
+        Assert.NotEqual(empty, nonEmpty);
+    }
+
+    [Fact]
     public void Compute_PacketKindsAreSortedBeforeHashing()
     {
         var sorted = ScopeHash.Compute(Inputs(packetKinds:
@@ -43,8 +61,9 @@ public sealed class ScopeHashTests
         Assert.Equal(sorted, unsorted);
     }
 
-    private static ScopeHashInputs Inputs(IReadOnlyList<string>? packetKinds = null)
+    private static ScopeHashInputs Inputs(IReadOnlyList<string>? packetKinds = null, string experimentManifestHash = "manifest-hash-001")
     {
+        // MIGRATED in C-PHASE 163: manifest hash folded into scope hash.
         return new ScopeHashInputs(
             "sprite-repair-batch-proposal",
             "apply-candidate-001",
@@ -57,6 +76,7 @@ public sealed class ScopeHashTests
                 SelfImprovementPacketKinds.ProposalDrafted,
                 SelfImprovementPacketKinds.DryRunCompleted,
                 SelfImprovementPacketKinds.EvalCompleted
-            ]);
+            ],
+            experimentManifestHash);
     }
 }

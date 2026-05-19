@@ -18,6 +18,7 @@ public static class ScopeHash
             inputs.DryRunSha256,
             inputs.EvalSha256,
             inputs.ExperimentManifestVersion,
+            inputs.ExperimentManifestHash,
             PacketKindsTouched = (inputs.PacketKindsTouched ?? [])
                 .Order(StringComparer.Ordinal)
                 .ToArray()

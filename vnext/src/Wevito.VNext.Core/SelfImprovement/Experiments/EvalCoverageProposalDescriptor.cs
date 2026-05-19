@@ -14,5 +14,6 @@ public sealed class EvalCoverageProposalDescriptor
         new ExperimentKind(Kind),
         "Eval-coverage proposal",
         "Review-only dry-run proposal listing eval gates with no Passed eval_completed packet in the last 30 days. No mutation. No apply.",
-        EnabledByDefault: false);
+        EnabledByDefault: false,
+        ManifestVersion: "1");
 }
