@@ -45,7 +45,7 @@ public static class CapabilityFlagInventory
         new(ModelProviderModeService.HostedProviderApprovedSetting, bool.FalseString, "Would allow hosted provider routing only in an explicitly approved future mode."),
         new(WebResearchConnector.WebSearchEnabledSetting, bool.FalseString, "Allows approved web research surfaces to fetch external pages."),
         new(SettingKeys.LocalDocumentRetrievalEnabled, bool.FalseString, "Allows local document retrieval to build and query the local docs index."),
-        new(LocalFileReadEnabledSetting, "", "Allows approved autonomous scopes to read local files through policy gates."),
-        new(LocalToolExecutionEnabledSetting, "", "Allows approved local tool execution through policy gates.")
+        new(LocalFileReadEnabledSetting, bool.FalseString, "Allows approved autonomous scopes to read local files through policy gates."),
+        new(LocalToolExecutionEnabledSetting, bool.FalseString, "Allows approved local tool execution through policy gates.")
     ];
 }
