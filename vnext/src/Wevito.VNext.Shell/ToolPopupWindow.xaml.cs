@@ -32,6 +32,7 @@ public partial class ToolPopupWindow : Window
     private List<LocalDocumentResultRowItem> _localDocumentRows = [];
     private List<EvidenceSummaryRowItem> _evidenceSummaryRows = [];
     private List<CapabilityFlagAuditRowItem> _capabilityFlagRows = [];
+    private List<OperationTimelineRowItem> _operationTimelineRows = [];
     private bool _suppressTaskQueueSelection;
     private IReadOnlyList<TaskCard> _lastTaskCards = [];
     private string _autonomousScopePreviewText = "No autonomous scope preview has run in this session.";
@@ -998,6 +999,11 @@ public partial class ToolPopupWindow : Window
         PublishSetting("evidence_dashboard_max_packets", EvidenceMaxPacketsComboBox.SelectedValue as string ?? EvidenceSummaryService.DefaultMaxPackets.ToString());
     }
 
+    private void OperationTimelineOperationTextBox_OnTextChanged(object sender, TextChangedEventArgs e)
+    {
+        PublishSetting("operation_timeline_operation_id", OperationTimelineOperationTextBox.Text ?? "");
+    }
+
     private async void EvidenceExportButton_OnClick(object sender, RoutedEventArgs e)
     {
         if (EvidenceSummaryExportRequested is not null)
@@ -1954,6 +1960,7 @@ public partial class ToolPopupWindow : Window
         CapabilityFlagStatusText.Text = _capabilityFlagRows.Count == 0
             ? "Capability flags are waiting for shell state."
             : $"{_capabilityFlagRows.Count} capability flag(s). Read-only inventory; this panel cannot flip settings.";
+        RenderOperationTimeline(state);
         if (summary is null)
         {
             _evidenceSummaryRows = [];
@@ -1972,6 +1979,40 @@ public partial class ToolPopupWindow : Window
         EvidenceStatusText.Text = summary.IsBlocked
             ? $"Blocked: {summary.StatusMessage}"
             : $"Range={ResolveEvidenceDateRangeSetting(state)}; max={summary.Query.MaxPackets}; rows={summary.Rows.Count}; {unknownText}. Export writes only to vnext/artifacts/c-phase-141-evidence-dashboard/.";
+    }
+
+    private void RenderOperationTimeline(CompanionState state)
+    {
+        var operationId = ResolveOperationTimelineOperationId(state);
+        if (!OperationTimelineOperationTextBox.IsKeyboardFocusWithin &&
+            !string.Equals(OperationTimelineOperationTextBox.Text, operationId, StringComparison.Ordinal))
+        {
+            var previousSuppress = _suppressSettingEvents;
+            _suppressSettingEvents = true;
+            OperationTimelineOperationTextBox.Text = operationId;
+            _suppressSettingEvents = previousSuppress;
+        }
+
+        if (string.IsNullOrWhiteSpace(operationId))
+        {
+            _operationTimelineRows = [];
+            OperationTimelineGrid.ItemsSource = _operationTimelineRows;
+            OperationTimelineStatusText.Text = "Enter an operation_id to render its self-improvement packet chain.";
+            return;
+        }
+
+        var service = new OperationTimelineService(
+            new AuditLedgerService().DatabasePath,
+            new PlainLanguageExplainer(),
+            new KillSwitchService(() => state.SettingsSnapshot));
+        var rows = service.BuildFor(operationId);
+        _operationTimelineRows = rows.Select(OperationTimelineRowItem.From).ToList();
+        OperationTimelineGrid.ItemsSource = _operationTimelineRows;
+        OperationTimelineStatusText.Text = _operationTimelineRows.Count == 0
+            ? $"No self-improvement packet rows found for operation_id '{operationId}'."
+            : rows.Count == 1 && rows[0].PacketKind.Equals("blocked", StringComparison.OrdinalIgnoreCase)
+                ? rows[0].PlainLanguage
+                : $"{_operationTimelineRows.Count} self-improvement packet row(s). Plain-language only; raw ledger text is hidden.";
     }
 
     private void RenderMaturityClock(MaturityClock? maturityClock)
@@ -2027,6 +2068,13 @@ public partial class ToolPopupWindow : Window
             int.TryParse(raw, out var maxPackets)
             ? Math.Clamp(maxPackets, 1, EvidenceSummaryService.MaxAllowedPackets)
             : EvidenceSummaryService.DefaultMaxPackets;
+    }
+
+    private static string ResolveOperationTimelineOperationId(CompanionState state)
+    {
+        return state.SettingsSnapshot.TryGetValue("operation_timeline_operation_id", out var operationId)
+            ? operationId
+            : "";
     }
 
     private static string FormatReasoningModelStatus(CompanionState state)
@@ -2885,6 +2933,26 @@ internal sealed record EvidenceSummaryRowItem(
             row.HostedAiYesCount,
             row.LocalModelYesCount,
             row.RefusalCount);
+    }
+}
+
+internal sealed record OperationTimelineRowItem(
+    string AtLocal,
+    string PacketKind,
+    string PlainLanguage,
+    string StatusBadge,
+    string DidMutate,
+    string DidUseLocalModel)
+{
+    public static OperationTimelineRowItem From(OperationTimelineRow row)
+    {
+        return new OperationTimelineRowItem(
+            row.AtUtc == DateTimeOffset.MinValue ? "--" : row.AtUtc.ToLocalTime().ToString("MM/dd HH:mm"),
+            row.PacketKind,
+            row.PlainLanguage,
+            row.StatusBadge,
+            row.DidMutate ? "yes" : "no",
+            row.DidUseLocalModel ? "yes" : "no");
     }
 }
 
