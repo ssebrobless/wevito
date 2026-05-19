@@ -11,6 +11,7 @@ using Wevito.VNext.Core.Audit;
 using Wevito.VNext.Core.LocalRetrieval;
 using Wevito.VNext.Core.SelfImprovement;
 using Wevito.VNext.Core.SelfImprovement.Experiments;
+using Wevito.VNext.Core.SelfImprovement.Invariants;
 using Wevito.VNext.Core.SelfImprovement.Maturity;
 using Wevito.VNext.Core.Settings;
 using Wevito.VNext.Core.Tools;
@@ -74,6 +75,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private readonly AutonomousScopeService _autonomousScopeService;
     private readonly IReadOnlyList<IAutonomousScope> _autonomousScopes;
     private readonly SupervisedImprovementLoop _supervisedImprovementLoop;
+    private readonly InvariantViolationWatchdog _invariantViolationWatchdog;
     private readonly AutonomousOperationsLoop _autonomousOperationsLoop;
     private readonly TranslationExecutionAdapter _translationExecutionAdapter = new();
     private readonly AudioAssistExecutionAdapter _audioAssistExecutionAdapter = new();
@@ -185,6 +187,10 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         ];
         var autonomousScopeRegistry = new AutonomousScopeRegistry(_autonomousScopeService, _autonomousScopes);
         _supervisedImprovementLoop = ShellCompositionRoot.CreateSupervisedImprovementLoop(_auditLedgerService, _killSwitchService);
+        _invariantViolationWatchdog = ShellCompositionRoot.CreateInvariantViolationWatchdog(
+            _auditLedgerService,
+            _killSwitchService,
+            () => _state?.SettingsSnapshot ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase));
         _autonomousOperationsLoop = new AutonomousOperationsLoop(_autonomousBetaDecisionService, _auditLedgerService, _killSwitchService, scopeRegistry: autonomousScopeRegistry, supervisedImprovementLoop: _supervisedImprovementLoop);
         _screenCaptureExecutionAdapter = new ScreenCaptureExecutionAdapter(new WindowsGraphicsCaptureBackend(() => _homeWindow));
         _tickTimer = new DispatcherTimer(DispatcherPriority.Render)
@@ -453,6 +459,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _runtimeBudgetMeter.FlushIfDue();
         _runtimeSessionTracker.Tick(now, _state.SettingsSnapshot);
         _dailyEvidenceSnapshotService.Tick(now, _runtimeSupervisorService.ReadBudgetSnapshot(_state.SettingsSnapshot), _state.SettingsSnapshot);
+        TryScanInvariantViolations(now);
         TryPollAutonomousScheduler(now);
         TryRunAutonomousOperationsBeta(now);
 
@@ -470,6 +477,28 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         TryPollLocalBrainHeartbeat(now);
 
         Render();
+    }
+
+    private void TryScanInvariantViolations(DateTimeOffset now)
+    {
+        if (_state is null || !GetSettingBool(_state.SettingsSnapshot, InvariantViolationWatchdog.EnabledSetting))
+        {
+            return;
+        }
+
+        try
+        {
+            var results = _invariantViolationWatchdog.Scan(now);
+            var triggered = results.Count(result => result.Triggered);
+            if (triggered > 0)
+            {
+                TraceLog.Write("self-improvement", $"invariant-watchdog triggered={triggered}");
+            }
+        }
+        catch (Exception ex)
+        {
+            TraceLog.Write("self-improvement", $"invariant-watchdog failed={ex.GetType().Name}");
+        }
     }
 
     private void TryPollLocalBrainHeartbeat(DateTimeOffset now)
@@ -3239,6 +3268,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         hydrated.TryAdd(AutonomousOperationsConfig.DailyCapSetting, "3");
         hydrated.TryAdd(AutonomousOperationsConfig.IntervalMinutesSetting, "10");
         hydrated.TryAdd(SupervisedImprovementLoopSettings.EnabledSetting, bool.FalseString);
+        hydrated.TryAdd(InvariantViolationWatchdog.EnabledSetting, bool.FalseString);
         hydrated.TryAdd(LiveStatusFeed.PollSecondsSetting, "10");
         hydrated.TryAdd(WebResearchConnector.WebSearchEnabledSetting, bool.FalseString);
         hydrated.TryAdd(WebResearchConnector.WebBackendSetting, "offline");
