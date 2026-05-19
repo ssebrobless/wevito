@@ -42,6 +42,13 @@ public static class ShellCompositionRoot
         return new HeuristicJudgeService(ledger.DatabasePath, ledger, killSwitchService, settingsProvider);
     }
 
+    public static ProposalDiffExplainerService CreateProposalDiffExplainerService(
+        AuditLedgerService ledger,
+        KillSwitchService? killSwitchService = null)
+    {
+        return new ProposalDiffExplainerService(ledger.DatabasePath, killSwitchService);
+    }
+
     public static EvalCoverageProposalScope CreateEvalCoverageProposalScope(
         AuditLedgerService ledger,
         KillSwitchService? killSwitchService = null,

@@ -155,7 +155,8 @@ public partial class ToolPopupWindow : Window
         EvidenceSummary? evidenceSummary = null,
         MaturityClock? maturityClock = null,
         IReadOnlyList<CapabilityFlagAuditRow>? capabilityFlagRows = null,
-        ApprovalCardDetail? approvalCardDetail = null)
+        ApprovalCardDetail? approvalCardDetail = null,
+        ProposalDiffExplanation? proposalDiffExplanation = null)
     {
         var toolId = string.IsNullOrWhiteSpace(state.ActiveTool.ToolId) ? "basket" : state.ActiveTool.ToolId;
         _lastTaskCards = state.TaskCards ?? [];
@@ -279,7 +280,7 @@ public partial class ToolPopupWindow : Window
         AutonomousSpriteRepairBatchProposalScopeCheckBox.IsChecked = SpriteRepairBatchProposalScopeCheckBox.IsChecked;
         AutonomousAuditLedgerCleanupScopeCheckBox.IsChecked = AuditLedgerCleanupScopeCheckBox.IsChecked;
         SupervisedImprovementLoopCheckBox.IsChecked = GetSettingBool(state, SupervisedImprovementLoopSettings.EnabledSetting);
-        RenderSupervisedApprovalCard(state, approvalCardDetail);
+        RenderSupervisedApprovalCard(state, approvalCardDetail, proposalDiffExplanation);
         AutonomousScopeStatusText.Text = FormatAutonomousScopeStatus(state.SettingsSnapshot);
         AutonomousScopePanelStatusText.Text = AutonomousScopeStatusText.Text;
         SpriteRepairScopeLastTickText.Text = FormatAutonomousScopeRecentLine(activityRecentLines, AutonomousScopeService.SpriteRepairTriageScopeId);
@@ -1743,7 +1744,10 @@ public partial class ToolPopupWindow : Window
         return $"Scopes: sprite-repair-triage={(spriteEnabled ? "on" : "off")}, sprite-repair-batch-proposal={(proposalEnabled ? "on" : "off")}, audit-ledger-cleanup={(cleanupEnabled ? "on" : "off")} | supervised-pilot={(supervisedEnabled ? "on" : "off")} | autonomous beta={(betaEnabled ? "on" : "off")} | review-only scopes never mutate sprite art.";
     }
 
-    private void RenderSupervisedApprovalCard(CompanionState state, ApprovalCardDetail? detail)
+    private void RenderSupervisedApprovalCard(
+        CompanionState state,
+        ApprovalCardDetail? detail,
+        ProposalDiffExplanation? proposalDiffExplanation)
     {
         var card = (state.TaskCards ?? []).FirstOrDefault(SupervisedImprovementLoop.IsAwaitingApprovalCard);
         if (card is null || card.ReviewPayload is null)
@@ -1754,6 +1758,11 @@ public partial class ToolPopupWindow : Window
             SupervisedApplyDetailText.Text = "";
             SupervisedApplyInputFilesText.Text = "";
             SupervisedApplyPacketChainText.Text = "";
+            SupervisedProposalDiffStatusText.Text = "";
+            SupervisedProposalDiffSourcePathsText.Text = "";
+            SupervisedProposalDiffToolsText.Text = "";
+            SupervisedProposalDiffEvalText.Text = "";
+            SupervisedProposalDiffHashesText.Text = "";
             SupervisedApplyApprovalButton.Tag = null;
             return;
         }
@@ -1771,6 +1780,7 @@ public partial class ToolPopupWindow : Window
         ]);
         SupervisedApplyScopeHashText.Text = $"Bound scope hash: {scopeHash}";
         RenderSupervisedApprovalDetail(detail);
+        RenderProposalDiffExplanation(proposalDiffExplanation);
     }
 
     private void RenderSupervisedApprovalDetail(ApprovalCardDetail? detail)
@@ -1804,6 +1814,48 @@ public partial class ToolPopupWindow : Window
         SupervisedApplyPacketChainText.Text = detail.ExpectedPacketChain.Count == 0
             ? "Expected packet chain: none"
             : string.Join(" -> ", detail.ExpectedPacketChain);
+    }
+
+    private void RenderProposalDiffExplanation(ProposalDiffExplanation? explanation)
+    {
+        if (explanation is null)
+        {
+            SupervisedProposalDiffStatusText.Text = "Proposal diff: waiting for an awaiting-approval operation.";
+            SupervisedProposalDiffSourcePathsText.Text = "";
+            SupervisedProposalDiffToolsText.Text = "";
+            SupervisedProposalDiffEvalText.Text = "";
+            SupervisedProposalDiffHashesText.Text = "";
+            return;
+        }
+
+        if (explanation.IsBlocked)
+        {
+            SupervisedProposalDiffStatusText.Text = $"Proposal diff blocked: {explanation.BlockReason}";
+            SupervisedProposalDiffSourcePathsText.Text = "";
+            SupervisedProposalDiffToolsText.Text = "";
+            SupervisedProposalDiffEvalText.Text = "";
+            SupervisedProposalDiffHashesText.Text = "";
+            return;
+        }
+
+        SupervisedProposalDiffStatusText.Text = string.Join(Environment.NewLine, [
+            $"Operation: {explanation.OperationId}",
+            $"Dry-run mutations: {explanation.DryRunMutationCount}",
+            "Read-only summary. This panel cannot approve, apply, mutate, or flip any capability flag."
+        ]);
+        SupervisedProposalDiffSourcePathsText.Text = explanation.SourcePaths.Count == 0
+            ? "Source paths: none listed"
+            : string.Join(Environment.NewLine, explanation.SourcePaths.Select(path => $"- {path}"));
+        SupervisedProposalDiffToolsText.Text = explanation.Tools.Count == 0
+            ? "Tools: none listed"
+            : string.Join(Environment.NewLine, explanation.Tools.Select(tool => $"- {tool}"));
+        SupervisedProposalDiffEvalText.Text = explanation.EvalGateStatuses.Count == 0
+            ? "Eval gates: none listed"
+            : string.Join(Environment.NewLine, explanation.EvalGateStatuses.OrderBy(pair => pair.Key, StringComparer.Ordinal).Select(pair => $"{pair.Key}: {pair.Value}"));
+        SupervisedProposalDiffHashesText.Text = string.Join(Environment.NewLine, [
+            $"Scope hash: {explanation.ScopeHash}",
+            $"Manifest hash: {explanation.ManifestHash}"
+        ]);
     }
 
     private static string FormatAutonomousScopeRecentLine(IReadOnlyList<string>? recentLines, string scopeId)
