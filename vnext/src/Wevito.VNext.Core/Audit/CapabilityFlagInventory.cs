@@ -27,6 +27,7 @@ public static class CapabilityFlagInventory
         new(AutonomousScopeService.BuildEnabledSettingKey(AutonomousScopeService.SpriteRepairTriageScopeId), bool.FalseString, "Allows the sprite-repair triage scope to draft review-only findings."),
         new(AutonomousScopeService.BuildEnabledSettingKey(AutonomousScopeService.AuditLedgerCleanupScopeId), bool.FalseString, "Allows the audit-ledger cleanup scope to propose cleanup work."),
         new(AutonomousScopeService.BuildEnabledSettingKey(AutonomousScopeService.SpriteRepairBatchProposalScopeId), bool.FalseString, "Allows the sprite-repair batch proposal scope to draft proposal packets."),
+        new(AutonomousScopeService.BuildEnabledSettingKey(AutonomousScopeService.EvalCoverageProposalScopeId), bool.FalseString, "Allows the eval-coverage proposal scope to draft review-only eval-gap proposal packets."),
         new(SupervisedImprovementLoopSettings.EnabledSetting, bool.FalseString, "Allows the supervised self-improvement loop to draft proposal-only task cards."),
         new(InvariantViolationWatchdog.EnabledSetting, bool.FalseString, "Allows the invariant watchdog to scan the audit ledger and write reset packets only."),
         new(EvalGateRunner.EnabledSetting, bool.FalseString, "Allows the eval gate runner v1 to execute the cheap deterministic gates only (Build / UnitTests / ScopeHash). All other gates remain NotApplicable."),
