@@ -1,4 +1,5 @@
 using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
 using Wevito.VNext.Contracts;
 using Wevito.VNext.Core.Audit;
@@ -33,6 +34,14 @@ public sealed class SpriteRepairBatchProposalScope : IAutonomousScope
 
     public AutonomousScopeRunResult TryRun(AutonomousScopeRunRequest request)
     {
+        return TryRun(request, seed: null, packetSink: null);
+    }
+
+    public AutonomousScopeRunResult TryRun(
+        AutonomousScopeRunRequest request,
+        string? seed = null,
+        Action<EvidencePacket>? packetSink = null)
+    {
         var repoRoot = ResolveRepoRoot(_queuePath);
         var row = ReadPriorityRows(_queuePath, repoRoot).FirstOrDefault();
         if (row is null)
@@ -41,7 +50,7 @@ public sealed class SpriteRepairBatchProposalScope : IAutonomousScope
         }
 
         var issue = row.Issues.FirstOrDefault() ?? BuildFallbackIssue(row);
-        var requestId = Guid.NewGuid();
+        var requestId = CreateGuid(seed, "request");
         var proposalPath = WriteProposalArtifact(repoRoot, request.ArtifactRoot, request.RequestedAtUtc, requestId, row, issue);
         var decisionInput = new ConstitutionalDecisionInput(
             Descriptor.ScopeId,
@@ -54,13 +63,13 @@ public sealed class SpriteRepairBatchProposalScope : IAutonomousScope
         var decision = _decisionService.Decide(decisionInput);
         var dryRunPath = WriteDryRunArtifact(request.ArtifactRoot, request.RequestedAtUtc, requestId, row, issue);
         var evalPath = WriteEvalArtifact(request.ArtifactRoot, request.RequestedAtUtc, requestId);
-        var card = BuildReviewCard(request.RequestedAtUtc, row, issue, proposalPath, dryRunPath, evalPath);
+        var card = BuildReviewCard(request.RequestedAtUtc, row, issue, proposalPath, dryRunPath, evalPath, seed);
         var cards = request.ExistingTaskCards.Concat([card]).ToArray();
 
-        Record(SelfImprovementPacketKinds.ProposalDrafted, card.Id, request.RequestedAtUtc, proposalPath, "Drafted", $"Drafted review-only sprite repair batch proposal for {row.RowId}.");
-        _constitutionalReviewedEmitter.Emit(decisionInput, decision, request.RequestedAtUtc, card.Id);
-        Record(SelfImprovementPacketKinds.DryRunCompleted, card.Id, request.RequestedAtUtc, dryRunPath, "Completed", $"Completed review-only dry run for {row.RowId}; no sprite files were written.");
-        Record(SelfImprovementPacketKinds.EvalCompleted, card.Id, request.RequestedAtUtc, evalPath, "Completed", $"Completed eval preview for {row.RowId}; apply-only gates are NotApplicable.");
+        Record(SelfImprovementPacketKinds.ProposalDrafted, card.Id, request.RequestedAtUtc, proposalPath, "Drafted", $"Drafted review-only sprite repair batch proposal for {row.RowId}.", seed, packetSink);
+        RecordConstitutionalReviewed(decisionInput, decision, card.Id, request.RequestedAtUtc, seed, packetSink);
+        Record(SelfImprovementPacketKinds.DryRunCompleted, card.Id, request.RequestedAtUtc, dryRunPath, "Completed", $"Completed review-only dry run for {row.RowId}; no sprite files were written.", seed, packetSink);
+        Record(SelfImprovementPacketKinds.EvalCompleted, card.Id, request.RequestedAtUtc, evalPath, "Completed", $"Completed eval preview for {row.RowId}; apply-only gates are NotApplicable.", seed, packetSink);
 
         return new AutonomousScopeRunResult(
             Descriptor.ScopeId,
@@ -215,10 +224,11 @@ public sealed class SpriteRepairBatchProposalScope : IAutonomousScope
         SpriteRepairQueueIssue issue,
         string proposalPath,
         string dryRunPath,
-        string evalPath)
+        string evalPath,
+        string? seed)
     {
         var intent = new TaskIntent(
-            Guid.NewGuid(),
+            CreateGuid(seed, "intent"),
             $"Review self-improvement sprite repair proposal for {row.RowId}.",
             TaskIntentTargetMode.RouteToBestHelper,
             TaskKind: TaskKind.ReviewSprites,
@@ -237,7 +247,7 @@ public sealed class SpriteRepairBatchProposalScope : IAutonomousScope
             ApprovedRootPaths: [],
             BlockReason: "Review-only self-improvement proposal. No apply path is enabled.");
         return new TaskCard(
-            Guid.NewGuid(),
+            CreateGuid(seed, "card"),
             intent,
             TaskCardStatus.Draft,
             ToolFamily: SpriteRepairBatchProposalDescriptor.Kind,
@@ -318,10 +328,18 @@ public sealed class SpriteRepairBatchProposalScope : IAutonomousScope
         return Convert.ToHexString(SHA256.HashData(stream)).ToLowerInvariant();
     }
 
-    private void Record(string packetKind, Guid taskCardId, DateTimeOffset timestamp, string artifactPath, string status, string summary)
+    private void Record(
+        string packetKind,
+        Guid taskCardId,
+        DateTimeOffset timestamp,
+        string artifactPath,
+        string status,
+        string summary,
+        string? seed,
+        Action<EvidencePacket>? packetSink)
     {
-        _ledger.Record(new EvidencePacket(
-            Guid.NewGuid(),
+        var packet = new EvidencePacket(
+            CreateGuid(seed, $"packet:{packetKind}"),
             packetKind,
             taskCardId,
             timestamp,
@@ -331,6 +349,64 @@ public sealed class SpriteRepairBatchProposalScope : IAutonomousScope
             DidMutate: false,
             ArtifactPath: artifactPath,
             Summary: summary,
-            Status: status));
+            Status: status);
+        if (packetSink is not null)
+        {
+            packetSink(packet);
+            return;
+        }
+
+        _ledger.Record(packet);
+    }
+
+    private void RecordConstitutionalReviewed(
+        ConstitutionalDecisionInput input,
+        ConstitutionalDecisionOutcome outcome,
+        Guid taskCardId,
+        DateTimeOffset timestamp,
+        string? seed,
+        Action<EvidencePacket>? packetSink)
+    {
+        if (packetSink is null)
+        {
+            _constitutionalReviewedEmitter.Emit(input, outcome, timestamp, taskCardId);
+            return;
+        }
+
+        packetSink(new EvidencePacket(
+            CreateGuid(seed, $"packet:{SelfImprovementPacketKinds.ConstitutionalReviewed}"),
+            SelfImprovementPacketKinds.ConstitutionalReviewed,
+            taskCardId,
+            timestamp,
+            DidUseNetwork: false,
+            DidUseHostedAi: false,
+            DidUseLocalModel: false,
+            DidMutate: false,
+            ArtifactPath: "",
+            Summary: $"Reviewed self-improvement experiment '{input.ExperimentKind}' for scope '{input.ScopeId}': {Describe(outcome)}.",
+            Status: outcome is ConstitutionalDecisionOutcome.Blocked ? "Blocked" : "Completed",
+            Error: outcome is ConstitutionalDecisionOutcome.Blocked blocked ? blocked.Reason : ""));
+    }
+
+    private static string Describe(ConstitutionalDecisionOutcome outcome)
+    {
+        return outcome switch
+        {
+            ConstitutionalDecisionOutcome.Allowed => "allowed",
+            ConstitutionalDecisionOutcome.Blocked blocked => $"blocked:{blocked.Reason}",
+            ConstitutionalDecisionOutcome.NeedsHumanApproval approval => $"needs_human_approval:{approval.Reason}",
+            _ => "unknown"
+        };
+    }
+
+    private static Guid CreateGuid(string? seed, string purpose)
+    {
+        if (string.IsNullOrWhiteSpace(seed))
+        {
+            return Guid.NewGuid();
+        }
+
+        var bytes = SHA256.HashData(Encoding.UTF8.GetBytes($"{seed}:{purpose}"));
+        return new Guid(bytes[..16]);
     }
 }
