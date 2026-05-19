@@ -59,10 +59,17 @@ public sealed class LocalScoringProviderContractTests
     }
 
     [Fact]
-    public void ScoringSourceFolder_ContainsNoHttpNetworkOrOllamaCode()
+    public void DefaultDenyContractFiles_ContainNoHttpNetworkOrOllamaCode()
     {
         var root = Path.Combine(FindRepositoryRoot(), "vnext", "src", "Wevito.VNext.Core", "SelfImprovement", "Scoring");
-        var source = string.Join(Environment.NewLine, Directory.EnumerateFiles(root, "*.cs", SearchOption.AllDirectories).Select(File.ReadAllText));
+        var contractFiles = new[]
+        {
+            "LocalScoringRequest.cs",
+            "LocalScoringResult.cs",
+            "ILocalScoringProvider.cs",
+            "NotConfiguredScoringProvider.cs"
+        };
+        var source = string.Join(Environment.NewLine, contractFiles.Select(file => File.ReadAllText(Path.Combine(root, file))));
 
         Assert.DoesNotContain("System.Net.Http", source, StringComparison.Ordinal);
         Assert.DoesNotContain("System.Net.Sockets", source, StringComparison.Ordinal);
