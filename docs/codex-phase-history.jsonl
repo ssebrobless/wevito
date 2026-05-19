@@ -106,3 +106,4 @@
 {"timestamp_utc":"2026-05-19T19:46:28.5667999Z","branch":"claude-implementation/c-phase-169-in-distribution-seed-and-visibility","phase_id":"C-PHASE 169","pr_url":"https://github.com/ssebrobless/wevito/pull/265"}
 {"timestamp_utc":"2026-05-19T20:05:58.8822262Z","branch":"claude-implementation/c-phase-170-local-scoring-contract","phase_id":"C-PHASE 170","pr_url":"https://github.com/ssebrobless/wevito/pull/266"}
 {"timestamp_utc":"2026-05-19T21:40:43.6305473Z","branch":"claude-implementation/c-phase-171-ollama-loopback-scoring-provider","phase_id":"C-PHASE 171","pr_url":"https://github.com/ssebrobless/wevito/pull/267"}
+{"timestamp_utc":"2026-05-19T21:57:43.9655509Z","branch":"claude-implementation/c-phase-172-capabilities-and-gates-panel","phase_id":"C-PHASE 172","pr_url":"https://github.com/ssebrobless/wevito/pull/268"}
