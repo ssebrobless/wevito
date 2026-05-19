@@ -2,6 +2,7 @@ using Wevito.VNext.Core.SelfImprovement;
 using Wevito.VNext.Core.SelfImprovement.Eval;
 using Wevito.VNext.Core.SelfImprovement.Experiments;
 using Wevito.VNext.Core.SelfImprovement.Invariants;
+using Wevito.VNext.Core.SelfImprovement.Judge;
 
 namespace Wevito.VNext.Core;
 
@@ -31,6 +32,14 @@ public static class ShellCompositionRoot
             "in-distribution");
 
         return new InDistributionEvalStore(root, killSwitchService);
+    }
+
+    public static HeuristicJudgeService CreateHeuristicJudgeService(
+        AuditLedgerService ledger,
+        KillSwitchService? killSwitchService = null,
+        Func<IReadOnlyDictionary<string, string>>? settingsProvider = null)
+    {
+        return new HeuristicJudgeService(ledger.DatabasePath, ledger, killSwitchService, settingsProvider);
     }
 
     public static EvalCoverageProposalScope CreateEvalCoverageProposalScope(

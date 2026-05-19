@@ -12,6 +12,7 @@ using Wevito.VNext.Core.LocalRetrieval;
 using Wevito.VNext.Core.SelfImprovement;
 using Wevito.VNext.Core.SelfImprovement.Experiments;
 using Wevito.VNext.Core.SelfImprovement.Invariants;
+using Wevito.VNext.Core.SelfImprovement.Judge;
 using Wevito.VNext.Core.SelfImprovement.Maturity;
 using Wevito.VNext.Core.Settings;
 using Wevito.VNext.Core.Tools;
@@ -77,6 +78,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private readonly IReadOnlyList<IAutonomousScope> _autonomousScopes;
     private readonly SupervisedImprovementLoop _supervisedImprovementLoop;
     private readonly InvariantViolationWatchdog _invariantViolationWatchdog;
+    private readonly HeuristicJudgeService _heuristicJudgeService;
     private readonly ApprovalCardDetailService _approvalCardDetailService;
     private readonly AutonomousOperationsLoop _autonomousOperationsLoop;
     private readonly TranslationExecutionAdapter _translationExecutionAdapter = new();
@@ -192,6 +194,10 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         var autonomousScopeRegistry = new AutonomousScopeRegistry(_autonomousScopeService, _autonomousScopes);
         _supervisedImprovementLoop = ShellCompositionRoot.CreateSupervisedImprovementLoop(_auditLedgerService, _killSwitchService);
         _invariantViolationWatchdog = ShellCompositionRoot.CreateInvariantViolationWatchdog(
+            _auditLedgerService,
+            _killSwitchService,
+            () => _state?.SettingsSnapshot ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase));
+        _heuristicJudgeService = ShellCompositionRoot.CreateHeuristicJudgeService(
             _auditLedgerService,
             _killSwitchService,
             () => _state?.SettingsSnapshot ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase));
@@ -465,6 +471,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _runtimeSessionTracker.Tick(now, _state.SettingsSnapshot);
         _dailyEvidenceSnapshotService.Tick(now, _runtimeSupervisorService.ReadBudgetSnapshot(_state.SettingsSnapshot), _state.SettingsSnapshot);
         TryScanInvariantViolations(now);
+        TryRunHeuristicJudge(now);
         TryPollAutonomousScheduler(now);
         TryRunAutonomousOperationsBeta(now);
 
@@ -503,6 +510,33 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         catch (Exception ex)
         {
             TraceLog.Write("self-improvement", $"invariant-watchdog failed={ex.GetType().Name}");
+        }
+    }
+
+    private void TryRunHeuristicJudge(DateTimeOffset now)
+    {
+        if (_state is null || !GetSettingBool(_state.SettingsSnapshot, HeuristicJudgeService.EnabledSetting))
+        {
+            return;
+        }
+
+        var card = (_state.TaskCards ?? []).FirstOrDefault(SupervisedImprovementLoop.IsAwaitingApprovalCard);
+        if (card?.ReviewPayload is null || !card.ReviewPayload.TryGetValue("operation_id", out var operationId))
+        {
+            return;
+        }
+
+        try
+        {
+            var findings = _heuristicJudgeService.Critique(operationId, now);
+            if (findings.Count > 0)
+            {
+                TraceLog.Write("self-improvement", $"heuristic-judge operation={operationId} passed={findings.Count(finding => finding.Passed)}/{findings.Count}");
+            }
+        }
+        catch (Exception ex)
+        {
+            TraceLog.Write("self-improvement", $"heuristic-judge failed={ex.GetType().Name}");
         }
     }
 
@@ -3284,6 +3318,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         hydrated.TryAdd(AutonomousOperationsConfig.IntervalMinutesSetting, "10");
         hydrated.TryAdd(SupervisedImprovementLoopSettings.EnabledSetting, bool.FalseString);
         hydrated.TryAdd(InvariantViolationWatchdog.EnabledSetting, bool.FalseString);
+        hydrated.TryAdd(HeuristicJudgeService.EnabledSetting, bool.FalseString);
         hydrated.TryAdd(LiveStatusFeed.PollSecondsSetting, "10");
         hydrated.TryAdd(WebResearchConnector.WebSearchEnabledSetting, bool.FalseString);
         hydrated.TryAdd(WebResearchConnector.WebBackendSetting, "offline");
