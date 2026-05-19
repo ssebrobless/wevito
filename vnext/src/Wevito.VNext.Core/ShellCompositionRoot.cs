@@ -1,5 +1,6 @@
 using Wevito.VNext.Core.SelfImprovement;
 using Wevito.VNext.Core.SelfImprovement.Experiments;
+using Wevito.VNext.Core.SelfImprovement.Invariants;
 
 namespace Wevito.VNext.Core;
 
@@ -10,6 +11,14 @@ public static class ShellCompositionRoot
         KillSwitchService? killSwitchService = null)
     {
         return new SupervisedImprovementLoop(ledger, new UserApplyApprovalValidator(), killSwitchService);
+    }
+
+    public static InvariantViolationWatchdog CreateInvariantViolationWatchdog(
+        AuditLedgerService ledger,
+        KillSwitchService? killSwitchService = null,
+        Func<IReadOnlyDictionary<string, string>>? settingsProvider = null)
+    {
+        return new InvariantViolationWatchdog(ledger.DatabasePath, ledger, killSwitchService, settingsProvider);
     }
 
     public static ConstitutionalDecisionService CreateConstitutionalDecisionService(KillSwitchService? killSwitchService = null)
