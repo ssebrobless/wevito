@@ -30,8 +30,6 @@ public sealed class SupervisedImprovementLoop
 {
     public const string ApprovalToolFamily = "self-improvement-apply-awaiting-approval";
     public const string ApplyRunnerNotImplementedReason = "apply_runner_not_implemented_in_v0";
-    private const string ExperimentManifestVersion = "1";
-
     private readonly AuditLedgerService _ledger;
     private readonly UserApplyApprovalValidator _approvalValidator;
     private readonly KillSwitchService? _killSwitchService;
@@ -262,19 +260,28 @@ public sealed class SupervisedImprovementLoop
 
     private static string BuildScopeHash(string operationId, string proposalPath, string dryRunPath, string evalPath)
     {
+        var descriptor = SpriteRepairBatchProposalDescriptor.Descriptor;
+        var packetKindsTouched = new[]
+        {
+            SelfImprovementPacketKinds.ProposalDrafted,
+            SelfImprovementPacketKinds.DryRunCompleted,
+            SelfImprovementPacketKinds.EvalCompleted,
+            SelfImprovementPacketKinds.ApplyAwaitingApproval
+        };
+        var manifestHash = ExperimentManifestHash.Compute(
+            descriptor,
+            SpriteRepairBatchProposalDescriptor.MutationPosture,
+            packetKindsTouched);
+
         return ScopeHash.Compute(new ScopeHashInputs(
             AutonomousScopeService.SpriteRepairBatchProposalScopeId,
             operationId,
             ComputeFileSha256(proposalPath),
             ComputeFileSha256(dryRunPath),
             ComputeFileSha256(evalPath),
-            ExperimentManifestVersion,
-            [
-                SelfImprovementPacketKinds.ProposalDrafted,
-                SelfImprovementPacketKinds.DryRunCompleted,
-                SelfImprovementPacketKinds.EvalCompleted,
-                SelfImprovementPacketKinds.ApplyAwaitingApproval
-            ]));
+            descriptor.ManifestVersion,
+            packetKindsTouched,
+            manifestHash));
     }
 
     private static string ComputeFileSha256(string path)

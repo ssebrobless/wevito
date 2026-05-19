@@ -4,4 +4,5 @@ public sealed record ExperimentDescriptor(
     ExperimentKind Kind,
     string DisplayName,
     string Description,
-    bool EnabledByDefault = false);
+    bool EnabledByDefault = false,
+    string ManifestVersion = "1");

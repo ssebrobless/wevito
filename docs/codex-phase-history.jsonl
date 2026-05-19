@@ -97,3 +97,4 @@
 {"timestamp_utc":"2026-05-19T05:29:35.2226452Z","branch":"claude-implementation/c-phase-160-in-distribution-eval-store","phase_id":"C-PHASE 160","pr_url":"https://github.com/ssebrobless/wevito/pull/256"}
 {"timestamp_utc":"2026-05-19T05:44:42.6251661Z","branch":"claude-implementation/c-phase-161-eval-gate-runner-v1","phase_id":"C-PHASE 161","pr_url":"https://github.com/ssebrobless/wevito/pull/257"}
 {"timestamp_utc":"2026-05-19T06:07:40.7893370Z","branch":"claude-implementation/c-phase-162-eval-coverage-proposal-scope","phase_id":"C-PHASE 162","pr_url":"https://github.com/ssebrobless/wevito/pull/258"}
+{"timestamp_utc":"2026-05-19T06:25:33.9949395Z","branch":"claude-implementation/c-phase-163-experiment-manifest-hash","phase_id":"C-PHASE 163","pr_url":"https://github.com/ssebrobless/wevito/pull/259"}

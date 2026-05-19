@@ -7,4 +7,5 @@ public sealed record ScopeHashInputs(
     string DryRunSha256,
     string EvalSha256,
     string ExperimentManifestVersion,
-    IReadOnlyList<string> PacketKindsTouched);
+    IReadOnlyList<string> PacketKindsTouched,
+    string ExperimentManifestHash = "");
