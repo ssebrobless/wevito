@@ -1276,6 +1276,33 @@
                                                FontSize="10"
                                                TextWrapping="Wrap"
                                                automation:AutomationProperties.AutomationId="SupervisedApplyScopeHashText" />
+                                    <Expander Header="Approval details"
+                                              Margin="0,8,0,0"
+                                              Foreground="#FFEAF6F7"
+                                              IsExpanded="False"
+                                              automation:AutomationProperties.AutomationId="SupervisedApplyDetailExpander">
+                                        <StackPanel Margin="0,8,0,0">
+                                            <TextBlock x:Name="SupervisedApplyDetailText"
+                                                       Foreground="#FFD6DCDE"
+                                                       FontSize="10"
+                                                       TextWrapping="Wrap"
+                                                       automation:AutomationProperties.AutomationId="SupervisedApplyDetailText" />
+                                            <TextBlock x:Name="SupervisedApplyInputFilesText"
+                                                       Margin="0,8,0,0"
+                                                       FontFamily="Consolas"
+                                                       Foreground="#FFBFD2DC"
+                                                       FontSize="9"
+                                                       TextWrapping="Wrap"
+                                                       automation:AutomationProperties.AutomationId="SupervisedApplyInputFilesText" />
+                                            <TextBlock x:Name="SupervisedApplyPacketChainText"
+                                                       Margin="0,8,0,0"
+                                                       FontFamily="Consolas"
+                                                       Foreground="#FFBFE8D3"
+                                                       FontSize="9"
+                                                       TextWrapping="Wrap"
+                                                       automation:AutomationProperties.AutomationId="SupervisedApplyPacketChainText" />
+                                        </StackPanel>
+                                    </Expander>
                                     <TextBox x:Name="SupervisedApplyOperationTextBox"
                                              Margin="0,8,0,0"
                                              Style="{StaticResource PopupTextBoxStyle}"

@@ -77,6 +77,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private readonly IReadOnlyList<IAutonomousScope> _autonomousScopes;
     private readonly SupervisedImprovementLoop _supervisedImprovementLoop;
     private readonly InvariantViolationWatchdog _invariantViolationWatchdog;
+    private readonly ApprovalCardDetailService _approvalCardDetailService;
     private readonly AutonomousOperationsLoop _autonomousOperationsLoop;
     private readonly TranslationExecutionAdapter _translationExecutionAdapter = new();
     private readonly AudioAssistExecutionAdapter _audioAssistExecutionAdapter = new();
@@ -193,6 +194,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             _auditLedgerService,
             _killSwitchService,
             () => _state?.SettingsSnapshot ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase));
+        _approvalCardDetailService = new ApprovalCardDetailService(_auditLedgerService.DatabasePath, _killSwitchService);
         _autonomousOperationsLoop = new AutonomousOperationsLoop(_autonomousBetaDecisionService, _auditLedgerService, _killSwitchService, scopeRegistry: autonomousScopeRegistry, supervisedImprovementLoop: _supervisedImprovementLoop);
         _screenCaptureExecutionAdapter = new ScreenCaptureExecutionAdapter(new WindowsGraphicsCaptureBackend(() => _homeWindow));
         _tickTimer = new DispatcherTimer(DispatcherPriority.Render)
@@ -792,10 +794,17 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         var evidenceSummary = _evidenceSummaryService.GetSummary(ToolPopupWindow.BuildEvidenceSummaryQuery(_state.SettingsSnapshot, now));
         var capabilityFlagRows = _capabilityFlagAuditService.GetRows();
         var maturityClock = _maturityScoreboardService.BuildScoreboard(now);
+        var approvalCardDetail = BuildApprovalCardDetail();
 
         _homeWindow.Render(_state, environment, _feedbackText, _assetService, needSnapshot, aggregateStatuses, actionEnabled, habitatLoadout, evidenceStatus, _localBrainStatus);
         _roamBandWindow.Render(_state, _assetService, liveStatus, liveBannerText, supervisorStatus, killSwitchActive, evidenceStatus, desktopAssetOpacity);
-        _toolPopupWindow.Render(_state, _content, habitatLoadout, _assetService, _devToolsEnabled, petCommandBarState, supervisorStatus, activitySummary, autonomousDecision, promotionDecision, liveRecentLines, evidenceStatus, evidenceSummary, maturityClock, capabilityFlagRows);
+        _toolPopupWindow.Render(_state, _content, habitatLoadout, _assetService, _devToolsEnabled, petCommandBarState, supervisorStatus, activitySummary, autonomousDecision, promotionDecision, liveRecentLines, evidenceStatus, evidenceSummary, maturityClock, capabilityFlagRows, approvalCardDetail);
+    }
+
+    private ApprovalCardDetail? BuildApprovalCardDetail()
+    {
+        var card = _state?.TaskCards?.FirstOrDefault(SupervisedImprovementLoop.IsAwaitingApprovalCard);
+        return card is null ? null : _approvalCardDetailService.BuildFor(card.Id);
     }
 
     private async Task EnableAutonomousBetaAfterConsentAsync()
