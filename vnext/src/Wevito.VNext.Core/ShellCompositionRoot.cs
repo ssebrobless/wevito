@@ -66,6 +66,13 @@ public static class ShellCompositionRoot
         return new NotConfiguredScoringProvider(killSwitchService);
     }
 
+    public static CapabilitiesAndGatesService CreateCapabilitiesAndGatesService(
+        Func<IReadOnlyDictionary<string, string>> settingsProvider,
+        KillSwitchService? killSwitchService = null)
+    {
+        return new CapabilitiesAndGatesService(settingsProvider, killSwitchService);
+    }
+
     public static EvalCoverageProposalScope CreateEvalCoverageProposalScope(
         AuditLedgerService ledger,
         KillSwitchService? killSwitchService = null,

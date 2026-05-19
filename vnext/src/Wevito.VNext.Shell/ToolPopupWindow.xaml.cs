@@ -158,7 +158,8 @@ public partial class ToolPopupWindow : Window
         IReadOnlyList<CapabilityFlagAuditRow>? capabilityFlagRows = null,
         ApprovalCardDetail? approvalCardDetail = null,
         ProposalDiffExplanation? proposalDiffExplanation = null,
-        ReplayResultSummary? replayResultSummary = null)
+        ReplayResultSummary? replayResultSummary = null,
+        CapabilitiesAndGatesSnapshot? capabilitiesAndGatesSnapshot = null)
     {
         var toolId = string.IsNullOrWhiteSpace(state.ActiveTool.ToolId) ? "basket" : state.ActiveTool.ToolId;
         _lastTaskCards = state.TaskCards ?? [];
@@ -254,7 +255,7 @@ public partial class ToolPopupWindow : Window
         }
         else if (showingEvidence)
         {
-            RenderEvidencePanel(state, evidenceSummary, maturityClock, capabilityFlagRows);
+            RenderEvidencePanel(state, evidenceSummary, maturityClock, capabilityFlagRows, capabilitiesAndGatesSnapshot);
         }
 
         _suppressSettingEvents = true;
@@ -2040,8 +2041,10 @@ public partial class ToolPopupWindow : Window
         CompanionState state,
         EvidenceSummary? summary,
         MaturityClock? maturityClock,
-        IReadOnlyList<CapabilityFlagAuditRow>? capabilityFlagRows)
+        IReadOnlyList<CapabilityFlagAuditRow>? capabilityFlagRows,
+        CapabilitiesAndGatesSnapshot? capabilitiesAndGatesSnapshot)
     {
+        RenderCapabilitiesAndGates(capabilitiesAndGatesSnapshot);
         RenderMaturityClock(maturityClock);
         _capabilityFlagRows = (capabilityFlagRows ?? [])
             .Select(CapabilityFlagAuditRowItem.From)
@@ -2070,6 +2073,22 @@ public partial class ToolPopupWindow : Window
         EvidenceStatusText.Text = summary.IsBlocked
             ? $"Blocked: {summary.StatusMessage}"
             : $"Range={ResolveEvidenceDateRangeSetting(state)}; max={summary.Query.MaxPackets}; rows={summary.Rows.Count}; {unknownText}. Export writes only to vnext/artifacts/c-phase-141-evidence-dashboard/.";
+    }
+
+    private void RenderCapabilitiesAndGates(CapabilitiesAndGatesSnapshot? snapshot)
+    {
+        if (snapshot is null)
+        {
+            CapabilitiesAndGatesStatusText.Text = "Capabilities snapshot is waiting for shell state.";
+            CapabilitiesAndGatesItemsControl.ItemsSource = Array.Empty<CapabilitiesAndGatesRowItem>();
+            return;
+        }
+
+        CapabilitiesAndGatesStatusText.Text =
+            $"Captured {snapshot.CapturedAtUtc.ToLocalTime():MM/dd HH:mm}; on={snapshot.OnCount}; off={snapshot.OffCount}; unset={snapshot.UnsetCount}; kill_switch={(snapshot.KillSwitchActive ? "true" : "false")}. Read-only; no toggles or setting writers live here.";
+        CapabilitiesAndGatesItemsControl.ItemsSource = snapshot.Entries
+            .Select(CapabilitiesAndGatesRowItem.From)
+            .ToList();
     }
 
     private void RenderOperationTimeline(CompanionState state)
@@ -3108,6 +3127,32 @@ internal sealed record CapabilityFlagAuditRowItem(
             string.IsNullOrEmpty(row.CurrentValue) ? "(empty)" : row.CurrentValue,
             row.IsDefault ? "default" : "overridden",
             row.PlainLanguage);
+    }
+}
+
+internal sealed record CapabilitiesAndGatesRowItem(
+    string Header,
+    string Detail,
+    string Effect,
+    FontWeight NameWeight,
+    FontStyle DetailStyle)
+{
+    public static CapabilitiesAndGatesRowItem From(CapabilitiesAndGatesEntry entry)
+    {
+        var state = entry.State;
+        var isOn = state.StartsWith("on", StringComparison.Ordinal);
+        var isUnset = state.StartsWith("unset", StringComparison.Ordinal);
+        return new CapabilitiesAndGatesRowItem(
+            $"{entry.Name} [{state}]",
+            $"default={FormatValue(entry.Default)}; current={FormatValue(entry.Current)}",
+            entry.Effect,
+            isOn ? FontWeights.SemiBold : FontWeights.Normal,
+            isUnset ? FontStyles.Italic : FontStyles.Normal);
+    }
+
+    private static string FormatValue(string value)
+    {
+        return string.IsNullOrEmpty(value) ? "(empty)" : value;
     }
 }
 

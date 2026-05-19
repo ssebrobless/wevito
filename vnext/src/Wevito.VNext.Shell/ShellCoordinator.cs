@@ -83,6 +83,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private readonly ApprovalCardDetailService _approvalCardDetailService;
     private readonly ProposalDiffExplainerService _proposalDiffExplainerService;
     private readonly ReplayResultStore _replayResultStore;
+    private readonly CapabilitiesAndGatesService _capabilitiesAndGatesService;
     private readonly AutonomousOperationsLoop _autonomousOperationsLoop;
     private readonly TranslationExecutionAdapter _translationExecutionAdapter = new();
     private readonly AudioAssistExecutionAdapter _audioAssistExecutionAdapter = new();
@@ -207,6 +208,9 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _approvalCardDetailService = new ApprovalCardDetailService(_auditLedgerService.DatabasePath, _killSwitchService);
         _proposalDiffExplainerService = ShellCompositionRoot.CreateProposalDiffExplainerService(_auditLedgerService, _killSwitchService);
         _replayResultStore = ShellCompositionRoot.CreateReplayResultStore(_killSwitchService);
+        _capabilitiesAndGatesService = ShellCompositionRoot.CreateCapabilitiesAndGatesService(
+            () => _state?.SettingsSnapshot ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
+            _killSwitchService);
         _autonomousOperationsLoop = new AutonomousOperationsLoop(_autonomousBetaDecisionService, _auditLedgerService, _killSwitchService, scopeRegistry: autonomousScopeRegistry, supervisedImprovementLoop: _supervisedImprovementLoop);
         _screenCaptureExecutionAdapter = new ScreenCaptureExecutionAdapter(new WindowsGraphicsCaptureBackend(() => _homeWindow));
         _tickTimer = new DispatcherTimer(DispatcherPriority.Render)
@@ -833,6 +837,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         var evidenceStatus = _evidenceCollectionStatusService.Read();
         var evidenceSummary = _evidenceSummaryService.GetSummary(ToolPopupWindow.BuildEvidenceSummaryQuery(_state.SettingsSnapshot, now));
         var capabilityFlagRows = _capabilityFlagAuditService.GetRows();
+        var capabilitiesAndGatesSnapshot = _capabilitiesAndGatesService.Snapshot(now);
         var maturityClock = _maturityScoreboardService.BuildScoreboard(now);
         var approvalCardDetail = BuildApprovalCardDetail();
         var proposalDiffExplanation = BuildProposalDiffExplanation();
@@ -840,7 +845,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
 
         _homeWindow.Render(_state, environment, _feedbackText, _assetService, needSnapshot, aggregateStatuses, actionEnabled, habitatLoadout, evidenceStatus, _localBrainStatus);
         _roamBandWindow.Render(_state, _assetService, liveStatus, liveBannerText, supervisorStatus, killSwitchActive, evidenceStatus, desktopAssetOpacity);
-        _toolPopupWindow.Render(_state, _content, habitatLoadout, _assetService, _devToolsEnabled, petCommandBarState, supervisorStatus, activitySummary, autonomousDecision, promotionDecision, liveRecentLines, evidenceStatus, evidenceSummary, maturityClock, capabilityFlagRows, approvalCardDetail, proposalDiffExplanation, replayResultSummary);
+        _toolPopupWindow.Render(_state, _content, habitatLoadout, _assetService, _devToolsEnabled, petCommandBarState, supervisorStatus, activitySummary, autonomousDecision, promotionDecision, liveRecentLines, evidenceStatus, evidenceSummary, maturityClock, capabilityFlagRows, approvalCardDetail, proposalDiffExplanation, replayResultSummary, capabilitiesAndGatesSnapshot);
     }
 
     private ApprovalCardDetail? BuildApprovalCardDetail()
