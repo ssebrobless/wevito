@@ -1,6 +1,7 @@
 using Wevito.VNext.Core;
 using Wevito.VNext.Core.Audit;
 using Wevito.VNext.Core.SelfImprovement;
+using Wevito.VNext.Core.SelfImprovement.Apply;
 using Wevito.VNext.Core.SelfImprovement.Eval;
 using Wevito.VNext.Core.SelfImprovement.Experiments;
 using Wevito.VNext.Core.SelfImprovement.Invariants;
@@ -46,6 +47,11 @@ public sealed class HeldOutEvalStoreVisibilityTests
             typeof(ProposalQualityMetricsSnapshot),
             typeof(ApplyRunnerStatusReportService),
             typeof(ApplyRunnerStatusReport),
+            // C-PHASE 183: the narrow artifact-rename apply runner must stay blind to
+            // held-out and in-distribution eval content; it only consumes approval metadata.
+            typeof(ArtifactRenameApplyRunner),
+            typeof(ApplyRequest),
+            typeof(ApplyResult),
             typeof(SpriteRepairBatchProposalScope)
         };
 

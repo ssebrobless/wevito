@@ -1,4 +1,5 @@
 using Wevito.VNext.Core.SelfImprovement;
+using Wevito.VNext.Core.SelfImprovement.Apply;
 using Wevito.VNext.Core.SelfImprovement.Eval;
 using Wevito.VNext.Core.SelfImprovement.Experiments;
 using Wevito.VNext.Core.SelfImprovement.Invariants;
@@ -35,6 +36,11 @@ public static class KillSwitchCoverageAllowList
         typeof(SupervisedImprovementApprovalResult).FullName!, // immutable approval result DTO.
         typeof(PrerequisiteEntry).FullName!, // immutable apply-runner prerequisite-check entry DTO.
         typeof(ApplyRunnerPrerequisiteCheckResult).FullName!, // immutable apply-runner prerequisite-check result DTO.
+        typeof(ApplyRequest).FullName!, // immutable narrow apply-runner request DTO.
+        typeof(ApplyResult).FullName!, // abstract narrow apply-runner result union; carries no behavior or IO.
+        typeof(ApplyResult.Refused).FullName!, // narrow apply-runner result value; carries no behavior or IO.
+        typeof(ApplyResult.RolledBack).FullName!, // narrow apply-runner result value; carries no behavior or IO.
+        typeof(ApplyResult.Succeeded).FullName!, // narrow apply-runner result value; carries no behavior or IO.
         typeof(SupervisedImprovementLoopSettings).FullName!, // immutable settings DTO plus parser.
         typeof(UserApplyApproval).FullName!, // user-entered approval DTO.
         typeof(UserApplyApprovalValidator).FullName!, // pure validator; no IO, loop, model call, or mutation.
