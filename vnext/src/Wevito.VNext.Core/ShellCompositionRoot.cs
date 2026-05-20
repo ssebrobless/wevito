@@ -1,4 +1,6 @@
+using Wevito.VNext.Core.Audit;
 using Wevito.VNext.Core.SelfImprovement;
+using Wevito.VNext.Core.SelfImprovement.Apply;
 using Wevito.VNext.Core.SelfImprovement.Eval;
 using Wevito.VNext.Core.SelfImprovement.Experiments;
 using Wevito.VNext.Core.SelfImprovement.Invariants;
@@ -90,6 +92,37 @@ public static class ShellCompositionRoot
         Func<IReadOnlyDictionary<string, string>>? settingsProvider = null)
     {
         return new ApplyRunnerStatusReportService(ledger, killSwitchService, settingsProvider);
+    }
+
+    public static ArtifactRenameApplyRunner CreateArtifactRenameApplyRunner(
+        AuditLedgerService ledger,
+        Func<string, string?> settings,
+        KillSwitchService? killSwitchService = null)
+    {
+        var artifactsRoot = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "WevitoVNext",
+            "artifacts");
+        var evalRoot = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "WevitoVNext",
+            "eval");
+        var killSwitch = killSwitchService ?? new KillSwitchService(() => new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase));
+        var settingsProvider = new Func<IReadOnlyDictionary<string, string>>(
+            () => CapabilityFlagInventory.Entries.ToDictionary(
+                entry => entry.Name,
+                entry => settings(entry.Name) ?? entry.DefaultValue,
+                StringComparer.OrdinalIgnoreCase));
+        var prereqCheck = new ApplyRunnerPrerequisiteCheckService(
+            artifactsRoot,
+            ledger.DatabasePath,
+            ledger,
+            new HeldOutEvalStore(Path.Combine(evalRoot, "held-out"), killSwitch),
+            new InDistributionEvalStore(Path.Combine(evalRoot, "in-distribution"), killSwitch),
+            killSwitch,
+            settingsProvider);
+
+        return new ArtifactRenameApplyRunner(ledger, settings, killSwitch, prereqCheck, artifactsRoot);
     }
 
     public static ReplayResultStore CreateReplayResultStore(KillSwitchService killSwitchService)

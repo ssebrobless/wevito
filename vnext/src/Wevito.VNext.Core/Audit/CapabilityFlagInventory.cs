@@ -1,4 +1,5 @@
 using Wevito.VNext.Core.SelfImprovement;
+using Wevito.VNext.Core.SelfImprovement.Apply;
 using Wevito.VNext.Core.SelfImprovement.Eval;
 using Wevito.VNext.Core.SelfImprovement.Invariants;
 using Wevito.VNext.Core.SelfImprovement.Judge;
@@ -49,6 +50,13 @@ public static class CapabilityFlagInventory
         new(ModelProviderModeService.HostedProviderApprovedSetting, bool.FalseString, "Would allow hosted provider routing only in an explicitly approved future mode."),
         new(ApplyRunnerPrerequisiteCheckService.EnabledSetting, bool.FalseString, "Allows the apply-runner prerequisite checklist service to emit audit packets describing whether every gate for a real apply runner is currently met."),
         new(ApplyRunnerStatusReportService.EnabledSetting, bool.FalseString, "Allows the apply-runner status report service to emit a packet confirming the apply runner is still not implemented. Default off."),
+        new(ArtifactRenameApplyRunner.DesignApprovedSetting, bool.FalseString, "Records explicit approval of the narrow v0 artifact-rename apply-runner design."),
+        new(ArtifactRenameApplyRunner.ImplementationPhaseApprovedSetting, bool.FalseString, "Records explicit approval to implement the narrow v0 artifact-rename apply-runner phase."),
+        new(ArtifactRenameApplyRunner.EnabledSetting, bool.FalseString, "Allows the narrow v0 apply runner to rename one artifact draft JSON to its approved JSON counterpart."),
+        new(ArtifactRenameApplyRunner.DryRunRequiredSetting, bool.FalseString, "Requires the v0 apply runner to write a dry-run record before any target artifact rename."),
+        new(ArtifactRenameApplyRunner.BackupRequiredSetting, bool.FalseString, "Requires the v0 apply runner to write and verify a backup before any target artifact rename."),
+        new(ArtifactRenameApplyRunner.PostProofRequiredSetting, bool.FalseString, "Requires the v0 apply runner to verify post-apply sha256 evidence after the rename."),
+        new(ArtifactRenameApplyRunner.RollbackRequiredSetting, bool.FalseString, "Requires the v0 apply runner to roll back automatically after any mid-flight failure."),
         new(WebResearchConnector.WebSearchEnabledSetting, bool.FalseString, "Allows approved web research surfaces to fetch external pages."),
         new(SettingKeys.LocalDocumentRetrievalEnabled, bool.FalseString, "Allows local document retrieval to build and query the local docs index."),
         new(LocalFileReadEnabledSetting, bool.FalseString, "Allows approved autonomous scopes to read local files through policy gates."),
