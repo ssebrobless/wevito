@@ -1753,6 +1753,33 @@
                             </UniformGrid>
                         </StackPanel>
                     </Expander>
+                    <Expander Header="Proposal quality metrics (read-only)"
+                              Margin="0,10,0,0"
+                              Foreground="#FFEAF6F7"
+                              IsExpanded="False"
+                              automation:AutomationProperties.AutomationId="ProposalQualityMetricsExpander">
+                        <StackPanel Margin="0,8,0,0">
+                            <TextBlock x:Name="ProposalQualityMetricsStatusText"
+                                       Foreground="#FFDCE9EF"
+                                       FontSize="10"
+                                       TextWrapping="Wrap"
+                                       automation:AutomationProperties.AutomationId="ProposalQualityMetricsStatusText" />
+                            <TextBlock x:Name="ProposalQualityMetricsCountsText"
+                                       Margin="0,8,0,0"
+                                       FontFamily="Consolas"
+                                       Foreground="#FFBFD2DC"
+                                       FontSize="9"
+                                       TextWrapping="Wrap"
+                                       automation:AutomationProperties.AutomationId="ProposalQualityMetricsCountsText" />
+                            <TextBlock x:Name="ProposalQualityMetricsEvalText"
+                                       Margin="0,8,0,0"
+                                       FontFamily="Consolas"
+                                       Foreground="#FFBFD2DC"
+                                       FontSize="9"
+                                       TextWrapping="Wrap"
+                                       automation:AutomationProperties.AutomationId="ProposalQualityMetricsEvalText" />
+                        </StackPanel>
+                    </Expander>
                     <Expander Header="Local runtime readiness (read-only)"
                               Margin="0,10,0,0"
                               Foreground="#FFEAF6F7"

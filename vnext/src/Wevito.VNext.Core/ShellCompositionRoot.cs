@@ -72,6 +72,18 @@ public static class ShellCompositionRoot
         return new EvalCoverageHealthService(heldOut, inDistribution, killSwitchService);
     }
 
+    public static ProposalQualityMetricsService CreateProposalQualityMetricsService(
+        AuditLedgerService ledger,
+        KillSwitchService? killSwitchService = null)
+    {
+        var artifactsRoot = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "WevitoVNext",
+            "artifacts");
+
+        return new ProposalQualityMetricsService(ledger.DatabasePath, artifactsRoot, killSwitchService);
+    }
+
     public static ReplayResultStore CreateReplayResultStore(KillSwitchService killSwitchService)
     {
         var root = Path.Combine(

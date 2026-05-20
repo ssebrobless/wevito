@@ -164,6 +164,7 @@ public partial class ToolPopupWindow : Window
         CapabilitiesAndGatesSnapshot? capabilitiesAndGatesSnapshot = null,
         ApplyPrerequisiteExplanation? applyPrerequisiteExplanation = null,
         EvalCoverageHealthSnapshot? evalCoverageHealthSnapshot = null,
+        ProposalQualityMetricsSnapshot? proposalQualityMetricsSnapshot = null,
         LocalOllamaReadinessSnapshot? localOllamaReadinessSnapshot = null)
     {
         var toolId = string.IsNullOrWhiteSpace(state.ActiveTool.ToolId) ? "basket" : state.ActiveTool.ToolId;
@@ -260,7 +261,7 @@ public partial class ToolPopupWindow : Window
         }
         else if (showingEvidence)
         {
-            RenderEvidencePanel(state, evidenceSummary, maturityClock, capabilityFlagRows, capabilitiesAndGatesSnapshot, applyPrerequisiteExplanation, evalCoverageHealthSnapshot, localOllamaReadinessSnapshot);
+            RenderEvidencePanel(state, evidenceSummary, maturityClock, capabilityFlagRows, capabilitiesAndGatesSnapshot, applyPrerequisiteExplanation, evalCoverageHealthSnapshot, proposalQualityMetricsSnapshot, localOllamaReadinessSnapshot);
         }
 
         _suppressSettingEvents = true;
@@ -2050,11 +2051,13 @@ public partial class ToolPopupWindow : Window
         CapabilitiesAndGatesSnapshot? capabilitiesAndGatesSnapshot,
         ApplyPrerequisiteExplanation? applyPrerequisiteExplanation,
         EvalCoverageHealthSnapshot? evalCoverageHealthSnapshot,
+        ProposalQualityMetricsSnapshot? proposalQualityMetricsSnapshot,
         LocalOllamaReadinessSnapshot? localOllamaReadinessSnapshot)
     {
         RenderCapabilitiesAndGates(capabilitiesAndGatesSnapshot);
         RenderApplyPrerequisiteExplanation(applyPrerequisiteExplanation);
         RenderEvalCoverageHealth(evalCoverageHealthSnapshot);
+        RenderProposalQualityMetrics(proposalQualityMetricsSnapshot);
         RenderLocalRuntimeReadiness(localOllamaReadinessSnapshot);
         RenderMaturityClock(maturityClock);
         _capabilityFlagRows = (capabilityFlagRows ?? [])
@@ -2147,6 +2150,49 @@ public partial class ToolPopupWindow : Window
     private static string FormatPassFail(bool passed)
     {
         return passed ? "pass" : "below minimum";
+    }
+
+    private void RenderProposalQualityMetrics(ProposalQualityMetricsSnapshot? snapshot)
+    {
+        if (snapshot is null)
+        {
+            ProposalQualityMetricsStatusText.Text = "No awaiting-approval self-improvement operation is selected.";
+            ProposalQualityMetricsCountsText.Text = "";
+            ProposalQualityMetricsEvalText.Text = "";
+            return;
+        }
+
+        ProposalQualityMetricsStatusText.Text = string.Join(Environment.NewLine, [
+            $"Operation: {snapshot.OperationId}",
+            $"Generated: {snapshot.GeneratedAtUtc.ToLocalTime():MM/dd HH:mm}",
+            $"Reason: {snapshot.Reason}",
+            $"Scope hash valid: {snapshot.LatestScopeHashFormatValid.ToString().ToLowerInvariant()}",
+            $"Judge: {FormatNullable(snapshot.JudgeRulesPassed)} / {FormatNullable(snapshot.JudgeRulesEvaluated)}",
+            $"Snapshot age days: {FormatNullable(snapshot.SnapshotAgeDays)}",
+            $"Replay: {snapshot.LatestReplayResultKind}",
+            $"Awaiting status: {snapshot.LatestAwaitingApprovalStatus}",
+            $"Apply refused not-implemented count: {snapshot.ApplyRefusedNotImplementedCount}",
+            "Read-only metrics. This panel cannot approve, apply, mutate, rerun checks, or flip flags."
+        ]);
+        ProposalQualityMetricsCountsText.Text = snapshot.PacketCountsByKind.Count == 0
+            ? "Packet counts: none"
+            : string.Join(Environment.NewLine, snapshot.PacketCountsByKind.OrderBy(pair => pair.Key, StringComparer.Ordinal).Select(pair => $"{pair.Key}: {pair.Value}"));
+        ProposalQualityMetricsEvalText.Text = string.Join(Environment.NewLine, [
+            "Eval gates present:",
+            snapshot.LatestEvalGatesPresent.Count == 0 ? "- none" : string.Join(Environment.NewLine, snapshot.LatestEvalGatesPresent.Select(gate => $"- {gate}")),
+            "Eval gates missing:",
+            snapshot.LatestEvalGatesMissing.Count == 0 ? "- none" : string.Join(Environment.NewLine, snapshot.LatestEvalGatesMissing.Select(gate => $"- {gate}"))
+        ]);
+    }
+
+    private static string FormatNullable(int? value)
+    {
+        return value.HasValue ? value.Value.ToString() : "n/a";
+    }
+
+    private static string FormatNullable(double? value)
+    {
+        return value.HasValue ? value.Value.ToString("0.00") : "n/a";
     }
 
     private void RenderLocalRuntimeReadiness(LocalOllamaReadinessSnapshot? snapshot)
