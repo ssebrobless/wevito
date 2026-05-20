@@ -15,6 +15,15 @@ public sealed partial class ArtifactRenameRollbackRunner
     public const string ExplicitRollbackEnabledSetting = "apply_runner_v0_explicit_rollback_enabled";
     public const string ExplicitRollbackDesignApprovedSetting = "apply_runner_v0_explicit_rollback_design_approved";
 
+    private static readonly string[] ForbiddenExtensions =
+    [
+        ".cs", ".csproj", ".xaml", ".config", ".exe", ".dll",
+        ".png", ".jpg", ".jpeg", ".gif", ".ico", ".wav", ".ogg",
+        ".ttf", ".otf", ".yaml", ".yml", ".toml", ".ini",
+        ".bat", ".ps1", ".sh", ".py", ".js", ".ts", ".java",
+        ".kt", ".swift", ".rs", ".go"
+    ];
+
     private static readonly string[] RequiredFlags =
     [
         ExplicitRollbackEnabledSetting,
@@ -188,6 +197,12 @@ public sealed partial class ArtifactRenameRollbackRunner
             return new RollbackResult.Refused($"prerequisite_check_failed:{failed?.Name ?? "unknown"}");
         }
 
+        var extension = Path.GetExtension(request.ApprovedRelativePath);
+        if (ForbiddenExtensions.Contains(extension, StringComparer.OrdinalIgnoreCase))
+        {
+            return new RollbackResult.Refused($"forbidden_extension:{extension.ToLowerInvariant()}");
+        }
+
         if (!ValidRelativePath().IsMatch(request.ApprovedRelativePath) ||
             request.ApprovedRelativePath.Contains("..", StringComparison.Ordinal) ||
             request.ApprovedRelativePath.Contains('\\', StringComparison.Ordinal) ||
@@ -195,6 +210,12 @@ public sealed partial class ArtifactRenameRollbackRunner
             request.ApprovedRelativePath.Contains(':', StringComparison.Ordinal))
         {
             return new RollbackResult.Refused("invalid_relative_path");
+        }
+
+        if (!string.Equals(extension, ".json", StringComparison.OrdinalIgnoreCase) &&
+            !string.Equals(_settings(ArtifactRenameApplyRunner.ExtendedArtifactTypesEnabledSetting), bool.TrueString, StringComparison.OrdinalIgnoreCase))
+        {
+            return new RollbackResult.Refused($"flag_{ArtifactRenameApplyRunner.ExtendedArtifactTypesEnabledSetting}_not_true");
         }
 
         if (request.ScopeHash.Length != 64 || request.ScopeHash.Any(character => character is not (>= '0' and <= '9' or >= 'a' and <= 'f')))
@@ -373,7 +394,7 @@ public sealed partial class ArtifactRenameRollbackRunner
 
     private static string ToDraftRelativePath(string approvedRelativePath)
     {
-        return approvedRelativePath[..^".approved.json".Length] + ".draft.json";
+        return approvedRelativePath.Replace(".approved.", ".draft.", StringComparison.Ordinal);
     }
 
     private static string FirstNonEmpty(params string[] values)
@@ -400,7 +421,7 @@ public sealed partial class ArtifactRenameRollbackRunner
         return Convert.ToHexString(SHA256.HashData(stream)).ToLowerInvariant();
     }
 
-    [GeneratedRegex("^[a-zA-Z0-9_-]+/[a-zA-Z0-9_-]+/[a-zA-Z0-9._-]+\\.approved\\.json$", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("^[a-zA-Z0-9_-]+/[a-zA-Z0-9_-]+/[a-zA-Z0-9._-]+\\.approved\\.(json|txt|md|svg)$", RegexOptions.CultureInvariant)]
     private static partial Regex ValidRelativePath();
 
     private sealed record AwaitingApproval(string ApprovalToken, string ScopeHash);

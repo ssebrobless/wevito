@@ -57,6 +57,7 @@ public static class CapabilityFlagInventory
         new(ArtifactRenameApplyRunner.BackupRequiredSetting, bool.FalseString, "Requires the v0 apply runner to write and verify a backup before any target artifact rename."),
         new(ArtifactRenameApplyRunner.PostProofRequiredSetting, bool.FalseString, "Requires the v0 apply runner to verify post-apply sha256 evidence after the rename."),
         new(ArtifactRenameApplyRunner.RollbackRequiredSetting, bool.FalseString, "Requires the v0 apply runner to roll back automatically after any mid-flight failure."),
+        new(ArtifactRenameApplyRunner.ExtendedArtifactTypesEnabledSetting, bool.FalseString, "Allows the narrow v0 apply/rollback runners to rename artifact-only draft/approved txt, md, and svg files. Default off; JSON remains the base format."),
         new(ArtifactRenameRollbackRunner.ExplicitRollbackEnabledSetting, bool.FalseString, "Allows the narrow v0 rollback runner to rename one approved JSON artifact back to its draft JSON counterpart."),
         new(ArtifactRenameRollbackRunner.ExplicitRollbackDesignApprovedSetting, bool.FalseString, "Records explicit approval of the narrow v0 artifact-rename rollback-runner design."),
         new("mutation_scope_audit_emit_enabled", bool.FalseString, "Allows future mutation-scope guard calls to emit audit packets. Default off; the C-PHASE 186 guard never emits by default."),
