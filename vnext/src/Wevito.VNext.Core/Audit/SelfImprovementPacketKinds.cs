@@ -26,4 +26,5 @@ public static class SelfImprovementPacketKinds
     public const string ApplyV0ExplicitRollbackStarted = "self_improvement_apply_v0_explicit_rollback_started";
     public const string ApplyV0ExplicitRollbackCompleted = "self_improvement_apply_v0_explicit_rollback_completed";
     public const string ApplyV0ExplicitRollbackRefused = "self_improvement_apply_v0_explicit_rollback_refused";
+    public const string MutationScopeAuditEvent = "self_improvement_mutation_scope_audit_event";
 }

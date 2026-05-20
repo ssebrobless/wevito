@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using Microsoft.Data.Sqlite;
 using Wevito.VNext.Contracts;
 using Wevito.VNext.Core.Audit;
+using Wevito.VNext.Core.Sandbox;
 
 namespace Wevito.VNext.Core.SelfImprovement.Apply;
 
@@ -94,6 +95,9 @@ public sealed partial class ArtifactRenameRollbackRunner
         var draftRelativePath = ToDraftRelativePath(request.ApprovedRelativePath);
         var destinationPath = ResolveUnderRoot(draftRelativePath);
         var dryRunPath = ResolveUnderRoot($"{request.OperationId}/{request.ScopeId}/rollback-v0-dry-run.json");
+        GuardArtifactPath(sourcePath);
+        GuardArtifactPath(destinationPath);
+        GuardArtifactPath(dryRunPath);
         var preHash = _sha256(sourcePath);
 
         try
@@ -132,6 +136,8 @@ public sealed partial class ArtifactRenameRollbackRunner
 
             try
             {
+                GuardArtifactPath(sourcePath);
+                GuardArtifactPath(destinationPath);
                 File.Move(sourcePath, destinationPath, overwrite: false);
             }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
@@ -352,6 +358,11 @@ public sealed partial class ArtifactRenameRollbackRunner
     private string ResolveUnderRoot(string relativePath)
     {
         return Path.GetFullPath(Path.Combine(_artifactRoot, relativePath.Replace('/', Path.DirectorySeparatorChar)));
+    }
+
+    private void GuardArtifactPath(string path)
+    {
+        MutationScopeGuard.ThrowIfOutsideScope(path, _artifactRoot, "artifact-root");
     }
 
     private bool IsUnderRoot(string path)
