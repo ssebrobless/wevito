@@ -139,7 +139,7 @@ public sealed class OllamaLoopbackScoringProviderTests
     }
 
     [Fact]
-    public void NoNewSelfImprovementPacketKindWasAdded()
+    public void NoUnexpectedOllamaPacketKindWasAdded()
     {
         var packetKindNames = typeof(SelfImprovementPacketKinds).GetFields(BindingFlags.Public | BindingFlags.Static)
             .Where(field => field.IsLiteral)
@@ -147,7 +147,7 @@ public sealed class OllamaLoopbackScoringProviderTests
             .Order(StringComparer.Ordinal)
             .ToArray();
 
-        Assert.DoesNotContain(packetKindNames, name => name.Contains("Scoring", StringComparison.OrdinalIgnoreCase));
+        Assert.Contains(nameof(SelfImprovementPacketKinds.ScoringDryRun), packetKindNames);
         Assert.DoesNotContain(packetKindNames, name => name.Contains("Ollama", StringComparison.OrdinalIgnoreCase));
     }
 

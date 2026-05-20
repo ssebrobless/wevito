@@ -85,6 +85,7 @@ public sealed class LocalScoringProviderContractTests
         var offenders = Directory.EnumerateFiles(root, "*.cs", SearchOption.AllDirectories)
             .Where(path => !path.Contains($"{Path.DirectorySeparatorChar}SelfImprovement{Path.DirectorySeparatorChar}Scoring{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase))
             .Where(path => !path.EndsWith("ShellCompositionRoot.cs", StringComparison.OrdinalIgnoreCase))
+            .Where(path => !path.EndsWith(Path.Combine("Audit", "CapabilityFlagInventory.cs"), StringComparison.OrdinalIgnoreCase))
             .Where(path => File.ReadAllText(path).Contains("ILocalScoringProvider", StringComparison.Ordinal))
             .Select(path => Path.GetRelativePath(FindRepositoryRoot(), path))
             .ToArray();

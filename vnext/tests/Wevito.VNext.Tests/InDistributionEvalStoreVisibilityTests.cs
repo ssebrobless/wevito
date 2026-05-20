@@ -7,6 +7,7 @@ using Wevito.VNext.Core.SelfImprovement.Invariants;
 using Wevito.VNext.Core.SelfImprovement.Maturity;
 using Wevito.VNext.Core.SelfImprovement.Readiness;
 using Wevito.VNext.Core.SelfImprovement.Replay;
+using Wevito.VNext.Core.SelfImprovement.Scoring;
 
 namespace Wevito.VNext.Tests;
 
@@ -37,6 +38,7 @@ public sealed class InDistributionEvalStoreVisibilityTests
             typeof(ApplyPrerequisiteExplainerService),
             typeof(ApplyPrerequisiteExplanation),
             typeof(LocalOllamaReadinessProbeService),
+            typeof(SupervisedScoringDryRunService),
             typeof(SpriteRepairBatchProposalScope)
         };
 

@@ -14,4 +14,5 @@ public static class SelfImprovementPacketKinds
     public const string JudgeCritique = "self_improvement_judge_critique";
     public const string ApplyPrerequisiteCheck = "self_improvement_apply_prerequisite_check";
     public const string LocalRuntimeProbe = "self_improvement_local_runtime_probe";
+    public const string ScoringDryRun = "self_improvement_scoring_dry_run";
 }

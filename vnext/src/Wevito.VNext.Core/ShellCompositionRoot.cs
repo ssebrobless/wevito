@@ -87,6 +87,20 @@ public static class ShellCompositionRoot
         return new NotConfiguredScoringProvider(killSwitchService);
     }
 
+    public static SupervisedScoringDryRunService CreateSupervisedScoringDryRunService(
+        AuditLedgerService ledger,
+        ILocalScoringProvider provider,
+        KillSwitchService? killSwitchService = null,
+        Func<IReadOnlyDictionary<string, string>>? settingsProvider = null)
+    {
+        return new SupervisedScoringDryRunService(
+            ledger.DatabasePath,
+            ledger,
+            provider,
+            killSwitchService,
+            settingsProvider);
+    }
+
     public static LocalOllamaReadinessProbeService CreateLocalOllamaReadinessProbeService(
         AuditLedgerService ledger,
         KillSwitchService? killSwitchService = null,
