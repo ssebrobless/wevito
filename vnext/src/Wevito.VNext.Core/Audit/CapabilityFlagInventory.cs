@@ -39,6 +39,7 @@ public static class CapabilityFlagInventory
         new(OllamaLoopbackScoringProvider.OllamaEnabledSetting, bool.FalseString, "Allows the loopback Ollama scoring provider type to be selected. Default off; the broader local_scoring_provider_enabled flag must also be true."),
         new(OllamaLoopbackScoringProvider.LoopbackEndpointSetting, "", "Loopback host:port for the local Ollama provider. Empty uses 127.0.0.1:11434; non-loopback hosts are refused."),
         new(OllamaLoopbackScoringProvider.OllamaModelSetting, "", "Model name passed to the loopback Ollama provider. Empty uses qwen2.5:7b-instruct-q4_k_m; used only when local_scoring_provider_ollama_enabled is true."),
+        new(SupervisedScoringDryRunService.EnabledSetting, bool.FalseString, "Allows the supervised self-improvement scoring dry-run to execute against the configured ILocalScoringProvider. Default off. Even when on, the default provider refuses."),
         new(LocalOllamaReadinessProbeService.EnabledSetting, bool.FalseString, "Allows the loopback Ollama readiness probe to issue a single GET /api/tags to 127.0.0.1. Default off; the probe never sends a prompt."),
         new(LocalOllamaReadinessProbeService.EndpointSetting, "", "Optional override for the loopback Ollama readiness probe endpoint (host:port). Empty falls back to local_scoring_provider_loopback_endpoint, then 127.0.0.1:11434."),
         new(PetModelAdapterEnabledSetting, bool.FalseString, "Allows helper previews to request model-written summaries after approval gates."),
