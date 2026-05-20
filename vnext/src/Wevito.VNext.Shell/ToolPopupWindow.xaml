@@ -1847,6 +1847,53 @@
                             </ItemsControl>
                         </StackPanel>
                     </Expander>
+                    <Expander Header="Rollback evidence (read-only)"
+                              Margin="0,10,0,0"
+                              Foreground="#FFEAF6F7"
+                              IsExpanded="False"
+                              automation:AutomationProperties.AutomationId="RollbackEvidenceExpander">
+                        <StackPanel Margin="0,8,0,0">
+                            <TextBlock x:Name="RollbackEvidenceStatusText"
+                                       Foreground="#FFDCE9EF"
+                                       FontSize="10"
+                                       TextWrapping="Wrap"
+                                       automation:AutomationProperties.AutomationId="RollbackEvidenceStatusText" />
+                            <ItemsControl x:Name="RollbackEvidenceItemsControl"
+                                          Margin="0,8,0,0"
+                                          automation:AutomationProperties.AutomationId="RollbackEvidenceItemsControl">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Margin="0,0,0,8"
+                                                Padding="8"
+                                                Background="#101E2A"
+                                                BorderBrush="#425D78"
+                                                BorderThickness="1"
+                                                CornerRadius="6">
+                                            <StackPanel>
+                                                <TextBlock Text="{Binding Header}"
+                                                           Foreground="#FFF0F4F5"
+                                                           FontSize="10"
+                                                           FontWeight="SemiBold"
+                                                           TextWrapping="Wrap" />
+                                                <TextBlock Text="{Binding Details}"
+                                                           Margin="0,5,0,0"
+                                                           FontFamily="Consolas"
+                                                           Foreground="#FFBFD2DC"
+                                                           FontSize="9"
+                                                           TextWrapping="Wrap" />
+                                                <TextBlock Text="{Binding Packets}"
+                                                           Margin="0,5,0,0"
+                                                           FontFamily="Consolas"
+                                                           Foreground="#FFDCE9EF"
+                                                           FontSize="9"
+                                                           TextWrapping="Wrap" />
+                                            </StackPanel>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Expander>
                     <Expander Header="Local runtime readiness (read-only)"
                               Margin="0,10,0,0"
                               Foreground="#FFEAF6F7"

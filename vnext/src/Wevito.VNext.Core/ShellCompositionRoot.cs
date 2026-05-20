@@ -134,6 +134,36 @@ public static class ShellCompositionRoot
         return new ArtifactRenameApplyRunner(ledger, settings, killSwitch, prereqCheck, artifactsRoot);
     }
 
+    public static ArtifactRenameRollbackRunner CreateArtifactRenameRollbackRunner(
+        AuditLedgerService ledger,
+        Func<string, string?> settings,
+        KillSwitchService? killSwitchService = null)
+    {
+        var artifactsRoot = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "WevitoVNext",
+            "artifacts");
+        var evalRoot = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "WevitoVNext",
+            "eval");
+        var killSwitch = killSwitchService ?? new KillSwitchService(() => new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase));
+        var settingsProvider = () => CapabilityFlagInventory.Entries.ToDictionary(
+            entry => entry.Name,
+            entry => settings(entry.Name) ?? entry.DefaultValue,
+            StringComparer.OrdinalIgnoreCase);
+        var prereqCheck = new ApplyRunnerPrerequisiteCheckService(
+            artifactsRoot,
+            ledger.DatabasePath,
+            ledger,
+            new HeldOutEvalStore(Path.Combine(evalRoot, "held-out"), killSwitch),
+            new InDistributionEvalStore(Path.Combine(evalRoot, "in-distribution"), killSwitch),
+            killSwitch,
+            settingsProvider);
+
+        return new ArtifactRenameRollbackRunner(ledger, settings, killSwitch, prereqCheck, artifactsRoot);
+    }
+
     public static ReplayResultStore CreateReplayResultStore(KillSwitchService killSwitchService)
     {
         var root = Path.Combine(

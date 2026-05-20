@@ -127,6 +127,7 @@ public sealed class ApplyRunnerPrerequisiteCheckServiceTests
         var offenders = Directory.EnumerateFiles(root, "*.cs", SearchOption.AllDirectories)
             .Where(path => !path.EndsWith("ApplyRunnerPrerequisiteCheckService.cs", StringComparison.OrdinalIgnoreCase))
             .Where(path => !path.EndsWith("ArtifactRenameApplyRunner.cs", StringComparison.OrdinalIgnoreCase))
+            .Where(path => !path.EndsWith("ArtifactRenameRollbackRunner.cs", StringComparison.OrdinalIgnoreCase))
             .Where(path => !path.EndsWith("ShellCompositionRoot.cs", StringComparison.OrdinalIgnoreCase))
             .Where(path => !path.EndsWith("CapabilityFlagInventory.cs", StringComparison.OrdinalIgnoreCase))
             .Where(path => File.ReadAllText(path).Contains("ApplyRunnerPrerequisiteCheckService", StringComparison.Ordinal))
