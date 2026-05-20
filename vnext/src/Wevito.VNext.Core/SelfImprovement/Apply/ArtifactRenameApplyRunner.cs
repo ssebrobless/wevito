@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using Microsoft.Data.Sqlite;
 using Wevito.VNext.Contracts;
 using Wevito.VNext.Core.Audit;
+using Wevito.VNext.Core.Sandbox;
 
 namespace Wevito.VNext.Core.SelfImprovement.Apply;
 
@@ -103,6 +104,9 @@ public sealed partial class ArtifactRenameApplyRunner
         var destinationPath = ResolveUnderRoot(approvedRelativePath);
         var dryRunRelativePath = $"{request.OperationId}/{request.ScopeId}/apply-v0-dry-run.json";
         var dryRunPath = ResolveUnderRoot(dryRunRelativePath);
+        GuardArtifactPath(sourcePath);
+        GuardArtifactPath(destinationPath);
+        GuardArtifactPath(dryRunPath);
         var backupPath = "";
         var backupRelativePath = "";
         var preHash = _sha256(sourcePath);
@@ -134,6 +138,7 @@ public sealed partial class ArtifactRenameApplyRunner
             var now = _clock(sourcePath).UtcDateTime.ToString("yyyyMMddHHmmssffff", CultureInfo.InvariantCulture);
             backupPath = $"{sourcePath}.backup-{now}";
             backupRelativePath = ToRelative(backupPath);
+            GuardArtifactPath(backupPath);
             File.Copy(sourcePath, backupPath, overwrite: false);
             var backupHash = _sha256(backupPath);
             if (!string.Equals(backupHash, preHash, StringComparison.Ordinal))
@@ -153,6 +158,8 @@ public sealed partial class ArtifactRenameApplyRunner
 
             try
             {
+                GuardArtifactPath(sourcePath);
+                GuardArtifactPath(destinationPath);
                 File.Move(sourcePath, destinationPath, overwrite: false);
             }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
@@ -302,12 +309,16 @@ public sealed partial class ArtifactRenameApplyRunner
     {
         if (File.Exists(destinationPath))
         {
+            GuardArtifactPath(destinationPath);
+            GuardArtifactPath(sourcePath);
             File.Move(destinationPath, sourcePath, overwrite: true);
             return;
         }
 
         if (!File.Exists(sourcePath) && File.Exists(backupPath))
         {
+            GuardArtifactPath(backupPath);
+            GuardArtifactPath(sourcePath);
             File.Copy(backupPath, sourcePath, overwrite: true);
         }
     }
@@ -412,6 +423,11 @@ public sealed partial class ArtifactRenameApplyRunner
     private string ResolveUnderRoot(string relativePath)
     {
         return Path.GetFullPath(Path.Combine(_artifactRoot, relativePath.Replace('/', Path.DirectorySeparatorChar)));
+    }
+
+    private void GuardArtifactPath(string path)
+    {
+        MutationScopeGuard.ThrowIfOutsideScope(path, _artifactRoot, "artifact-root");
     }
 
     private bool IsUnderRoot(string path)

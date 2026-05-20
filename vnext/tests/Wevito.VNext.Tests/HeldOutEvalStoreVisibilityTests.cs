@@ -9,6 +9,7 @@ using Wevito.VNext.Core.SelfImprovement.Maturity;
 using Wevito.VNext.Core.SelfImprovement.Readiness;
 using Wevito.VNext.Core.SelfImprovement.Replay;
 using Wevito.VNext.Core.SelfImprovement.Scoring;
+using Wevito.VNext.Core.Sandbox;
 
 namespace Wevito.VNext.Tests;
 
@@ -60,6 +61,7 @@ public sealed class HeldOutEvalStoreVisibilityTests
             typeof(ArtifactRenameRollbackRunner),
             typeof(RollbackRequest),
             typeof(RollbackResult),
+            typeof(MutationScopeGuard),
             typeof(SpriteRepairBatchProposalScope)
         };
 
