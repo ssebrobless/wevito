@@ -35,6 +35,8 @@ public sealed class HeldOutEvalStoreVisibilityTests
             typeof(ReplayResultSummary),
             typeof(ProposalDiffExplainerService),
             typeof(ProposalDiffExplanation),
+            typeof(ApplyPrerequisiteExplainerService),
+            typeof(ApplyPrerequisiteExplanation),
             typeof(LocalOllamaReadinessProbeService),
             typeof(SpriteRepairBatchProposalScope)
         };

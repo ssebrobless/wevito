@@ -83,6 +83,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private readonly HeuristicJudgeService _heuristicJudgeService;
     private readonly ApprovalCardDetailService _approvalCardDetailService;
     private readonly ProposalDiffExplainerService _proposalDiffExplainerService;
+    private readonly ApplyPrerequisiteExplainerService _applyPrerequisiteExplainerService;
     private readonly ReplayResultStore _replayResultStore;
     private readonly CapabilitiesAndGatesService _capabilitiesAndGatesService;
     private readonly LocalOllamaReadinessProbeService _localOllamaReadinessProbeService;
@@ -209,6 +210,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             () => _state?.SettingsSnapshot ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase));
         _approvalCardDetailService = new ApprovalCardDetailService(_auditLedgerService.DatabasePath, _killSwitchService);
         _proposalDiffExplainerService = ShellCompositionRoot.CreateProposalDiffExplainerService(_auditLedgerService, _killSwitchService);
+        _applyPrerequisiteExplainerService = ShellCompositionRoot.CreateApplyPrerequisiteExplainerService(_auditLedgerService, _killSwitchService);
         _replayResultStore = ShellCompositionRoot.CreateReplayResultStore(_killSwitchService);
         _capabilitiesAndGatesService = ShellCompositionRoot.CreateCapabilitiesAndGatesService(
             () => _state?.SettingsSnapshot ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
@@ -847,12 +849,13 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         var maturityClock = _maturityScoreboardService.BuildScoreboard(now);
         var approvalCardDetail = BuildApprovalCardDetail();
         var proposalDiffExplanation = BuildProposalDiffExplanation();
+        var applyPrerequisiteExplanation = BuildApplyPrerequisiteExplanation(now);
         var replayResultSummary = BuildReplayResultSummary();
         var localOllamaReadinessSnapshot = BuildLatestLocalOllamaReadinessSnapshot(now);
 
         _homeWindow.Render(_state, environment, _feedbackText, _assetService, needSnapshot, aggregateStatuses, actionEnabled, habitatLoadout, evidenceStatus, _localBrainStatus);
         _roamBandWindow.Render(_state, _assetService, liveStatus, liveBannerText, supervisorStatus, killSwitchActive, evidenceStatus, desktopAssetOpacity);
-        _toolPopupWindow.Render(_state, _content, habitatLoadout, _assetService, _devToolsEnabled, petCommandBarState, supervisorStatus, activitySummary, autonomousDecision, promotionDecision, liveRecentLines, evidenceStatus, evidenceSummary, maturityClock, capabilityFlagRows, approvalCardDetail, proposalDiffExplanation, replayResultSummary, capabilitiesAndGatesSnapshot, localOllamaReadinessSnapshot);
+        _toolPopupWindow.Render(_state, _content, habitatLoadout, _assetService, _devToolsEnabled, petCommandBarState, supervisorStatus, activitySummary, autonomousDecision, promotionDecision, liveRecentLines, evidenceStatus, evidenceSummary, maturityClock, capabilityFlagRows, approvalCardDetail, proposalDiffExplanation, replayResultSummary, capabilitiesAndGatesSnapshot, applyPrerequisiteExplanation, localOllamaReadinessSnapshot);
     }
 
     private ApprovalCardDetail? BuildApprovalCardDetail()
@@ -877,6 +880,24 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         }
 
         return _proposalDiffExplainerService.Explain(operationId);
+    }
+
+    public ApplyPrerequisiteExplanation? GetApplyPrerequisiteExplanation(DateTimeOffset nowUtc)
+    {
+        return BuildApplyPrerequisiteExplanation(nowUtc);
+    }
+
+    private ApplyPrerequisiteExplanation? BuildApplyPrerequisiteExplanation(DateTimeOffset nowUtc)
+    {
+        var card = _state?.TaskCards?.FirstOrDefault(SupervisedImprovementLoop.IsAwaitingApprovalCard);
+        if (card?.ReviewPayload is null ||
+            !card.ReviewPayload.TryGetValue("operation_id", out var operationId) ||
+            string.IsNullOrWhiteSpace(operationId))
+        {
+            return null;
+        }
+
+        return _applyPrerequisiteExplainerService.Explain(operationId, nowUtc);
     }
 
     public ReplayResultSummary? GetReplayResultSummary()

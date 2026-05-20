@@ -52,6 +52,18 @@ public static class ShellCompositionRoot
         return new ProposalDiffExplainerService(ledger.DatabasePath, killSwitchService);
     }
 
+    public static ApplyPrerequisiteExplainerService CreateApplyPrerequisiteExplainerService(
+        AuditLedgerService ledger,
+        KillSwitchService? killSwitchService = null)
+    {
+        var artifactsRoot = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "WevitoVNext",
+            "artifacts");
+
+        return new ApplyPrerequisiteExplainerService(ledger.DatabasePath, artifactsRoot, killSwitchService);
+    }
+
     public static ReplayResultStore CreateReplayResultStore(KillSwitchService killSwitchService)
     {
         var root = Path.Combine(
