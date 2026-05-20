@@ -64,6 +64,14 @@ public static class ShellCompositionRoot
         return new ApplyPrerequisiteExplainerService(ledger.DatabasePath, artifactsRoot, killSwitchService);
     }
 
+    public static EvalCoverageHealthService CreateEvalCoverageHealthService(
+        IHeldOutEvalStore heldOut,
+        IInDistributionEvalStore inDistribution,
+        KillSwitchService? killSwitchService = null)
+    {
+        return new EvalCoverageHealthService(heldOut, inDistribution, killSwitchService);
+    }
+
     public static ReplayResultStore CreateReplayResultStore(KillSwitchService killSwitchService)
     {
         var root = Path.Combine(

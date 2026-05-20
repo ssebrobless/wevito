@@ -1700,6 +1700,59 @@
                             </ItemsControl>
                         </StackPanel>
                     </Expander>
+                    <Expander Header="Eval coverage (read-only)"
+                              Margin="0,10,0,0"
+                              Foreground="#FFEAF6F7"
+                              IsExpanded="False"
+                              automation:AutomationProperties.AutomationId="EvalCoverageHealthExpander">
+                        <StackPanel Margin="0,8,0,0">
+                            <TextBlock x:Name="EvalCoverageHealthStatusText"
+                                       Foreground="#FFDCE9EF"
+                                       FontSize="10"
+                                       TextWrapping="Wrap"
+                                       automation:AutomationProperties.AutomationId="EvalCoverageHealthStatusText" />
+                            <UniformGrid Margin="0,8,0,0"
+                                         Columns="2">
+                                <Border Margin="0,0,6,0"
+                                        Padding="8"
+                                        Background="#101E2A"
+                                        BorderBrush="#425D78"
+                                        BorderThickness="1"
+                                        CornerRadius="6">
+                                    <StackPanel>
+                                        <TextBlock Text="Held-out eval"
+                                                   Foreground="#FFF0F4F5"
+                                                   FontSize="10"
+                                                   FontWeight="SemiBold" />
+                                        <TextBlock x:Name="EvalCoverageHeldOutText"
+                                                   Margin="0,4,0,0"
+                                                   Foreground="#FFBFD2DC"
+                                                   FontSize="9"
+                                                   TextWrapping="Wrap"
+                                                   automation:AutomationProperties.AutomationId="EvalCoverageHeldOutText" />
+                                    </StackPanel>
+                                </Border>
+                                <Border Padding="8"
+                                        Background="#101E2A"
+                                        BorderBrush="#425D78"
+                                        BorderThickness="1"
+                                        CornerRadius="6">
+                                    <StackPanel>
+                                        <TextBlock Text="In-distribution eval"
+                                                   Foreground="#FFF0F4F5"
+                                                   FontSize="10"
+                                                   FontWeight="SemiBold" />
+                                        <TextBlock x:Name="EvalCoverageInDistributionText"
+                                                   Margin="0,4,0,0"
+                                                   Foreground="#FFBFD2DC"
+                                                   FontSize="9"
+                                                   TextWrapping="Wrap"
+                                                   automation:AutomationProperties.AutomationId="EvalCoverageInDistributionText" />
+                                    </StackPanel>
+                                </Border>
+                            </UniformGrid>
+                        </StackPanel>
+                    </Expander>
                     <Expander Header="Local runtime readiness (read-only)"
                               Margin="0,10,0,0"
                               Foreground="#FFEAF6F7"

@@ -26,6 +26,7 @@ public sealed class InDistributionVersusHeldOutTypeSeparationTests
                 Constructors = type.GetConstructors(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
             })
             .Where(entry => entry.Type != typeof(ApplyRunnerPrerequisiteCheckService)) // C-PHASE 174 exception: reads only ListCaseIds() from each store; covered by ApplyRunnerPrerequisiteHeldOutAccessTests.
+            .Where(entry => entry.Type != typeof(EvalCoverageHealthService)) // C-PHASE 178 exception: counts only through ListCaseIds(); covered by EvalCoverageHealthHeldOutAccessTests.
             .Where(entry => entry.Constructors.Any(ConstructorMixesStoreTypes))
             .Select(entry => entry.Type.FullName ?? entry.Type.Name)
             .ToArray();

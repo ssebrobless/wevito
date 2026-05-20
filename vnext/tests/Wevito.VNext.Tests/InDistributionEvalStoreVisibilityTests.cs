@@ -15,6 +15,8 @@ public sealed class InDistributionEvalStoreVisibilityTests
     [Fact]
     public void InDistributionStore_IsNotReferencedByForbiddenSurfaces()
     {
+        // EvalCoverageHealthService is the explicit C-PHASE 178 exception: it may receive
+        // IInDistributionEvalStore only to count IDs through ListCaseIds(), never ReadCase().
         var forbiddenTypes = new[]
         {
             typeof(ToolRegistry),
