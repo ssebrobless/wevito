@@ -44,6 +44,8 @@ public sealed class HeldOutEvalStoreVisibilityTests
             typeof(SupervisedScoringDryRunService),
             typeof(ProposalQualityMetricsService),
             typeof(ProposalQualityMetricsSnapshot),
+            typeof(ApplyRunnerStatusReportService),
+            typeof(ApplyRunnerStatusReport),
             typeof(SpriteRepairBatchProposalScope)
         };
 

@@ -165,6 +165,7 @@ public partial class ToolPopupWindow : Window
         ApplyPrerequisiteExplanation? applyPrerequisiteExplanation = null,
         EvalCoverageHealthSnapshot? evalCoverageHealthSnapshot = null,
         ProposalQualityMetricsSnapshot? proposalQualityMetricsSnapshot = null,
+        ApplyRunnerStatusReport? applyRunnerStatusReport = null,
         LocalOllamaReadinessSnapshot? localOllamaReadinessSnapshot = null)
     {
         var toolId = string.IsNullOrWhiteSpace(state.ActiveTool.ToolId) ? "basket" : state.ActiveTool.ToolId;
@@ -261,7 +262,7 @@ public partial class ToolPopupWindow : Window
         }
         else if (showingEvidence)
         {
-            RenderEvidencePanel(state, evidenceSummary, maturityClock, capabilityFlagRows, capabilitiesAndGatesSnapshot, applyPrerequisiteExplanation, evalCoverageHealthSnapshot, proposalQualityMetricsSnapshot, localOllamaReadinessSnapshot);
+            RenderEvidencePanel(state, evidenceSummary, maturityClock, capabilityFlagRows, capabilitiesAndGatesSnapshot, applyPrerequisiteExplanation, evalCoverageHealthSnapshot, proposalQualityMetricsSnapshot, applyRunnerStatusReport, localOllamaReadinessSnapshot);
         }
 
         _suppressSettingEvents = true;
@@ -2052,12 +2053,14 @@ public partial class ToolPopupWindow : Window
         ApplyPrerequisiteExplanation? applyPrerequisiteExplanation,
         EvalCoverageHealthSnapshot? evalCoverageHealthSnapshot,
         ProposalQualityMetricsSnapshot? proposalQualityMetricsSnapshot,
+        ApplyRunnerStatusReport? applyRunnerStatusReport,
         LocalOllamaReadinessSnapshot? localOllamaReadinessSnapshot)
     {
         RenderCapabilitiesAndGates(capabilitiesAndGatesSnapshot);
         RenderApplyPrerequisiteExplanation(applyPrerequisiteExplanation);
         RenderEvalCoverageHealth(evalCoverageHealthSnapshot);
         RenderProposalQualityMetrics(proposalQualityMetricsSnapshot);
+        RenderApplyRunnerStatusReport(applyRunnerStatusReport);
         RenderLocalRuntimeReadiness(localOllamaReadinessSnapshot);
         RenderMaturityClock(maturityClock);
         _capabilityFlagRows = (capabilityFlagRows ?? [])
@@ -2183,6 +2186,27 @@ public partial class ToolPopupWindow : Window
             "Eval gates missing:",
             snapshot.LatestEvalGatesMissing.Count == 0 ? "- none" : string.Join(Environment.NewLine, snapshot.LatestEvalGatesMissing.Select(gate => $"- {gate}"))
         ]);
+    }
+
+    private void RenderApplyRunnerStatusReport(ApplyRunnerStatusReport? report)
+    {
+        if (report is null)
+        {
+            ApplyRunnerStatusReportStatusText.Text = "No apply-runner status report has been emitted.";
+            ApplyRunnerStatusReportPrerequisitesText.Text = "";
+            return;
+        }
+
+        ApplyRunnerStatusReportStatusText.Text = string.Join(Environment.NewLine, [
+            $"Report: {report.ReportId}",
+            $"Generated: {report.GeneratedAtUtc.ToLocalTime():MM/dd HH:mm}",
+            $"Apply runner implemented: {report.ApplyRunnerImplemented.ToString().ToLowerInvariant()}",
+            $"Source constant: {report.SourceConstant}",
+            "Read-only status. This panel cannot emit reports, approve, apply, mutate, rerun checks, or flip flags."
+        ]);
+        ApplyRunnerStatusReportPrerequisitesText.Text = report.OutstandingPrerequisites.Count == 0
+            ? "Outstanding prerequisites: none"
+            : string.Join(Environment.NewLine, report.OutstandingPrerequisites.Select(item => $"- {item}"));
     }
 
     private static string FormatNullable(int? value)
