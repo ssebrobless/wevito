@@ -86,6 +86,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private readonly ProposalDiffExplainerService _proposalDiffExplainerService;
     private readonly ApplyPrerequisiteExplainerService _applyPrerequisiteExplainerService;
     private readonly EvalCoverageHealthService _evalCoverageHealthService;
+    private readonly ProposalQualityMetricsService _proposalQualityMetricsService;
     private readonly ReplayResultStore _replayResultStore;
     private readonly CapabilitiesAndGatesService _capabilitiesAndGatesService;
     private readonly LocalOllamaReadinessProbeService _localOllamaReadinessProbeService;
@@ -221,6 +222,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
                 "held-out"), _killSwitchService),
             ShellCompositionRoot.CreateInDistributionEvalStore(_killSwitchService),
             _killSwitchService);
+        _proposalQualityMetricsService = ShellCompositionRoot.CreateProposalQualityMetricsService(_auditLedgerService, _killSwitchService);
         _replayResultStore = ShellCompositionRoot.CreateReplayResultStore(_killSwitchService);
         _capabilitiesAndGatesService = ShellCompositionRoot.CreateCapabilitiesAndGatesService(
             () => _state?.SettingsSnapshot ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
@@ -861,12 +863,13 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         var proposalDiffExplanation = BuildProposalDiffExplanation();
         var applyPrerequisiteExplanation = BuildApplyPrerequisiteExplanation(now);
         var evalCoverageHealthSnapshot = _evalCoverageHealthService.Snapshot(now);
+        var proposalQualityMetricsSnapshot = BuildProposalQualityMetricsSnapshot(now);
         var replayResultSummary = BuildReplayResultSummary();
         var localOllamaReadinessSnapshot = BuildLatestLocalOllamaReadinessSnapshot(now);
 
         _homeWindow.Render(_state, environment, _feedbackText, _assetService, needSnapshot, aggregateStatuses, actionEnabled, habitatLoadout, evidenceStatus, _localBrainStatus);
         _roamBandWindow.Render(_state, _assetService, liveStatus, liveBannerText, supervisorStatus, killSwitchActive, evidenceStatus, desktopAssetOpacity);
-        _toolPopupWindow.Render(_state, _content, habitatLoadout, _assetService, _devToolsEnabled, petCommandBarState, supervisorStatus, activitySummary, autonomousDecision, promotionDecision, liveRecentLines, evidenceStatus, evidenceSummary, maturityClock, capabilityFlagRows, approvalCardDetail, proposalDiffExplanation, replayResultSummary, capabilitiesAndGatesSnapshot, applyPrerequisiteExplanation, evalCoverageHealthSnapshot, localOllamaReadinessSnapshot);
+        _toolPopupWindow.Render(_state, _content, habitatLoadout, _assetService, _devToolsEnabled, petCommandBarState, supervisorStatus, activitySummary, autonomousDecision, promotionDecision, liveRecentLines, evidenceStatus, evidenceSummary, maturityClock, capabilityFlagRows, approvalCardDetail, proposalDiffExplanation, replayResultSummary, capabilitiesAndGatesSnapshot, applyPrerequisiteExplanation, evalCoverageHealthSnapshot, proposalQualityMetricsSnapshot, localOllamaReadinessSnapshot);
     }
 
     private ApprovalCardDetail? BuildApprovalCardDetail()
@@ -927,6 +930,19 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         }
 
         return _replayResultStore.GetLatest(operationId);
+    }
+
+    private ProposalQualityMetricsSnapshot? BuildProposalQualityMetricsSnapshot(DateTimeOffset nowUtc)
+    {
+        var card = _state?.TaskCards?.FirstOrDefault(SupervisedImprovementLoop.IsAwaitingApprovalCard);
+        if (card?.ReviewPayload is null ||
+            !card.ReviewPayload.TryGetValue("operation_id", out var operationId) ||
+            string.IsNullOrWhiteSpace(operationId))
+        {
+            return null;
+        }
+
+        return _proposalQualityMetricsService.Snapshot(operationId, nowUtc);
     }
 
     private LocalOllamaReadinessSnapshot? BuildLatestLocalOllamaReadinessSnapshot(DateTimeOffset now)
