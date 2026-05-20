@@ -161,6 +161,7 @@ public partial class ToolPopupWindow : Window
         ProposalDiffExplanation? proposalDiffExplanation = null,
         ReplayResultSummary? replayResultSummary = null,
         CapabilitiesAndGatesSnapshot? capabilitiesAndGatesSnapshot = null,
+        ApplyPrerequisiteExplanation? applyPrerequisiteExplanation = null,
         LocalOllamaReadinessSnapshot? localOllamaReadinessSnapshot = null)
     {
         var toolId = string.IsNullOrWhiteSpace(state.ActiveTool.ToolId) ? "basket" : state.ActiveTool.ToolId;
@@ -257,7 +258,7 @@ public partial class ToolPopupWindow : Window
         }
         else if (showingEvidence)
         {
-            RenderEvidencePanel(state, evidenceSummary, maturityClock, capabilityFlagRows, capabilitiesAndGatesSnapshot, localOllamaReadinessSnapshot);
+            RenderEvidencePanel(state, evidenceSummary, maturityClock, capabilityFlagRows, capabilitiesAndGatesSnapshot, applyPrerequisiteExplanation, localOllamaReadinessSnapshot);
         }
 
         _suppressSettingEvents = true;
@@ -2045,9 +2046,11 @@ public partial class ToolPopupWindow : Window
         MaturityClock? maturityClock,
         IReadOnlyList<CapabilityFlagAuditRow>? capabilityFlagRows,
         CapabilitiesAndGatesSnapshot? capabilitiesAndGatesSnapshot,
+        ApplyPrerequisiteExplanation? applyPrerequisiteExplanation,
         LocalOllamaReadinessSnapshot? localOllamaReadinessSnapshot)
     {
         RenderCapabilitiesAndGates(capabilitiesAndGatesSnapshot);
+        RenderApplyPrerequisiteExplanation(applyPrerequisiteExplanation);
         RenderLocalRuntimeReadiness(localOllamaReadinessSnapshot);
         RenderMaturityClock(maturityClock);
         _capabilityFlagRows = (capabilityFlagRows ?? [])
@@ -2092,6 +2095,30 @@ public partial class ToolPopupWindow : Window
             $"Captured {snapshot.CapturedAtUtc.ToLocalTime():MM/dd HH:mm}; on={snapshot.OnCount}; off={snapshot.OffCount}; unset={snapshot.UnsetCount}; kill_switch={(snapshot.KillSwitchActive ? "true" : "false")}. Read-only; no toggles or setting writers live here.";
         CapabilitiesAndGatesItemsControl.ItemsSource = snapshot.Entries
             .Select(CapabilitiesAndGatesRowItem.From)
+            .ToList();
+    }
+
+    private void RenderApplyPrerequisiteExplanation(ApplyPrerequisiteExplanation? explanation)
+    {
+        if (explanation is null)
+        {
+            ApplyBlockExplainerStatusText.Text = "No awaiting-approval self-improvement operation is selected.";
+            ApplyBlockExplainerItemsControl.ItemsSource = Array.Empty<ApplyPrerequisiteExplanationRowItem>();
+            return;
+        }
+
+        if (explanation.Entries.Count == 0)
+        {
+            ApplyBlockExplainerStatusText.Text =
+                $"{explanation.OperationId}: {explanation.Reason}. all_passed={explanation.AllPassed.ToString().ToLowerInvariant()}. Read-only; this panel never reruns checks.";
+            ApplyBlockExplainerItemsControl.ItemsSource = Array.Empty<ApplyPrerequisiteExplanationRowItem>();
+            return;
+        }
+
+        ApplyBlockExplainerStatusText.Text =
+            $"{explanation.OperationId}: {explanation.Entries.Count} prerequisite row(s); all_passed={explanation.AllPassed.ToString().ToLowerInvariant()}; generated={explanation.GeneratedAtUtc.ToLocalTime():MM/dd HH:mm}. Read-only artifact view.";
+        ApplyBlockExplainerItemsControl.ItemsSource = explanation.Entries
+            .Select(ApplyPrerequisiteExplanationRowItem.From)
             .ToList();
     }
 
@@ -3176,6 +3203,23 @@ internal sealed record CapabilitiesAndGatesRowItem(
     private static string FormatValue(string value)
     {
         return string.IsNullOrEmpty(value) ? "(empty)" : value;
+    }
+}
+
+internal sealed record ApplyPrerequisiteExplanationRowItem(
+    string Header,
+    string Detail,
+    string PlainLanguage,
+    FontWeight NameWeight)
+{
+    public static ApplyPrerequisiteExplanationRowItem From(ApplyPrerequisiteExplanationEntry entry)
+    {
+        var state = entry.Passed ? "passed" : "blocked";
+        return new ApplyPrerequisiteExplanationRowItem(
+            $"{entry.Name} [{state}]",
+            string.IsNullOrWhiteSpace(entry.Detail) ? "(no detail)" : entry.Detail,
+            string.IsNullOrWhiteSpace(entry.PlainLanguage) ? "No plain-language mapping is registered for this prerequisite row." : entry.PlainLanguage,
+            entry.Passed ? FontWeights.Normal : FontWeights.SemiBold);
     }
 }
 

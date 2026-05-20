@@ -32,6 +32,8 @@ public sealed class InDistributionEvalStoreVisibilityTests
             typeof(ReplayResultSummary),
             typeof(ProposalDiffExplainerService),
             typeof(ProposalDiffExplanation),
+            typeof(ApplyPrerequisiteExplainerService),
+            typeof(ApplyPrerequisiteExplanation),
             typeof(LocalOllamaReadinessProbeService),
             typeof(SpriteRepairBatchProposalScope)
         };

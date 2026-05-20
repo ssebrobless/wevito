@@ -1664,6 +1664,42 @@
                             </ItemsControl>
                         </StackPanel>
                     </Expander>
+                    <Expander Header="Why is apply blocked? (read-only)"
+                              Margin="0,10,0,0"
+                              Foreground="#FFEAF6F7"
+                              IsExpanded="False"
+                              automation:AutomationProperties.AutomationId="ApplyBlockExplainerExpander">
+                        <StackPanel Margin="0,8,0,0">
+                            <TextBlock x:Name="ApplyBlockExplainerStatusText"
+                                       Foreground="#FFDCE9EF"
+                                       FontSize="10"
+                                       TextWrapping="Wrap"
+                                       automation:AutomationProperties.AutomationId="ApplyBlockExplainerStatusText" />
+                            <ItemsControl x:Name="ApplyBlockExplainerItemsControl"
+                                          Margin="0,8,0,0"
+                                          automation:AutomationProperties.AutomationId="ApplyBlockExplainerItemsControl">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Margin="0,0,0,8">
+                                            <TextBlock Foreground="#FFF0F4F5"
+                                                       FontSize="10"
+                                                       FontWeight="{Binding NameWeight}"
+                                                       Text="{Binding Header}"
+                                                       TextWrapping="Wrap" />
+                                            <TextBlock Foreground="#FFBFD2DC"
+                                                       FontSize="9"
+                                                       Text="{Binding Detail}"
+                                                       TextWrapping="Wrap" />
+                                            <TextBlock Foreground="#FF8FA9B8"
+                                                       FontSize="9"
+                                                       Text="{Binding PlainLanguage}"
+                                                       TextWrapping="Wrap" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Expander>
                     <Expander Header="Local runtime readiness (read-only)"
                               Margin="0,10,0,0"
                               Foreground="#FFEAF6F7"
