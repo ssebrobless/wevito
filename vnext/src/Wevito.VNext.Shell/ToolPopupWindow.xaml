@@ -1780,6 +1780,26 @@
                                        automation:AutomationProperties.AutomationId="ProposalQualityMetricsEvalText" />
                         </StackPanel>
                     </Expander>
+                    <Expander Header="Apply runner status (read-only)"
+                              Margin="0,10,0,0"
+                              Foreground="#FFEAF6F7"
+                              IsExpanded="False"
+                              automation:AutomationProperties.AutomationId="ApplyRunnerStatusReportExpander">
+                        <StackPanel Margin="0,8,0,0">
+                            <TextBlock x:Name="ApplyRunnerStatusReportStatusText"
+                                       Foreground="#FFDCE9EF"
+                                       FontSize="10"
+                                       TextWrapping="Wrap"
+                                       automation:AutomationProperties.AutomationId="ApplyRunnerStatusReportStatusText" />
+                            <TextBlock x:Name="ApplyRunnerStatusReportPrerequisitesText"
+                                       Margin="0,8,0,0"
+                                       FontFamily="Consolas"
+                                       Foreground="#FFBFD2DC"
+                                       FontSize="9"
+                                       TextWrapping="Wrap"
+                                       automation:AutomationProperties.AutomationId="ApplyRunnerStatusReportPrerequisitesText" />
+                        </StackPanel>
+                    </Expander>
                     <Expander Header="Local runtime readiness (read-only)"
                               Margin="0,10,0,0"
                               Foreground="#FFEAF6F7"

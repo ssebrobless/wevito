@@ -87,6 +87,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private readonly ApplyPrerequisiteExplainerService _applyPrerequisiteExplainerService;
     private readonly EvalCoverageHealthService _evalCoverageHealthService;
     private readonly ProposalQualityMetricsService _proposalQualityMetricsService;
+    private readonly ApplyRunnerStatusReportService _applyRunnerStatusReportService;
     private readonly ReplayResultStore _replayResultStore;
     private readonly CapabilitiesAndGatesService _capabilitiesAndGatesService;
     private readonly LocalOllamaReadinessProbeService _localOllamaReadinessProbeService;
@@ -223,6 +224,10 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             ShellCompositionRoot.CreateInDistributionEvalStore(_killSwitchService),
             _killSwitchService);
         _proposalQualityMetricsService = ShellCompositionRoot.CreateProposalQualityMetricsService(_auditLedgerService, _killSwitchService);
+        _applyRunnerStatusReportService = ShellCompositionRoot.CreateApplyRunnerStatusReportService(
+            _auditLedgerService,
+            _killSwitchService,
+            () => _state?.SettingsSnapshot ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase));
         _replayResultStore = ShellCompositionRoot.CreateReplayResultStore(_killSwitchService);
         _capabilitiesAndGatesService = ShellCompositionRoot.CreateCapabilitiesAndGatesService(
             () => _state?.SettingsSnapshot ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
@@ -864,12 +869,13 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         var applyPrerequisiteExplanation = BuildApplyPrerequisiteExplanation(now);
         var evalCoverageHealthSnapshot = _evalCoverageHealthService.Snapshot(now);
         var proposalQualityMetricsSnapshot = BuildProposalQualityMetricsSnapshot(now);
+        var applyRunnerStatusReport = _applyRunnerStatusReportService.ReadLatest(now);
         var replayResultSummary = BuildReplayResultSummary();
         var localOllamaReadinessSnapshot = BuildLatestLocalOllamaReadinessSnapshot(now);
 
         _homeWindow.Render(_state, environment, _feedbackText, _assetService, needSnapshot, aggregateStatuses, actionEnabled, habitatLoadout, evidenceStatus, _localBrainStatus);
         _roamBandWindow.Render(_state, _assetService, liveStatus, liveBannerText, supervisorStatus, killSwitchActive, evidenceStatus, desktopAssetOpacity);
-        _toolPopupWindow.Render(_state, _content, habitatLoadout, _assetService, _devToolsEnabled, petCommandBarState, supervisorStatus, activitySummary, autonomousDecision, promotionDecision, liveRecentLines, evidenceStatus, evidenceSummary, maturityClock, capabilityFlagRows, approvalCardDetail, proposalDiffExplanation, replayResultSummary, capabilitiesAndGatesSnapshot, applyPrerequisiteExplanation, evalCoverageHealthSnapshot, proposalQualityMetricsSnapshot, localOllamaReadinessSnapshot);
+        _toolPopupWindow.Render(_state, _content, habitatLoadout, _assetService, _devToolsEnabled, petCommandBarState, supervisorStatus, activitySummary, autonomousDecision, promotionDecision, liveRecentLines, evidenceStatus, evidenceSummary, maturityClock, capabilityFlagRows, approvalCardDetail, proposalDiffExplanation, replayResultSummary, capabilitiesAndGatesSnapshot, applyPrerequisiteExplanation, evalCoverageHealthSnapshot, proposalQualityMetricsSnapshot, applyRunnerStatusReport, localOllamaReadinessSnapshot);
     }
 
     private ApprovalCardDetail? BuildApprovalCardDetail()

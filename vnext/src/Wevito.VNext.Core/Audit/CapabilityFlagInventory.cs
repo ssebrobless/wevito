@@ -48,6 +48,7 @@ public static class CapabilityFlagInventory
         new(ModelProviderModeService.InProcessLocalRuntimeEnabledSetting, bool.FalseString, "Allows the optional in-process local runtime fallback when weights are present."),
         new(ModelProviderModeService.HostedProviderApprovedSetting, bool.FalseString, "Would allow hosted provider routing only in an explicitly approved future mode."),
         new(ApplyRunnerPrerequisiteCheckService.EnabledSetting, bool.FalseString, "Allows the apply-runner prerequisite checklist service to emit audit packets describing whether every gate for a real apply runner is currently met."),
+        new(ApplyRunnerStatusReportService.EnabledSetting, bool.FalseString, "Allows the apply-runner status report service to emit a packet confirming the apply runner is still not implemented. Default off."),
         new(WebResearchConnector.WebSearchEnabledSetting, bool.FalseString, "Allows approved web research surfaces to fetch external pages."),
         new(SettingKeys.LocalDocumentRetrievalEnabled, bool.FalseString, "Allows local document retrieval to build and query the local docs index."),
         new(LocalFileReadEnabledSetting, bool.FalseString, "Allows approved autonomous scopes to read local files through policy gates."),

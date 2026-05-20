@@ -84,6 +84,14 @@ public static class ShellCompositionRoot
         return new ProposalQualityMetricsService(ledger.DatabasePath, artifactsRoot, killSwitchService);
     }
 
+    public static ApplyRunnerStatusReportService CreateApplyRunnerStatusReportService(
+        AuditLedgerService ledger,
+        KillSwitchService? killSwitchService = null,
+        Func<IReadOnlyDictionary<string, string>>? settingsProvider = null)
+    {
+        return new ApplyRunnerStatusReportService(ledger, killSwitchService, settingsProvider);
+    }
+
     public static ReplayResultStore CreateReplayResultStore(KillSwitchService killSwitchService)
     {
         var root = Path.Combine(

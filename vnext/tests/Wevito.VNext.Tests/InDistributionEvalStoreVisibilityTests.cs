@@ -41,6 +41,8 @@ public sealed class InDistributionEvalStoreVisibilityTests
             typeof(SupervisedScoringDryRunService),
             typeof(ProposalQualityMetricsService),
             typeof(ProposalQualityMetricsSnapshot),
+            typeof(ApplyRunnerStatusReportService),
+            typeof(ApplyRunnerStatusReport),
             typeof(SpriteRepairBatchProposalScope)
         };
 
