@@ -19,6 +19,16 @@ public sealed partial class ArtifactRenameApplyRunner
     public const string BackupRequiredSetting = "apply_runner_v0_backup_required";
     public const string PostProofRequiredSetting = "apply_runner_v0_post_proof_required";
     public const string RollbackRequiredSetting = "apply_runner_v0_rollback_required";
+    public const string ExtendedArtifactTypesEnabledSetting = "apply_runner_v0_extended_artifact_types_enabled";
+
+    private static readonly string[] ForbiddenExtensions =
+    [
+        ".cs", ".csproj", ".xaml", ".config", ".exe", ".dll",
+        ".png", ".jpg", ".jpeg", ".gif", ".ico", ".wav", ".ogg",
+        ".ttf", ".otf", ".yaml", ".yml", ".toml", ".ini",
+        ".bat", ".ps1", ".sh", ".py", ".js", ".ts", ".java",
+        ".kt", ".swift", ".rs", ".go"
+    ];
 
     private static readonly string[] RequiredFlags =
     [
@@ -220,6 +230,12 @@ public sealed partial class ArtifactRenameApplyRunner
             return new ApplyResult.Refused($"prerequisite_check_failed:{failed?.Name ?? "unknown"}");
         }
 
+        var extension = Path.GetExtension(request.DraftRelativePath);
+        if (ForbiddenExtensions.Contains(extension, StringComparer.OrdinalIgnoreCase))
+        {
+            return new ApplyResult.Refused($"forbidden_extension:{extension.ToLowerInvariant()}");
+        }
+
         if (!ValidRelativePath().IsMatch(request.DraftRelativePath) ||
             request.DraftRelativePath.Contains("..", StringComparison.Ordinal) ||
             request.DraftRelativePath.Contains('\\', StringComparison.Ordinal) ||
@@ -227,6 +243,12 @@ public sealed partial class ArtifactRenameApplyRunner
             request.DraftRelativePath.Contains(':', StringComparison.Ordinal))
         {
             return new ApplyResult.Refused("invalid_relative_path");
+        }
+
+        if (!string.Equals(extension, ".json", StringComparison.OrdinalIgnoreCase) &&
+            !string.Equals(_settings(ExtendedArtifactTypesEnabledSetting), bool.TrueString, StringComparison.OrdinalIgnoreCase))
+        {
+            return new ApplyResult.Refused($"flag_{ExtendedArtifactTypesEnabledSetting}_not_true");
         }
 
         if (request.ScopeHash.Length != 64 || request.ScopeHash.Any(character => character is not (>= '0' and <= '9' or >= 'a' and <= 'f')))
@@ -443,7 +465,7 @@ public sealed partial class ArtifactRenameApplyRunner
 
     private static string ToApprovedRelativePath(string draftRelativePath)
     {
-        return draftRelativePath[..^".draft.json".Length] + ".approved.json";
+        return draftRelativePath.Replace(".draft.", ".approved.", StringComparison.Ordinal);
     }
 
     private static string FirstNonEmpty(params string[] values)
@@ -487,7 +509,7 @@ public sealed partial class ArtifactRenameApplyRunner
         return Convert.ToHexString(SHA256.HashData(stream)).ToLowerInvariant();
     }
 
-    [GeneratedRegex("^[a-zA-Z0-9_-]+/[a-zA-Z0-9_-]+/[a-zA-Z0-9._-]+\\.draft\\.json$", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("^[a-zA-Z0-9_-]+/[a-zA-Z0-9_-]+/[a-zA-Z0-9._-]+\\.draft\\.(json|txt|md|svg)$", RegexOptions.CultureInvariant)]
     private static partial Regex ValidRelativePath();
 
     private sealed record AwaitingApproval(string ApprovalToken, string ScopeHash);

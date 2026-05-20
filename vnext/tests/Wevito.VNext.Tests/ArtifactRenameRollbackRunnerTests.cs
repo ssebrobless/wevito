@@ -12,6 +12,14 @@ public sealed class ArtifactRenameRollbackRunnerTests
     private const string ScopeHash = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
     private const string Token = "approve-rollback";
     private const string ApprovedRelativePath = $"{OperationId}/{ScopeId}/sample.approved.json";
+    private static readonly string[] ForbiddenExtensions =
+    [
+        ".cs", ".csproj", ".xaml", ".config", ".exe", ".dll",
+        ".png", ".jpg", ".jpeg", ".gif", ".ico", ".wav", ".ogg",
+        ".ttf", ".otf", ".yaml", ".yml", ".toml", ".ini",
+        ".bat", ".ps1", ".sh", ".py", ".js", ".ts", ".java",
+        ".kt", ".swift", ".rs", ".go"
+    ];
 
     [Fact]
     public void ExplicitRollback_refuses_when_enabled_flag_false() => AssertFlagRefusal(ArtifactRenameRollbackRunner.ExplicitRollbackEnabledSetting);
@@ -58,6 +66,56 @@ public sealed class ArtifactRenameRollbackRunnerTests
 
     [Fact]
     public void ExplicitRollback_refuses_when_relative_path_does_not_end_with_approved_json() => AssertInvalidPath($"{OperationId}/{ScopeId}/sample.draft.json");
+
+    [Fact]
+    public void ExplicitRollback_refuses_when_relative_path_has_unsupported_extension() => AssertInvalidPath($"{OperationId}/{ScopeId}/sample.approved.html");
+
+    [Theory]
+    [InlineData("txt")]
+    [InlineData("md")]
+    [InlineData("svg")]
+    public void ExplicitRollback_refuses_non_json_extension_when_extended_flag_false(string extension)
+    {
+        var fixture = Fixture.Create(extension: extension);
+
+        var result = fixture.Runner.ExplicitRollback(fixture.Request(), CancellationToken.None);
+
+        Assert.Equal($"flag_{ArtifactRenameApplyRunner.ExtendedArtifactTypesEnabledSetting}_not_true", Assert.IsType<RollbackResult.Refused>(result).Reason);
+        Assert.Empty(fixture.RollbackRows());
+    }
+
+    [Theory]
+    [InlineData("txt")]
+    [InlineData("md")]
+    [InlineData("svg")]
+    public void ExplicitRollback_accepts_extended_artifact_extension_when_flag_true(string extension)
+    {
+        var fixture = Fixture.Create(extension: extension);
+        fixture.Settings[ArtifactRenameApplyRunner.ExtendedArtifactTypesEnabledSetting] = bool.TrueString;
+        var preHash = fixture.Hash(fixture.SourcePath);
+
+        var result = fixture.Runner.ExplicitRollback(fixture.Request(), CancellationToken.None);
+
+        var succeeded = Assert.IsType<RollbackResult.Succeeded>(result);
+        Assert.Equal($"{OperationId}/{ScopeId}/sample.draft.{extension}", succeeded.DraftRelativePath);
+        Assert.Equal(preHash, succeeded.PostHashSha256);
+        Assert.False(File.Exists(fixture.SourcePath));
+        Assert.True(File.Exists(fixture.DestinationPath));
+        Assert.Equal(preHash, fixture.Hash(fixture.DestinationPath));
+    }
+
+    [Theory]
+    [MemberData(nameof(ForbiddenExtensionValues))]
+    public void ExplicitRollback_refuses_forbidden_extensions_even_when_extended_flag_true(string extension)
+    {
+        var fixture = Fixture.Create(writeSource: false);
+        fixture.Settings[ArtifactRenameApplyRunner.ExtendedArtifactTypesEnabledSetting] = bool.TrueString;
+
+        var result = fixture.Runner.ExplicitRollback(fixture.Request(relativePath: $"{OperationId}/{ScopeId}/sample.approved{extension}"), CancellationToken.None);
+
+        Assert.Equal($"forbidden_extension:{extension}", Assert.IsType<RollbackResult.Refused>(result).Reason);
+        Assert.Empty(fixture.RollbackRows());
+    }
 
     [Fact]
     public void ExplicitRollback_refuses_when_scope_id_segment_mismatches_request()
@@ -227,6 +285,11 @@ public sealed class ArtifactRenameRollbackRunnerTests
         Assert.Equal("invalid_relative_path", Assert.IsType<RollbackResult.Refused>(result).Reason);
     }
 
+    public static IEnumerable<object[]> ForbiddenExtensionValues()
+    {
+        return ForbiddenExtensions.Select(extension => new object[] { extension });
+    }
+
     private static string SourcePath()
     {
         var root = FindRepositoryRoot();
@@ -254,17 +317,18 @@ public sealed class ArtifactRenameRollbackRunnerTests
         private readonly Func<string, string>? _sha256;
         private readonly bool _prereqPassed;
 
-        private Fixture(Func<string, string>? sha256, bool prereqPassed)
+        private Fixture(Func<string, string>? sha256, bool prereqPassed, string extension)
         {
             _sha256 = sha256;
             _prereqPassed = prereqPassed;
+            Extension = extension;
             Root = Path.Combine(Path.GetTempPath(), "wevito-rollback-runner-tests", Guid.NewGuid().ToString("N"));
             ArtifactRoot = Path.Combine(Root, "artifacts");
             Ledger = new AuditLedgerService(Path.Combine(Root, "ledger.sqlite"));
             Settings = AllFlagsTrue();
             KillSwitch = new KillSwitchService(() => Settings, Ledger);
-            SourcePath = Path.Combine(ArtifactRoot, OperationId, ScopeId, "sample.approved.json");
-            DestinationPath = Path.Combine(ArtifactRoot, OperationId, ScopeId, "sample.draft.json");
+            SourcePath = Path.Combine(ArtifactRoot, OperationId, ScopeId, $"sample.approved.{Extension}");
+            DestinationPath = Path.Combine(ArtifactRoot, OperationId, ScopeId, $"sample.draft.{Extension}");
         }
 
         public string Root { get; }
@@ -274,6 +338,8 @@ public sealed class ArtifactRenameRollbackRunnerTests
         public string SourcePath { get; }
 
         public string DestinationPath { get; }
+
+        public string Extension { get; }
 
         public AuditLedgerService Ledger { get; }
 
@@ -289,10 +355,11 @@ public sealed class ArtifactRenameRollbackRunnerTests
             bool prereqPassed = true,
             string token = Token,
             string scopeHash = ScopeHash,
+            string extension = "json",
             Func<string, string>? sha256 = null,
             bool deferRunner = false)
         {
-            var fixture = new Fixture(sha256, prereqPassed);
+            var fixture = new Fixture(sha256, prereqPassed, extension);
             Directory.CreateDirectory(Path.GetDirectoryName(fixture.SourcePath)!);
             if (writeSource)
             {
@@ -335,10 +402,10 @@ public sealed class ArtifactRenameRollbackRunnerTests
             string operationId = OperationId,
             string scopeId = ScopeId,
             string scopeHash = ScopeHash,
-            string relativePath = ApprovedRelativePath,
+            string? relativePath = null,
             string token = Token)
         {
-            return new RollbackRequest(operationId, scopeId, scopeHash, relativePath, token);
+            return new RollbackRequest(operationId, scopeId, scopeHash, relativePath ?? $"{OperationId}/{ScopeId}/sample.approved.{Extension}", token);
         }
 
         public IReadOnlyList<AuditLedgerRow> RollbackRows()
