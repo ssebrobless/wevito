@@ -52,6 +52,10 @@ public sealed class HeldOutEvalStoreVisibilityTests
             typeof(ArtifactRenameApplyRunner),
             typeof(ApplyRequest),
             typeof(ApplyResult),
+            // C-PHASE 184: apply-runner activity is a read-only ledger view.
+            typeof(ApplyRunnerActivityService),
+            typeof(ApplyRunnerActivityEntry),
+            typeof(ApplyRunnerActivityPacket),
             typeof(SpriteRepairBatchProposalScope)
         };
 

@@ -94,6 +94,15 @@ public static class ShellCompositionRoot
         return new ApplyRunnerStatusReportService(ledger, killSwitchService, settingsProvider);
     }
 
+    public static ApplyRunnerActivityService CreateApplyRunnerActivityService(
+        AuditLedgerService ledger,
+        KillSwitchService? killSwitchService = null)
+    {
+        return new ApplyRunnerActivityService(
+            ledger.DatabasePath,
+            killSwitchService ?? new KillSwitchService(() => new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)));
+    }
+
     public static ArtifactRenameApplyRunner CreateArtifactRenameApplyRunner(
         AuditLedgerService ledger,
         Func<string, string?> settings,

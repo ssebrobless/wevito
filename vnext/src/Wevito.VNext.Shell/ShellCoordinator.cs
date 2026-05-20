@@ -10,6 +10,7 @@ using Wevito.VNext.Core;
 using Wevito.VNext.Core.Audit;
 using Wevito.VNext.Core.LocalRetrieval;
 using Wevito.VNext.Core.SelfImprovement;
+using Wevito.VNext.Core.SelfImprovement.Apply;
 using Wevito.VNext.Core.SelfImprovement.Eval;
 using Wevito.VNext.Core.SelfImprovement.Experiments;
 using Wevito.VNext.Core.SelfImprovement.Invariants;
@@ -88,6 +89,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private readonly EvalCoverageHealthService _evalCoverageHealthService;
     private readonly ProposalQualityMetricsService _proposalQualityMetricsService;
     private readonly ApplyRunnerStatusReportService _applyRunnerStatusReportService;
+    private readonly ApplyRunnerActivityService _applyRunnerActivityService;
     private readonly ReplayResultStore _replayResultStore;
     private readonly CapabilitiesAndGatesService _capabilitiesAndGatesService;
     private readonly LocalOllamaReadinessProbeService _localOllamaReadinessProbeService;
@@ -228,6 +230,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             _auditLedgerService,
             _killSwitchService,
             () => _state?.SettingsSnapshot ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase));
+        _applyRunnerActivityService = ShellCompositionRoot.CreateApplyRunnerActivityService(_auditLedgerService, _killSwitchService);
         _replayResultStore = ShellCompositionRoot.CreateReplayResultStore(_killSwitchService);
         _capabilitiesAndGatesService = ShellCompositionRoot.CreateCapabilitiesAndGatesService(
             () => _state?.SettingsSnapshot ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
@@ -870,12 +873,13 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         var evalCoverageHealthSnapshot = _evalCoverageHealthService.Snapshot(now);
         var proposalQualityMetricsSnapshot = BuildProposalQualityMetricsSnapshot(now);
         var applyRunnerStatusReport = _applyRunnerStatusReportService.ReadLatest(now);
+        var applyRunnerActivityEntries = _applyRunnerActivityService.ReadRecent(20);
         var replayResultSummary = BuildReplayResultSummary();
         var localOllamaReadinessSnapshot = BuildLatestLocalOllamaReadinessSnapshot(now);
 
         _homeWindow.Render(_state, environment, _feedbackText, _assetService, needSnapshot, aggregateStatuses, actionEnabled, habitatLoadout, evidenceStatus, _localBrainStatus);
         _roamBandWindow.Render(_state, _assetService, liveStatus, liveBannerText, supervisorStatus, killSwitchActive, evidenceStatus, desktopAssetOpacity);
-        _toolPopupWindow.Render(_state, _content, habitatLoadout, _assetService, _devToolsEnabled, petCommandBarState, supervisorStatus, activitySummary, autonomousDecision, promotionDecision, liveRecentLines, evidenceStatus, evidenceSummary, maturityClock, capabilityFlagRows, approvalCardDetail, proposalDiffExplanation, replayResultSummary, capabilitiesAndGatesSnapshot, applyPrerequisiteExplanation, evalCoverageHealthSnapshot, proposalQualityMetricsSnapshot, applyRunnerStatusReport, localOllamaReadinessSnapshot);
+        _toolPopupWindow.Render(_state, _content, habitatLoadout, _assetService, _devToolsEnabled, petCommandBarState, supervisorStatus, activitySummary, autonomousDecision, promotionDecision, liveRecentLines, evidenceStatus, evidenceSummary, maturityClock, capabilityFlagRows, approvalCardDetail, proposalDiffExplanation, replayResultSummary, capabilitiesAndGatesSnapshot, applyPrerequisiteExplanation, evalCoverageHealthSnapshot, proposalQualityMetricsSnapshot, applyRunnerStatusReport, applyRunnerActivityEntries, localOllamaReadinessSnapshot);
     }
 
     private ApprovalCardDetail? BuildApprovalCardDetail()

@@ -12,6 +12,7 @@ using Wevito.VNext.Core;
 using Wevito.VNext.Core.Audit;
 using Wevito.VNext.Core.LocalRetrieval;
 using Wevito.VNext.Core.SelfImprovement;
+using Wevito.VNext.Core.SelfImprovement.Apply;
 using Wevito.VNext.Core.SelfImprovement.Eval;
 using Wevito.VNext.Core.SelfImprovement.Maturity;
 using Wevito.VNext.Core.SelfImprovement.Readiness;
@@ -166,6 +167,7 @@ public partial class ToolPopupWindow : Window
         EvalCoverageHealthSnapshot? evalCoverageHealthSnapshot = null,
         ProposalQualityMetricsSnapshot? proposalQualityMetricsSnapshot = null,
         ApplyRunnerStatusReport? applyRunnerStatusReport = null,
+        IReadOnlyList<ApplyRunnerActivityEntry>? applyRunnerActivityEntries = null,
         LocalOllamaReadinessSnapshot? localOllamaReadinessSnapshot = null)
     {
         var toolId = string.IsNullOrWhiteSpace(state.ActiveTool.ToolId) ? "basket" : state.ActiveTool.ToolId;
@@ -262,7 +264,7 @@ public partial class ToolPopupWindow : Window
         }
         else if (showingEvidence)
         {
-            RenderEvidencePanel(state, evidenceSummary, maturityClock, capabilityFlagRows, capabilitiesAndGatesSnapshot, applyPrerequisiteExplanation, evalCoverageHealthSnapshot, proposalQualityMetricsSnapshot, applyRunnerStatusReport, localOllamaReadinessSnapshot);
+            RenderEvidencePanel(state, evidenceSummary, maturityClock, capabilityFlagRows, capabilitiesAndGatesSnapshot, applyPrerequisiteExplanation, evalCoverageHealthSnapshot, proposalQualityMetricsSnapshot, applyRunnerStatusReport, applyRunnerActivityEntries, localOllamaReadinessSnapshot);
         }
 
         _suppressSettingEvents = true;
@@ -2054,6 +2056,7 @@ public partial class ToolPopupWindow : Window
         EvalCoverageHealthSnapshot? evalCoverageHealthSnapshot,
         ProposalQualityMetricsSnapshot? proposalQualityMetricsSnapshot,
         ApplyRunnerStatusReport? applyRunnerStatusReport,
+        IReadOnlyList<ApplyRunnerActivityEntry>? applyRunnerActivityEntries,
         LocalOllamaReadinessSnapshot? localOllamaReadinessSnapshot)
     {
         RenderCapabilitiesAndGates(capabilitiesAndGatesSnapshot);
@@ -2061,6 +2064,7 @@ public partial class ToolPopupWindow : Window
         RenderEvalCoverageHealth(evalCoverageHealthSnapshot);
         RenderProposalQualityMetrics(proposalQualityMetricsSnapshot);
         RenderApplyRunnerStatusReport(applyRunnerStatusReport);
+        RenderApplyRunnerActivity(applyRunnerActivityEntries);
         RenderLocalRuntimeReadiness(localOllamaReadinessSnapshot);
         RenderMaturityClock(maturityClock);
         _capabilityFlagRows = (capabilityFlagRows ?? [])
@@ -2207,6 +2211,22 @@ public partial class ToolPopupWindow : Window
         ApplyRunnerStatusReportPrerequisitesText.Text = report.OutstandingPrerequisites.Count == 0
             ? "Outstanding prerequisites: none"
             : string.Join(Environment.NewLine, report.OutstandingPrerequisites.Select(item => $"- {item}"));
+    }
+
+    private void RenderApplyRunnerActivity(IReadOnlyList<ApplyRunnerActivityEntry>? entries)
+    {
+        if (entries is null || entries.Count == 0)
+        {
+            ApplyRunnerActivityStatusText.Text = "No apply-v0 activity has been recorded.";
+            ApplyRunnerActivityItemsControl.ItemsSource = Array.Empty<ApplyRunnerActivityRowItem>();
+            return;
+        }
+
+        ApplyRunnerActivityStatusText.Text =
+            $"{entries.Count} recent operation(s). Read-only ledger view; this expander cannot approve, apply, mutate, rerun checks, or flip flags.";
+        ApplyRunnerActivityItemsControl.ItemsSource = entries
+            .Select(ApplyRunnerActivityRowItem.From)
+            .ToList();
     }
 
     private static string FormatNullable(int? value)
@@ -3317,6 +3337,47 @@ internal sealed record ApplyPrerequisiteExplanationRowItem(
             string.IsNullOrWhiteSpace(entry.Detail) ? "(no detail)" : entry.Detail,
             string.IsNullOrWhiteSpace(entry.PlainLanguage) ? "No plain-language mapping is registered for this prerequisite row." : entry.PlainLanguage,
             entry.Passed ? FontWeights.Normal : FontWeights.SemiBold);
+    }
+}
+
+internal sealed record ApplyRunnerActivityRowItem(
+    string Header,
+    string Details,
+    string Packets)
+{
+    public static ApplyRunnerActivityRowItem From(ApplyRunnerActivityEntry entry)
+    {
+        var latestSummary = entry.Packets.Count == 0
+            ? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            : entry.Packets[^1].Summary;
+        var paths = string.Join(Environment.NewLine, [
+            $"source={Value(latestSummary, "source", "draftRelativePath", "draft_relative_path")}",
+            $"destination={Value(latestSummary, "destination", "approved_path", "approvedPath")}",
+            $"pre_sha256={Value(latestSummary, "pre_sha256", "expectedPreSha256", "expected_pre_sha256")}",
+            $"post_sha256={Value(latestSummary, "post_sha256", "postSha256")}",
+            $"flags={Value(latestSummary, "flags", "flag_checklist", "flagChecklist")}"
+        ]);
+        var packets = entry.Packets.Count == 0
+            ? "(no packets)"
+            : string.Join(Environment.NewLine, entry.Packets.Select(packet =>
+                $"{packet.Timestamp.ToLocalTime():MM/dd HH:mm:ss} {packet.PacketKind} mutate={packet.DidMutate.ToString().ToLowerInvariant()}"));
+        return new ApplyRunnerActivityRowItem(
+            $"{entry.OperationId} / {entry.ScopeId} [{entry.Disposition}]",
+            $"scope_hash={entry.ScopeHash}{Environment.NewLine}{paths}",
+            packets);
+    }
+
+    private static string Value(IReadOnlyDictionary<string, string> values, params string[] keys)
+    {
+        foreach (var key in keys)
+        {
+            if (values.TryGetValue(key, out var value) && !string.IsNullOrWhiteSpace(value))
+            {
+                return value;
+            }
+        }
+
+        return "(not recorded)";
     }
 }
 
