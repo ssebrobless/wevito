@@ -12,6 +12,7 @@ using Wevito.VNext.Core;
 using Wevito.VNext.Core.Audit;
 using Wevito.VNext.Core.LocalRetrieval;
 using Wevito.VNext.Core.SelfImprovement;
+using Wevito.VNext.Core.SelfImprovement.Eval;
 using Wevito.VNext.Core.SelfImprovement.Maturity;
 using Wevito.VNext.Core.SelfImprovement.Readiness;
 using Wevito.VNext.Core.SelfImprovement.Replay;
@@ -162,6 +163,7 @@ public partial class ToolPopupWindow : Window
         ReplayResultSummary? replayResultSummary = null,
         CapabilitiesAndGatesSnapshot? capabilitiesAndGatesSnapshot = null,
         ApplyPrerequisiteExplanation? applyPrerequisiteExplanation = null,
+        EvalCoverageHealthSnapshot? evalCoverageHealthSnapshot = null,
         LocalOllamaReadinessSnapshot? localOllamaReadinessSnapshot = null)
     {
         var toolId = string.IsNullOrWhiteSpace(state.ActiveTool.ToolId) ? "basket" : state.ActiveTool.ToolId;
@@ -258,7 +260,7 @@ public partial class ToolPopupWindow : Window
         }
         else if (showingEvidence)
         {
-            RenderEvidencePanel(state, evidenceSummary, maturityClock, capabilityFlagRows, capabilitiesAndGatesSnapshot, applyPrerequisiteExplanation, localOllamaReadinessSnapshot);
+            RenderEvidencePanel(state, evidenceSummary, maturityClock, capabilityFlagRows, capabilitiesAndGatesSnapshot, applyPrerequisiteExplanation, evalCoverageHealthSnapshot, localOllamaReadinessSnapshot);
         }
 
         _suppressSettingEvents = true;
@@ -2047,10 +2049,12 @@ public partial class ToolPopupWindow : Window
         IReadOnlyList<CapabilityFlagAuditRow>? capabilityFlagRows,
         CapabilitiesAndGatesSnapshot? capabilitiesAndGatesSnapshot,
         ApplyPrerequisiteExplanation? applyPrerequisiteExplanation,
+        EvalCoverageHealthSnapshot? evalCoverageHealthSnapshot,
         LocalOllamaReadinessSnapshot? localOllamaReadinessSnapshot)
     {
         RenderCapabilitiesAndGates(capabilitiesAndGatesSnapshot);
         RenderApplyPrerequisiteExplanation(applyPrerequisiteExplanation);
+        RenderEvalCoverageHealth(evalCoverageHealthSnapshot);
         RenderLocalRuntimeReadiness(localOllamaReadinessSnapshot);
         RenderMaturityClock(maturityClock);
         _capabilityFlagRows = (capabilityFlagRows ?? [])
@@ -2120,6 +2124,29 @@ public partial class ToolPopupWindow : Window
         ApplyBlockExplainerItemsControl.ItemsSource = explanation.Entries
             .Select(ApplyPrerequisiteExplanationRowItem.From)
             .ToList();
+    }
+
+    private void RenderEvalCoverageHealth(EvalCoverageHealthSnapshot? snapshot)
+    {
+        if (snapshot is null)
+        {
+            EvalCoverageHealthStatusText.Text = "Eval coverage snapshot is waiting for shell state.";
+            EvalCoverageHeldOutText.Text = "count=0 / minimum=5 [waiting]";
+            EvalCoverageInDistributionText.Text = "count=0 / minimum=10 [waiting]";
+            return;
+        }
+
+        EvalCoverageHealthStatusText.Text =
+            $"Generated {snapshot.GeneratedAtUtc.ToLocalTime():MM/dd HH:mm}; all_met={snapshot.AllMet.ToString().ToLowerInvariant()}; reason={snapshot.Reason}. Counts only; case IDs and case contents are never shown.";
+        EvalCoverageHeldOutText.Text =
+            $"count={snapshot.HeldOutCount} / minimum={snapshot.HeldOutMinimum} [{FormatPassFail(snapshot.HeldOutMeetsMinimum)}]";
+        EvalCoverageInDistributionText.Text =
+            $"count={snapshot.InDistributionCount} / minimum={snapshot.InDistributionMinimum} [{FormatPassFail(snapshot.InDistributionMeetsMinimum)}]";
+    }
+
+    private static string FormatPassFail(bool passed)
+    {
+        return passed ? "pass" : "below minimum";
     }
 
     private void RenderLocalRuntimeReadiness(LocalOllamaReadinessSnapshot? snapshot)

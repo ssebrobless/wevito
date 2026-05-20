@@ -10,6 +10,7 @@ using Wevito.VNext.Core;
 using Wevito.VNext.Core.Audit;
 using Wevito.VNext.Core.LocalRetrieval;
 using Wevito.VNext.Core.SelfImprovement;
+using Wevito.VNext.Core.SelfImprovement.Eval;
 using Wevito.VNext.Core.SelfImprovement.Experiments;
 using Wevito.VNext.Core.SelfImprovement.Invariants;
 using Wevito.VNext.Core.SelfImprovement.Judge;
@@ -84,6 +85,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private readonly ApprovalCardDetailService _approvalCardDetailService;
     private readonly ProposalDiffExplainerService _proposalDiffExplainerService;
     private readonly ApplyPrerequisiteExplainerService _applyPrerequisiteExplainerService;
+    private readonly EvalCoverageHealthService _evalCoverageHealthService;
     private readonly ReplayResultStore _replayResultStore;
     private readonly CapabilitiesAndGatesService _capabilitiesAndGatesService;
     private readonly LocalOllamaReadinessProbeService _localOllamaReadinessProbeService;
@@ -211,6 +213,14 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _approvalCardDetailService = new ApprovalCardDetailService(_auditLedgerService.DatabasePath, _killSwitchService);
         _proposalDiffExplainerService = ShellCompositionRoot.CreateProposalDiffExplainerService(_auditLedgerService, _killSwitchService);
         _applyPrerequisiteExplainerService = ShellCompositionRoot.CreateApplyPrerequisiteExplainerService(_auditLedgerService, _killSwitchService);
+        _evalCoverageHealthService = ShellCompositionRoot.CreateEvalCoverageHealthService(
+            new HeldOutEvalStore(Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "WevitoVNext",
+                "eval",
+                "held-out"), _killSwitchService),
+            ShellCompositionRoot.CreateInDistributionEvalStore(_killSwitchService),
+            _killSwitchService);
         _replayResultStore = ShellCompositionRoot.CreateReplayResultStore(_killSwitchService);
         _capabilitiesAndGatesService = ShellCompositionRoot.CreateCapabilitiesAndGatesService(
             () => _state?.SettingsSnapshot ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
@@ -850,12 +860,13 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         var approvalCardDetail = BuildApprovalCardDetail();
         var proposalDiffExplanation = BuildProposalDiffExplanation();
         var applyPrerequisiteExplanation = BuildApplyPrerequisiteExplanation(now);
+        var evalCoverageHealthSnapshot = _evalCoverageHealthService.Snapshot(now);
         var replayResultSummary = BuildReplayResultSummary();
         var localOllamaReadinessSnapshot = BuildLatestLocalOllamaReadinessSnapshot(now);
 
         _homeWindow.Render(_state, environment, _feedbackText, _assetService, needSnapshot, aggregateStatuses, actionEnabled, habitatLoadout, evidenceStatus, _localBrainStatus);
         _roamBandWindow.Render(_state, _assetService, liveStatus, liveBannerText, supervisorStatus, killSwitchActive, evidenceStatus, desktopAssetOpacity);
-        _toolPopupWindow.Render(_state, _content, habitatLoadout, _assetService, _devToolsEnabled, petCommandBarState, supervisorStatus, activitySummary, autonomousDecision, promotionDecision, liveRecentLines, evidenceStatus, evidenceSummary, maturityClock, capabilityFlagRows, approvalCardDetail, proposalDiffExplanation, replayResultSummary, capabilitiesAndGatesSnapshot, applyPrerequisiteExplanation, localOllamaReadinessSnapshot);
+        _toolPopupWindow.Render(_state, _content, habitatLoadout, _assetService, _devToolsEnabled, petCommandBarState, supervisorStatus, activitySummary, autonomousDecision, promotionDecision, liveRecentLines, evidenceStatus, evidenceSummary, maturityClock, capabilityFlagRows, approvalCardDetail, proposalDiffExplanation, replayResultSummary, capabilitiesAndGatesSnapshot, applyPrerequisiteExplanation, evalCoverageHealthSnapshot, localOllamaReadinessSnapshot);
     }
 
     private ApprovalCardDetail? BuildApprovalCardDetail()
