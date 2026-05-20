@@ -11,5 +11,7 @@ public abstract record IScoringHttpClient
         _ = killSwitchService;
     }
 
+    public abstract Task<string> GetAsync(Uri uri, CancellationToken cancellationToken);
+
     public abstract Task<string> PostAsync(Uri uri, string body, CancellationToken cancellationToken);
 }

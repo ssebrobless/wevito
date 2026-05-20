@@ -14,6 +14,22 @@ public sealed record DefaultScoringHttpClient : IScoringHttpClient
         _httpClient = httpClient ?? new HttpClient();
     }
 
+    public override async Task<string> GetAsync(Uri uri, CancellationToken cancellationToken)
+    {
+        if (_killSwitchService?.IsActive() == true)
+        {
+            throw new InvalidOperationException("kill_switch=true");
+        }
+
+        if (!string.Equals(uri.Host, "127.0.0.1", StringComparison.Ordinal))
+        {
+            throw new InvalidOperationException("non_loopback_endpoint");
+        }
+
+        using var response = await _httpClient.GetAsync(uri, cancellationToken).ConfigureAwait(false);
+        return await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+    }
+
     public override async Task<string> PostAsync(Uri uri, string body, CancellationToken cancellationToken)
     {
         if (_killSwitchService?.IsActive() == true)

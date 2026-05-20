@@ -14,6 +14,7 @@ using Wevito.VNext.Core.SelfImprovement.Experiments;
 using Wevito.VNext.Core.SelfImprovement.Invariants;
 using Wevito.VNext.Core.SelfImprovement.Judge;
 using Wevito.VNext.Core.SelfImprovement.Maturity;
+using Wevito.VNext.Core.SelfImprovement.Readiness;
 using Wevito.VNext.Core.SelfImprovement.Replay;
 using Wevito.VNext.Core.Settings;
 using Wevito.VNext.Core.Tools;
@@ -84,6 +85,7 @@ internal sealed class ShellCoordinator : IAsyncDisposable
     private readonly ProposalDiffExplainerService _proposalDiffExplainerService;
     private readonly ReplayResultStore _replayResultStore;
     private readonly CapabilitiesAndGatesService _capabilitiesAndGatesService;
+    private readonly LocalOllamaReadinessProbeService _localOllamaReadinessProbeService;
     private readonly AutonomousOperationsLoop _autonomousOperationsLoop;
     private readonly TranslationExecutionAdapter _translationExecutionAdapter = new();
     private readonly AudioAssistExecutionAdapter _audioAssistExecutionAdapter = new();
@@ -211,6 +213,10 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         _capabilitiesAndGatesService = ShellCompositionRoot.CreateCapabilitiesAndGatesService(
             () => _state?.SettingsSnapshot ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
             _killSwitchService);
+        _localOllamaReadinessProbeService = ShellCompositionRoot.CreateLocalOllamaReadinessProbeService(
+            _auditLedgerService,
+            _killSwitchService,
+            () => _state?.SettingsSnapshot ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase));
         _autonomousOperationsLoop = new AutonomousOperationsLoop(_autonomousBetaDecisionService, _auditLedgerService, _killSwitchService, scopeRegistry: autonomousScopeRegistry, supervisedImprovementLoop: _supervisedImprovementLoop);
         _screenCaptureExecutionAdapter = new ScreenCaptureExecutionAdapter(new WindowsGraphicsCaptureBackend(() => _homeWindow));
         _tickTimer = new DispatcherTimer(DispatcherPriority.Render)
@@ -842,10 +848,11 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         var approvalCardDetail = BuildApprovalCardDetail();
         var proposalDiffExplanation = BuildProposalDiffExplanation();
         var replayResultSummary = BuildReplayResultSummary();
+        var localOllamaReadinessSnapshot = BuildLatestLocalOllamaReadinessSnapshot(now);
 
         _homeWindow.Render(_state, environment, _feedbackText, _assetService, needSnapshot, aggregateStatuses, actionEnabled, habitatLoadout, evidenceStatus, _localBrainStatus);
         _roamBandWindow.Render(_state, _assetService, liveStatus, liveBannerText, supervisorStatus, killSwitchActive, evidenceStatus, desktopAssetOpacity);
-        _toolPopupWindow.Render(_state, _content, habitatLoadout, _assetService, _devToolsEnabled, petCommandBarState, supervisorStatus, activitySummary, autonomousDecision, promotionDecision, liveRecentLines, evidenceStatus, evidenceSummary, maturityClock, capabilityFlagRows, approvalCardDetail, proposalDiffExplanation, replayResultSummary, capabilitiesAndGatesSnapshot);
+        _toolPopupWindow.Render(_state, _content, habitatLoadout, _assetService, _devToolsEnabled, petCommandBarState, supervisorStatus, activitySummary, autonomousDecision, promotionDecision, liveRecentLines, evidenceStatus, evidenceSummary, maturityClock, capabilityFlagRows, approvalCardDetail, proposalDiffExplanation, replayResultSummary, capabilitiesAndGatesSnapshot, localOllamaReadinessSnapshot);
     }
 
     private ApprovalCardDetail? BuildApprovalCardDetail()
@@ -888,6 +895,58 @@ internal sealed class ShellCoordinator : IAsyncDisposable
         }
 
         return _replayResultStore.GetLatest(operationId);
+    }
+
+    private LocalOllamaReadinessSnapshot? BuildLatestLocalOllamaReadinessSnapshot(DateTimeOffset now)
+    {
+        _ = _localOllamaReadinessProbeService;
+
+        var row = _auditLedgerService
+            .Snapshot(now.AddDays(-30), now.AddMinutes(1))
+            .Where(candidate => string.Equals(candidate.PacketKind, SelfImprovementPacketKinds.LocalRuntimeProbe, StringComparison.Ordinal))
+            .OrderByDescending(candidate => candidate.CreatedAtUtc)
+            .FirstOrDefault();
+        if (row is null)
+        {
+            return null;
+        }
+
+        try
+        {
+            using var document = JsonDocument.Parse(row.Summary);
+            var root = document.RootElement;
+            return new LocalOllamaReadinessSnapshot(
+                ReadString(root, "endpoint"),
+                ReadString(root, "configured_model"),
+                ProbeRan: true,
+                LoopbackReachable: ReadBool(root, "loopback_reachable"),
+                ConfiguredModelPresent: ReadBool(root, "configured_model_present"),
+                ReadDateTime(root, "probed_at_utc", row.CreatedAtUtc),
+                ReadString(root, "reason"));
+        }
+        catch (JsonException)
+        {
+            return new LocalOllamaReadinessSnapshot("", "", true, false, false, row.CreatedAtUtc, "invalid_probe_packet_summary");
+        }
+    }
+
+    private static string ReadString(JsonElement root, string name)
+    {
+        return root.TryGetProperty(name, out var element) ? element.GetString() ?? "" : "";
+    }
+
+    private static bool ReadBool(JsonElement root, string name)
+    {
+        return root.TryGetProperty(name, out var element) && element.ValueKind == JsonValueKind.True;
+    }
+
+    private static DateTimeOffset ReadDateTime(JsonElement root, string name, DateTimeOffset fallback)
+    {
+        return root.TryGetProperty(name, out var element) &&
+               element.ValueKind == JsonValueKind.String &&
+               DateTimeOffset.TryParse(element.GetString(), out var parsed)
+            ? parsed
+            : fallback;
     }
 
     private async Task EnableAutonomousBetaAfterConsentAsync()
