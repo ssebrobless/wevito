@@ -78,7 +78,7 @@ public sealed class ApplyRunnerActivityService
         var disposition = lastKind switch
         {
             SelfImprovementPacketKinds.ApplyV0Completed => ApplyRunnerActivityDisposition.Succeeded,
-            SelfImprovementPacketKinds.ApplyV0RolledBack => ApplyRunnerActivityDisposition.RolledBack,
+            SelfImprovementPacketKinds.ApplyV0RolledBack or SelfImprovementPacketKinds.ApplyV0ExplicitRollbackCompleted => ApplyRunnerActivityDisposition.RolledBack,
             _ => ApplyRunnerActivityDisposition.InProgress
         };
 

@@ -2065,6 +2065,7 @@ public partial class ToolPopupWindow : Window
         RenderProposalQualityMetrics(proposalQualityMetricsSnapshot);
         RenderApplyRunnerStatusReport(applyRunnerStatusReport);
         RenderApplyRunnerActivity(applyRunnerActivityEntries);
+        RenderRollbackEvidence(applyRunnerActivityEntries);
         RenderLocalRuntimeReadiness(localOllamaReadinessSnapshot);
         RenderMaturityClock(maturityClock);
         _capabilityFlagRows = (capabilityFlagRows ?? [])
@@ -2225,6 +2226,29 @@ public partial class ToolPopupWindow : Window
         ApplyRunnerActivityStatusText.Text =
             $"{entries.Count} recent operation(s). Read-only ledger view; this expander cannot approve, apply, mutate, rerun checks, or flip flags.";
         ApplyRunnerActivityItemsControl.ItemsSource = entries
+            .Select(ApplyRunnerActivityRowItem.From)
+            .ToList();
+    }
+
+    private void RenderRollbackEvidence(IReadOnlyList<ApplyRunnerActivityEntry>? entries)
+    {
+        var rollbackEntries = (entries ?? [])
+            .Where(entry => entry.Disposition == ApplyRunnerActivityDisposition.RolledBack ||
+                            entry.Packets.Any(packet => packet.PacketKind is
+                                SelfImprovementPacketKinds.ApplyV0ExplicitRollbackStarted or
+                                SelfImprovementPacketKinds.ApplyV0ExplicitRollbackCompleted or
+                                SelfImprovementPacketKinds.ApplyV0ExplicitRollbackRefused))
+            .ToList();
+        if (rollbackEntries.Count == 0)
+        {
+            RollbackEvidenceStatusText.Text = "No rollback evidence has been recorded.";
+            RollbackEvidenceItemsControl.ItemsSource = Array.Empty<ApplyRunnerActivityRowItem>();
+            return;
+        }
+
+        RollbackEvidenceStatusText.Text =
+            $"{rollbackEntries.Count} rollback-related operation(s). Read-only ledger view; this expander cannot invoke explicit rollback, mutate files, rerun checks, or flip flags.";
+        RollbackEvidenceItemsControl.ItemsSource = rollbackEntries
             .Select(ApplyRunnerActivityRowItem.From)
             .ToList();
     }

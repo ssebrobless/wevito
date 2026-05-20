@@ -44,6 +44,10 @@ public static class KillSwitchCoverageAllowList
         typeof(ApplyRunnerActivityEntry).FullName!, // immutable read-only apply-runner activity DTO.
         typeof(ApplyRunnerActivityPacket).FullName!, // immutable read-only apply-runner packet DTO.
         typeof(ApplyRunnerActivityDisposition).FullName!, // activity disposition enum.
+        typeof(RollbackRequest).FullName!, // immutable narrow rollback-runner request DTO.
+        typeof(RollbackResult).FullName!, // abstract narrow rollback-runner result union; carries no behavior or IO.
+        typeof(RollbackResult.Refused).FullName!, // narrow rollback-runner result value; carries no behavior or IO.
+        typeof(RollbackResult.Succeeded).FullName!, // narrow rollback-runner result value; carries no behavior or IO.
         typeof(SupervisedImprovementLoopSettings).FullName!, // immutable settings DTO plus parser.
         typeof(UserApplyApproval).FullName!, // user-entered approval DTO.
         typeof(UserApplyApprovalValidator).FullName!, // pure validator; no IO, loop, model call, or mutation.

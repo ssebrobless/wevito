@@ -56,6 +56,10 @@ public sealed class HeldOutEvalStoreVisibilityTests
             typeof(ApplyRunnerActivityService),
             typeof(ApplyRunnerActivityEntry),
             typeof(ApplyRunnerActivityPacket),
+            // C-PHASE 185: explicit rollback is a narrow artifact-root rename mirror.
+            typeof(ArtifactRenameRollbackRunner),
+            typeof(RollbackRequest),
+            typeof(RollbackResult),
             typeof(SpriteRepairBatchProposalScope)
         };
 

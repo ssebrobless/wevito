@@ -23,4 +23,7 @@ public static class SelfImprovementPacketKinds
     public const string ApplyV0PostProofCompleted = "self_improvement_apply_v0_post_proof_completed";
     public const string ApplyV0RolledBack = "self_improvement_apply_v0_rolled_back";
     public const string ApplyV0Completed = "self_improvement_apply_v0_completed";
+    public const string ApplyV0ExplicitRollbackStarted = "self_improvement_apply_v0_explicit_rollback_started";
+    public const string ApplyV0ExplicitRollbackCompleted = "self_improvement_apply_v0_explicit_rollback_completed";
+    public const string ApplyV0ExplicitRollbackRefused = "self_improvement_apply_v0_explicit_rollback_refused";
 }
