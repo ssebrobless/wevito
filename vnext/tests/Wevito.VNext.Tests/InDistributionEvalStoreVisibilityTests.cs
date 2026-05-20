@@ -5,6 +5,7 @@ using Wevito.VNext.Core.SelfImprovement.Eval;
 using Wevito.VNext.Core.SelfImprovement.Experiments;
 using Wevito.VNext.Core.SelfImprovement.Invariants;
 using Wevito.VNext.Core.SelfImprovement.Maturity;
+using Wevito.VNext.Core.SelfImprovement.Readiness;
 using Wevito.VNext.Core.SelfImprovement.Replay;
 
 namespace Wevito.VNext.Tests;
@@ -31,6 +32,7 @@ public sealed class InDistributionEvalStoreVisibilityTests
             typeof(ReplayResultSummary),
             typeof(ProposalDiffExplainerService),
             typeof(ProposalDiffExplanation),
+            typeof(LocalOllamaReadinessProbeService),
             typeof(SpriteRepairBatchProposalScope)
         };
 

@@ -13,6 +13,7 @@ using Wevito.VNext.Core.Audit;
 using Wevito.VNext.Core.LocalRetrieval;
 using Wevito.VNext.Core.SelfImprovement;
 using Wevito.VNext.Core.SelfImprovement.Maturity;
+using Wevito.VNext.Core.SelfImprovement.Readiness;
 using Wevito.VNext.Core.SelfImprovement.Replay;
 using Wevito.VNext.Core.Settings;
 using Wevito.VNext.Core.Tools;
@@ -159,7 +160,8 @@ public partial class ToolPopupWindow : Window
         ApprovalCardDetail? approvalCardDetail = null,
         ProposalDiffExplanation? proposalDiffExplanation = null,
         ReplayResultSummary? replayResultSummary = null,
-        CapabilitiesAndGatesSnapshot? capabilitiesAndGatesSnapshot = null)
+        CapabilitiesAndGatesSnapshot? capabilitiesAndGatesSnapshot = null,
+        LocalOllamaReadinessSnapshot? localOllamaReadinessSnapshot = null)
     {
         var toolId = string.IsNullOrWhiteSpace(state.ActiveTool.ToolId) ? "basket" : state.ActiveTool.ToolId;
         _lastTaskCards = state.TaskCards ?? [];
@@ -255,7 +257,7 @@ public partial class ToolPopupWindow : Window
         }
         else if (showingEvidence)
         {
-            RenderEvidencePanel(state, evidenceSummary, maturityClock, capabilityFlagRows, capabilitiesAndGatesSnapshot);
+            RenderEvidencePanel(state, evidenceSummary, maturityClock, capabilityFlagRows, capabilitiesAndGatesSnapshot, localOllamaReadinessSnapshot);
         }
 
         _suppressSettingEvents = true;
@@ -2042,9 +2044,11 @@ public partial class ToolPopupWindow : Window
         EvidenceSummary? summary,
         MaturityClock? maturityClock,
         IReadOnlyList<CapabilityFlagAuditRow>? capabilityFlagRows,
-        CapabilitiesAndGatesSnapshot? capabilitiesAndGatesSnapshot)
+        CapabilitiesAndGatesSnapshot? capabilitiesAndGatesSnapshot,
+        LocalOllamaReadinessSnapshot? localOllamaReadinessSnapshot)
     {
         RenderCapabilitiesAndGates(capabilitiesAndGatesSnapshot);
+        RenderLocalRuntimeReadiness(localOllamaReadinessSnapshot);
         RenderMaturityClock(maturityClock);
         _capabilityFlagRows = (capabilityFlagRows ?? [])
             .Select(CapabilityFlagAuditRowItem.From)
@@ -2089,6 +2093,25 @@ public partial class ToolPopupWindow : Window
         CapabilitiesAndGatesItemsControl.ItemsSource = snapshot.Entries
             .Select(CapabilitiesAndGatesRowItem.From)
             .ToList();
+    }
+
+    private void RenderLocalRuntimeReadiness(LocalOllamaReadinessSnapshot? snapshot)
+    {
+        if (snapshot is null)
+        {
+            LocalRuntimeReadinessStatusText.Text = "No local runtime readiness probe packet found yet.";
+            LocalRuntimeReadinessDetailText.Text = "Read-only: this panel cannot run a probe, send a prompt, flip a flag, or call a model.";
+            return;
+        }
+
+        LocalRuntimeReadinessStatusText.Text =
+            $"Captured {snapshot.ProbedAtUtc.ToLocalTime():MM/dd HH:mm}; reachable={snapshot.LoopbackReachable.ToString().ToLowerInvariant()}; configured_model_present={snapshot.ConfiguredModelPresent.ToString().ToLowerInvariant()}; reason={snapshot.Reason}.";
+        LocalRuntimeReadinessDetailText.Text = string.Join(Environment.NewLine, [
+            $"endpoint: {snapshot.Endpoint}",
+            $"configured_model: {snapshot.ConfiguredModel}",
+            "source: latest self_improvement_local_runtime_probe audit packet",
+            "read-only: no probe, prompt, scoring call, or setting write happens from this expander"
+        ]);
     }
 
     private void RenderOperationTimeline(CompanionState state)

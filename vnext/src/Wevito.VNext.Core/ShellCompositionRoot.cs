@@ -3,6 +3,7 @@ using Wevito.VNext.Core.SelfImprovement.Eval;
 using Wevito.VNext.Core.SelfImprovement.Experiments;
 using Wevito.VNext.Core.SelfImprovement.Invariants;
 using Wevito.VNext.Core.SelfImprovement.Judge;
+using Wevito.VNext.Core.SelfImprovement.Readiness;
 using Wevito.VNext.Core.SelfImprovement.Replay;
 using Wevito.VNext.Core.SelfImprovement.Scoring;
 
@@ -64,6 +65,18 @@ public static class ShellCompositionRoot
     public static ILocalScoringProvider CreateLocalScoringProvider(KillSwitchService? killSwitchService = null)
     {
         return new NotConfiguredScoringProvider(killSwitchService);
+    }
+
+    public static LocalOllamaReadinessProbeService CreateLocalOllamaReadinessProbeService(
+        AuditLedgerService ledger,
+        KillSwitchService? killSwitchService = null,
+        Func<IReadOnlyDictionary<string, string>>? settingsProvider = null)
+    {
+        return new LocalOllamaReadinessProbeService(
+            new DefaultScoringHttpClient(killSwitchService),
+            ledger,
+            killSwitchService,
+            settingsProvider ?? (() => new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)));
     }
 
     public static CapabilitiesAndGatesService CreateCapabilitiesAndGatesService(
