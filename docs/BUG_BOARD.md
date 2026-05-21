@@ -4,7 +4,7 @@ Use this with `docs/RC_CHECKLIST_V1.md`.
 
 ## Summary
 
-- Critical: 0
+- Critical: 1
 - Major: 0
 - Minor: 0
 
@@ -12,7 +12,7 @@ Use this with `docs/RC_CHECKLIST_V1.md`.
 
 | ID | Severity | RC Item | Pets | Mode | Title | Status |
 |---|---|---|---|---|---|---|
-|  |  |  |  |  |  |  |
+| BUG-005 | Critical | RC-ApplyRunner | N/A | Test | Apply/rollback runner tests emit empty packet list on origin/main as of 2026-05-21 | Open |
 
 ## In Progress
 
@@ -42,6 +42,7 @@ Use this with `docs/RC_CHECKLIST_V1.md`.
 - 2026-05-16: C-PHASE 125 product-truth baseline appended BUG-001 through BUG-004 from live build evidence on commit `c3572a176`.
 - 2026-05-16: C-PHASE 126a moved BUG-002 and BUG-003 to ready for retest; C-PHASE 126b moved BUG-001 and BUG-004 to ready for retest.
 - 2026-05-18: C-PHASE 134 live retest closed BUG-001 through BUG-004 on commit `c6365a4fe`.
+- 2026-05-21: C-PHASE 189 bridge preflight fuller-clean retry opened BUG-005 on origin/main commit `9b0dd40aa0ad6b2a678ef3617b5d294890a010e1`.
 
 ## BUG-001 Detail
 
@@ -102,6 +103,38 @@ Use this with `docs/RC_CHECKLIST_V1.md`.
 - Expected: Each successful action gives a visible animation-state confirmation.
 - Actual: All actions returned success, but `water`, `groom`, and `doctor` did not change `AnimationState` in the sequential check.
 - Notes: Evidence in `vnext/artifacts/c-phase-125-truth/devcontrol-spawn-and-actions.json`.
+
+## BUG-005 Detail
+
+- ID: BUG-005
+- Severity: Critical
+- RC Item: RC-ApplyRunner
+- Pet Count: N/A
+- Mode: Test
+- Discovered: 2026-05-21
+- Discovered during: C-PHASE 189 bridge preflight (Stage 1 fuller-clean retry)
+- Repro commit: `9b0dd40aa0ad6b2a678ef3617b5d294890a010e1` (`origin/main`, C-PHASE 188 merge)
+- Affected tests:
+  1. `Wevito.VNext.Tests.ArtifactRenameApplyRunnerTests.Apply_happy_path_writes_six_packets_in_order`
+  2. `Wevito.VNext.Tests.ArtifactRenameApplyRunnerTests.Apply_backup_sha256_mismatch_rolls_back_emits_no_completed`
+  3. `Wevito.VNext.Tests.ArtifactRenameApplyRunnerTests.Apply_post_proof_mismatch_rolls_back_destination_back_to_source`
+  4. `Wevito.VNext.Tests.ArtifactRenameApplyRunnerTests.Apply_kill_switch_activated_between_backup_and_post_proof_rolls_back`
+  5. `Wevito.VNext.Tests.ArtifactRenameRollbackRunnerTests.ExplicitRollback_happy_path_writes_started_and_completed_packets`
+- Steps:
+  1. Preserve the three untracked C-PHASE 189 planning docs.
+  2. Delete every `bin` and `obj` directory under `vnext\`.
+  3. Run `dotnet build .\vnext\Wevito.VNext.sln`.
+  4. Run `dotnet test .\vnext\tests\Wevito.VNext.Tests\Wevito.VNext.Tests.csproj --no-build --logger "console;verbosity=normal"`.
+- Expected: All apply/rollback runner tests pass and observe the expected emitted audit-packet sequences.
+- Actual: The five affected tests assert specific emitted audit-packet sequences, but each observed packet list is empty.
+- Prior state: C-PHASE 188 merge report claims 1629/1629 passing at 2026-05-19. Regression appeared between that report and 2026-05-21.
+- Remediation already attempted:
+  1. `dotnet build-server shutdown`
+  2. Stop `Wevito.VNext.UI` processes.
+  3. Delete `vnext\src\Wevito.VNext.Core\bin` and `obj`.
+  4. Delete every `bin\` and `obj\` directory under `vnext\`.
+  5. Cold-cache `dotnet build .\vnext\Wevito.VNext.sln`, which passed.
+- Notes: None of the remediation steps resolved the failures. Next step is a separate Claude-planned diagnostic phase to read `ArtifactRenameApplyRunner`, `ArtifactRenameRollbackRunner`, and the failing test fixtures side-by-side and identify why the audit ledger capture comes back empty. No bridge PR and no C-PHASE 189 implementation should proceed until this is resolved.
 
 ## Bug Report Template
 
