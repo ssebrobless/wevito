@@ -230,7 +230,11 @@ internal sealed class ShellCoordinator : IAsyncDisposable
             _auditLedgerService,
             _killSwitchService,
             () => _state?.SettingsSnapshot ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase));
-        _applyRunnerActivityService = ShellCompositionRoot.CreateApplyRunnerActivityService(_auditLedgerService, _killSwitchService);
+        _applyRunnerActivityService = ShellCompositionRoot.CreateApplyRunnerActivityService(
+            _auditLedgerService,
+            _killSwitchService,
+            _invariantViolationWatchdog,
+            () => _state?.SettingsSnapshot ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase));
         _replayResultStore = ShellCompositionRoot.CreateReplayResultStore(_killSwitchService);
         _capabilitiesAndGatesService = ShellCompositionRoot.CreateCapabilitiesAndGatesService(
             () => _state?.SettingsSnapshot ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
