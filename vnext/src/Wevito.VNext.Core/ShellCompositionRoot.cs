@@ -96,11 +96,15 @@ public static class ShellCompositionRoot
 
     public static ApplyRunnerActivityService CreateApplyRunnerActivityService(
         AuditLedgerService ledger,
-        KillSwitchService? killSwitchService = null)
+        KillSwitchService? killSwitchService = null,
+        InvariantViolationWatchdog? watchdog = null,
+        Func<IReadOnlyDictionary<string, string>>? settingsProvider = null)
     {
         return new ApplyRunnerActivityService(
             ledger.DatabasePath,
-            killSwitchService ?? new KillSwitchService(() => new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)));
+            killSwitchService ?? new KillSwitchService(() => new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)),
+            watchdog,
+            settingsProvider);
     }
 
     public static ArtifactRenameApplyRunner CreateArtifactRenameApplyRunner(

@@ -118,6 +118,17 @@ public sealed partial class InvariantViolationWatchdog
         return results;
     }
 
+    public IReadOnlyList<InvariantCheckResult> ScanAndEmit(DateTimeOffset nowUtc)
+    {
+        var results = Scan(nowUtc);
+        if (results.Count > 0)
+        {
+            EmitInvariantCheckFailedPackets(results, nowUtc);
+        }
+
+        return results;
+    }
+
     private static bool IsEnabled(IReadOnlyDictionary<string, string>? settings)
     {
         return settings is not null &&

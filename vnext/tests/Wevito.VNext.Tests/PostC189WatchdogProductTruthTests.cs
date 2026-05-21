@@ -160,15 +160,39 @@ public sealed class PostC189WatchdogProductTruthTests
     }
 
     [Fact]
-    public void ProductTruth_watchdog_has_no_producer_in_src_tree()
+    public void ProductTruth_watchdog_only_allowed_external_facade_producer_is_activity_service_under_flag()
     {
         var watchdogPath = WatchdogSourcePath();
-        var forbiddenCallers = SourceFiles()
+        var sourceFiles = SourceFiles().ToArray();
+        var externalEmitCallers = sourceFiles
             .Where(path => !path.Equals(watchdogPath, StringComparison.OrdinalIgnoreCase))
             .Where(path => File.ReadAllText(path).Contains("EmitInvariantCheckFailedPackets(", StringComparison.Ordinal))
             .ToArray();
 
-        Assert.Empty(forbiddenCallers);
+        Assert.Empty(externalEmitCallers);
+
+        var activityPath = RepoPath("vnext", "src", "Wevito.VNext.Core", "SelfImprovement", "Apply", "ApplyRunnerActivityService.cs");
+        var externalFacadeCallers = sourceFiles
+            .Where(path => !path.Equals(watchdogPath, StringComparison.OrdinalIgnoreCase))
+            .SelectMany(path => Regex.Matches(File.ReadAllText(path), @"\.ScanAndEmit\s*\(", RegexOptions.CultureInvariant)
+                .Select(match => new { Path = path, Match = match, Source = File.ReadAllText(path) }))
+            .ToArray();
+
+        var caller = Assert.Single(externalFacadeCallers);
+        Assert.Equal(activityPath, caller.Path, ignoreCase: true);
+
+        var methodStart = caller.Source.LastIndexOf("public IReadOnlyList<ApplyRunnerActivityEntry> ReadRecent", caller.Match.Index, StringComparison.Ordinal);
+        var guardStart = caller.Source.LastIndexOf("IsTrue(_settingsProvider(), ObserverEnabledSetting)", caller.Match.Index, StringComparison.Ordinal);
+        Assert.True(methodStart >= 0, "The allowed facade call must be inside ReadRecent.");
+        Assert.True(guardStart > methodStart, "The allowed facade call must be guarded by the observer flag.");
+        Assert.True(caller.Match.Index - guardStart <= 200, "The observer flag guard must be near the facade call.");
+
+        var externalDirectScanCallers = sourceFiles
+            .Where(path => !path.Equals(watchdogPath, StringComparison.OrdinalIgnoreCase))
+            .Where(path => !path.EndsWith(Path.Combine("Wevito.VNext.Shell", "ShellCoordinator.cs"), StringComparison.OrdinalIgnoreCase))
+            .Where(path => Regex.IsMatch(File.ReadAllText(path), @"\.Scan\s*\(", RegexOptions.CultureInvariant))
+            .ToArray();
+        Assert.Empty(externalDirectScanCallers);
     }
 
     [Fact]

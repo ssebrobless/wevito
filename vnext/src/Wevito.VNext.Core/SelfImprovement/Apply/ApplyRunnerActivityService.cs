@@ -2,20 +2,31 @@ using System.Globalization;
 using System.Text.Json;
 using Microsoft.Data.Sqlite;
 using Wevito.VNext.Core.Audit;
+using Wevito.VNext.Core.SelfImprovement.Invariants;
 
 namespace Wevito.VNext.Core.SelfImprovement.Apply;
 
 public sealed class ApplyRunnerActivityService
 {
+    public const string ObserverEnabledSetting = "apply_v0_invariant_observer_in_activity_service_enabled";
+
     private const string PacketPrefix = "self_improvement_apply_v0_";
 
     private readonly string _databasePath;
     private readonly KillSwitchService _killSwitch;
+    private readonly InvariantViolationWatchdog? _watchdog;
+    private readonly Func<IReadOnlyDictionary<string, string>> _settingsProvider;
 
-    public ApplyRunnerActivityService(string databasePath, KillSwitchService killSwitch)
+    public ApplyRunnerActivityService(
+        string databasePath,
+        KillSwitchService killSwitch,
+        InvariantViolationWatchdog? watchdog = null,
+        Func<IReadOnlyDictionary<string, string>>? settingsProvider = null)
     {
         _databasePath = Path.GetFullPath(databasePath);
         _killSwitch = killSwitch;
+        _watchdog = watchdog;
+        _settingsProvider = settingsProvider ?? (() => new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase));
     }
 
     public IReadOnlyList<ApplyRunnerActivityEntry> ReadRecent(int maxEntries)
@@ -55,13 +66,20 @@ public sealed class ApplyRunnerActivityService
             rows.Add(new Row(packetKind, timestamp, didMutate, summary));
         }
 
-        return rows
+        var entries = rows
             .GroupBy(row => GetValue(row.Summary, "operation_id", "operationId"), StringComparer.Ordinal)
             .Where(group => !string.IsNullOrWhiteSpace(group.Key))
             .Select(group => BuildEntry(group.Key, group))
             .OrderByDescending(entry => entry.Packets.Count == 0 ? DateTimeOffset.MinValue : entry.Packets[^1].Timestamp)
             .Take(maxEntries)
             .ToList();
+
+        if (_watchdog is not null && IsTrue(_settingsProvider(), ObserverEnabledSetting))
+        {
+            _watchdog.ScanAndEmit(DateTimeOffset.UtcNow);
+        }
+
+        return entries;
     }
 
     private static ApplyRunnerActivityEntry BuildEntry(string operationId, IEnumerable<Row> group)
@@ -161,6 +179,13 @@ public sealed class ApplyRunnerActivityService
         }
 
         return "";
+    }
+
+    private static bool IsTrue(IReadOnlyDictionary<string, string> settings, string key)
+    {
+        return settings.TryGetValue(key, out var value) &&
+               bool.TryParse(value, out var parsed) &&
+               parsed;
     }
 
     private sealed record Row(
