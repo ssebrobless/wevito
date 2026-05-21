@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using Microsoft.Data.Sqlite;
+using Wevito.VNext.Contracts;
 using Wevito.VNext.Core.Audit;
 using Wevito.VNext.Core.SelfImprovement.Maturity;
 
@@ -10,6 +11,11 @@ namespace Wevito.VNext.Core.SelfImprovement.Invariants;
 public sealed partial class InvariantViolationWatchdog
 {
     public const string EnabledSetting = "invariant_violation_watchdog_enabled";
+    public const string V0InvariantCheckEmitEnabledSetting = "apply_v0_invariant_check_emit_enabled";
+
+    private const string V0CompletedWithoutApplied = "v0_completed_without_applied";
+    private const string V0RolledBackFollowedByCompleted = "v0_rolled_back_followed_by_completed";
+    private const string ExplicitRollbackCompletedWithoutStarted = "explicit_rollback_completed_without_started";
 
     private static readonly InvariantCheck SilentMutationInReviewOnlyScope = new(
         "rule_silent_mutation_in_review_only_scope",
@@ -41,6 +47,21 @@ public sealed partial class InvariantViolationWatchdog
         "Only one awaiting-approval row is allowed per operation id.",
         MaturityClockResetReason.InvariantViolation);
 
+    private static readonly InvariantCheck V0CompletedWithoutAppliedCheck = new(
+        V0CompletedWithoutApplied,
+        "Apply-v0 completed rows require a matching apply-v0 applied row.",
+        MaturityClockResetReason.InvariantViolation);
+
+    private static readonly InvariantCheck V0RolledBackFollowedByCompletedCheck = new(
+        V0RolledBackFollowedByCompleted,
+        "Apply-v0 completed rows must not follow a rollback for the same operation.",
+        MaturityClockResetReason.InvariantViolation);
+
+    private static readonly InvariantCheck ExplicitRollbackCompletedWithoutStartedCheck = new(
+        ExplicitRollbackCompletedWithoutStarted,
+        "Apply-v0 explicit rollback completed rows require a matching explicit rollback started row.",
+        MaturityClockResetReason.InvariantViolation);
+
     private static readonly IReadOnlyList<InvariantCheck> Checks =
     [
         SilentMutationInReviewOnlyScope,
@@ -48,7 +69,10 @@ public sealed partial class InvariantViolationWatchdog
         SilentHostedAi,
         ApplyCompletedWithoutAwaitingApproval,
         AwaitingApprovalWithoutPrecedingChain,
-        DuplicateAwaitingApproval
+        DuplicateAwaitingApproval,
+        V0CompletedWithoutAppliedCheck,
+        V0RolledBackFollowedByCompletedCheck,
+        ExplicitRollbackCompletedWithoutStartedCheck
     ];
 
     private readonly string _databasePath;
@@ -162,7 +186,10 @@ public sealed partial class InvariantViolationWatchdog
                 row => $"row_id={row.Id} packet_kind={row.PacketKind}"),
             BuildApplyCompletedWithoutAwaitingApproval(rows),
             BuildAwaitingApprovalWithoutPrecedingChain(rows),
-            BuildDuplicateAwaitingApproval(rows)
+            BuildDuplicateAwaitingApproval(rows),
+            BuildV0CompletedWithoutApplied(rows),
+            BuildV0RolledBackFollowedByCompleted(rows),
+            BuildExplicitRollbackCompletedWithoutStarted(rows)
         ];
     }
 
@@ -180,6 +207,56 @@ public sealed partial class InvariantViolationWatchdog
             .Select(item => $"row_id={item.Row.Id} operation_id={item.OperationId}")
             .ToArray();
         return BuildResult(ApplyCompletedWithoutAwaitingApproval, failures);
+    }
+
+    private static InvariantCheckResult BuildV0CompletedWithoutApplied(IReadOnlyList<AuditLedgerRow> rows)
+    {
+        var appliedOperationIds = rows
+            .Where(row => row.PacketKind.Equals(SelfImprovementPacketKinds.ApplyV0Applied, StringComparison.OrdinalIgnoreCase))
+            .Select(ExtractOperationId)
+            .Where(id => !string.IsNullOrWhiteSpace(id))
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var failures = rows
+            .Where(row => row.PacketKind.Equals(SelfImprovementPacketKinds.ApplyV0Completed, StringComparison.OrdinalIgnoreCase))
+            .Select(row => new { Row = row, OperationId = ExtractOperationId(row) })
+            .Where(item => string.IsNullOrWhiteSpace(item.OperationId) || !appliedOperationIds.Contains(item.OperationId))
+            .Select(item => $"row_id={item.Row.Id} operation_id={item.OperationId}")
+            .ToArray();
+        return BuildResult(V0CompletedWithoutAppliedCheck, failures);
+    }
+
+    private static InvariantCheckResult BuildV0RolledBackFollowedByCompleted(IReadOnlyList<AuditLedgerRow> rows)
+    {
+        var rolledBackRows = rows
+            .Where(row => row.PacketKind.Equals(SelfImprovementPacketKinds.ApplyV0RolledBack, StringComparison.OrdinalIgnoreCase))
+            .Select(row => new { Row = row, OperationId = ExtractOperationId(row) })
+            .Where(item => !string.IsNullOrWhiteSpace(item.OperationId))
+            .ToArray();
+        var failures = rows
+            .Where(row => row.PacketKind.Equals(SelfImprovementPacketKinds.ApplyV0Completed, StringComparison.OrdinalIgnoreCase))
+            .Select(row => new { Row = row, OperationId = ExtractOperationId(row) })
+            .Where(item => !string.IsNullOrWhiteSpace(item.OperationId) &&
+                           rolledBackRows.Any(rolledBack => rolledBack.OperationId.Equals(item.OperationId, StringComparison.OrdinalIgnoreCase) &&
+                                                            IsLaterThan(item.Row, rolledBack.Row)))
+            .Select(item => $"row_id={item.Row.Id} operation_id={item.OperationId}")
+            .ToArray();
+        return BuildResult(V0RolledBackFollowedByCompletedCheck, failures);
+    }
+
+    private static InvariantCheckResult BuildExplicitRollbackCompletedWithoutStarted(IReadOnlyList<AuditLedgerRow> rows)
+    {
+        var startedOperationIds = rows
+            .Where(row => row.PacketKind.Equals(SelfImprovementPacketKinds.ApplyV0ExplicitRollbackStarted, StringComparison.OrdinalIgnoreCase))
+            .Select(ExtractOperationId)
+            .Where(id => !string.IsNullOrWhiteSpace(id))
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var failures = rows
+            .Where(row => row.PacketKind.Equals(SelfImprovementPacketKinds.ApplyV0ExplicitRollbackCompleted, StringComparison.OrdinalIgnoreCase))
+            .Select(row => new { Row = row, OperationId = ExtractOperationId(row) })
+            .Where(item => string.IsNullOrWhiteSpace(item.OperationId) || !startedOperationIds.Contains(item.OperationId))
+            .Select(item => $"row_id={item.Row.Id} operation_id={item.OperationId}")
+            .ToArray();
+        return BuildResult(ExplicitRollbackCompletedWithoutStartedCheck, failures);
     }
 
     private static InvariantCheckResult BuildAwaitingApprovalWithoutPrecedingChain(IReadOnlyList<AuditLedgerRow> rows)
@@ -276,10 +353,77 @@ public sealed partial class InvariantViolationWatchdog
         }
     }
 
+    public void EmitInvariantCheckFailedPackets(IReadOnlyList<InvariantCheckResult> results, DateTimeOffset nowUtc)
+    {
+        if (_killSwitchService?.IsActive() == true)
+        {
+            return;
+        }
+
+        if (_auditLedgerService is null)
+        {
+            return;
+        }
+
+        var settings = _settingsProvider?.Invoke();
+        if (settings is null || !IsTrue(settings, V0InvariantCheckEmitEnabledSetting))
+        {
+            return;
+        }
+
+        foreach (var result in results)
+        {
+            if (!result.Triggered || !IsV0Rule(result.Check.Id))
+            {
+                continue;
+            }
+
+            _auditLedgerService.Record(new EvidencePacket(
+                Guid.NewGuid(),
+                SelfImprovementPacketKinds.ApplyV0InvariantCheckFailed,
+                TaskCardId: null,
+                nowUtc,
+                DidUseNetwork: false,
+                DidUseHostedAi: false,
+                DidUseLocalModel: false,
+                DidMutate: false,
+                ArtifactPath: "",
+                Summary: JsonSerializer.Serialize(new { invariantId = result.Check.Id, failures = FailureItems(result) }, JsonDefaults.Options),
+                Status: "Completed"));
+        }
+    }
+
     private static bool RowMentionsReason(AuditLedgerRow row, MaturityClockResetReason reason)
     {
         var text = $"{row.Summary} {row.Error}";
         return text.Contains(reason.ToString(), StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool IsV0Rule(string invariantId)
+    {
+        return invariantId is V0CompletedWithoutApplied or
+            V0RolledBackFollowedByCompleted or
+            ExplicitRollbackCompletedWithoutStarted;
+    }
+
+    private static bool IsTrue(IReadOnlyDictionary<string, string> settings, string key)
+    {
+        return settings.TryGetValue(key, out var raw) &&
+               bool.TryParse(raw, out var parsed) &&
+               parsed;
+    }
+
+    private static IReadOnlyList<string> FailureItems(InvariantCheckResult result)
+    {
+        return result.EvidenceSummary.Equals("no violation detected", StringComparison.OrdinalIgnoreCase)
+            ? []
+            : result.EvidenceSummary.Split("; ", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+    }
+
+    private static bool IsLaterThan(AuditLedgerRow candidate, AuditLedgerRow reference)
+    {
+        return candidate.CreatedAtUtc > reference.CreatedAtUtc ||
+               (candidate.CreatedAtUtc == reference.CreatedAtUtc && candidate.Id > reference.Id);
     }
 
     private static bool IsReviewOnlySpriteRepairScopeRow(AuditLedgerRow row)
