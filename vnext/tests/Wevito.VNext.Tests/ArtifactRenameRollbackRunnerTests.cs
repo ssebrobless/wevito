@@ -410,7 +410,7 @@ public sealed class ArtifactRenameRollbackRunnerTests
 
         public IReadOnlyList<AuditLedgerRow> RollbackRows()
         {
-            return Ledger.Snapshot(DateTimeOffset.Parse("2026-05-19T00:00:00Z"), DateTimeOffset.Parse("2026-05-21T00:00:00Z"))
+            return Ledger.Snapshot(DateTimeOffset.MinValue, DateTimeOffset.MaxValue)
                 .Where(row => row.PacketKind.Contains("explicit_rollback", StringComparison.Ordinal))
                 .OrderBy(row => row.Id)
                 .ToArray();

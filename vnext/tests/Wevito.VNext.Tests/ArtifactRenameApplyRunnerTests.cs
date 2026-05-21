@@ -469,7 +469,7 @@ public sealed class ArtifactRenameApplyRunnerTests
 
         public IReadOnlyList<AuditLedgerRow> ApplyRows()
         {
-            return Ledger.Snapshot(DateTimeOffset.Parse("2026-05-19T00:00:00Z"), DateTimeOffset.Parse("2026-05-21T00:00:00Z"))
+            return Ledger.Snapshot(DateTimeOffset.MinValue, DateTimeOffset.MaxValue)
                 .Where(row => row.PacketKind.StartsWith("self_improvement_apply_v0_", StringComparison.Ordinal))
                 .OrderBy(row => row.Id)
                 .ToArray();
