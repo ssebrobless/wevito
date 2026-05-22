@@ -81,12 +81,13 @@ public sealed class PostC191WatchdogObserverProductTruthTests
     }
 
     [Fact]
-    public void ProductTruth_only_scan_and_emit_callers_in_src_and_tools_are_watchdog_definition_and_activity_service()
+    public void ProductTruth_only_scan_and_emit_callers_in_src_and_tools_are_watchdog_definition_activity_service_and_capabilities_and_gates()
     {
         var allowed = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             WatchdogSourcePath(),
-            ActivitySourcePath()
+            ActivitySourcePath(),
+            CapabilitiesAndGatesSourcePath()
         };
         var callers = SourceAndToolFiles()
             .Where(path => File.ReadAllText(path).Contains("ScanAndEmit(", StringComparison.Ordinal))
@@ -94,6 +95,7 @@ public sealed class PostC191WatchdogObserverProductTruthTests
             .ToArray();
 
         Assert.NotEmpty(callers);
+        Assert.Equal(3, callers.Length);
         Assert.All(callers, path => Assert.Contains(path, allowed));
     }
 
@@ -109,7 +111,7 @@ public sealed class PostC191WatchdogObserverProductTruthTests
         var source = File.ReadAllText(PostC189ProductTruthPath());
 
         Assert.Contains(
-            "ProductTruth_watchdog_only_allowed_external_facade_producer_is_activity_service_under_flag",
+            "ProductTruth_watchdog_allowed_external_facade_producers_are_activity_service_and_capabilities_and_gates_under_flag",
             source,
             StringComparison.Ordinal);
     }
@@ -191,6 +193,11 @@ public sealed class PostC191WatchdogObserverProductTruthTests
     private static string ActivitySourcePath()
     {
         return RepoPath("vnext", "src", "Wevito.VNext.Core", "SelfImprovement", "Apply", "ApplyRunnerActivityService.cs");
+    }
+
+    private static string CapabilitiesAndGatesSourcePath()
+    {
+        return RepoPath("vnext", "src", "Wevito.VNext.Core", "SelfImprovement", "CapabilitiesAndGatesService.cs");
     }
 
     private static string PostC189ProductTruthPath()

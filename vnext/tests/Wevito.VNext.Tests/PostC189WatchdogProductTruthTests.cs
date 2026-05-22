@@ -160,7 +160,7 @@ public sealed class PostC189WatchdogProductTruthTests
     }
 
     [Fact]
-    public void ProductTruth_watchdog_only_allowed_external_facade_producer_is_activity_service_under_flag()
+    public void ProductTruth_watchdog_allowed_external_facade_producers_are_activity_service_and_capabilities_and_gates_under_flag()
     {
         var watchdogPath = WatchdogSourcePath();
         var sourceFiles = SourceFiles().ToArray();
@@ -172,20 +172,34 @@ public sealed class PostC189WatchdogProductTruthTests
         Assert.Empty(externalEmitCallers);
 
         var activityPath = RepoPath("vnext", "src", "Wevito.VNext.Core", "SelfImprovement", "Apply", "ApplyRunnerActivityService.cs");
+        var capabilitiesPath = RepoPath("vnext", "src", "Wevito.VNext.Core", "SelfImprovement", "CapabilitiesAndGatesService.cs");
+        var allowedExternalFacadeCallers = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            activityPath,
+            capabilitiesPath
+        };
         var externalFacadeCallers = sourceFiles
             .Where(path => !path.Equals(watchdogPath, StringComparison.OrdinalIgnoreCase))
             .SelectMany(path => Regex.Matches(File.ReadAllText(path), @"\.ScanAndEmit\s*\(", RegexOptions.CultureInvariant)
                 .Select(match => new { Path = path, Match = match, Source = File.ReadAllText(path) }))
             .ToArray();
 
-        var caller = Assert.Single(externalFacadeCallers);
-        Assert.Equal(activityPath, caller.Path, ignoreCase: true);
+        Assert.Equal(2, externalFacadeCallers.Length);
+        Assert.All(externalFacadeCallers, caller => Assert.Contains(caller.Path, allowedExternalFacadeCallers));
 
-        var methodStart = caller.Source.LastIndexOf("public IReadOnlyList<ApplyRunnerActivityEntry> ReadRecent", caller.Match.Index, StringComparison.Ordinal);
-        var guardStart = caller.Source.LastIndexOf("IsTrue(_settingsProvider(), ObserverEnabledSetting)", caller.Match.Index, StringComparison.Ordinal);
-        Assert.True(methodStart >= 0, "The allowed facade call must be inside ReadRecent.");
-        Assert.True(guardStart > methodStart, "The allowed facade call must be guarded by the observer flag.");
-        Assert.True(caller.Match.Index - guardStart <= 200, "The observer flag guard must be near the facade call.");
+        var activityCaller = Assert.Single(externalFacadeCallers.Where(caller => caller.Path.Equals(activityPath, StringComparison.OrdinalIgnoreCase)));
+        var activityMethodStart = activityCaller.Source.LastIndexOf("public IReadOnlyList<ApplyRunnerActivityEntry> ReadRecent", activityCaller.Match.Index, StringComparison.Ordinal);
+        var activityGuardStart = activityCaller.Source.LastIndexOf("IsTrue(_settingsProvider(), ObserverEnabledSetting)", activityCaller.Match.Index, StringComparison.Ordinal);
+        Assert.True(activityMethodStart >= 0, "The activity facade call must be inside ReadRecent.");
+        Assert.True(activityGuardStart > activityMethodStart, "The activity facade call must be guarded by the observer flag.");
+        Assert.True(activityCaller.Match.Index - activityGuardStart <= 200, "The activity observer flag guard must be near the facade call.");
+
+        var capabilitiesCaller = Assert.Single(externalFacadeCallers.Where(caller => caller.Path.Equals(capabilitiesPath, StringComparison.OrdinalIgnoreCase)));
+        var capabilitiesMethodStart = capabilitiesCaller.Source.LastIndexOf("public CapabilitiesAndGatesSnapshot Snapshot", capabilitiesCaller.Match.Index, StringComparison.Ordinal);
+        var capabilitiesGuardStart = capabilitiesCaller.Source.LastIndexOf("WatchdogObserverEnabledSetting", capabilitiesCaller.Match.Index, StringComparison.Ordinal);
+        Assert.True(capabilitiesMethodStart >= 0, "The capabilities facade call must be inside Snapshot.");
+        Assert.True(capabilitiesGuardStart > capabilitiesMethodStart, "The capabilities facade call must be guarded by the observer flag.");
+        Assert.True(capabilitiesCaller.Match.Index - capabilitiesGuardStart <= 240, "The capabilities observer flag guard must be near the facade call.");
 
         var externalDirectScanCallers = sourceFiles
             .Where(path => !path.Equals(watchdogPath, StringComparison.OrdinalIgnoreCase))
