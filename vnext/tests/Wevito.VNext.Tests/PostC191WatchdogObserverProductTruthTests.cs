@@ -81,13 +81,14 @@ public sealed class PostC191WatchdogObserverProductTruthTests
     }
 
     [Fact]
-    public void ProductTruth_only_scan_and_emit_callers_in_src_and_tools_are_watchdog_definition_activity_service_and_capabilities_and_gates()
+    public void ProductTruth_only_scan_and_emit_callers_in_src_and_tools_are_watchdog_definition_activity_service_capabilities_and_gates_and_proposal_quality_metrics()
     {
         var allowed = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             WatchdogSourcePath(),
             ActivitySourcePath(),
-            CapabilitiesAndGatesSourcePath()
+            CapabilitiesAndGatesSourcePath(),
+            MetricsSourcePath()
         };
         var callers = SourceAndToolFiles()
             .Where(path => File.ReadAllText(path).Contains("ScanAndEmit(", StringComparison.Ordinal))
@@ -95,7 +96,7 @@ public sealed class PostC191WatchdogObserverProductTruthTests
             .ToArray();
 
         Assert.NotEmpty(callers);
-        Assert.Equal(3, callers.Length);
+        Assert.Equal(4, callers.Length);
         Assert.All(callers, path => Assert.Contains(path, allowed));
     }
 
@@ -111,7 +112,7 @@ public sealed class PostC191WatchdogObserverProductTruthTests
         var source = File.ReadAllText(PostC189ProductTruthPath());
 
         Assert.Contains(
-            "ProductTruth_watchdog_allowed_external_facade_producers_are_activity_service_and_capabilities_and_gates_under_flag",
+            "ProductTruth_watchdog_allowed_external_facade_producers_are_activity_service_capabilities_and_gates_and_proposal_quality_metrics_under_flag",
             source,
             StringComparison.Ordinal);
     }
@@ -198,6 +199,11 @@ public sealed class PostC191WatchdogObserverProductTruthTests
     private static string CapabilitiesAndGatesSourcePath()
     {
         return RepoPath("vnext", "src", "Wevito.VNext.Core", "SelfImprovement", "CapabilitiesAndGatesService.cs");
+    }
+
+    private static string MetricsSourcePath()
+    {
+        return RepoPath("vnext", "src", "Wevito.VNext.Core", "SelfImprovement", "ProposalQualityMetricsService.cs");
     }
 
     private static string PostC189ProductTruthPath()
