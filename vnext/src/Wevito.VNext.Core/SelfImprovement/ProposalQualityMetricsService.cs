@@ -4,20 +4,32 @@ using System.Text.Json;
 using Microsoft.Data.Sqlite;
 using Wevito.VNext.Core.Audit;
 using Wevito.VNext.Core.SelfImprovement.Eval;
+using Wevito.VNext.Core.SelfImprovement.Invariants;
 
 namespace Wevito.VNext.Core.SelfImprovement;
 
 public sealed class ProposalQualityMetricsService
 {
+    public const string WatchdogObserverEnabledSetting = "snapshot_v0_invariant_observer_in_proposal_quality_metrics_enabled";
+
     private readonly string _databasePath;
     private readonly string _artifactRoot;
     private readonly KillSwitchService? _killSwitch;
+    private readonly InvariantViolationWatchdog? _watchdog;
+    private readonly Func<IReadOnlyDictionary<string, string>>? _settingsProvider;
 
-    public ProposalQualityMetricsService(string databasePath, string artifactRoot, KillSwitchService? killSwitch = null)
+    public ProposalQualityMetricsService(
+        string databasePath,
+        string artifactRoot,
+        KillSwitchService? killSwitch = null,
+        InvariantViolationWatchdog? watchdog = null,
+        Func<IReadOnlyDictionary<string, string>>? settingsProvider = null)
     {
         _databasePath = Path.GetFullPath(databasePath);
         _artifactRoot = Path.GetFullPath(artifactRoot);
         _killSwitch = killSwitch;
+        _watchdog = watchdog;
+        _settingsProvider = settingsProvider;
     }
 
     public ProposalQualityMetricsSnapshot Snapshot(string operationId, DateTimeOffset nowUtc)
@@ -57,6 +69,16 @@ public sealed class ProposalQualityMetricsService
         var replayResult = ReadLatestReplayResultKind(normalizedOperationId);
         var refusedCount = CountApplyRefusedNotImplemented(connection, normalizedOperationId);
         var reason = ComputeReason(latestEval, evalGates.ArtifactMissing);
+
+        if (_watchdog is not null && _settingsProvider is not null)
+        {
+            var settingsForObserver = _settingsProvider();
+            if (settingsForObserver.TryGetValue(WatchdogObserverEnabledSetting, out var observerEnabled) &&
+                string.Equals(observerEnabled, bool.TrueString, StringComparison.OrdinalIgnoreCase))
+            {
+                _watchdog.ScanAndEmit(nowUtc);
+            }
+        }
 
         return new ProposalQualityMetricsSnapshot(
             normalizedOperationId,
