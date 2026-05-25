@@ -81,14 +81,15 @@ public sealed class PostC191WatchdogObserverProductTruthTests
     }
 
     [Fact]
-    public void ProductTruth_only_scan_and_emit_callers_in_src_and_tools_are_watchdog_definition_activity_service_capabilities_and_gates_and_proposal_quality_metrics()
+    public void ProductTruth_only_scan_and_emit_callers_in_src_and_tools_are_watchdog_definition_activity_service_capabilities_and_gates_proposal_quality_metrics_and_eval_coverage_health()
     {
         var allowed = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             WatchdogSourcePath(),
             ActivitySourcePath(),
             CapabilitiesAndGatesSourcePath(),
-            MetricsSourcePath()
+            MetricsSourcePath(),
+            EvalCoverageHealthSourcePath()
         };
         var callers = SourceAndToolFiles()
             .Where(path => File.ReadAllText(path).Contains("ScanAndEmit(", StringComparison.Ordinal))
@@ -96,7 +97,7 @@ public sealed class PostC191WatchdogObserverProductTruthTests
             .ToArray();
 
         Assert.NotEmpty(callers);
-        Assert.Equal(4, callers.Length);
+        Assert.Equal(5, callers.Length);
         Assert.All(callers, path => Assert.Contains(path, allowed));
     }
 
@@ -112,7 +113,7 @@ public sealed class PostC191WatchdogObserverProductTruthTests
         var source = File.ReadAllText(PostC189ProductTruthPath());
 
         Assert.Contains(
-            "ProductTruth_watchdog_allowed_external_facade_producers_are_activity_service_capabilities_and_gates_and_proposal_quality_metrics_under_flag",
+            "ProductTruth_watchdog_allowed_external_facade_producers_are_activity_service_capabilities_and_gates_proposal_quality_metrics_and_eval_coverage_health_under_flag",
             source,
             StringComparison.Ordinal);
     }
@@ -176,6 +177,17 @@ public sealed class PostC191WatchdogObserverProductTruthTests
         Assert.Contains("KillSwitch", ActivitySource(), StringComparison.Ordinal);
     }
 
+    [Fact]
+    public void ProductTruth_invariant_violation_watchdog_source_does_not_reference_held_out_eval_store()
+    {
+        var source = WatchdogSource();
+
+        Assert.DoesNotContain("IHeldOutEvalStore", source, StringComparison.Ordinal);
+        Assert.DoesNotContain("HeldOutEvalStore", source, StringComparison.Ordinal);
+        Assert.DoesNotContain("HeldOutCase", source, StringComparison.Ordinal);
+        Assert.DoesNotContain("_heldOut", source, StringComparison.Ordinal);
+    }
+
     private static string WatchdogSource()
     {
         return File.ReadAllText(WatchdogSourcePath());
@@ -204,6 +216,11 @@ public sealed class PostC191WatchdogObserverProductTruthTests
     private static string MetricsSourcePath()
     {
         return RepoPath("vnext", "src", "Wevito.VNext.Core", "SelfImprovement", "ProposalQualityMetricsService.cs");
+    }
+
+    private static string EvalCoverageHealthSourcePath()
+    {
+        return RepoPath("vnext", "src", "Wevito.VNext.Core", "SelfImprovement", "Eval", "EvalCoverageHealthService.cs");
     }
 
     private static string PostC189ProductTruthPath()
