@@ -160,7 +160,7 @@ public sealed class PostC189WatchdogProductTruthTests
     }
 
     [Fact]
-    public void ProductTruth_watchdog_allowed_external_facade_producers_are_activity_service_capabilities_and_gates_and_proposal_quality_metrics_under_flag()
+    public void ProductTruth_watchdog_allowed_external_facade_producers_are_activity_service_capabilities_and_gates_proposal_quality_metrics_and_eval_coverage_health_under_flag()
     {
         var watchdogPath = WatchdogSourcePath();
         var sourceFiles = SourceFiles().ToArray();
@@ -174,11 +174,13 @@ public sealed class PostC189WatchdogProductTruthTests
         var activityPath = RepoPath("vnext", "src", "Wevito.VNext.Core", "SelfImprovement", "Apply", "ApplyRunnerActivityService.cs");
         var capabilitiesPath = RepoPath("vnext", "src", "Wevito.VNext.Core", "SelfImprovement", "CapabilitiesAndGatesService.cs");
         var metricsPath = RepoPath("vnext", "src", "Wevito.VNext.Core", "SelfImprovement", "ProposalQualityMetricsService.cs");
+        var evalCoverageHealthPath = EvalCoverageHealthSourcePath();
         var allowedExternalFacadeCallers = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             activityPath,
             capabilitiesPath,
-            metricsPath
+            metricsPath,
+            evalCoverageHealthPath
         };
         var externalFacadeCallers = sourceFiles
             .Where(path => !path.Equals(watchdogPath, StringComparison.OrdinalIgnoreCase))
@@ -186,7 +188,7 @@ public sealed class PostC189WatchdogProductTruthTests
                 .Select(match => new { Path = path, Match = match, Source = File.ReadAllText(path) }))
             .ToArray();
 
-        Assert.Equal(3, externalFacadeCallers.Length);
+        Assert.Equal(4, externalFacadeCallers.Length);
         Assert.All(externalFacadeCallers, caller => Assert.Contains(caller.Path, allowedExternalFacadeCallers));
 
         var activityCaller = Assert.Single(externalFacadeCallers.Where(caller => caller.Path.Equals(activityPath, StringComparison.OrdinalIgnoreCase)));
@@ -209,6 +211,13 @@ public sealed class PostC189WatchdogProductTruthTests
         Assert.True(metricsMethodStart >= 0, "The metrics facade call must be inside Snapshot.");
         Assert.True(metricsGuardStart > metricsMethodStart, "The metrics facade call must be guarded by the observer flag.");
         Assert.True(metricsCaller.Match.Index - metricsGuardStart <= 240, "The metrics observer flag guard must be near the facade call.");
+
+        var evalCoverageHealthCaller = Assert.Single(externalFacadeCallers.Where(caller => caller.Path.Equals(evalCoverageHealthPath, StringComparison.OrdinalIgnoreCase)));
+        var evalCoverageHealthMethodStart = evalCoverageHealthCaller.Source.LastIndexOf("public EvalCoverageHealthSnapshot Snapshot", evalCoverageHealthCaller.Match.Index, StringComparison.Ordinal);
+        var evalCoverageHealthGuardStart = evalCoverageHealthCaller.Source.LastIndexOf("WatchdogObserverEnabledSetting", evalCoverageHealthCaller.Match.Index, StringComparison.Ordinal);
+        Assert.True(evalCoverageHealthMethodStart >= 0, "The eval coverage health facade call must be inside Snapshot.");
+        Assert.True(evalCoverageHealthGuardStart > evalCoverageHealthMethodStart, "The eval coverage health facade call must be guarded by the observer flag.");
+        Assert.True(evalCoverageHealthCaller.Match.Index - evalCoverageHealthGuardStart <= 240, "The eval coverage health observer flag guard must be near the facade call.");
 
         var externalDirectScanCallers = sourceFiles
             .Where(path => !path.Equals(watchdogPath, StringComparison.OrdinalIgnoreCase))
@@ -253,6 +262,11 @@ public sealed class PostC189WatchdogProductTruthTests
     private static string WatchdogSourcePath()
     {
         return RepoPath("vnext", "src", "Wevito.VNext.Core", "SelfImprovement", "Invariants", "InvariantViolationWatchdog.cs");
+    }
+
+    private static string EvalCoverageHealthSourcePath()
+    {
+        return RepoPath("vnext", "src", "Wevito.VNext.Core", "SelfImprovement", "Eval", "EvalCoverageHealthService.cs");
     }
 
     private static IEnumerable<string> SourceFiles()
