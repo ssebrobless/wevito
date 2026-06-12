@@ -34,6 +34,7 @@ Use this with `docs/RC_CHECKLIST_V1.md`.
 | BUG-002 | Major | RC-01 | Closed in C-PHASE 134. Selecting `Help with sprite cleanup` drafted a persisted `TaskCard` with `Status=Draft` and `ToolFamily=spriteAudit`. Evidence: `vnext/artifacts/c-phase-134-verification/sqlite-state-after-help-choice.json`, `vnext/artifacts/c-phase-134-verification/devcontrol-snapshot-after-help-choice.json`. |
 | BUG-003 | Major | RC-21 | Closed in C-PHASE 134. WPF rendered six v1 starter eggs only: red, orange, yellow, blue, indigo, violet; green was omitted, and Godot fallback matched the same six-color catalog. Evidence: `vnext/artifacts/c-phase-134-verification/egg-catalog-parity.json`. |
 | BUG-004 | Major | RC-25 | Closed in C-PHASE 134. DevControl action retest returned success for all nine actions, and `water`, `groom`, and `doctor` now transitioned animation state. Evidence: `vnext/artifacts/c-phase-134-verification/devcontrol-red-fox-actions.json`. |
+| BUG-006 | Critical | RC-01 | Closed same-day by `fix/bug-006-tool-popup-textbox-style`. The shell crashed at startup with `XamlParseException: Cannot find resource named 'PopupTextBoxStyle'` (`ToolPopupWindow.xaml` lines 1381 and 2054 referenced a style that was never defined; introduced by C-PHASE 150/156, so the shell has been unlaunchable since ~2026-05-18 — masked because the test suite never instantiates that XAML and no phase launched the app after C-134). Fix: defined `PopupTextBoxStyle` (TargetType TextBox) in `ToolPopupWindow.xaml` resources matching the popup theme. Verified: sandboxed shell launches to `startup-complete`, DevControl spawn + actions respond. Discovered during C-PHASE 198 in-app proof. |
 | BUG-005 | Critical | RC-ApplyRunner | Closed in C-PHASE 196. The full BUG-005 cold-cache recipe (build-server shutdown, delete all 26 `bin`/`obj` under `vnext\`, cold build, filtered + full test) was re-run on merged main after PR #298 (C-PHASE 195 squash `d7a5e916a`). All five affected `ArtifactRenameApplyRunnerTests`/`ArtifactRenameRollbackRunnerTests` facts passed (filtered run 123/123; full suite 1715/1715). The empty-packet-list failure observed 2026-05-21 at `9b0dd40aa` is resolved by the C-PHASE 189–195 chain. Evidence: `vnext/artifacts/c-phase-196-main-truth/main_truth.json`. |
 
 ## Session Notes
@@ -45,6 +46,7 @@ Use this with `docs/RC_CHECKLIST_V1.md`.
 - 2026-05-18: C-PHASE 134 live retest closed BUG-001 through BUG-004 on commit `c6365a4fe`.
 - 2026-05-21: C-PHASE 189 bridge preflight fuller-clean retry opened BUG-005 on origin/main commit `9b0dd40aa0ad6b2a678ef3617b5d294890a010e1`.
 - 2026-06-12: C-PHASE 196 main-sync product truth closed BUG-005 on merged main (post-PR-#298, C-PHASE 195 squash `d7a5e916a`) via the exact cold-cache repro recipe; 123/123 filtered, 1715/1715 full.
+- 2026-06-12: C-PHASE 198 in-app proof discovered BUG-006 (shell unlaunchable since ~2026-05-18, missing `PopupTextBoxStyle`); fixed same day on `fix/bug-006-tool-popup-textbox-style` and verified via sandboxed launch + DevControl drive.
 
 ## BUG-001 Detail
 
