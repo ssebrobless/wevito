@@ -42,6 +42,10 @@ EXPECTED_ANIMATIONS = {
     "sleep": 2,
     "sick": 4,
     "bathe": 4,
+    # Registered in C-PHASE 201: groom is rendered by PetAnimationState.Groom via
+    # the shell's primary animation-id path (SpriteAssetService), so it is a
+    # required family, not a stray. It was present 360/360 before registration.
+    "groom": 4,
 }
 OPTIONAL_EXPANDED_ANIMATIONS = {
     "drink": 4,
@@ -186,6 +190,24 @@ def audit_runtime(runtime_root: Path) -> tuple[list[dict[str, Any]], list[str], 
                         "color": color,
                         "animations": {},
                     }
+
+                    # C-PHASE 201 stray-family pin: every animation frame in a
+                    # variant directory must belong to a contracted family.
+                    contracted_families = set(EXPECTED_ANIMATIONS) | set(OPTIONAL_EXPANDED_ANIMATIONS)
+                    for frame_path in sorted(variant_dir.glob("*.png")):
+                        stem = frame_path.stem
+                        family, _, frame_index = stem.rpartition("_")
+                        if not frame_index.isdigit() or not family:
+                            errors.append(
+                                f"{species}/{age_stage}/{gender}/{color}/{frame_path.name} "
+                                "does not match the <family>_<NN>.png naming contract."
+                            )
+                            continue
+                        if family not in contracted_families:
+                            errors.append(
+                                f"{species}/{age_stage}/{gender}/{color}/{frame_path.name} "
+                                f"belongs to uncontracted family '{family}'."
+                            )
 
                     for animation_name, frame_count in EXPECTED_ANIMATIONS.items():
                         frames = sorted(variant_dir.glob(f"{animation_name}_*.png"))
