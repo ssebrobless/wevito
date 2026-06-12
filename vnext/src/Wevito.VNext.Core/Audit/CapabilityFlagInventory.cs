@@ -65,6 +65,7 @@ public static class CapabilityFlagInventory
         new("apply_v0_invariant_observer_in_activity_service_enabled", bool.FalseString, "Allows the read-only apply-runner activity surface to invoke the invariant watchdog facade. Default off."),
         new("snapshot_v0_invariant_observer_in_capabilities_and_gates_enabled", bool.FalseString, "Allows the capabilities and gates snapshot to invoke the invariant watchdog facade. Default off."),
         new("snapshot_v0_invariant_observer_in_proposal_quality_metrics_enabled", bool.FalseString, "Allows the proposal quality metrics snapshot to invoke the invariant watchdog facade. Default off."),
+        new(EvalCoverageHealthService.WatchdogObserverEnabledSetting, bool.FalseString, "Allows the eval coverage health snapshot to invoke the invariant watchdog facade. Default off."),
         new(WebResearchConnector.WebSearchEnabledSetting, bool.FalseString, "Allows approved web research surfaces to fetch external pages."),
         new(SettingKeys.LocalDocumentRetrievalEnabled, bool.FalseString, "Allows local document retrieval to build and query the local docs index."),
         new(LocalFileReadEnabledSetting, bool.FalseString, "Allows approved autonomous scopes to read local files through policy gates."),
