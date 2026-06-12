@@ -83,10 +83,10 @@ def fit_sprite(sprite: Image.Image, target_size: tuple[int, int]) -> Image.Image
     return canvas
 
 
-def render_editable_board(base_sprite: Image.Image, title: str, frame_layout: list[list[str | None]] = FRAME_LAYOUT) -> Image.Image:
+def render_editable_board(base_sprite: Image.Image, title: str, frame_layout: list[list[str | None]] = FRAME_LAYOUT, cell_size: tuple[int, int] = EDIT_CELL_SIZE) -> Image.Image:
     row_count, col_count = get_layout_size(frame_layout)
-    width = PADDING * 2 + col_count * EDIT_CELL_SIZE[0]
-    height = 54 + PADDING * 2 + row_count * (EDIT_CELL_SIZE[1] + LABEL_HEIGHT)
+    width = PADDING * 2 + col_count * cell_size[0]
+    height = 54 + PADDING * 2 + row_count * (cell_size[1] + LABEL_HEIGHT)
     sheet = checkerboard((width, height), (246, 246, 246, 255), (226, 226, 226, 255), cell=18)
     draw = ImageDraw.Draw(sheet)
     title_font = load_font(22)
@@ -94,19 +94,19 @@ def render_editable_board(base_sprite: Image.Image, title: str, frame_layout: li
     draw.rectangle((0, 0, width, 54), fill=(40, 48, 58, 255))
     draw.text((PADDING, 14), title, fill=(245, 248, 250, 255), font=title_font)
 
-    fitted = fit_sprite(base_sprite, (EDIT_CELL_SIZE[0] - 20, EDIT_CELL_SIZE[1] - 20))
+    fitted = fit_sprite(base_sprite, (cell_size[0] - 20, cell_size[1] - 20))
     for row_index, row in enumerate(frame_layout):
         for col_index, frame_name in enumerate(row):
-            x = PADDING + col_index * EDIT_CELL_SIZE[0]
-            y = 54 + PADDING + row_index * (EDIT_CELL_SIZE[1] + LABEL_HEIGHT)
-            draw.rectangle((x, y, x + EDIT_CELL_SIZE[0], y + EDIT_CELL_SIZE[1]), outline=(122, 132, 144, 255), width=2)
-            tile = checkerboard((EDIT_CELL_SIZE[0] - 6, EDIT_CELL_SIZE[1] - 6), (250, 250, 250, 255), (235, 235, 235, 255), cell=16)
+            x = PADDING + col_index * cell_size[0]
+            y = 54 + PADDING + row_index * (cell_size[1] + LABEL_HEIGHT)
+            draw.rectangle((x, y, x + cell_size[0], y + cell_size[1]), outline=(122, 132, 144, 255), width=2)
+            tile = checkerboard((cell_size[0] - 6, cell_size[1] - 6), (250, 250, 250, 255), (235, 235, 235, 255), cell=16)
             if frame_name:
                 tile.alpha_composite(fitted, ((tile.width - fitted.width) // 2, (tile.height - fitted.height) // 2))
             sheet.alpha_composite(tile, (x + 3, y + 3))
-            draw.rectangle((x, y + EDIT_CELL_SIZE[1], x + EDIT_CELL_SIZE[0], y + EDIT_CELL_SIZE[1] + LABEL_HEIGHT), fill=(250, 250, 250, 230))
+            draw.rectangle((x, y + cell_size[1], x + cell_size[0], y + cell_size[1] + LABEL_HEIGHT), fill=(250, 250, 250, 230))
             if frame_name:
-                draw.text((x + 6, y + EDIT_CELL_SIZE[1] + 4), frame_name, fill=(28, 34, 40, 255), font=label_font)
+                draw.text((x + 6, y + cell_size[1] + 4), frame_name, fill=(28, 34, 40, 255), font=label_font)
 
     return sheet
 

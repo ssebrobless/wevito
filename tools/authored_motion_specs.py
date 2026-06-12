@@ -85,6 +85,82 @@ MOTION_FAMILIES: Final[dict[str, dict[str, object]]] = {
             "Sick frames should feel low-energy and heavy rather than distorted.",
         ],
     },
+    # C-PHASE 203B anti-blur splits (Amendment R2b): Gemini per-frame detail is
+    # inversely proportional to board cell count, so no board sent to Gemini may
+    # exceed 4 sprite frames. The composite `care`/`expression` boards above are
+    # kept for layout history but are refused by prepare_motion_gemini_handoff.
+    "care_eat": {
+        "title": "care eat",
+        "description": "eat-only pose refinement",
+        "frame_layout": [
+            ["eat_00", "eat_01", "eat_02", "eat_03"],
+        ],
+        "prompt_focus": [
+            "Only improve eat_00 through eat_03.",
+            "The eat frames should work as convincing head-down food or water interaction poses.",
+            "Keep the animal on-model and readable with crisp edges and no blur.",
+        ],
+    },
+    "care_sleep": {
+        "title": "care sleep",
+        "description": "sleep-only pose refinement",
+        "frame_layout": [
+            ["sleep_00", "sleep_01", None, None],
+        ],
+        "prompt_focus": [
+            "Only improve sleep_00 and sleep_01.",
+            "The sleep frames should become clear static resting poses that feel species-appropriate and calm.",
+            "Keep edges crisp; no blur or motion smearing.",
+        ],
+    },
+    "expression_happy": {
+        "title": "expression happy",
+        "description": "happy-only pose refinement",
+        "frame_layout": [
+            ["happy_00", "happy_01", "happy_02", "happy_03"],
+        ],
+        "prompt_focus": [
+            "Only improve happy_00 through happy_03.",
+            "The happy frames should read as an energetic, joyful bounce while staying on-model.",
+            "Keep edges crisp; no blur or noisy motion.",
+        ],
+    },
+    "expression_sad": {
+        "title": "expression sad",
+        "description": "sad-only pose refinement",
+        "frame_layout": [
+            ["sad_00", "sad_01", None, None],
+        ],
+        "prompt_focus": [
+            "Only improve sad_00 and sad_01.",
+            "The sad frames should read as drooped and subdued while staying on-model.",
+            "Keep edges crisp; no blur.",
+        ],
+    },
+    "expression_sick": {
+        "title": "expression sick",
+        "description": "sick-only pose refinement",
+        "frame_layout": [
+            ["sick_00", "sick_01", "sick_02", "sick_03"],
+        ],
+        "prompt_focus": [
+            "Only improve sick_00 through sick_03.",
+            "Sick frames should feel low-energy and heavy rather than distorted.",
+            "Keep edges crisp; no blur.",
+        ],
+    },
+    "expression_bathe": {
+        "title": "expression bathe",
+        "description": "bathe-only pose refinement",
+        "frame_layout": [
+            ["bathe_00", "bathe_01", "bathe_02", "bathe_03"],
+        ],
+        "prompt_focus": [
+            "Only improve bathe_00 through bathe_03.",
+            "The bathe frames should read as washing or splashing motion while staying on-model.",
+            "Keep edges crisp; no blur.",
+        ],
+    },
 }
 
 

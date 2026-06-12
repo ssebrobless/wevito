@@ -1,0 +1,28 @@
+{
+  "species": "pigeon",
+  "ageStage": "baby",
+  "gender": "male",
+  "family": "expression_happy",
+  "boardImage": "expression_happy-editable-board.png",
+  "runtimeReferenceImage": "expression_happy-runtime-reference-blue.png",
+  "frameLayout": [
+    [
+      "happy_00",
+      "happy_01",
+      "happy_02",
+      "happy_03"
+    ]
+  ],
+  "cellSize": [
+    256,
+    256
+  ],
+  "colors": [
+    "red",
+    "orange",
+    "yellow",
+    "blue",
+    "indigo",
+    "violet"
+  ]
+}

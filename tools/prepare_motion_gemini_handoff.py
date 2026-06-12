@@ -21,6 +21,7 @@ from export_species_authoring_pack import (
     DEFAULT_OUTPUT_ROOT,
     DEFAULT_PACK_ROOT,
     DEFAULT_SOURCE_ROOT,
+    EDIT_CELL_SIZE,
     PADDING,
     RUNTIME_CELL_SIZE,
     checkerboard,
@@ -248,10 +249,15 @@ def write_family_assets(species_pack_dir: Path, handoff_root: Path, species: str
 
     source_dir = species_pack_dir / age_stage / gender
     family_layout = get_family_layout(family)
+    frame_count = sum(1 for row in family_layout for name in row if name)
+    # Anti-blur policy (Amendment R2b): small boards get enlarged cells so each
+    # frame claims more of Gemini's fixed output resolution.
+    cell_size = (256, 256) if frame_count <= 4 else EDIT_CELL_SIZE
     family_board = render_editable_board(
         Image.open(source_dir / "base-pose.png").convert("RGBA"),
         f"{species} {age_stage} {gender} {family} board",
         family_layout,
+        cell_size=cell_size,
     )
     family_board_path = target_dir / f"{family}-editable-board.png"
     family_board.save(family_board_path)
@@ -293,6 +299,7 @@ def write_family_assets(species_pack_dir: Path, handoff_root: Path, species: str
                 "boardImage": f"{family}-editable-board.png",
                 "runtimeReferenceImage": f"{family}-runtime-reference-blue.png",
                 "frameLayout": family_layout,
+                "cellSize": list(cell_size),
                 "colors": COLORS,
             },
             indent=2,
@@ -320,7 +327,21 @@ def main() -> None:
     parser.add_argument("--runtime-root", type=Path, default=DEFAULT_OUTPUT_ROOT)
     parser.add_argument("--authored-root", type=Path, default=DEFAULT_AUTHORED_ROOT)
     parser.add_argument("--output-root", type=Path, default=DEFAULT_HANDOFF_ROOT)
+    parser.add_argument(
+        "--allow-large-board",
+        action="store_true",
+        help="Override the anti-blur pin (Amendment R2b: boards sent to Gemini must carry <= 4 sprite frames).",
+    )
     args = parser.parse_args()
+
+    layout = get_family_layout(args.family)
+    frame_count = sum(1 for row in layout for name in row if name)
+    if frame_count > 4 and not args.allow_large_board:
+        parser.error(
+            f"family '{args.family}' carries {frame_count} frames per board; the anti-blur pin "
+            "(Amendment R2b) caps Gemini boards at 4. Use the *_a/*_b or per-family splits, "
+            "or pass --allow-large-board to override deliberately."
+        )
 
     prepared: list[str] = []
     for species in args.species:
