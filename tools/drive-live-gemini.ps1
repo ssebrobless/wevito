@@ -6,7 +6,8 @@ param(
     [string]$WindowTitle = "Google Gemini - Google Chrome",
     [int]$GenerationTimeoutSeconds = 360,
     [string]$AuthUser = "wbogusz24@gmail.com",
-    [switch]$AllowLaunchFallback
+    [switch]$AllowLaunchFallback,
+    [switch]$SkipPrepare
 )
 
 $ErrorActionPreference = "Stop"
@@ -59,11 +60,13 @@ $ChromePath = @(
     "C:\Program Files\Google\Chrome\Application\chrome.exe"
 ) | Where-Object { Test-Path $_ } | Select-Object -First 1
 
-if ([string]::IsNullOrWhiteSpace($Family)) {
-    python $PrepareScript --species $Species | Out-Null
-}
-else {
-    python $PrepareScript --species $Species --family $Family | Out-Null
+if (-not $SkipPrepare) {
+    if ([string]::IsNullOrWhiteSpace($Family)) {
+        python $PrepareScript --species $Species | Out-Null
+    }
+    else {
+        python $PrepareScript --species $Species --family $Family | Out-Null
+    }
 }
 
 if (-not (Test-Path $PromptPath)) {

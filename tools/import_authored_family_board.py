@@ -105,6 +105,17 @@ def import_family_board(
     board = Image.open(board_path).convert("RGBA")
     layout = get_family_layout(family)
 
+    # Boards extracted from a Gemini result pack come back at the result's
+    # resolution, not the prep geometry — normalize so cell slicing lines up.
+    row_count = len(layout)
+    col_count = max(len(row) for row in layout)
+    expected = (
+        PADDING * 2 + col_count * cell_size[0],
+        HEADER_HEIGHT + PADDING * 2 + row_count * (cell_size[1] + LABEL_HEIGHT),
+    )
+    if board.size != expected:
+        board = board.resize(expected, Image.Resampling.LANCZOS)
+
     staged: list[tuple[str, Image.Image]] = []
     rejections: list[str] = []
     metrics: dict[str, dict[str, float]] = {}
