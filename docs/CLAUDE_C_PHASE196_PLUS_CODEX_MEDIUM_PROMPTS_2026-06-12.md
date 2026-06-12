@@ -570,6 +570,28 @@ Auto-continue: No
 > batch post-proof adds a BUG-007 color-conformance check (per-variant tint
 > verification of required families against the variant's color id). After both
 > lanes: run §11 (C-199R) before §5 (C-200).
+>
+> **C-203B anti-blur policy (owner concern, 2026-06-12 — BINDING):** Gemini output
+> resolution is fixed, so per-frame detail is inversely proportional to frames per
+> board; large boards come back blurry. Therefore:
+> 1. **Hard cap: ≤4 sprite frames per Gemini prompt.** Use the existing small
+>    splits (`locomotion_idle` 4, `locomotion_walk_a`/`_b` 3+3) and add matching
+>    splits in `tools/authored_motion_specs.py` for any other family in scope
+>    (e.g. `care_eat` 4, `care_sleep` 2, `expression_happy` 4, `expression_sad` 2,
+>    `expression_sick` 4, `expression_bathe` 4). Never send the 10-frame
+>    `locomotion` or 14-frame `expression` boards.
+> 2. **Bigger cells for small boards:** when a board has ≤4 cells, render the
+>    editable board with enlarged cells (≥256 px, vs the default
+>    `EDIT_CELL_SIZE` 148) so each frame claims more of the model's output budget.
+> 3. **Sharpness gate at import:** the import tool computes a deterministic
+>    sharpness metric (e.g. normalized Laplacian edge-energy) per returned frame
+>    and compares against the variant's current accepted frames; below-threshold
+>    frames are auto-rejected and the board re-rolled — blurry art never enters
+>    the repo. Record the metric per frame in the batch evidence.
+> 4. Minimum regen scope per larger-bucket species row = the synthesis source
+>    families (idle, walk, eat, happy) + any machine-flagged family; more boards
+>    only if the owner's per-species notes call for them. Volume is handled by
+>    `batch-drive-live-gemini.ps1`, not by packing more frames per prompt.
 
 ```text
 Start with the §0 common header. Run only after C-PHASE 197 AND 200 AND 202 merged.

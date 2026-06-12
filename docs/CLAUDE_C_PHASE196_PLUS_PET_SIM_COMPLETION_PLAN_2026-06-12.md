@@ -394,7 +394,12 @@ C-PHASE 203 is **pulled forward ahead of C-200** and split into two lanes:
   guarded import (`import_gemini_sprite_block.py` lineage) + color propagation +
   post-proof per species. BUG-007 fix for fox/blue rides this lane. The original
   C-202 locomotion boards (goose, squirrel, raccoon) join the **same round-trip
-  session** so the owner drives Gemini once, not twice.
+  session** so the owner drives Gemini once, not twice. **Anti-blur policy
+  (binding, owner 2026-06-12):** ≤4 frames per Gemini prompt (small-board splits
+  only, never the 10-frame locomotion / 14-frame expression boards), enlarged
+  board cells for ≤4-cell boards, and a deterministic sharpness gate at import
+  that auto-rejects blurry returns — volume is absorbed by more small prompts via
+  the batch driver, never by packing frames. Full spec in prompts §8 amendment.
 
 Then:
 
