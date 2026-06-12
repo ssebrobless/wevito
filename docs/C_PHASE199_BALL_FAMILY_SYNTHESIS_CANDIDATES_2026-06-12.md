@@ -51,21 +51,31 @@ species; one row per variant (36 rows): play_ball ×6, carry_ball_run ×6, then
 pickup/hold/drop/carry_walk first frames. The goose sheet's baby/female/blue row is
 the applied C-198 pilot, labeled `[PILOT/runtime]`, as the visual reference.
 
-## AWAITING PER-SPECIES OWNER APPROVAL BEFORE C-PHASE 200
+## OWNER REVIEW RESOLVED 2026-06-12 — 0/10 APPROVED
 
 Review each sheet; check a species to approve its matrix apply. C-200's scope is
 exactly the checked species.
 
-- [ ] rat
-- [ ] crow
-- [ ] fox
-- [ ] snake
-- [ ] deer
-- [ ] frog
-- [ ] pigeon
-- [ ] raccoon
-- [ ] squirrel
-- [ ] goose (35 remaining variants; pilot already applied)
+- [ ] rat — smaller issues
+- [ ] crow — smaller issues (assigned by owner follow-up)
+- [ ] fox — larger issues
+- [ ] snake — larger issues
+- [ ] deer — larger issues
+- [ ] frog — larger issues
+- [ ] pigeon — larger issues
+- [ ] raccoon — smaller issues
+- [ ] squirrel — smaller issues
+- [ ] goose (35 remaining variants; pilot already applied) — smaller issues
+
+**Verdict (owner, 2026-06-12): no species approved.** Larger issues (missing chunks
+of sprites, very blurry, art inconsistencies): deer, fox, frog, pigeon, snake.
+Smaller issues (small cutoffs, silhouette cleanup, sizing issues, cleaning between
+the legs): crow, goose, raccoon, rat, squirrel. Because candidates are synthesized
+verbatim from each variant's happy/idle/eat/walk source frames, these defects live
+in the SOURCE required families — repair flows through the pulled-forward C-PHASE
+203 (see plan Amendment R2), candidates regenerate deterministically afterward, and
+a second review round gates C-200. Triage queue seeded at
+`vnext/artifacts/c-phase-203-quality-triage/triage-queue.json`.
 
 Note for review: pickup/hold/drop/carry_walk reuse already-shipped eat/idle/walk
 poses verbatim (lowest risk). The judgment calls are play_ball (happy-bounce loop)

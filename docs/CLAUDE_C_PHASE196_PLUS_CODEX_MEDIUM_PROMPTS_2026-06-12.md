@@ -554,6 +554,23 @@ Auto-continue: No
 
 ## §8 — C-PHASE 203: Quality triage queue + targeted authored refresh batches
 
+> **AMENDMENT R2 (2026-06-12, plan §10):** the C-199 review returned 0/10 approved,
+> so C-203 now runs BEFORE C-200 and C-202-import. Preconditions become: C-197 AND
+> C-199 AND C-201 merged (NOT 200/202). Stage 1's machine-built queue is REPLACED by
+> the owner-seeded queue already at
+> `vnext/artifacts/c-phase-203-quality-triage/triage-queue.json` (owner review is
+> ground truth; machine flags under-detect — fox/raccoon/squirrel/crow are 0/6
+> flagged but owner-reported). The phase splits into two lanes per plan §10.2:
+> **C-203A** procedural cleanup (crow, goose, raccoon, rat, squirrel; branch
+> `claude-implementation/c-phase-203a-procedural-cleanup`) and **C-203B** Gemini
+> regeneration (deer, fox, frog, pigeon, snake; branch
+> `claude-implementation/c-phase-203b-gemini-regen`), one PR each. C-203B's
+> round-trip session also carries the C-202 locomotion boards (single owner driving
+> session). Stage-2 batch machinery below applies unchanged to both lanes; every
+> batch post-proof adds a BUG-007 color-conformance check (per-variant tint
+> verification of required families against the variant's color id). After both
+> lanes: run §11 (C-199R) before §5 (C-200).
+
 ```text
 Start with the §0 common header. Run only after C-PHASE 197 AND 200 AND 202 merged.
 The queue (Stage 1) needs explicit owner approval before any batch (Stage 2) runs.
@@ -695,5 +712,50 @@ Stop gates:
 Validation: §0 A–E; A = full suite (no filter).
 Commit message: C-PHASE 205: RC checklist v1 full sweep + pet-sim playability verdict
 PR title: C-PHASE 205: RC sweep + playability verdict
+Auto-continue: No
+```
+
+---
+
+## §11 — C-PHASE 199R: Ball-candidate regeneration + second review round (Amendment R2)
+
+```text
+Start with the §0 common header. Run only after C-PHASE 203A AND 203B (incl. the
+C-202 board import) merged. Report-only phase: no sprites_runtime mutation.
+
+Phase: C-PHASE 199R — Ball-candidate regeneration + second review round
+Branch: claude-implementation/c-phase-199r-candidate-regen
+
+Goal:
+The C-199 candidate set inherited source-art defects (owner review 2026-06-12:
+0/10 approved). Sources are now repaired; regenerate candidates deterministically
+and stage the second per-species approval gate for C-200.
+
+Steps:
+1) Delete the stale candidate tree under
+   vnext/artifacts/c-phase-199-ball-candidates/candidates/ (artifacts are local;
+   keep candidate-manifest.json renamed *.r1.json for provenance).
+2) Re-run tools/generate_optional_ball_families.py over the full matrix into
+   vnext/artifacts/c-phase-199r-ball-candidates/ — same flags as C-199, fresh
+   manifest with per-frame sha256. Determinism spot-check via --hash-only twice.
+3) Rebuild the 10 per-species review sheets (same layout; goose pilot row labeled).
+   NOTE: the C-198 pilot (goose/baby/female/blue) was applied from PRE-repair
+   sources — regenerate its 6 families too and include the diff in the report so
+   the owner can decide whether the pilot gets re-applied in C-200's goose batch.
+4) Phase report docs/C_PHASE199R_CANDIDATE_REGEN_2026-MM-DD.md with the per-species
+   approval checklist ("AWAITING PER-SPECIES OWNER APPROVAL BEFORE C-PHASE 200").
+   C-200's scope = exactly the species checked HERE (the C-199 checklist is void).
+5) History append per §0.
+
+Stop gates:
+- Any write outside the two c-phase-199* artifact roots.
+- Hash instability across the two --hash-only runs.
+- Any source row consumed by synthesis still failing the contract audit or the
+  BUG-007 color-conformance check (halt: repair lane missed a row).
+
+Validation: §0 A–E; A = dotnet test ... --filter "FullyQualifiedName~Sprite"
+(minimum derived per §0).
+Commit message: C-PHASE 199R: regenerate ball candidates from repaired sources + second review gate
+PR title: C-PHASE 199R: candidate regeneration + re-review gate
 Auto-continue: No
 ```

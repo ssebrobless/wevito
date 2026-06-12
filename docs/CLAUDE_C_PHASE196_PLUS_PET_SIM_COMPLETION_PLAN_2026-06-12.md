@@ -164,6 +164,11 @@ C-201 and C-202 are parallel-safe with the 198→200 ball track (disjoint file s
 201 touches only `play_*` files, 202 touches only goose/squirrel/raccoon
 locomotion rows). Codex still runs them as separate sequential phases — one PR each.
 
+> **SUPERSEDED for the 199→200 edge by Amendment R2 (§10):** the C-199 review
+> returned 0/10 approved; C-203 (split A/B) now runs BEFORE C-200, followed by
+> C-199R candidate regeneration and a second review gate. See §10.3 for the live
+> graph.
+
 ## 5. Decisions needed from the owner (resolve at go-ahead)
 
 - **D1 — Loose `play_*` frames: remove or register?** Recommendation: **remove**
@@ -350,3 +355,70 @@ C-130/C-128 artifact patterns exactly; never widen a mutation scope mid-phase; v
 all stop gates before opening the PR (any true → Draft PR + `phase_blocked` audit
 row); one PR per phase; append `docs/codex-phase-history.jsonl` after the PR opens;
 end every phase with the standard GREEN/RED report block (see prompts §0).
+
+## 10. Amendment R2 (2026-06-12, post C-199 owner review) — quality before apply
+
+### 10.1 Trigger
+
+The C-199 review gate returned **0/10 species approved**. Owner verdict:
+
+- **Larger issues** (missing chunks of sprites, very blurry, art inconsistencies):
+  deer, fox, frog, pigeon, snake.
+- **Smaller issues** (small cutoffs, silhouette cleanup, sizing issues, cleaning
+  between the legs of animals): crow, goose, raccoon, rat, squirrel.
+
+Because C-199 candidates are synthesized verbatim from each variant's existing
+happy/idle/eat/walk frames, every reported defect lives in the **source required
+families**, not in the synthesis transforms. The C-197 machine audit corroborates but
+under-detects (25/60 rows flagged; frog 6/6, snake 6/6, goose 6/6, pigeon 4/6, deer
+2/6, rat 1/6 — but fox/raccoon/squirrel/crow 0/6 despite owner-visible issues).
+**Owner review supersedes machine flags.** Triage queue (owner-seeded):
+`vnext/artifacts/c-phase-203-quality-triage/triage-queue.json`.
+
+### 10.2 Restructure
+
+C-PHASE 203 is **pulled forward ahead of C-200** and split into two lanes:
+
+- **C-203A — Procedural cleanup sweep** (smaller bucket: crow, goose, raccoon, rat,
+  squirrel). Deterministic local repairs in the `repair_*_motion_rows.py` lineage:
+  silhouette/halo cleanup (incl. stray pixels between legs), edge-cutoff fixes
+  (edge-touch padding), per-species sizing normalization. One guarded batch per
+  species (C-130 pattern: declared scope, backup+sha256, post-proof, rollback),
+  before/after contact sheet per batch. No Gemini dependency. Repairs land at the
+  source-row level and propagate to all 6 colors via the existing tint pipeline;
+  BUG-007 color-conformance is checked in every batch post-proof and fixed for any
+  in-scope species (e.g. goose/blue).
+- **C-203B — Gemini regeneration sweep** (larger bucket: deer, fox, frog, pigeon,
+  snake). Handoff packs via `prepare_gemini_handoff.py` / family-focused packs for
+  affected families; owner (or `batch-drive-live-gemini.ps1`) round-trips boards;
+  guarded import (`import_gemini_sprite_block.py` lineage) + color propagation +
+  post-proof per species. BUG-007 fix for fox/blue rides this lane. The original
+  C-202 locomotion boards (goose, squirrel, raccoon) join the **same round-trip
+  session** so the owner drives Gemini once, not twice.
+
+Then:
+
+- **C-199R — Candidate regeneration + second review round.** Re-run
+  `generate_optional_ball_families.py` against repaired sources (deterministic; prior
+  candidate set discarded), rebuild the 10 review sheets, present for per-species
+  approval. This is the **second user gate**; C-200's scope is the species approved
+  here.
+- **C-200 / C-204 / C-205** specs unchanged; C-200 consumes C-199R approvals instead
+  of C-199's.
+
+### 10.3 Revised dependency graph
+
+```text
+C-199 review (0/10) ──> 203A procedural cleanup (smaller bucket) ─────────────┐
+                   ──> 203B gemini regen (larger bucket) + 202 boards (same trip) ─┤
+[owner approves triage queue before any 203A/203B batch runs — standing C-203 gate]
+203A + 203B + 202 import ──> 199R re-synthesis + new sheets ──[owner re-review]──> 200 matrix apply
+200 + 201 (done) ──> 204 play/fetch wiring proof ──> 205 RC sweep + verdict
+```
+
+### 10.4 Gates introduced/kept
+
+1. Owner approves the triage queue (lanes + species scope) before any repair batch.
+2. Owner drives (or authorizes the automated driver for) the single Gemini
+   round-trip session covering C-203B + C-202 boards.
+3. Owner re-reviews the regenerated C-199R sheets before C-200.
