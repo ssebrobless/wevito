@@ -5,14 +5,14 @@ Use this with `docs/RC_CHECKLIST_V1.md`.
 ## Summary
 
 - Critical: 0
-- Major: 0
+- Major: 1
 - Minor: 0
 
 ## Open Bugs
 
 | ID | Severity | RC Item | Pets | Mode | Title | Status |
 |---|---|---|---|---|---|---|
-|  |  |  |  |  |  |  |
+| BUG-007 | Major | RC-26 | 1 | Focused | Color-variant tint inconsistency: some variants' required-family frames are untinted vs their own optional-family frames (e.g., goose/baby/female/blue idle/walk/eat/happy are cream while its play_ball/hold_ball are blue; fox/blue also warm-toned; rat/blue correctly blue) | Open |
 
 ## In Progress
 
@@ -47,6 +47,23 @@ Use this with `docs/RC_CHECKLIST_V1.md`.
 - 2026-05-21: C-PHASE 189 bridge preflight fuller-clean retry opened BUG-005 on origin/main commit `9b0dd40aa0ad6b2a678ef3617b5d294890a010e1`.
 - 2026-06-12: C-PHASE 196 main-sync product truth closed BUG-005 on merged main (post-PR-#298, C-PHASE 195 squash `d7a5e916a`) via the exact cold-cache repro recipe; 123/123 filtered, 1715/1715 full.
 - 2026-06-12: C-PHASE 198 in-app proof discovered BUG-006 (shell unlaunchable since ~2026-05-18, missing `PopupTextBoxStyle`); fixed same day on `fix/bug-006-tool-popup-textbox-style` and verified via sandboxed launch + DevControl drive.
+- 2026-06-12: C-PHASE 198 contact-sheet review opened BUG-007 (color-variant tint inconsistency in required families for at least goose/blue and fox/blue). Feeds the C-PHASE 203 triage queue: the queue builder must add a color-conformance check (per-variant hue comparison of required families against the variant's own tinted optional families or sibling color variants).
+
+## BUG-007 Detail
+
+- ID: BUG-007
+- Severity: Major
+- RC Item: RC-26 (action animation/visual correctness)
+- Pet Count: 1
+- Mode: Focused
+- Discovered: 2026-06-12, during C-PHASE 198 carry-family contact-sheet review
+- Steps:
+  1. Open `sprites_runtime/goose/baby/female/blue/idle_00.png` and `play_ball_00.png`.
+  2. Compare dominant body hue.
+  3. Repeat for `fox/baby/female/blue/idle_00.png` vs `rat/baby/female/blue/idle_00.png`.
+- Expected: every frame in a `blue` variant directory is blue-tinted, consistently across required and optional families.
+- Actual: goose/blue required families (idle/walk/eat/happy avg RGB ≈ 188,159,131 — cream) are untinted while the same variant's optional families are blue (avg ≈ 78,104,141). fox/blue is warm-brown (122,85,65). rat/blue is correctly blue (51,69,94). Full per-variant census not yet taken.
+- Notes: Discovered visually; the C-128/130 contract + canvas audits do not check hue, and the C-197 quality audit compares shape vs source poses only. Disposition: C-PHASE 203 triage must include a deterministic color-conformance check and queue the failing rows for repair. Severity Major (visual correctness across potentially many variants), not Critical (game playable).
 
 ## BUG-001 Detail
 
