@@ -431,8 +431,22 @@ Phase: C-PHASE 201 — Loose play_* removal + contract stray-family pin
 Branch: claude-implementation/c-phase-201-loose-play-removal-stray-pin
 
 Goal:
-Delete the dead generic play_* frames (unreachable by any action or engine path) and
-pin the contract so stray families can never silently accumulate again.
+Delete the dead generic play_* frames (unreachable by any action or engine path),
+REGISTER the live-but-uncontracted groom family in the sprite contract, and pin the
+contract so stray families can never silently accumulate again.
+
+C-197 finding that amends this phase (2026-06-12): `groom` (4 frames, present
+360/360) is in neither EXPECTED_ANIMATIONS nor OPTIONAL_EXPANDED_ANIMATIONS, but it
+IS live: PetAnimationState.Groom resolves its primary animation id via
+CurrentAnimationState.ToString().ToLowerInvariant() in
+Wevito.VNext.Shell/SpriteAssetService.cs (the GetFallbackAnimationId "happy" entry is
+fallback-only). `play` has no PetAnimationState member and no action maps to it
+(actions.json play -> animationState happy + optionalAnimationFamily play_ball), so
+play_* is dead. Therefore BEFORE the stray-family pin lands: add "groom": 4 to
+EXPECTED_ANIMATIONS in tools/audit_sprite_contract.py. Without this, the pin would
+flag 1,440 live groom files. The C-197 baseline.json loose-file inventory classifies
+each loose file as uncontracted_live (groom -> register) vs uncontracted_dead
+(play -> delete); the deletion list is the uncontracted_dead entries ONLY.
 
 Declared mutation scope (exact): ONLY the files listed in the C-PHASE 197
 baseline.json loose-file inventory (expected ~504 play_*.png across ~126 variants —
@@ -440,9 +454,13 @@ use the inventory, never a re-glob, as the deletion list). DELETE only; no file
 content modified.
 
 Steps (artifact root vnext/artifacts/c-phase-201-loose-play-removal/):
-1) Extract the deletion list from the C-197 baseline.json. Cross-check: every path
-   exists, every filename starts with play_, count matches the baseline count.
-   Any divergence: STOP.
+0) Register groom: add "groom": 4 to EXPECTED_ANIMATIONS in
+   tools/audit_sprite_contract.py; re-run the contract audit (error_count must stay 0,
+   now with groom counted as required 360/360).
+1) Extract the deletion list from the C-197 baseline.json: the
+   loose_file_inventory.files entries with classification == "uncontracted_dead"
+   ONLY. Cross-check: every path exists, every filename starts with play_, count
+   matches the baseline uncontracted_dead_count. Any divergence: STOP.
 2) Backup: zip all listed files with relative paths + sha256 manifest.
 3) Dry-run listing -> delete -> post-proof:
    a) §0 F and G (contract error_count=0; canvas clean)
