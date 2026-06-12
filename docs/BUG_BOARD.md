@@ -12,7 +12,7 @@ Use this with `docs/RC_CHECKLIST_V1.md`.
 
 | ID | Severity | RC Item | Pets | Mode | Title | Status |
 |---|---|---|---|---|---|---|
-| BUG-007 | Major | RC-26 | 1 | Focused | Color-variant tint inconsistency: some variants' required-family frames are untinted vs their own optional-family frames (e.g., goose/baby/female/blue idle/walk/eat/happy are cream while its play_ball/hold_ball are blue; fox/blue also warm-toned; rat/blue correctly blue) | Open |
+| BUG-007 | Major | RC-26 | 1 | Focused | Color-variant tint inconsistency: some variants' required-family frames are untinted vs their own optional-family frames (e.g., goose/baby/female/blue idle/walk/eat/happy are cream while its play_ball/hold_ball are blue; fox/blue also warm-toned; rat/blue correctly blue) | Open — partially fixed in C-PHASE 203A (goose blue ×6 + raccoon adult blue ×2 repaired + verified; fox/blue remains, rides C-203B) |
 
 ## In Progress
 
@@ -64,6 +64,7 @@ Use this with `docs/RC_CHECKLIST_V1.md`.
 - Expected: every frame in a `blue` variant directory is blue-tinted, consistently across required and optional families.
 - Actual: goose/blue required families (idle/walk/eat/happy avg RGB ≈ 188,159,131 — cream) are untinted while the same variant's optional families are blue (avg ≈ 78,104,141). fox/blue is warm-brown (122,85,65). rat/blue is correctly blue (51,69,94). Full per-variant census not yet taken.
 - Notes: Discovered visually; the C-128/130 contract + canvas audits do not check hue, and the C-197 quality audit compares shape vs source poses only. Disposition: C-PHASE 203 triage must include a deterministic color-conformance check and queue the failing rows for repair. Severity Major (visual correctness across potentially many variants), not Critical (game playable).
+- 2026-06-12 C-PHASE 203A: deterministic conformance check landed in `tools/procedural_cleanup_sweep.py` (required-family circular-mean hue vs expected tint hue from `COLOR_VARIANTS`, ±40°, saturation ≥ 0.15). Full census over the 5 procedural-lane species found 8 nonconforming variants: goose blue all 6 rows (incl. the original baby/female case — caught only when measurement was restricted to required families; the variant's blue pilot optional frames had masked it in a whole-variant mean) + raccoon adult blue both genders (previously unknown instance). All 8 repaired with the pipeline's own `colorize()` and verified (post-apply census: 0 nonconforming). Remaining known instance: fox/blue (all rows suspected) — C-PHASE 203B regenerates fox art, conformance check re-runs there. Bug stays Open until the 203B lane closes fox.
 
 ## BUG-001 Detail
 
