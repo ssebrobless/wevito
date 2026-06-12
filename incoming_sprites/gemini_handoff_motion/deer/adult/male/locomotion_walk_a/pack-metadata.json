@@ -14,6 +14,10 @@
       null
     ]
   ],
+  "cellSize": [
+    256,
+    256
+  ],
   "colors": [
     "red",
     "orange",

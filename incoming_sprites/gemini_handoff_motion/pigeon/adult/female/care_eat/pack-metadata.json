@@ -1,0 +1,28 @@
+{
+  "species": "pigeon",
+  "ageStage": "adult",
+  "gender": "female",
+  "family": "care_eat",
+  "boardImage": "care_eat-editable-board.png",
+  "runtimeReferenceImage": "care_eat-runtime-reference-blue.png",
+  "frameLayout": [
+    [
+      "eat_00",
+      "eat_01",
+      "eat_02",
+      "eat_03"
+    ]
+  ],
+  "cellSize": [
+    256,
+    256
+  ],
+  "colors": [
+    "red",
+    "orange",
+    "yellow",
+    "blue",
+    "indigo",
+    "violet"
+  ]
+}
