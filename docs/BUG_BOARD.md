@@ -5,14 +5,14 @@ Use this with `docs/RC_CHECKLIST_V1.md`.
 ## Summary
 
 - Critical: 0
-- Major: 1
+- Major: 0
 - Minor: 0
 
 ## Open Bugs
 
 | ID | Severity | RC Item | Pets | Mode | Title | Status |
 |---|---|---|---|---|---|---|
-| BUG-007 | Major | RC-26 | 1 | Focused | Color-variant tint inconsistency: some variants' required-family frames are untinted vs their own optional-family frames (e.g., goose/baby/female/blue idle/walk/eat/happy are cream while its play_ball/hold_ball are blue; fox/blue also warm-toned; rat/blue correctly blue) | Open — partially fixed in C-PHASE 203A (goose blue ×6 + raccoon adult blue ×2 repaired + verified; fox/blue remains, rides C-203B) |
+|  |  |  |  |  |  |  |
 
 ## In Progress
 
@@ -35,6 +35,7 @@ Use this with `docs/RC_CHECKLIST_V1.md`.
 | BUG-003 | Major | RC-21 | Closed in C-PHASE 134. WPF rendered six v1 starter eggs only: red, orange, yellow, blue, indigo, violet; green was omitted, and Godot fallback matched the same six-color catalog. Evidence: `vnext/artifacts/c-phase-134-verification/egg-catalog-parity.json`. |
 | BUG-004 | Major | RC-25 | Closed in C-PHASE 134. DevControl action retest returned success for all nine actions, and `water`, `groom`, and `doctor` now transitioned animation state. Evidence: `vnext/artifacts/c-phase-134-verification/devcontrol-red-fox-actions.json`. |
 | BUG-006 | Critical | RC-01 | Closed same-day by `fix/bug-006-tool-popup-textbox-style`. The shell crashed at startup with `XamlParseException: Cannot find resource named 'PopupTextBoxStyle'` (`ToolPopupWindow.xaml` lines 1381 and 2054 referenced a style that was never defined; introduced by C-PHASE 150/156, so the shell has been unlaunchable since ~2026-05-18 — masked because the test suite never instantiates that XAML and no phase launched the app after C-134). Fix: defined `PopupTextBoxStyle` (TargetType TextBox) in `ToolPopupWindow.xaml` resources matching the popup theme. Verified: sandboxed shell launches to `startup-complete`, DevControl spawn + actions respond. Discovered during C-PHASE 198 in-app proof. |
+| BUG-007 | Major | RC-26 | Closed in C-PHASE 203A + 203B Stage 2 (2026-06-12). Tint-conformance census + fix: goose blue ×6 and raccoon adult blue ×2 repaired in 203A; deer/fox/frog blue ×18 rows (natural-colored old families, same propagate-passthrough trap) repaired in 203B Stage 2. Final census 0/360 variants nonconforming; the authored apply lane now tints all six colors with no passthrough. Evidence: `vnext/artifacts/c-phase-203b-apply/tint-census-final.json`. |
 | BUG-005 | Critical | RC-ApplyRunner | Closed in C-PHASE 196. The full BUG-005 cold-cache recipe (build-server shutdown, delete all 26 `bin`/`obj` under `vnext\`, cold build, filtered + full test) was re-run on merged main after PR #298 (C-PHASE 195 squash `d7a5e916a`). All five affected `ArtifactRenameApplyRunnerTests`/`ArtifactRenameRollbackRunnerTests` facts passed (filtered run 123/123; full suite 1715/1715). The empty-packet-list failure observed 2026-05-21 at `9b0dd40aa` is resolved by the C-PHASE 189–195 chain. Evidence: `vnext/artifacts/c-phase-196-main-truth/main_truth.json`. |
 
 ## Session Notes
@@ -64,6 +65,7 @@ Use this with `docs/RC_CHECKLIST_V1.md`.
 - Expected: every frame in a `blue` variant directory is blue-tinted, consistently across required and optional families.
 - Actual: goose/blue required families (idle/walk/eat/happy avg RGB ≈ 188,159,131 — cream) are untinted while the same variant's optional families are blue (avg ≈ 78,104,141). fox/blue is warm-brown (122,85,65). rat/blue is correctly blue (51,69,94). Full per-variant census not yet taken.
 - Notes: Discovered visually; the C-128/130 contract + canvas audits do not check hue, and the C-197 quality audit compares shape vs source poses only. Disposition: C-PHASE 203 triage must include a deterministic color-conformance check and queue the failing rows for repair. Severity Major (visual correctness across potentially many variants), not Critical (game playable).
+- 2026-06-12 C-PHASE 203B Stage 2 — CLOSED: the full-matrix census after the regen apply exposed the bug's true extent: deer/fox/frog blue variants (18 rows) carried natural-colored (brown/warm/green) frames in their non-regenerated families — same propagate-passthrough trap. All 360 old-family frames of those variants colorized with the pipeline's `colorize()` (no passthrough); final census: 0/360 variants nonconforming. The apply tool (`apply_authored_family_imports.py`) tints every authored frame into all six colors with NO passthrough color, so this class of bug cannot re-enter via the authored lane.
 - 2026-06-12 C-PHASE 203A: deterministic conformance check landed in `tools/procedural_cleanup_sweep.py` (required-family circular-mean hue vs expected tint hue from `COLOR_VARIANTS`, ±40°, saturation ≥ 0.15). Full census over the 5 procedural-lane species found 8 nonconforming variants: goose blue all 6 rows (incl. the original baby/female case — caught only when measurement was restricted to required families; the variant's blue pilot optional frames had masked it in a whole-variant mean) + raccoon adult blue both genders (previously unknown instance). All 8 repaired with the pipeline's own `colorize()` and verified (post-apply census: 0 nonconforming). Remaining known instance: fox/blue (all rows suspected) — C-PHASE 203B regenerates fox art, conformance check re-runs there. Bug stays Open until the 203B lane closes fox.
 
 ## BUG-001 Detail
