@@ -56,3 +56,10 @@ Important:
 
 
 Return only the edited image.
+
+
+CRITICAL SCALE RULE (this board has failed twice on this exact mistake):
+- Every walk frame must contain the ENTIRE snake — head AND tail fully visible
+  inside the frame, at the same small scale as the frames already on the board.
+- Never zoom in. Never draw a cropped or magnified body segment filling the cell.
+- If unsure, make the snake smaller, not larger.
