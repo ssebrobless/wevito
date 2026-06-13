@@ -133,4 +133,4 @@
 {"phase_id":"C-PHASE 203B-prep","timestamp_utc":"2026-06-12T17:10:41.6644250Z","branch":"claude-implementation/c-phase-203b-gemini-regen-prep","pr_url":"https://github.com/ssebrobless/wevito/pull/309"}
 {"phase_id":"C-PHASE 203B","timestamp_utc":"2026-06-13T01:39:03.5586280Z","branch":"claude-implementation/c-phase-203b-stage2-apply","pr_url":"https://github.com/ssebrobless/wevito/pull/312"}
 {"phase_id":"C-PHASE 199R","timestamp_utc":"2026-06-13T01:44:11.0606490Z","branch":"claude-implementation/c-phase-199r-candidate-regen","pr_url":"https://github.com/ssebrobless/wevito/pull/313"}
-{"phase_id":"C-PHASE 199R2","timestamp_utc":"2026-06-13T20:35:09.0000000Z","branch":"claude-implementation/c-phase-203c-outline-reimport","pr_url":"PENDING"}
+{"phase_id":"C-PHASE 199R2","timestamp_utc":"2026-06-13T20:35:09.0000000Z","branch":"claude-implementation/c-phase-203c-outline-reimport","pr_url":"https://github.com/ssebrobless/wevito/pull/314"}
