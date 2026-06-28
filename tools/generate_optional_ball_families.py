@@ -31,8 +31,10 @@ Safety:
 - Deterministic: PNGs are re-encoded through a fixed PIL save path; --hash-only
   re-synthesizes in memory and emits the manifest without writing frames, so two
   runs can be compared for byte-identity.
-- Skips any family the variant already has in runtime (e.g. the C-PHASE 198 pilot)
-  and records the skip in the manifest.
+- Skips any family the variant already has in runtime by default (e.g. the
+  C-PHASE 198 pilot) and records the skip in the manifest. Review-sheet rebuilds
+  can pass --include-existing-runtime-families to copy those existing frames into
+  the candidate artifact tree so already-authored rows stay visible for review.
 """
 
 from __future__ import annotations
@@ -87,15 +89,23 @@ def encode_png(image: Image.Image) -> bytes:
 
 
 def synthesize_family(
-    variant_dir: Path, family: str
-) -> list[tuple[str, bytes]] | str:
-    """Returns [(filename, png_bytes)] or a string skip/error reason."""
+    variant_dir: Path, family: str, include_existing_runtime_families: bool
+) -> tuple[str, list[tuple[str, bytes]]] | str:
+    """Returns (status, [(filename, png_bytes)]) or a string skip/error reason."""
     source_family, plan = TRANSFORMS[family]
     expected = OPTIONAL_EXPANDED_ANIMATIONS[family]
     if len(plan) != expected:
         raise AssertionError(f"{family} plan length != contract frame count")
 
-    if list(variant_dir.glob(f"{family}_*.png")):
+    existing = sorted(variant_dir.glob(f"{family}_*.png"))
+    if existing and include_existing_runtime_families:
+        if len(existing) != expected:
+            return f"error_existing_runtime_family_count:{family}:{len(existing)}"
+        return (
+            "copied_existing_runtime_family",
+            [(p.name, p.read_bytes()) for p in existing],
+        )
+    if existing:
         return "skip_existing_runtime_family"
 
     sources = sorted(variant_dir.glob(f"{source_family}_*.png"))
@@ -118,7 +128,7 @@ def synthesize_family(
         y = canvas_h - src.height - safe_lift
         canvas.paste(src, (x, max(y, 0)), src)
         out.append((f"{family}_{out_index:02d}.png", encode_png(canvas)))
-    return out
+    return ("generated", out)
 
 
 def main() -> int:
@@ -133,6 +143,14 @@ def main() -> int:
         help="synthesize in memory and write only the manifest (determinism check)",
     )
     parser.add_argument("--manifest-name", default="candidate-manifest.json")
+    parser.add_argument(
+        "--include-existing-runtime-families",
+        action="store_true",
+        help=(
+            "copy existing runtime optional-family frames into the artifact tree "
+            "instead of showing them as missing in review sheets"
+        ),
+    )
     args = parser.parse_args()
 
     out_root = Path(args.out_root).resolve()
@@ -147,7 +165,7 @@ def main() -> int:
         raise SystemExit(f"unknown families: {sorted(unknown)}")
 
     manifest: dict = {"tool": "generate_optional_ball_families", "species": {}}
-    generated = skipped = errors = 0
+    generated = copied_existing = skipped = errors = 0
 
     for species in EXPECTED_SPECIES:
         if species not in species_filter:
@@ -162,7 +180,11 @@ def main() -> int:
                     for family in BALL_FAMILIES:
                         if family not in family_filter:
                             continue
-                        result = synthesize_family(variant_dir, family)
+                        result = synthesize_family(
+                            variant_dir,
+                            family,
+                            args.include_existing_runtime_families,
+                        )
                         if isinstance(result, str):
                             variant_entry[family] = {"status": result}
                             if result.startswith("error"):
@@ -170,17 +192,21 @@ def main() -> int:
                             else:
                                 skipped += 1
                             continue
+                        status, frames = result
                         frames_entry = {}
-                        for name, blob in result:
+                        for name, blob in frames:
                             digest = hashlib.sha256(blob).hexdigest()
                             frames_entry[name] = digest
                             if not args.hash_only:
                                 dest = out_root / species / age / gender / color
                                 dest.mkdir(parents=True, exist_ok=True)
                                 (dest / name).write_bytes(blob)
-                            generated += 1
+                            if status == "copied_existing_runtime_family":
+                                copied_existing += 1
+                            else:
+                                generated += 1
                         variant_entry[family] = {
-                            "status": "generated",
+                            "status": status,
                             "sha256": frames_entry,
                         }
                     species_entry["variants"][variant] = variant_entry
@@ -188,6 +214,7 @@ def main() -> int:
 
     manifest["summary"] = {
         "frames_generated": generated,
+        "frames_copied_existing_runtime_family": copied_existing,
         "families_skipped_existing": skipped,
         "errors": errors,
     }
