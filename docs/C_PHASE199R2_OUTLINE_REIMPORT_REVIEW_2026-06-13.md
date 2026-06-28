@@ -60,13 +60,25 @@ reliably as a dark fox — while legitimate leg gaps stay open.
 | Full suite | — | **1717/1717** |
 | build-vnext -SkipAssetPrep | — | compiles; suite green |
 
-## AWAITING PER-SPECIES OWNER APPROVAL (third gate)
+## THIRD REVIEW GATE VERDICT: REJECTED (2026-06-27)
 
-Review `vnext/artifacts/c-phase-199r2-ball-candidates/review-sheets/`. Check a
-species to approve its C-200 matrix apply.
+Owner review of `vnext/artifacts/c-phase-199r2-ball-candidates/review-sheets/`
+found that **0/10 species are approved** for C-200 matrix apply. C-200 is
+blocked until a cleanup phase fixes the rejected rows and produces a new review
+gate.
 
-- [ ] crow   - [ ] deer   - [ ] fox   - [ ] frog   - [ ] goose
-- [ ] pigeon - [ ] raccoon - [ ] rat  - [ ] snake  - [ ] squirrel
+| Species | Owner review finding | C-200 status |
+|---|---|---|
+| crow | Adult female and adult male need cleanup between the legs. | Rejected |
+| deer | Teen male and teen female need cleanup between the legs. | Rejected |
+| fox | Adult male fox has its head cut off in many sprites on the review sheet. | Rejected |
+| frog | Teen female has no eyes and a faint PNG checker pattern over the body; teen male needs cleanup between the legs. | Rejected |
+| goose | Every goose sprite needs cleanup between the legs; male goose feet are cut off; blue baby female goose row is redacted/blank. | Rejected |
+| pigeon | Teen male and teen female rows need cleanup between/around the legs; adult female has missing eyes/checker-pattern body; adult male has PNG checker pattern on the wing. | Rejected |
+| raccoon | Teen male and teen female have body-adjacent pixel debris; adult female has slight PNG checker pattern over the body. | Rejected |
+| rat | Teen female and teen male need cleanup around and between tails and feet. | Rejected |
+| snake | Review sheet is not sufficient: inconsistent sizes, no clear uncoiled movement/base visualization, and no good indication whether snake should be considered ready. | Rejected / needs movement-visualization plan |
+| squirrel | Teen male and teen female have shadows around the feet that need cleanup. | Rejected |
 
 Note: crow/rat/goose/raccoon/squirrel required families were procedurally
 cleaned in C-203A (not Gemini-regenerated); their candidates derive from that
@@ -74,6 +86,14 @@ art. snake/adult/male carry_ball_walk/run derive from the OLD walk row
 (deferred).
 
 ## Next
+
+**Superseded by the 2026-06-27 owner review rejection:** C-200 is blocked.
+Proceed to C-199R3 cleanup/review first, then run a new owner review gate, then
+C-200 guarded matrix apply only for species approved in that future gate.
+
+See `docs/C_PHASE199R3_REVIEW_REJECTION_CLEANUP_PLAN_2026-06-27.md` for the
+cleanup phase plan. No species is approved for C-200 from the C-199R2 review
+gate.
 
 Owner-approved species → C-200 guarded matrix apply (prop_anchors.json +
 coverage pin) → C-204 fetch wiring → C-205 RC verdict.
