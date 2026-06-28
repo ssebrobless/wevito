@@ -67,6 +67,18 @@ def edge_energy(image: Image.Image) -> float:
 def extract_frame_tile(board: Image.Image, row_index: int, col_index: int, cell_size: tuple[int, int] = EDIT_CELL_SIZE) -> Image.Image:
     x, y = cell_top_left(row_index, col_index, cell_size)
     crop = board.crop((x, y, x + cell_size[0], y + cell_size[1]))
+    if cell_size != EDIT_CELL_SIZE:
+        # 256px-cell anti-blur era (C-203B+): segment by the drawn dark OUTLINE,
+        # not by colour. The earlier brightness-flood (clean_cell_border_flood)
+        # could not tell a white body (pigeon) from the light checker and ate
+        # the body (C-199R round-2 rejection: holes / missing chunks / faint
+        # white birds). segment_cell_by_outline treats the dark silhouette
+        # outline as a sealed boundary, floods the EXTERIOR from the canvas
+        # border, and keeps everything the flood cannot reach — colour-agnostic,
+        # so white bodies survive, enclosed belly gaps fill, between-the-legs
+        # gaps (open to the border) stay transparent, and detached halo specks
+        # are dropped by keep-largest-component.
+        return segment_cell_by_outline(crop.convert("RGBA"))
     cleaned = remove_checkerboard_background(crop.convert("RGBA"))
     bbox = cleaned.getbbox()
     if bbox is None:
@@ -84,6 +96,120 @@ def extract_frame_tile(board: Image.Image, row_index: int, col_index: int, cell_
     cleaned = clear_small_background_like_islands(cleaned)
     cleaned = clear_lower_background_islands(cleaned)
     return cleaned
+
+
+def segment_cell_by_outline(
+    crop: Image.Image,
+    dark_threshold: int = 150,
+    seal: int = 2,
+    ring: int = 6,
+) -> Image.Image:
+    """Isolate the subject by treating its dark outline as a sealed boundary.
+
+    The board renderer draws each frame as a colour fill bounded by a dark
+    silhouette outline, on a light-gray checkerboard, with a 2px mid-gray
+    cell-outline rectangle at the cell edge. This segmenter:
+
+    1. marks dark pixels (the drawn outline AND any dark body) as a barrier and
+       dilates it by ``seal`` to close hairline gaps in the outline;
+    2. clears the outer ``ring`` so the cell-outline rectangle is removed and the
+       checker connects to the canvas border;
+    3. flood-labels the non-barrier ("free") space and calls every component
+       touching the border the EXTERIOR (checker + open gaps such as between the
+       legs, which drain to the border);
+    4. body = everything not exterior, then ``binary_fill_holes`` fills any
+       checker pocket fully enclosed by the outline (belly holes), and
+       keep-largest-component drops detached halo specks.
+
+    Colour plays no role, so a white body on a near-white checker (pigeon) is
+    recovered as reliably as a dark one — fixing the C-199R round-2 rejection
+    where the brightness flood ate light bodies.
+    """
+    from scipy import ndimage  # local import keeps module load light
+
+    arr = np.array(crop.convert("RGBA"), dtype=np.uint8)
+    height, width = arr.shape[:2]
+    brightness = arr[:, :, :3].astype(np.int16).mean(axis=2)
+
+    barrier = ndimage.binary_dilation(brightness <= dark_threshold, iterations=seal)
+    barrier[:ring, :] = barrier[-ring:, :] = barrier[:, :ring] = barrier[:, -ring:] = False
+
+    labels, _ = ndimage.label(~barrier)
+    border_labels = set(labels[0, :]) | set(labels[-1, :]) | set(labels[:, 0]) | set(labels[:, -1])
+    border_labels.discard(0)
+    exterior = np.isin(labels, sorted(border_labels))
+
+    body = ndimage.binary_fill_holes(~exterior)
+    comp, count = ndimage.label(body)
+    if count > 1:
+        sizes = ndimage.sum(np.ones_like(comp), comp, range(1, count + 1))
+        body = comp == (1 + int(np.argmax(sizes)))
+
+    out = np.zeros_like(arr)
+    out[:, :, :3] = arr[:, :, :3]
+    out[:, :, 3] = np.where(body, 255, 0)
+    return Image.fromarray(out, "RGBA")
+
+
+def clean_cell_border_flood(crop: Image.Image, channel_spread: int = 14, brightness_floor: int = 210) -> Image.Image:
+    """Strip background as the border-connected near-gray/near-white region.
+
+    Keeps every pixel not reachable from the canvas border through
+    background-like colors — light body interiors are preserved by
+    construction. A final 1px defringe drops boundary pixels that are
+    themselves background-colored (anti-matte).
+
+    The board renderer draws a 2px mid-gray cell-outline rectangle at each
+    cell edge (render_editable_board, outline (122,132,144)). That outline is
+    darker than the checker and would wall the checkerboard off from the canvas
+    border, leaving the whole background enclosed (counted as one giant hole).
+    The sprite is centered with a wide inset, so the outer ring of the cell is
+    always background — we force it transparent first, which removes the outline
+    and lets the checker flood from the border.
+    """
+    from scipy import ndimage  # local import keeps module load light
+
+    arr = np.array(crop.convert("RGBA"), dtype=np.uint8)
+    height, width = arr.shape[:2]
+    rgb = arr[:, :, :3].astype(np.int16)
+    spread = rgb.max(axis=2) - rgb.min(axis=2)
+    brightness = rgb.mean(axis=2)
+    background_like = (spread <= channel_spread) & (brightness >= brightness_floor)  # checker grays + white
+    background_like |= arr[:, :, 3] == 0
+
+    # The subject is drawn with a dark silhouette outline. White/light body
+    # interiors (e.g. the pigeon chest) are background-colored too, so only the
+    # outline separates them from the exterior. Treat the outline as a flood
+    # barrier and dilate it to seal hairline gaps, otherwise the flood leaks
+    # through and eats the body (C-199R round-1: missing chunks).
+    dark = brightness <= 140
+    barrier = ndimage.binary_dilation(dark, iterations=2)
+    floodable = background_like & ~barrier
+
+    # Force the outer ring floodable so the cell-outline rectangle is removed
+    # and the checker becomes border-connected.
+    ring = max(3, min(height, width) // 32)
+    floodable[:ring, :] = True
+    floodable[-ring:, :] = True
+    floodable[:, :ring] = True
+    floodable[:, -ring:] = True
+
+    # 4-connectivity so the flood cannot squeeze through diagonal pinholes.
+    labels, count = ndimage.label(floodable)
+    border_labels = set(labels[0, :]) | set(labels[-1, :]) | set(labels[:, 0]) | set(labels[:, -1])
+    border_labels.discard(0)
+    background = np.isin(labels, sorted(border_labels))
+
+    out = arr.copy()
+    out[background] = 0
+
+    # 1px defringe: opaque boundary pixels that are themselves background-colored
+    opaque = out[:, :, 3] > 0
+    neighbor_kernel = np.array([[1, 1, 1], [1, 0, 1], [1, 1, 1]], dtype=np.uint8)
+    boundary = opaque & (ndimage.convolve(opaque.astype(np.uint8), neighbor_kernel, mode="constant") < 8)
+    fringe = boundary & background_like
+    out[fringe] = 0
+    return Image.fromarray(out, "RGBA")
 
 
 def normalize_frame(frame: Image.Image, species: str, age_stage: str, frame_name: str) -> Image.Image:
