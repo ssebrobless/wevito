@@ -98,6 +98,31 @@ Snake review result
   +-- Required next work: snake-specific art/regeneration pass
 ```
 
+## Owner Follow-Up Review: Refreshed Sheets Still Rejected
+
+2026-06-29 owner review of the regenerated C-199R3 procedural review sheets
+confirmed that the same visible issues are still noticeable. The procedural
+cleanup pass improved deterministic pixel hygiene, but it is not sufficient for
+owner approval and should not be treated as readiness evidence.
+
+```
+C-199R3 refreshed sheets
+  |
+  +-- Review-pipeline completeness: fixed
+  |
+  +-- Procedural pixel cleanup: applied
+  |
+  +-- Owner visual verdict: still rejected
+  |
+  +-- Species approved: 0 / 10
+  |
+  +-- C-200 matrix apply: still blocked
+  |
+  +-- Required next work
+      |
+      +-- art cleanup/regeneration, not another sheet-only rebuild
+```
+
 ## Safety Boundaries
 
 - No species approved.
