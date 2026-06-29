@@ -76,7 +76,27 @@ Owner third review rejection
 | fox | Not repaired by this procedural lane; adult male head/crop issue remains open. |
 | frog | Not repaired by this procedural lane; teen female eyes/checker body and teen male leg cleanup remain open. |
 | pigeon | Not repaired by this procedural lane; leg cleanup and checker-pattern body/wing concerns remain open. |
-| snake | Not repaired by this procedural lane; movement/base-pose review remains open. |
+| snake | REJECTED in owner follow-up review on 2026-06-29. Most variants remain coiled only; the only attempted uncoiled/slithering poses are adult male variants, and those do not fit the base snake models. Needs a snake-specific art/regeneration pass before readiness can be judged. |
+
+## Owner Follow-Up Review: Snake
+
+2026-06-29 owner review of the regenerated sheets confirmed that snake remains
+blocked. The issue is not only the review-sheet format: the underlying sprite
+set does not yet provide coherent movement-ready snake variants.
+
+```
+Snake review result
+  |
+  +-- Most variants: coiled-only
+  |
+  +-- Adult male variants: attempted uncoiled/slithering poses
+  |   |
+  |   +-- rejected because they do not fit the base snake models
+  |
+  +-- Approval status: rejected
+  |
+  +-- Required next work: snake-specific art/regeneration pass
+```
 
 ## Safety Boundaries
 
